@@ -8,7 +8,7 @@ const AuthenticatedRoutes = () => {
     const { token } = useSelector((state: RootState) => state.user);
 
     if (!token) {
-        return <Navigate to="/login" />;
+        return <Navigate to="/auth/login" />;
     }
     return <Outlet />;
 };
