@@ -1,9 +1,12 @@
+import Layout from "../../containers/Layout"
 
 const Home = () => {
   return (
-    <main className="min-h-[80vh] flex flex-col items-center justify-center w-full">
+    <Layout>
+      <main className="min-h-[80vh] h-[160vh] flex flex-col items-center justify-center w-full">
       <h1>Home</h1>
     </main>
+    </Layout>
   )
 }
 

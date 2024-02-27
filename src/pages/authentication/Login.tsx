@@ -29,8 +29,8 @@ const Login = () => {
   };
 
   return (
-    <main className="h-[100vh] flex items-center justify-between w-full">
-      <section className="login-panel bg-white flex flex-col items-center justify-between gap-8 w-full">
+    <main className="h-[100vh] flex items-center justify-between w-full !bg-white">
+      <section className="login-panel !bg-white flex flex-col items-center justify-between gap-8 w-full">
         <figure className="w-[90%] mx-auto flex items-center gap-6 justify-between max-[800px]:flex-col-reverse">
           <img src={rdb_icon} alt="RDB Logo" className="mx-auto" />
           <FontAwesomeIcon onClick={(e) => {

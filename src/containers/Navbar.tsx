@@ -14,11 +14,11 @@ const Navbar = () => {
     }
 
   return (
-    <header className="w-[95%] mx-auto p-4 py-6 flex items-center justify-between">
+    <header className="w-[95%] mx-auto p-4 pt-6 py-4 flex items-center justify-between h-[10vh] fixed top-0 left-[2.5%]">
         <figure className="w-[20%]">
             <img src={rdb_icon} className="w-[60%] h-auto" alt="logo" />
         </figure>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-4 self-start">
             <FontAwesomeIcon className="text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]" icon={faMoon} />
             <FontAwesomeIcon className="text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]" icon={faBell} />
             <Link to={'#'} className="px-4">
