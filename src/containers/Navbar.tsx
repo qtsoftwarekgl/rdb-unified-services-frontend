@@ -4,8 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faMoon } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../states/store";
 
 const Navbar = () => {
+
+    // STATE VARIABLES
+    const { user } = useSelector((state: RootState) => state.user);
 
     const { pathname } = useLocation();
 
@@ -29,7 +34,7 @@ const Navbar = () => {
 
                 <article>
                     <h1 className="text-[16px] font-semibold">Christella</h1>
-                    <p className="text-[12px] text-gray-500">christella@qtglobal.rw</p>
+                    <p className="text-[12px] text-gray-500">{user?.email?.toLowerCase() || 'christella@qtglobal.rw'}</p>
                 </article>
 
                 <FontAwesomeIcon icon={faChevronDown} />

@@ -1,10 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+export interface User {
+    name: string;
+    email: string;
+}
+
 export const userSlice = createSlice({
     name: "user",
     initialState: {
-        token: null,
-        user: null
+        token: sessionStorage.getItem("token") || '',
+        user: sessionStorage.getItem("user") ? JSON.parse(sessionStorage.getItem("user") as string) : {} as User,
     },
     reducers: {
         setUser: (state, action) => {

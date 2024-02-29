@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link, useLocation } from 'react-router-dom';
 import Button from '../components/inputs/Button';
 
-const Sidebar = () => {
+const UserSidebar = () => {
   const { pathname } = useLocation();
 
   // SIDEBAR NAVIGATION
@@ -105,4 +105,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default UserSidebar;

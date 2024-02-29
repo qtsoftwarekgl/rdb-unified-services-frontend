@@ -10,6 +10,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
 import Modal from '../../components/Modal';
 import { setInfoModal } from '../../states/features/authSlice';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { setUser } from '../../states/features/userSlice';
 
 const Login = () => {
   // REACT HOOK FORM
@@ -23,9 +26,25 @@ const Login = () => {
   const dispatch: AppDispatch = useDispatch();
   const { infoModal } = useSelector((state: RootState) => state.auth);
 
+  // NAVIGATION
+  const navigate = useNavigate();
+
+  // LOGIN PAYLOAD OBJECT
+  interface LoginPayload {
+    email: string;
+    password: string;
+  }
+
   // HANDLE SUBMIT
-  const onSubmit = (data: object) => {
-    console.log(data);
+  const onSubmit = (data: LoginPayload) => {
+    toast.success('Login successful. Redirecting...');
+    dispatch(setUser(data));
+    setTimeout(() => {
+      if (data?.email?.includes('admin')) {
+        return navigate('/admin/dashboard');
+      }
+      return navigate('/');
+    }, 3000);
   };
 
   return (
@@ -71,6 +90,7 @@ const Login = () => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
+                  type='password'
                     placeholder="Enter password"
                     label="Password"
                     {...field}

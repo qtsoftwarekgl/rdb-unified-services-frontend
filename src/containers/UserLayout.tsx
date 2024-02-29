@@ -1,19 +1,19 @@
 import { FC, ReactNode } from 'react';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
+import UserSidebar from './UserSidebar';
 
-interface LayoutProps {
+interface UserLayoutProps {
   children: ReactNode;
 }
 
-const Layout: FC<LayoutProps> = ({ children }) => {
+const UserLayout: FC<UserLayoutProps> = ({ children }) => {
   return (
     <main className="relative">
       <Navbar />
-      <Sidebar />
+      <UserSidebar />
       {children}
     </main>
   );
 };
 
-export default Layout;
+export default UserLayout;
