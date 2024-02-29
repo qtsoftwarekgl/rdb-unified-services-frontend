@@ -11,7 +11,7 @@ const SuperAdminLayout: FC<SuperAdminLayout> = ({ children }) => {
     <main className="relative">
       <Navbar />
       <SuperAdminSidebar />
-      <section className="absolute left-[17%] top-[10vh] w-full h-full max-w-[83%]">
+      <section className="absolute left-[17%] top-[10vh] w-full h-full max-w-[83%] p-2">
         {children}
       </section>
     </main>

@@ -1,0 +1,104 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../components/inputs/Button';
+import { faCircleInfo, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import SuperAdminLayout from '../../containers/SuperAdminLayout';
+import Table from '../../components/table/Table';
+import { users } from '../../constants/Users';
+import { capitalizeString, formatDate } from '../../helpers/Data';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+
+const ListUsers = () => {
+  // COLUMNS
+  const columns = [
+    {
+      header: 'No',
+      accessorKey: 'no',
+    },
+    {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({ row }: { row: unknown }) => {
+        return (
+          <menu className="flex items-center justify-start gap-3">
+            <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
+              <img src={row?.original?.image} className="w-full h-full object-cover" />
+            </figure>
+            <p className='text-[13px]'>{row?.original?.name}</p>
+          </menu>
+        );
+      },
+    },
+    {
+      header: 'Email',
+      accessorKey: 'email',
+    },
+    {
+      header: 'Role',
+      accessorKey: 'role',
+      filter: true,
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      filter: true
+    },
+    {
+      header: 'Date Added',
+      accessorKey: 'created_at',
+    },
+    {
+      header: '',
+      accessorKey: 'actions',
+      cell: () => {
+        return (
+          <menu className="flex items-center gap-4">
+            <FontAwesomeIcon
+              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
+              icon={faCircleInfo}
+            />
+            <FontAwesomeIcon
+              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
+              icon={faPenToSquare}
+            />
+          </menu>
+        );
+      },
+    },
+  ];
+
+  return (
+    <SuperAdminLayout>
+      <main className="p-6 flex flex-col gap-6 w-full bg-white rounded-md">
+        <menu className="w-full flex items-center gap-6 justify-between">
+          <h1 className="text-xl font-semibold">Users List</h1>
+          <Button
+            primary
+            value={
+              <menu className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faCirclePlus} />
+                New User
+              </menu>
+            }
+          />
+        </menu>
+        <section>
+          <Table
+            data={users?.map((user, index) => {
+              return {
+                ...user,
+                no: index + 1,
+                name: `${user?.first_name} ${user?.last_name}`,
+                role: capitalizeString(user?.role),
+                status: capitalizeString(user?.status),
+                created_at: formatDate(user?.created_at),
+              };
+            })}
+            columns={columns}
+          />
+        </section>
+      </main>
+    </SuperAdminLayout>
+  );
+};
+
+export default ListUsers;

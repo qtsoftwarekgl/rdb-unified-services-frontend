@@ -5,9 +5,9 @@ import { RootState } from "../states/store";
 const AuthenticatedRoutes = () => {
 
     // STATE VARIABLES
-    const { token } = useSelector((state: RootState) => state.user);
+    const { user } = useSelector((state: RootState) => state.user);
 
-    if (token) {
+    if (user?.email?.includes("admin")) {
         return <Navigate to="/auth/login" />;
     }
     return <Outlet />;

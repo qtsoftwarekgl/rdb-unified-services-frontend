@@ -14,9 +14,11 @@ export const userSlice = createSlice({
     reducers: {
         setUser: (state, action) => {
             state.user = action.payload;
+            sessionStorage.setItem("user", JSON.stringify(action.payload));
         },
         setToken: (state, action) => {
             state.token = action.payload;
+            sessionStorage.setItem("token", action.payload);
         },
     }
 });

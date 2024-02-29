@@ -125,12 +125,12 @@ const UserSidebar = () => {
       >
         <figure
           className={`w-full flex items-center justify-between pr-2 ${
-            isOpen ? 'flex-row' : 'flex-col gap-4'
+            isOpen ? 'flex-row w-full' : 'flex-col gap-4'
           }`}
         >
           <img
             src={isOpen ? rdb_logo : rdb_icon}
-            className={`h-auto ${isOpen ? 'max-w-[100px]' : 'max-w-[50px]'}`}
+            className={`h-auto ${isOpen ? 'w-full max-w-[100px]' : 'max-w-[50px]'}`}
             alt="logo"
           />
           <FontAwesomeIcon
@@ -165,13 +165,13 @@ const UserSidebar = () => {
           })}
         </menu>
         <Button
-          className={`max-w-[90%] text-center`}
+          className={`w-full max-w-[90%]`}
           primary
           route="/auth/login"
           value={
             <menu
-              className={`flex items-center gap-4 ${
-                isOpen ? 'justify-start' : 'justify-center'
+              className={`flex items-center w-full gap-4 ${
+                isOpen ? 'justify-start w-full' : 'justify-center'
               }`}
             >
               <FontAwesomeIcon icon={faRightFromBracket} />
