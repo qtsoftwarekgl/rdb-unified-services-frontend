@@ -11,7 +11,9 @@ const UserLayout: FC<UserLayoutProps> = ({ children }) => {
     <main className="relative">
       <Navbar />
       <UserSidebar />
-      {children}
+      <section className="absolute left-[17%] top-[10vh] w-full h-full max-w-[83%]">
+        {children}
+      </section>
     </main>
   );
 };

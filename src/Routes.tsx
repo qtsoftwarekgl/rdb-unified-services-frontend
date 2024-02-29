@@ -6,6 +6,7 @@ import NotFound from './pages/NotFound';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import BusinessRegistration from './pages/business-registration/index';
 
 const Routes = () => {
   return (
@@ -20,6 +21,9 @@ const Routes = () => {
 
         {/* NOT FOUND */}
         <Route path="*" element={<NotFound />} />
+
+        {/* BUSINESS REGISTRATION */}
+        <Route path="/business-registration/" element={<BusinessRegistration />} />
 
         {/* SUPER ADMIN */}
         <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />

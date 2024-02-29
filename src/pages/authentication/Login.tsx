@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form';
-import rdb_icon from '/rdb-icon.png';
+import rdb_logo from '/rdb-logo.png';
 import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
 import validateInputs from '../../helpers/Validations';
@@ -51,7 +51,7 @@ const Login = () => {
     <main className="h-[100vh] flex items-center justify-between w-full !bg-white">
       <section className="login-panel !bg-white flex flex-col items-center justify-between gap-8 w-full">
         <figure className="w-[90%] mx-auto flex items-center gap-6 justify-between max-[800px]:flex-col-reverse">
-          <img src={rdb_icon} alt="RDB Logo" className="mx-auto" />
+          <img src={rdb_logo} alt="RDB Logo" className="mx-auto" />
           <FontAwesomeIcon onClick={(e) => {
             e.preventDefault();
             dispatch(setInfoModal(true));
