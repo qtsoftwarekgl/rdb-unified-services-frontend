@@ -12,6 +12,7 @@ const ListUsers = () => {
   const columns = [
     {
       header: 'No',
+      id: 'no',
       accessorKey: 'no',
     },
     {
@@ -31,6 +32,7 @@ const ListUsers = () => {
     {
       header: 'Email',
       accessorKey: 'email',
+      filter: true,
     },
     {
       header: 'Role',

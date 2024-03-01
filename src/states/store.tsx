@@ -3,6 +3,7 @@ import userSlice from './features/userSlice';
 import authSlice from './features/authSlice';
 import businessRegistrationSlice from './features/businessRegistrationSlice';
 import sidebarSlice from './features/sidebarSlice';
+import tableSlice from './features/tableSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
     sidebar: sidebarSlice,
+    table: tableSlice,
   },
 });
 

@@ -9,6 +9,7 @@ interface InputProps {
   defaultValue?: string;
   submit?: boolean;
   type?: string;
+  value?: string;
 }
 
 const Input: FC<InputProps> = ({
@@ -17,6 +18,7 @@ const Input: FC<InputProps> = ({
   placeholder,
   className,
   required = false,
+  value,
   onChange,
   defaultValue,
 }) => {
@@ -35,7 +37,7 @@ const Input: FC<InputProps> = ({
     }
 
   return (
-    <label className="flex flex-col gap-[5px]">
+    <label className="flex flex-col gap-[5px] w-full">
       <p className={`${label ? 'flex items-center gap-[5px]' : 'hidden'}`}>
         {label}{' '}
         <span className={required ? 'text-[14px] text-red-600' : 'hidden'}>
@@ -44,10 +46,11 @@ const Input: FC<InputProps> = ({
       </p>
       <input
         defaultValue={defaultValue}
+        value={value && value}
         type={type || 'text'}
         onChange={onChange}
         placeholder={placeholder}
-        className={`py-2 px-4 flex items-center w-full rounded-lg border-[1.5px] border-secondary outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+        className={`py-[6px] px-4 flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
       />
     </label>
   );
