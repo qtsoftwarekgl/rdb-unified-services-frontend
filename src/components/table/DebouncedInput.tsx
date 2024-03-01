@@ -40,10 +40,11 @@ const DebouncedInput: FC<DebouncedInputProps> = ({
   return (
     <Input
       {...props}
-      value={value}
+      value={String(value)}
       type={type}
       className={`${className}`}
       placeholder={placeholder}
+      defaultValue={initialValue}
       onChange={(e) => setValue(e.target.value)}
     />
   );

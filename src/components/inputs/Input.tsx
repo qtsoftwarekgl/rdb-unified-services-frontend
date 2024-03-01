@@ -6,10 +6,10 @@ interface InputProps {
   className?: string;
   required?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  defaultValue?: string;
+  defaultValue?: string | number;
   submit?: boolean;
   type?: string;
-  value?: string;
+  value?: string | number;
 }
 
 const Input: FC<InputProps> = ({

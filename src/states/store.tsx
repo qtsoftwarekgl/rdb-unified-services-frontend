@@ -4,6 +4,7 @@ import authSlice from './features/authSlice';
 import businessRegistrationSlice from './features/businessRegistrationSlice';
 import sidebarSlice from './features/sidebarSlice';
 import tableSlice from './features/tableSlice';
+import paginationSlice from './features/paginationSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     businessRegistration: businessRegistrationSlice,
     sidebar: sidebarSlice,
     table: tableSlice,
+    pagination: paginationSlice,
   },
 });
 

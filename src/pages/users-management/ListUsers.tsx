@@ -83,7 +83,7 @@ const ListUsers = () => {
             }
           />
         </menu>
-        <section>
+        <section className='p-2'>
           <Table
             data={users?.map((user, index) => {
               return {

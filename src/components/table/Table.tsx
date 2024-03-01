@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useState, FC, useEffect } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -19,29 +19,38 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import Button from '../inputs/Button';
 import { setFilterModal } from '../../states/features/tableSlice';
+import TablePagination from './TablePagination';
+import { setTotalPages } from '../../states/features/paginationSlice';
+
+interface Column extends ColumnDef<unknown> {
+  header: string;
+  cell: ({ value }: { value: unknown }) => JSX.Element | unknown;
+  filter?: boolean;
+}
 
 interface TableProps {
   data: Array<unknown>;
-  columns: Array<
-    | ColumnDef<unknown>
-    | {
-        header: string;
-        cell: (cell: { value: unknown }) => JSX.Element;
-        filter?: boolean;
-      }
-  >;
+  columns: Array<Column>;
 }
 
 const Table: FC<TableProps> = ({ data, columns }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const { size, page } = useSelector((state: RootState) => state.pagination);
   const { filterModal } = useSelector((state: RootState) => state.table);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
+  // SET TOTAL PAGES
+  useEffect(() => {
+    if (data?.length > size) {
+      dispatch(setTotalPages(Math.ceil(data.length / size)));
+    }
+  }, [data, dispatch, size]);
+
   const table = useReactTable({
     data,
-    columns: columns?.map((column) => {
+    columns: columns?.map((column: Column) => {
       return {
         ...column,
         filterFn: column.filter ? 'includesString' : 'auto',
@@ -50,10 +59,15 @@ const Table: FC<TableProps> = ({ data, columns }) => {
     state: {
       sorting,
       globalFilter,
+      pagination: {
+        pageSize: size,
+        pageIndex: page,
+      }
     },
     initialState: {
       pagination: {
-        pageSize: 40,
+        pageSize: size,
+        pageIndex: page,
       },
     },
     getCoreRowModel: getCoreRowModel(),
@@ -73,7 +87,6 @@ const Table: FC<TableProps> = ({ data, columns }) => {
 
   return (
     <section className="flex flex-col gap-6 w-full rounded-md">
-      {/* Separate Filter Bar */}
       <menu className="flex w-full items-start gap-6 justify-between">
         <DebouncedInput
           value={globalFilter ?? ''}
@@ -81,52 +94,57 @@ const Table: FC<TableProps> = ({ data, columns }) => {
           className="w-full max-w-[45%]"
           placeholder="Search all columns..."
         />
-        <menu className='flex flex-col gap-2 w-full max-w-[50%]:'>
-        <Button
-          primary
-          className="!px-3 !py-2 !w-fit self-end"
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(setFilterModal(!filterModal));
-          }}
-          value={
-            <menu className="text-[12px] flex items-center gap-2">
-              <FontAwesomeIcon icon={faFilter} />
-              Filter
-            </menu>
-          }
-        />
-        <ul
-          className={`${
-            filterModal ? 'flex gap-4 w-full self-end' : '!h-[0px] opacity-0 pointer-events-none'
-          } duration-200`}
-        >
-          {table.getHeaderGroups()?.map((headerGroup) => (
-            <>
-              {headerGroup.headers.map((header) => (
-                <span
-                  key={header.id}
-                  className={`${header?.column?.columnDef?.filterFn !== 'includesString' && 'hidden'} text-[14px] w-full font-medium text-left`}
-                >
-                  <menu className="flex items w-full gap-2">
-                    <Filter
-                      column={header?.column}
-                      table={table}
-                      label={
-                        <p>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                        </p>
-                      }
-                    />
-                  </menu>
-                </span>
-              ))}
-            </>
-          ))}
-        </ul>
+        <menu className="flex flex-col gap-2 w-full max-w-[50%]:">
+          <Button
+            primary
+            className="!px-3 !py-2 !w-fit self-end"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setFilterModal(!filterModal));
+            }}
+            value={
+              <menu className="text-[12px] flex items-center gap-2">
+                <FontAwesomeIcon icon={faFilter} />
+                Filter
+              </menu>
+            }
+          />
+          <ul
+            className={`${
+              filterModal
+                ? 'flex gap-4 w-full self-end'
+                : '!h-[0px] opacity-0 pointer-events-none'
+            } duration-200`}
+          >
+            {table.getHeaderGroups()?.map((headerGroup, index) => (
+              <span key={index} className="w-full flex items-center gap-2">
+                {headerGroup.headers.map((header) => (
+                  <span
+                    key={header.id}
+                    className={`${
+                      header?.column?.columnDef?.filterFn !==
+                        'includesString' && 'hidden'
+                    } text-[14px] w-full font-medium text-left`}
+                  >
+                    <menu className="flex items w-full gap-2">
+                      <Filter
+                        column={header?.column}
+                        table={table}
+                        label={
+                          <p>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </p>
+                        }
+                      />
+                    </menu>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </ul>
         </menu>
       </menu>
       <table className="border-[1.5px] border-background">
@@ -181,6 +199,7 @@ const Table: FC<TableProps> = ({ data, columns }) => {
           ))}
         </tbody>
       </table>
+      <TablePagination />
     </section>
   );
 };
