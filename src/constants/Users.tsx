@@ -1,3 +1,7 @@
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 export const users = [
   {
     id: 'e4542af8-5a31-4052-9204-957b2dbe0d10',
@@ -1100,3 +1104,63 @@ export const users = [
     created_at: '12/10/2023',
   },
 ];
+
+  // COLUMNS
+  export const columns = [
+    {
+      header: 'No',
+      id: 'no',
+      accessorKey: 'no',
+    },
+    {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({ row }: { row: unknown }) => {
+        return (
+          <menu className="flex items-center justify-start gap-3">
+            <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
+              <img src={row?.original?.image} className="w-full h-full object-cover" />
+            </figure>
+            <p className='text-[13px]'>{row?.original?.name}</p>
+          </menu>
+        );
+      },
+    },
+    {
+      header: 'Email',
+      accessorKey: 'email',
+      filter: true,
+    },
+    {
+      header: 'Role',
+      accessorKey: 'role',
+      filter: true,
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      filter: true
+    },
+    {
+      header: 'Date Added',
+      accessorKey: 'created_at',
+    },
+    {
+      header: '',
+      accessorKey: 'actions',
+      cell: () => {
+        return (
+          <menu className="flex items-center gap-4">
+            <FontAwesomeIcon
+              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
+              icon={faCircleInfo}
+            />
+            <FontAwesomeIcon
+              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
+              icon={faPenToSquare}
+            />
+          </menu>
+        );
+      },
+    },
+  ];

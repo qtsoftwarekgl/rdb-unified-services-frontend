@@ -58,7 +58,7 @@ const Login = () => {
           }} className='text-primary cursor-pointer ease-in-out duration-200 hover:scale-[1.02] lg:hidden' icon={faCircleInfo} />
         </figure>
         <h1 className='text-primary font-semibold uppercase text-2xl'>Login</h1>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full max-w-[50%] max-[1200px]:max-w-[55%] max-[1000px]:max-w-[60%] max-[800px]:max-w-[50%] max-[650px]:max-w-[55%] max-[600px]:max-w-[60%] max-[550px]:max-w-[65%] max-[500px]:max-w-[70%] max-[450px]:max-w-[75%]">
+        <form onSubmit={handleSubmit<LoginPayload>(onSubmit)} className="flex flex-col gap-4 w-full max-w-[50%] max-[1200px]:max-w-[55%] max-[1000px]:max-w-[60%] max-[800px]:max-w-[50%] max-[650px]:max-w-[55%] max-[600px]:max-w-[60%] max-[550px]:max-w-[65%] max-[500px]:max-w-[70%] max-[450px]:max-w-[75%]">
           <Controller
             rules={{ required: 'Email is required', validate: (value) => {
               return validateInputs(value, 'email') || 'Invalid email address';

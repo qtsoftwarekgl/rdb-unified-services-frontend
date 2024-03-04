@@ -5,6 +5,7 @@ import businessRegistrationSlice from './features/businessRegistrationSlice';
 import sidebarSlice from './features/sidebarSlice';
 import tableSlice from './features/tableSlice';
 import paginationSlice from './features/paginationSlice';
+import navbarSlice from './features/navbarSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     sidebar: sidebarSlice,
     table: tableSlice,
     pagination: paginationSlice,
+    navbar: navbarSlice,
   },
 });
 

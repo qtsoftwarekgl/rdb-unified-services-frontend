@@ -74,8 +74,9 @@ const TablePagination = () => {
   };
 
   return (
-    <nav className="flex items-center gap-2 justify-between">
-      <article className="flex items-center gap-2 w-full max-w-[20%]">
+    <nav className="flex items-center gap-2 justify-between max-[700px]:flex-col">
+      <menu className='flex items-center w-full max-w-[50%] gap-3 max-[1000px]:max-w-[30%] max-[900px]:flex-col max-[900px]:items-start'>
+      <article className="flex items-center gap-2 w-full">
         <p className="flex items-center gap-1 !text-[14px]">
           Page {currentPage} of {totalPages}
         </p>
@@ -96,7 +97,9 @@ const TablePagination = () => {
           }}
         />
       </label>
-      <menu className="flex items-center gap-3">
+      </menu>
+      <menu className="flex items-center gap-3 max-[500px]:flex-col">
+        <ul className='flex items-center gap-3'>
         <FontAwesomeIcon
           className="p-[8px] px-[8px] text-[10px] rounded-md shadow-sm bg-background cursor-pointer"
           onClick={(e) => {
@@ -140,11 +143,13 @@ const TablePagination = () => {
           }}
           icon={faAngleDoubleRight}
         />
+        </ul>
         <select
           value={size}
           onChange={(e) => {
             dispatch(setSize(Number(e.target.value)));
           }}
+          className='max-[500px]:block'
         >
           {[5, 10, 25, 50].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
