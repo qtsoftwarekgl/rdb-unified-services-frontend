@@ -29,6 +29,7 @@ const Filter = ({
 
   return (
     <Select
+    labelClassName='max-w-[300px]'
       label={label}
       options={[{ value: '', label: 'All' }, ...sortedUniqueValues]
         ?.filter((value) => value !== undefined)

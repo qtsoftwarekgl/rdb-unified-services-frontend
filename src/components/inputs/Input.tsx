@@ -50,7 +50,7 @@ const Input: FC<InputProps> = ({
         type={type || 'text'}
         onChange={onChange}
         placeholder={placeholder}
-        className={`py-[6px] px-4 flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+        className={`py-[6px] text-[15px] px-4 flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
       />
     </label>
   );

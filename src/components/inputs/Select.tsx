@@ -32,6 +32,7 @@ interface SelectProps {
   styled?: boolean;
   label?: string | JSX.Element;
   required?: boolean;
+  labelClassName?: string;
 }
 
 const Select: FC<SelectProps> = ({
@@ -47,6 +48,7 @@ const Select: FC<SelectProps> = ({
   styled = true,
   label = null,
   required = false,
+  labelClassName = null,
 }) => {
   const mappedOptions: OptionsOrGroups<Option, GroupBase<Option>> = options.map(
     (option: Option) => ({
@@ -58,7 +60,7 @@ const Select: FC<SelectProps> = ({
   );
 
   return (
-    <label className="flex flex-col gap-2 items-start w-full">
+    <label className={`flex flex-col gap-2 items-start w-full ${labelClassName}`}>
       <p className={`${label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}`}>
         {label}{' '}
         <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>

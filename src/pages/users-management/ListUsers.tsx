@@ -12,7 +12,7 @@ const ListUsers = () => {
     <SuperAdminLayout>
       <main className="p-6 flex flex-col gap-6 w-full bg-white rounded-md">
         <menu className="w-full flex items-center gap-6 justify-between">
-          <h1 className="text-xl font-semibold">Users List</h1>
+          <h1 className="text-lg font-semibold uppercase">Users List</h1>
           <Button
             primary
             value={

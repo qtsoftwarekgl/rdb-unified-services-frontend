@@ -139,7 +139,7 @@ const Table: FC<TableProps> = ({
                         'includesString' && 'hidden'
                     } text-[14px] w-full font-medium text-left`}
                   >
-                    <menu className="flex items w-full gap-2">
+                    <menu className="flex items w-full gap-2 justify-end">
                       <Filter
                         column={header?.column}
                         table={table}

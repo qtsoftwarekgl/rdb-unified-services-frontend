@@ -9,6 +9,7 @@ import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
 import BusinessRegistration from './pages/business-registration/index';
 import SuperAdminRoutes from './outlets/SuperAdminRoutes';
 import ListUsers from './pages/users-management/ListUsers';
+import ListRoles from './pages/roles-management/ListRoles';
 
 const Routes = () => {
   return (
@@ -46,6 +47,7 @@ const Routes = () => {
           {/* SUPER ADMIN DASHBOARD */}
           <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />
           <Route path="/admin/users" element={<ListUsers />} />
+          <Route path="/admin/roles" element={<ListRoles />} />
         </Route>
       </Router>
     </>
