@@ -1,17 +1,18 @@
-import { Routes as Router, Route } from "react-router-dom";
-import AuthenticatedRoutes from "./outlets/AuthenticatedRoutes";
-import Home from "./pages/dashboard/Home";
-import Login from "./pages/authentication/Login";
-import NotFound from "./pages/NotFound";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import SuperAdminDashboard from "./pages/dashboard/SuperAdminDashboard";
-import BusinessRegistration from "./pages/business-registration/index";
-import SuperAdminRoutes from "./outlets/SuperAdminRoutes";
-import ListUsers from "./pages/users-management/ListUsers";
 import Profile from "./pages/profile";
 import "react-toastify/dist/ReactToastify.css";
-import ListRoles from "./pages/roles-management/ListRoles";
+import { Routes as Router, Route } from 'react-router-dom';
+import AuthenticatedRoutes from './outlets/AuthenticatedRoutes';
+import Home from './pages/dashboard/Home';
+import Login from './pages/authentication/Login';
+import NotFound from './pages/NotFound';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import BusinessRegistration from './pages/business-registration/index';
+import SuperAdminRoutes from './outlets/SuperAdminRoutes';
+import ListUsers from './pages/users-management/ListUsers';
+import ListRoles from './pages/roles-management/ListRoles';
 
 const Routes = () => {
   return (

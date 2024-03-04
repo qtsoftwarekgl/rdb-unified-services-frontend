@@ -76,9 +76,9 @@ const ListUsers = () => {
 
   return (
     <SuperAdminLayout>
-      <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
-        <menu className="flex items-center justify-between w-full gap-6">
-          <h1 className="text-xl font-semibold">Users List</h1>
+      <main className="p-6 flex flex-col gap-6 w-full bg-white rounded-md">
+        <menu className="w-full flex items-center gap-6 justify-between">
+          <h1 className="text-lg font-semibold uppercase">Users List</h1>
           <Button
             primary
             onClick={() => setOpenUserModal(true)}
