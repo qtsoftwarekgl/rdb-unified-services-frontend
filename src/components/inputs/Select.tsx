@@ -60,14 +60,10 @@ const Select: FC<SelectProps> = ({
   );
 
   return (
-    <label className="flex flex-col items-start w-full gap-2">
-      <p
-        className={`${
-          label ? "flex items-center gap-1 text-[14px]" : "hidden"
-        }`}
-      >
-        {label}{" "}
-        <span className={`${required ? "text-red-500" : "hidden"}`}>*</span>
+    <label className={`flex flex-col gap-2 items-start w-full ${labelClassName}`}>
+      <p className={`${label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}`}>
+        {label}{' '}
+        <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>
       </p>
       <ReactSelect
         onChange={(e) => {

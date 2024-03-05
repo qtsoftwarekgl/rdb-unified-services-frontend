@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/inputs/Button';
-import SuperAdminLayout from '../../containers/SuperAdminLayout';
+import AdminLayout from '../../containers/AdminLayout';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import Table from '../../components/table/Table';
 import { roleColumns, roles } from '../../constants/Dashboard';
@@ -18,7 +18,7 @@ const ListRoles = () => {
 
 
   return (
-    <SuperAdminLayout>
+    <AdminLayout>
       <main className="p-6 flex flex-col gap-6 w-full bg-white rounded-md">
         <menu className="flex items-center gap-2 justify-between">
           <h1 className="text-lg uppercase font-semibold">Roles list</h1>
@@ -50,7 +50,7 @@ const ListRoles = () => {
         </section>
       </main>
       <AddRole />
-    </SuperAdminLayout>
+    </AdminLayout>
   );
 };
 

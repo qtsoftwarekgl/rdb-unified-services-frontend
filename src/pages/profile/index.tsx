@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../components/inputs/Button";
-import SuperAdminLayout from "../../containers/SuperAdminLayout";
+import AdminLayout from "../../containers/AdminLayout";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { RootState } from "../../states/store";
 import { useSelector } from "react-redux";
@@ -12,7 +12,7 @@ const Profile = () => {
   const { user } = useSelector((state: RootState) => state.user);
 
   return (
-    <SuperAdminLayout>
+    <AdminLayout>
       <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
         <h1 className="text-lg font-bold border-b text-secondary w-fit">
           User Profile
@@ -118,7 +118,7 @@ const Profile = () => {
         {/* Notification Preferences */}
         <NotificationPreference />
       </main>
-    </SuperAdminLayout>
+    </AdminLayout>
   );
 };
 

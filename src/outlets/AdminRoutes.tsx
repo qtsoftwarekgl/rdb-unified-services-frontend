@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 import { RootState } from '../states/store';
 
-const SuperAdminRoutes = () => {
+const AdminRoutes = () => {
   // STATE VARIABLES
   const { user } = useSelector((state: RootState) => state.user);
 
@@ -11,8 +11,6 @@ const SuperAdminRoutes = () => {
   }
 
   return <Outlet />;
-
-  return <div>SuperAdminRoutes</div>;
 };
 
-export default SuperAdminRoutes;
+export default AdminRoutes;

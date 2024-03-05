@@ -98,8 +98,9 @@ const Navbar = () => {
                 to={nav?.link}
                 key={index}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
-                  ['Theme', 'Notifications'].includes(nav?.title) &&
-                  'min-[450px]:hidden'
+                  ['Theme', 'Notifications'].includes(nav?.title)
+                    ? 'min-[450px]:hidden'
+                    : 'flex'
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
