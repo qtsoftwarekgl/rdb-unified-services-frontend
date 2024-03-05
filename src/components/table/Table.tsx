@@ -31,9 +31,18 @@ interface Column extends ColumnDef<unknown> {
 interface TableProps {
   data: Array<unknown>;
   columns: Array<Column>;
+  showPagination?: boolean;
+  pageSize?: number;
+  showFilter?: boolean;
 }
 
-const Table: FC<TableProps> = ({ data, columns }) => {
+const Table: FC<TableProps> = ({
+  data,
+  columns,
+  showPagination = true,
+  pageSize,
+  showFilter = true,
+}) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { size, page } = useSelector((state: RootState) => state.pagination);
@@ -60,9 +69,9 @@ const Table: FC<TableProps> = ({ data, columns }) => {
       sorting,
       globalFilter,
       pagination: {
-        pageSize: size,
+        pageSize: pageSize || size,
         pageIndex: page,
-      }
+      },
     },
     initialState: {
       pagination: {
@@ -87,7 +96,11 @@ const Table: FC<TableProps> = ({ data, columns }) => {
 
   return (
     <section className="flex flex-col gap-6 w-full rounded-md">
-      <menu className="flex w-full items-start gap-6 justify-between">
+      <menu
+        className={`${
+          showFilter ? 'flex' : 'hidden'
+        } w-full items-start gap-6 justify-between `}
+      >
         <DebouncedInput
           value={globalFilter ?? ''}
           onChange={(value) => setGlobalFilter(String(value))}
@@ -126,7 +139,7 @@ const Table: FC<TableProps> = ({ data, columns }) => {
                         'includesString' && 'hidden'
                     } text-[14px] w-full font-medium text-left`}
                   >
-                    <menu className="flex items w-full gap-2">
+                    <menu className="flex items w-full gap-2 justify-end">
                       <Filter
                         column={header?.column}
                         table={table}
@@ -147,59 +160,72 @@ const Table: FC<TableProps> = ({ data, columns }) => {
           </ul>
         </menu>
       </menu>
-      <table className="border-[1.5px] border-background">
-        <thead className="">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b uppercase">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="px-4 pr-2 py-4 text-[14px] font-medium text-left"
-                >
-                  {header.isPlaceholder ? null : (
-                    <menu className="flex flex-col gap-2">
-                      <p
-                        {...{
-                          className: header.column.getCanSort()
-                            ? 'cursor-pointer select-none text-[14px] flex min-w-[36px]'
-                            : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: <span className="pl-2">↑</span>,
-                          desc: <span className="pl-2">↓</span>,
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </p>
-                    </menu>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="">
-          {table.getRowModel().rows.map((row, index, arr) => (
-            <tr
-              key={row.id}
-              className={`${
-                index !== arr.length - 1 && 'border-b'
-              } ease-in-out duration-200 hover:bg-background`}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-4 py-3 text-[14px]">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <TablePagination />
+      <section className="mt-2 flex flex-col w-full mx-auto">
+        <div className="-my-1 overflow-x-auto -mx-4 sm:-mx-6 lg:-mx-1">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-1">
+            <span className="overflow-hidden flex flex-col gap-4">
+              <table className="border-[1.5px] border-background">
+                <thead className="">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id} className="border-b uppercase">
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          className="px-4 pr-2 py-4 text-[14px] font-medium text-left"
+                        >
+                          {header.isPlaceholder ? null : (
+                            <menu className="flex flex-col gap-2">
+                              <p
+                                {...{
+                                  className: header.column.getCanSort()
+                                    ? 'cursor-pointer select-none text-[14px] flex min-w-[36px]'
+                                    : '',
+                                  onClick:
+                                    header.column.getToggleSortingHandler(),
+                                }}
+                              >
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                                {{
+                                  asc: <span className="pl-2">↑</span>,
+                                  desc: <span className="pl-2">↓</span>,
+                                }[header.column.getIsSorted() as string] ??
+                                  null}
+                              </p>
+                            </menu>
+                          )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody className="">
+                  {table.getRowModel().rows.map((row, index, arr) => (
+                    <tr
+                      key={row.id}
+                      className={`${
+                        index !== arr.length - 1 && 'border-b'
+                      } ease-in-out duration-200 hover:bg-background`}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <td key={cell.id} className="p-4 py-3 text-[14px]">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </span>
+          </div>
+        </div>
+      </section>
+      {showPagination && <TablePagination />}
     </section>
   );
 };

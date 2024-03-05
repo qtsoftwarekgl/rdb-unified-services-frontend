@@ -10,6 +10,8 @@ import BusinessRegistration from "./pages/business-registration/index";
 import SuperAdminRoutes from "./outlets/SuperAdminRoutes";
 import ListUsers from "./pages/users-management/ListUsers";
 import Profile from "./pages/profile";
+import "react-toastify/dist/ReactToastify.css";
+import ListRoles from "./pages/roles-management/ListRoles";
 
 const Routes = () => {
   return (
@@ -48,6 +50,7 @@ const Routes = () => {
           <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />
           <Route path="/admin/users" element={<ListUsers />} />
           <Route path="/admin/profile" element={<Profile />} />
+          <Route path="/admin/roles" element={<ListRoles />} />
         </Route>
       </Router>
     </>

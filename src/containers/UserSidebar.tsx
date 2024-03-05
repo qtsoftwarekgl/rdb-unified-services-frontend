@@ -151,7 +151,7 @@ const UserSidebar = () => {
     <aside className={``} ref={ref}>
       <motion.div
         animate={controls}
-        className="h-[95vh] w-full flex flex-col gap-8 items-center justify-between pl-[2vw] max-w-[350px] fixed left-0 py-6 max-[1200px]:w-[22vw] max-[1100px]:w-[25vw] max-[1000px]:w-[30vw] ease-in-out duration-500 max-[500px]:w-[30%]:"
+        className="h-[95vh] w-full flex flex-col gap-8 items-center justify-between pl-[2vw] max-w-[350px] fixed left-0 py-6 max-[1200px]:w-[22vw] max-[1100px]:w-[25vw] max-[1000px]:w-[30vw] ease-in-out duration-500 max-[500px]:w-[30%]"
       >
         <figure
           className={`w-full flex items-center justify-between pr-2 ${

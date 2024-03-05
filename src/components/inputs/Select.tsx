@@ -32,6 +32,7 @@ interface SelectProps {
   styled?: boolean;
   label?: string | JSX.Element;
   required?: boolean;
+  labelClassName?: string;
 }
 
 const Select: FC<SelectProps> = ({
@@ -47,6 +48,7 @@ const Select: FC<SelectProps> = ({
   styled = true,
   label = null,
   required = false,
+  labelClassName = null,
 }) => {
   const mappedOptions: OptionsOrGroups<Option, GroupBase<Option>> = options.map(
     (option: Option) => ({
