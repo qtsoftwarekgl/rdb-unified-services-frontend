@@ -2,22 +2,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../components/inputs/Button";
 import SuperAdminLayout from "../../containers/SuperAdminLayout";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import {
-  Controller,
-  useForm,
-  SubmitHandler,
-  FieldValues,
-} from "react-hook-form";
-import Input from "../../components/inputs/Input";
+import { RootState } from "../../states/store";
+import { useSelector } from "react-redux";
+import NotificationPreference from "./NotificationPreference";
 
 const Profile = () => {
   const registeredCompanies = ["YXZ LTD", "ZTD LTD", "STORE BUS"];
   const roles = ["Verifier", "Admin", "Super Admin"];
-  const {
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm();
+  const { user } = useSelector((state: RootState) => state.user);
+
   return (
     <SuperAdminLayout>
       <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
@@ -40,7 +33,7 @@ const Profile = () => {
                 Christella
               </h1>
               <p className="text-[12px] text-gray-500">Verifier</p>
-              <p className="text-[12px] text-gray-500">sando@gmail.com</p>
+              <p className="text-[12px] text-gray-500">{user?.email}</p>
             </div>
           </div>
           <div className="justify-between w-1/2">
@@ -123,44 +116,7 @@ const Profile = () => {
         <div className="h-[1px] bg-gray-300 "></div>
 
         {/* Notification Preferences */}
-
-        <h3 className="mb-2 text-primary">Update Notification Preference</h3>
-        <div className="flex items-center gap-12">
-          <div className="w-1/2">
-            <Controller
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col gap-1">
-                    <Input
-                      label="Email Address"
-                      {...field}
-                      placeholder="sandra@gmail.com"
-                    />
-                  </label>
-                );
-              }}
-              name="email"
-              control={control}
-            />
-          </div>
-          <div className="w-1/2">
-            <Controller
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col gap-1">
-                    <Input
-                      label="Phone Number"
-                      {...field}
-                      placeholder="+25074656765"
-                    />
-                  </label>
-                );
-              }}
-              name="phoneNumber"
-              control={control}
-            />
-          </div>
-        </div>
+        <NotificationPreference />
       </main>
     </SuperAdminLayout>
   );
