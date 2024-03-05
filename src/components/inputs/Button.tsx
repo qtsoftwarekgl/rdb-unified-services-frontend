@@ -11,6 +11,7 @@ interface ButtonProps {
   styled?: boolean;
   className?: string;
   submit?: boolean;
+  danger?: boolean;
 }
 
 const Button: FC<ButtonProps> = ({
@@ -23,6 +24,7 @@ const Button: FC<ButtonProps> = ({
   styled = true,
   className,
   submit = false,
+  danger = false,
 }) => {
   if (submit || type === "submit") {
     return (
@@ -57,7 +59,9 @@ const Button: FC<ButtonProps> = ({
       } ${className} ${
         primary &&
         "!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm"
-      } max-[800px]:!text-[14px] shadow-md`}
+      }
+      ${danger && "!bg-red-600 !text-white hover:!bg-red-600 hover:!text-white !shadow-sm"}
+      max-[800px]:!text-[14px] shadow-md`}
     >
       {value}
     </Link>

@@ -11,8 +11,10 @@ const AdminLayout: FC<AdminLayout> = ({ children }) => {
     <main className="relative">
       <Navbar />
       <AdminSidebar />
-      <section className="absolute left-[17%] top-[10vh] w-full h-full max-w-[83%] mx-auto p-4">
+      <section className="left-[17%] top-[10vh] absolute mx-auto flex w-[83%] items-center justify-center p-4">
+      <section className="h-full mx-auto w-full max-w-[1500px]">
         {children}
+        </section>
       </section>
     </main>
   );

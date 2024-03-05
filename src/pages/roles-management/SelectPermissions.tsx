@@ -92,6 +92,7 @@ const SelectPermissions = () => {
         dispatch(setAddPermissionModal(false));
         dispatch(setAddRoleModal(true));
       }}
+      mainClassName='!z-[20000]'
     >
       <section className="p-6 flex flex-col gap-3">
         <Table
@@ -106,10 +107,11 @@ const SelectPermissions = () => {
           showFilter={false}
         />
         <menu className="flex items-center flex-wrap gap-3">
-          {selectedPermissions?.map((permission) => {
+          {selectedPermissions?.map((permission, index) => {
             return (
               <Button
                 styled={false}
+                key={index}
                 value={
                   <menu className="flex items-center gap-1 p-1 rounded-md bg-secondary">
                     <p className="text-[14px] text-white">{permission?.name}</p>
@@ -140,7 +142,6 @@ const SelectPermissions = () => {
           onClick={(e) => {
             e.preventDefault();
             dispatch(setAddPermissionModal(false));
-            dispatch(setAddRoleModal(true));
           }}
         />
       </section>
