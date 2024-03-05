@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import {
   recentActivities,
-  dashboardCards,
+  adminDashboardCards,
   monthsData,
 } from '../../constants/Dashboard';
 import Select from '../../components/inputs/Select';
@@ -24,7 +24,7 @@ const AdminDashboard = () => {
       <main className="flex flex-col items-center justify-center w-full gap-6 px-6">
         {/* DASHBOARD CARDS */}
         <menu className="flex items-start w-full justify-between gap-6 flex-wrap max-[600px]:justify-center max-[600px]:gap-4">
-          {dashboardCards.map((card, index) => {
+          {adminDashboardCards.map((card, index) => {
             return (
               <DashboardCard
                 title={card?.title}

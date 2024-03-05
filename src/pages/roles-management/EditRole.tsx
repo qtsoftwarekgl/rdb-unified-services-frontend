@@ -87,7 +87,7 @@ const EditRole = () => {
                   {...field}
                 />
                 {errors?.name && (
-                  <p className="text-red-500 text-[13px]">
+                  <p className="text-red-600 text-[13px]">
                     {errors?.name?.message}
                   </p>
                 )}

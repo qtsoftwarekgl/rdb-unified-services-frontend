@@ -54,10 +54,10 @@ const AddRole = () => {
           rules={{ required: 'Name is required' }}
           render={({ field }) => {
             return (
-              <label className="flex flex-col items-start gap-2">
+              <label className="flex flex-col items-start gap-1">
                 <Input label="Name" {...field} />
                 {errors.name && (
-                  <p className="text-red-500 text-[13px]">
+                  <p className="text-red-600 text-[13px]">
                     {errors?.name?.message}
                   </p>
                 )}
@@ -70,7 +70,7 @@ const AddRole = () => {
           control={control}
           render={({ field }) => {
             return (
-              <label className="flex flex-col items-start gap-2">
+              <label className="flex flex-col items-start gap-1">
                 <TextArea resize label="Description" {...field} />
               </label>
             );

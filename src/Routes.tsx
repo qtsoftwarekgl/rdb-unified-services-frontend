@@ -15,6 +15,7 @@ import ListUsers from './pages/users-management/ListUsers';
 import ListRoles from './pages/roles-management/ListRoles';
 import SuperAdminRoutes from "./outlets/SuperAdminRoutes";
 import SuperAdminDashboard from "./pages/dashboard/SuperAdminDashboard";
+import ListInstitutions from "./pages/institutions-management/ListInstitutions";
 
 const Routes = () => {
   return (
@@ -63,8 +64,13 @@ const Routes = () => {
          <Route element={<SuperAdminRoutes />}>
           {/* SUPER ADMIN DASHBOARD */}
           <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+          {/* USERS MANAGEMENT */}
           <Route path="/super-admin/users" element={<ListUsers />} />
+          {/* ROLES MANAGEMENT */}
           <Route path="/super-admin/roles" element={<ListRoles />} />
+          {/* INSTITUTIONS MANAGEMENT */}
+          <Route path="/super-admin/institutions" element={<ListInstitutions />} />
+          {/* PROFILE */}
          </Route>
 
       </Router>
