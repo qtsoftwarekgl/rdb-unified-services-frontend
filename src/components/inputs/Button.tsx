@@ -39,7 +39,7 @@ const Button: FC<ButtonProps> = ({
         } ${className} ${
           primary &&
           "!bg-primary !sha !text-white hover:!bg-primary hover:!text-white !shadow-sm"
-        } max-[800px]:!text-[14px] shadow-md transition-all`}
+        } max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center`}
       >
         {value}
       </button>

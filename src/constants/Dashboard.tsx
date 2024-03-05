@@ -41,7 +41,7 @@ export const dashboardCards = [
 ];
 
 // RECENT ACTIVITIES
-export const RecentActivities = [
+export const recentActivities = [
   {
     title: 'Logged in',
     date: '2022-10-10, 10:00',

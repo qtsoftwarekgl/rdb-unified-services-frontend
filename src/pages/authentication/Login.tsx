@@ -18,6 +18,8 @@ import { setInfoModal } from "../../states/features/authSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../../states/features/userSlice";
+import { useState } from "react";
+import Loader from "../../components/Loader";
 
 const Login = () => {
   // REACT HOOK FORM
@@ -30,6 +32,7 @@ const Login = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { infoModal } = useSelector((state: RootState) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -42,14 +45,18 @@ const Login = () => {
 
   // HANDLE SUBMIT
   const onSubmit: SubmitHandler<FieldValues | LoginPayload> = (data) => {
-    toast.success("Login successful. Redirecting...");
+    toast.success('Login successful. Redirecting...');
     dispatch(setUser(data));
+    setIsLoading(true);
     setTimeout(() => {
-      if (data?.email?.includes("admin")) {
-        return navigate("/admin/dashboard");
+      setIsLoading(false);
+      if (data?.email?.includes('admin')) {
+        return navigate('/super-admin/dashboard');
+      } else if (data?.email?.includes('info')) {
+        return navigate('/dashboard');
       }
-      return navigate("/");
-    }, 3000);
+      return navigate('/');
+    }, 1000);
   };
 
   return (
@@ -76,10 +83,10 @@ const Login = () => {
           </h1>
           <Controller
             rules={{
-              required: "Email is required",
+              required: 'Email is required',
               validate: (value) => {
                 return (
-                  validateInputs(value, "email") || "Invalid email address"
+                  validateInputs(value, 'email') || 'Invalid email address'
                 );
               },
             }}
@@ -103,7 +110,7 @@ const Login = () => {
             }}
           />
           <Controller
-            rules={{ required: "Password is required" }}
+            rules={{ required: 'Password is required' }}
             name="password"
             control={control}
             render={({ field }) => {
@@ -139,7 +146,12 @@ const Login = () => {
             />
           </menu>
           <menu className="flex flex-col items-center gap-4 my-4">
-            <Button submit primary value="Login" className="w-full" />
+            <Button
+              submit
+              primary
+              value={isLoading ? <Loader /> : 'Login'}
+              className="w-full"
+            />
             <Button value="Create account" styled={false} />
           </menu>
         </form>

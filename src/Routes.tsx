@@ -13,6 +13,8 @@ import BusinessRegistration from './pages/business-registration/index';
 import AdminRoutes from './outlets/AdminRoutes';
 import ListUsers from './pages/users-management/ListUsers';
 import ListRoles from './pages/roles-management/ListRoles';
+import SuperAdminRoutes from "./outlets/SuperAdminRoutes";
+import SuperAdminDashboard from "./pages/dashboard/SuperAdminDashboard";
 
 const Routes = () => {
   return (
@@ -43,16 +45,28 @@ const Routes = () => {
         <Route path="*" element={<NotFound />} />
 
         {/**
-         * SUPER ADMIN ROUTES
+         *  ADMIN ROUTES
          */}
 
         <Route element={<AdminRoutes />}>
-          {/* SUPER ADMIN DASHBOARD */}
+          {/* INSITUTION ADMIN DASHBOARD */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ListUsers />} />
           <Route path="/admin/profile" element={<Profile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
         </Route>
+
+        {/**
+         * SUPER ADMIN ROUTES
+         */}
+
+         <Route element={<SuperAdminRoutes />}>
+          {/* SUPER ADMIN DASHBOARD */}
+          <Route path="/super-admin/dashboard" element={<SuperAdminDashboard />} />
+          <Route path="/super-admin/users" element={<ListUsers />} />
+          <Route path="/super-admin/roles" element={<ListRoles />} />
+         </Route>
+
       </Router>
     </>
   );
