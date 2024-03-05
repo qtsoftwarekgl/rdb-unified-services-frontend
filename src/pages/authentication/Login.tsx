@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 import { setUser } from "../../states/features/userSlice";
 import { useState } from "react";
 import Loader from "../../components/Loader";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 
 const Login = () => {
   // REACT HOOK FORM
@@ -33,6 +34,7 @@ const Login = () => {
   const dispatch: AppDispatch = useDispatch();
   const { infoModal } = useSelector((state: RootState) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -117,9 +119,15 @@ const Login = () => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     placeholder="Enter password"
                     label="Password"
+                    password
+                    suffixIcon={showPassword ? faEyeSlash : faEye}
+                    suffixButtonHandler={(e) => {
+                      e.preventDefault();
+                      setShowPassword(!showPassword);
+                    }}
                     {...field}
                   />
                   {errors.password && (
@@ -143,6 +151,7 @@ const Login = () => {
               styled={false}
               className="!text-[13px]"
               value="Forgot password?"
+              route="/auth/reset-password/request"
             />
           </menu>
           <menu className="flex flex-col items-center gap-4 my-4">
