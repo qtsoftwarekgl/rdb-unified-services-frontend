@@ -944,6 +944,7 @@ export const roleColumns = [
   {
     header: 'Role',
     accessorKey: 'name',
+    filter: true
   },
   {
     header: 'Description',

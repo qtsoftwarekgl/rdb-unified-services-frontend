@@ -17,7 +17,7 @@ import { AppDispatch, RootState } from "../states/store";
 import { toggleSidebar } from "../states/features/sidebarSlice";
 import { useEffect, useRef, useState } from "react";
 
-const UserSidebar = () => {
+const AdminSidebar = () => {
   const { pathname } = useLocation();
 
   // STATE VARIABLES
@@ -186,4 +186,4 @@ const UserSidebar = () => {
   );
 };
 
-export default UserSidebar;
+export default AdminSidebar;

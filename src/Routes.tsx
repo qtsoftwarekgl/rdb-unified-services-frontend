@@ -8,9 +8,9 @@ import Login from './pages/authentication/Login';
 import NotFound from './pages/NotFound';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
 import BusinessRegistration from './pages/business-registration/index';
-import SuperAdminRoutes from './outlets/SuperAdminRoutes';
+import AdminRoutes from './outlets/AdminRoutes';
 import ListUsers from './pages/users-management/ListUsers';
 import ListRoles from './pages/roles-management/ListRoles';
 
@@ -46,9 +46,9 @@ const Routes = () => {
          * SUPER ADMIN ROUTES
          */}
 
-        <Route element={<SuperAdminRoutes />}>
+        <Route element={<AdminRoutes />}>
           {/* SUPER ADMIN DASHBOARD */}
-          <Route path="/admin/dashboard" element={<SuperAdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ListUsers />} />
           <Route path="/admin/profile" element={<Profile />} />
           <Route path="/admin/roles" element={<ListRoles />} />

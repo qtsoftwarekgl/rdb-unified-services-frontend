@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../components/inputs/Button";
-import SuperAdminLayout from "../../containers/SuperAdminLayout";
+import AdminLayout from "../../containers/AdminLayout";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import {
   Controller,
@@ -19,7 +19,7 @@ const Profile = () => {
     control,
   } = useForm();
   return (
-    <SuperAdminLayout>
+    <AdminLayout>
       <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
         <h1 className="text-lg font-bold border-b text-secondary w-fit">
           User Profile
@@ -162,7 +162,7 @@ const Profile = () => {
           </div>
         </div>
       </main>
-    </SuperAdminLayout>
+    </AdminLayout>
   );
 };
 

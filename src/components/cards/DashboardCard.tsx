@@ -5,7 +5,7 @@ import { formatNumbers } from '../../helpers/Data';
 import Button from '../inputs/Button';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
-interface SuperAdminDashboardCardProps {
+interface AdminDashboardCardProps {
   title: string;
   value: string | number;
   change?: string | number;
@@ -13,7 +13,7 @@ interface SuperAdminDashboardCardProps {
   route?: string;
 }
 
-const SuperAdminDashboardCard: FC<SuperAdminDashboardCardProps> = ({
+const AdminDashboardCard: FC<AdminDashboardCardProps> = ({
   title,
   value,
   change,
@@ -68,4 +68,4 @@ const SuperAdminDashboardCard: FC<SuperAdminDashboardCardProps> = ({
   );
 };
 
-export default SuperAdminDashboardCard;
+export default AdminDashboardCard;

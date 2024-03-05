@@ -1,5 +1,5 @@
-import SuperAdminDashboardCard from '../../components/cards/SuperAdminDashboardCard';
-import SuperAdminLayout from '../../containers/SuperAdminLayout';
+import DashboardCard from '../../components/cards/DashboardCard';
+import AdminLayout from '../../containers/AdminLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faCircle } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
@@ -24,18 +24,18 @@ import Button from '../../components/inputs/Button';
 import Table from '../../components/table/Table';
 import { columns, users } from '../../constants/Users';
 
-const SuperAdminDashboard = () => {
+const AdminDashboard = () => {
   // STATE VARIABLES
   const [monthsDataArray, setMonthsDataArray] = useState(monthsData());
 
   return (
-    <SuperAdminLayout>
+    <AdminLayout>
       <main className="flex flex-col gap-6 w-full items-center justify-center px-6">
         {/* DASHBOARD CARDS */}
         <menu className="flex items-start w-full justify-between gap-6 flex-wrap max-[600px]:justify-center max-[600px]:gap-4">
           {dashboardCards.map((card, index) => {
             return (
-              <SuperAdminDashboardCard
+              <DashboardCard
                 title={card?.title}
                 change={card?.change}
                 value={card?.value}
@@ -125,13 +125,23 @@ const SuperAdminDashboard = () => {
         {/* RECENT USERS */}
         <section className="w-full flex flex-col gap-6 rounded-md shadow-md bg-white p-6">
           <menu className="flex w-full items-center gap-3 justify-between max-[400px]:flex-col">
-            <h1 className="text-primary text-lg font-semibold max-[400px]:text-center">Recent Users</h1>
-            <Button route='/admin/users' className="!text-[13px]" styled={false} value={
-          <menu className="flex items-center gap-2 text-[13px] ease-in-out hover:gap-3 duration-300">
-            View more
-            <FontAwesomeIcon className='text-[13px]' icon={faArrowRight} />
-          </menu>
-        } />
+            <h1 className="text-primary text-lg font-semibold max-[400px]:text-center">
+              Recent Users
+            </h1>
+            <Button
+              route="/admin/users"
+              className="!text-[13px]"
+              styled={false}
+              value={
+                <menu className="flex items-center gap-2 text-[13px] ease-in-out hover:gap-3 duration-300">
+                  View more
+                  <FontAwesomeIcon
+                    className="text-[13px]"
+                    icon={faArrowRight}
+                  />
+                </menu>
+              }
+            />
           </menu>
           <Table
             data={users?.map((user, index) => {
@@ -147,8 +157,8 @@ const SuperAdminDashboard = () => {
           />
         </section>
       </main>
-    </SuperAdminLayout>
+    </AdminLayout>
   );
 };
 
-export default SuperAdminDashboard;
+export default AdminDashboard;

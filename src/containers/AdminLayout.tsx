@@ -1,16 +1,16 @@
 import { FC, ReactNode } from "react";
 import Navbar from "./Navbar";
-import SuperAdminSidebar from "./SuperAdminSidebar";
+import AdminSidebar from "./AdminSidebar";
 
-interface SuperAdminLayout {
+interface AdminLayout {
   children: ReactNode;
 }
 
-const SuperAdminLayout: FC<SuperAdminLayout> = ({ children }) => {
+const AdminLayout: FC<AdminLayout> = ({ children }) => {
   return (
     <main className="relative">
       <Navbar />
-      <SuperAdminSidebar />
+      <AdminSidebar />
       <section className="absolute left-[17%] top-[10vh] w-full h-full max-w-[83%] mx-auto p-4">
         {children}
       </section>
@@ -18,4 +18,4 @@ const SuperAdminLayout: FC<SuperAdminLayout> = ({ children }) => {
   );
 };
 
-export default SuperAdminLayout;
+export default AdminLayout;
