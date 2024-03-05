@@ -1,11 +1,11 @@
-import { FC, MouseEventHandler } from 'react';
-import { Link } from 'react-router-dom';
+import { FC, MouseEventHandler } from "react";
+import { Link } from "react-router-dom";
 
 interface ButtonProps {
   route?: string;
   value: string | JSX.Element;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
-  type?: 'submit' | 'button' | 'reset';
+  type?: "submit" | "button" | "reset";
   disabled?: boolean;
   primary?: boolean;
   styled?: boolean;
@@ -14,7 +14,7 @@ interface ButtonProps {
 }
 
 const Button: FC<ButtonProps> = ({
-  route = '#',
+  route = "#",
   value,
   onClick,
   type = null,
@@ -24,20 +24,20 @@ const Button: FC<ButtonProps> = ({
   className,
   submit = false,
 }) => {
-  if (submit || type === 'submit') {
+  if (submit || type === "submit") {
     return (
       <button
-        type={type || 'submit'}
+        type={type || "submit"}
         className={`py-2 px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] ${
           disabled &&
-          'bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center'
+          "bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center transition-all"
         } ${
-          !styled && 
-          'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary'
+          !styled &&
+          "bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary transition-all"
         } ${className} ${
           primary &&
-          '!bg-primary !sha !text-white hover:!bg-primary hover:!text-white !shadow-sm'
-        } max-[800px]:!text-[14px] shadow-md`}
+          "!bg-primary !sha !text-white hover:!bg-primary hover:!text-white !shadow-sm"
+        } max-[800px]:!text-[14px] shadow-md transition-all`}
       >
         {value}
       </button>
@@ -50,12 +50,13 @@ const Button: FC<ButtonProps> = ({
       onClick={onClick}
       className={`py-2 px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${
         disabled &&
-        'bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center'
+        "bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center"
       } ${
         !styled &&
-        'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary'
+        "bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary"
       } ${className} ${
-        primary && '!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm'
+        primary &&
+        "!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm"
       } max-[800px]:!text-[14px] shadow-md`}
     >
       {value}

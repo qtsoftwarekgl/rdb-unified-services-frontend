@@ -1,11 +1,11 @@
-import { FC } from 'react';
+import { FC } from "react";
 import ReactSelect, {
   SingleValue,
   MultiValue,
   OptionsOrGroups,
   GroupBase,
   ThemeConfig,
-} from 'react-select';
+} from "react-select";
 
 interface Option {
   label?: string | number | undefined;
@@ -37,7 +37,7 @@ interface SelectProps {
 const Select: FC<SelectProps> = ({
   options = [],
   onChange,
-  className = '',
+  className = "",
   defaultValue = null,
   disabled = false,
   isSearchable = true,
@@ -52,16 +52,20 @@ const Select: FC<SelectProps> = ({
     (option: Option) => ({
       ...option,
       label: option.text || option.name || option.title || option.label,
-      value: option.value || option.id || '',
+      value: option.value || option.id || "",
       isDisabled: option.disabled,
     })
   );
 
   return (
-    <label className="flex flex-col gap-2 items-start w-full">
-      <p className={`${label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}`}>
-        {label}{' '}
-        <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>
+    <label className="flex flex-col items-start w-full gap-2">
+      <p
+        className={`${
+          label ? "flex items-center gap-1 text-[14px]" : "hidden"
+        }`}
+      >
+        {label}{" "}
+        <span className={`${required ? "text-red-500" : "hidden"}`}>*</span>
       </p>
       <ReactSelect
         onChange={(e) => {
@@ -82,13 +86,13 @@ const Select: FC<SelectProps> = ({
         className={`${className}`}
         theme={(theme: ThemeConfig) => ({
           ...theme,
-          borderRadius: '0.3rem',
-          paddingTop: '0.2px',
-          fontSize: '13px',
+          borderRadius: "0.5rem",
+          paddingTop: "0.2px",
+          fontSize: "13px",
           colors: {
             ...theme.colors,
-            primary: '#005A96',
-            primary25: '#005A96',
+            primary: "#005A96",
+            primary25: "#005A96",
           },
         })}
         styles={
@@ -96,13 +100,13 @@ const Select: FC<SelectProps> = ({
             ? {
                 control: (provided) => ({
                   ...provided,
-                  display: 'flex',
-                  border: '1.5px solid #D1D5DB',
-                  '&hover': {
-                    border: '1.6px solid #005A96',
+                  display: "flex",
+                  border: "1.5px solid #D1D5DB",
+                  "&hover": {
+                    border: "1.6px solid #005A96",
                   },
-                  '&focus': {
-                    border: '1.6px solid #005A96',
+                  "&focus": {
+                    border: "1.6px solid #005A96",
                   },
                 }),
               }

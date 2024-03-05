@@ -10,17 +10,17 @@ import {
   faPen,
   faRightFromBracket,
   faSitemap,
-} from '@fortawesome/free-solid-svg-icons';
-import { motion, useAnimation } from 'framer-motion';
-import rdb_logo from '/rdb-logo.png';
-import rdb_icon from '/rdb-icon.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useLocation } from 'react-router-dom';
-import Button from '../components/inputs/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../states/store';
-import { toggleSidebar } from '../states/features/sidebarSlice';
-import { useEffect, useRef, useState } from 'react';
+} from "@fortawesome/free-solid-svg-icons";
+import { motion, useAnimation } from "framer-motion";
+import rdb_logo from "/rdb-logo.png";
+import rdb_icon from "/rdb-icon.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link, useLocation } from "react-router-dom";
+import Button from "../components/inputs/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../states/store";
+import { toggleSidebar } from "../states/features/sidebarSlice";
+import { useEffect, useRef, useState } from "react";
 
 const UserSidebar = () => {
   const { pathname } = useLocation();
@@ -42,48 +42,48 @@ const UserSidebar = () => {
   // SIDEBAR NAVIGATION
   const sidebarNav = [
     {
-      title: 'Home',
-      path: '/',
+      title: "Home",
+      path: "/",
       icon: faHouse,
     },
     {
-      title: 'Register your business',
-      path: '/business-registration',
+      title: "Register your business",
+      path: "/business-registration",
       icon: faPen,
     },
     {
-      title: 'Edit your registered business',
-      path: '/business-registration/edit',
+      title: "Edit your registered business",
+      path: "/business-registration/edit",
       icon: faImage,
     },
     {
-      title: 'Amendments',
-      path: '/business-registration/amendments',
+      title: "Amendments",
+      path: "/business-registration/amendments",
       icon: faBook,
     },
     {
-      title: 'Certification of GSR',
-      path: '/business-registration/certification',
+      title: "Certification of GSR",
+      path: "/business-registration/certification",
       icon: faCommentDots,
     },
     {
-      title: 'Certitificates',
-      path: '/certificates',
+      title: "Certitificates",
+      path: "/certificates",
       icon: faCertificate,
     },
     {
-      title: 'Request for VAT Certificate',
-      path: '/certificates/vat',
+      title: "Request for VAT Certificate",
+      path: "/certificates/vat",
       icon: faBagShopping,
     },
     {
-      title: 'Search Company',
-      path: '/search',
+      title: "Search Company",
+      path: "/search",
       icon: faSitemap,
     },
     {
-      title: 'My Profile',
-      path: '/profile',
+      title: "My Profile",
+      path: "/profile",
       icon: faGear,
     },
   ];
@@ -95,12 +95,12 @@ const UserSidebar = () => {
 
   const showMore = () => {
     controls.start({
-      width: '17vw',
+      width: "17vw",
       transition: { duration: 0.001 },
     });
     controlText.start({
       opacity: 1,
-      display: 'block',
+      display: "block",
       transition: { delay: 0.3 },
     });
     controlTitleText.start({
@@ -111,13 +111,13 @@ const UserSidebar = () => {
 
   const showLess = () => {
     controls.start({
-      width: '10vw',
+      width: "10vw",
       transition: { duration: 0.001 },
     });
 
     controlText.start({
       opacity: 0,
-      display: 'none',
+      display: "none",
     });
 
     controlTitleText.start({
@@ -144,7 +144,7 @@ const UserSidebar = () => {
         dispatch(toggleSidebar(!isOpen));
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, screenWidth]);
 
   return (
@@ -155,12 +155,12 @@ const UserSidebar = () => {
       >
         <figure
           className={`w-full flex items-center justify-between pr-2 ${
-            isOpen ? 'flex-row' : 'flex-col gap-4'
+            isOpen ? "flex-row" : "flex-col gap-4"
           }`}
         >
           <img
             src={isOpen ? rdb_logo : rdb_icon}
-            className={`h-auto ${isOpen ? 'max-w-[100px]' : 'max-w-[50px]'}`}
+            className={`h-auto ${isOpen ? "max-w-[100px]" : "max-w-[50px]"}`}
             alt="logo"
           />
           <FontAwesomeIcon
@@ -172,7 +172,7 @@ const UserSidebar = () => {
             icon={faBars}
           />
         </figure>
-        <menu className="w-full flex flex-col gap-2 h-full mt-6">
+        <menu className="flex flex-col w-full h-full gap-2 mt-6">
           {sidebarNav?.map((nav, index) => {
             const selected = pathname === nav?.path;
             return (
@@ -180,14 +180,14 @@ const UserSidebar = () => {
                 to={nav?.path}
                 key={index}
                 className={`flex items-center gap-5 px-4 font-semibold text-[15px] ease-in-out duration-200 hover:bg-white text-secondary rounded-md py-3 max-[1200px]:text-[14px] max-[1000px]:text-[13px] ${
-                  selected && 'bg-white !text-primary'
-                } ${isOpen ? 'justify-start' : 'justify-center'}`}
+                  selected && "bg-white !text-primary"
+                } ${isOpen ? "justify-start" : "justify-center"}`}
               >
                 <FontAwesomeIcon
                   icon={nav?.icon}
                   className={` text-secondary font-bold ${
-                    selected && '!text-primary'
-                  } ${isOpen ? 'text-[20px]' : 'text-[16px]'}`}
+                    selected && "!text-primary"
+                  } ${isOpen ? "text-[20px]" : "text-[16px]"}`}
                 />
                 {isOpen ? nav?.title : null}
               </Link>
@@ -201,11 +201,11 @@ const UserSidebar = () => {
           value={
             <menu
               className={`flex items-center w-full gap-4 ${
-                isOpen ? 'justify-start w-full' : 'justify-center'
+                isOpen ? "justify-start w-full" : "justify-center"
               }`}
             >
               <FontAwesomeIcon icon={faRightFromBracket} />
-              {isOpen ? 'Logout' : null}
+              {isOpen ? "Logout" : null}
             </menu>
           }
         />

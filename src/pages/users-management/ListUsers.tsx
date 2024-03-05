@@ -1,56 +1,62 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../../components/inputs/Button';
-import { faCircleInfo, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
-import SuperAdminLayout from '../../containers/SuperAdminLayout';
-import Table from '../../components/table/Table';
-import { users } from '../../constants/Users';
-import { capitalizeString, formatDate } from '../../helpers/Data';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "../../components/inputs/Button";
+import { faCircleInfo, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import SuperAdminLayout from "../../containers/SuperAdminLayout";
+import Table from "../../components/table/Table";
+import { users } from "../../constants/Users";
+import { capitalizeString, formatDate } from "../../helpers/Data";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { useState } from "react";
+import AddUser from "./AddUser";
 
 const ListUsers = () => {
   // COLUMNS
+  const [openUserModal, setOpenUserModal] = useState(false);
   const columns = [
     {
-      header: 'No',
-      id: 'no',
-      accessorKey: 'no',
+      header: "No",
+      id: "no",
+      accessorKey: "no",
     },
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
       cell: ({ row }: { row: unknown }) => {
         return (
           <menu className="flex items-center justify-start gap-3">
             <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
-              <img src={row?.original?.image} className="w-full h-full object-cover" />
+              <img
+                src={row?.original?.image}
+                className="object-cover w-full h-full"
+              />
             </figure>
-            <p className='text-[13px]'>{row?.original?.name}</p>
+            <p className="text-[13px]">{row?.original?.name}</p>
           </menu>
         );
       },
     },
     {
-      header: 'Email',
-      accessorKey: 'email',
+      header: "Email",
+      accessorKey: "email",
       filter: true,
     },
     {
-      header: 'Role',
-      accessorKey: 'role',
+      header: "Role",
+      accessorKey: "role",
       filter: true,
     },
     {
-      header: 'Status',
-      accessorKey: 'status',
-      filter: true
+      header: "Status",
+      accessorKey: "status",
+      filter: true,
     },
     {
-      header: 'Date Added',
-      accessorKey: 'created_at',
+      header: "Date Added",
+      accessorKey: "created_at",
     },
     {
-      header: '',
-      accessorKey: 'actions',
+      header: "",
+      accessorKey: "actions",
       cell: () => {
         return (
           <menu className="flex items-center gap-4">
@@ -70,11 +76,12 @@ const ListUsers = () => {
 
   return (
     <SuperAdminLayout>
-      <main className="p-6 flex flex-col gap-6 w-full bg-white rounded-md">
-        <menu className="w-full flex items-center gap-6 justify-between">
+      <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
+        <menu className="flex items-center justify-between w-full gap-6">
           <h1 className="text-xl font-semibold">Users List</h1>
           <Button
             primary
+            onClick={() => setOpenUserModal(true)}
             value={
               <menu className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faCirclePlus} />
@@ -83,7 +90,7 @@ const ListUsers = () => {
             }
           />
         </menu>
-        <section className='p-2'>
+        <section className="p-2">
           <Table
             data={users?.map((user, index) => {
               return {
@@ -98,6 +105,13 @@ const ListUsers = () => {
             columns={columns}
           />
         </section>
+        {/* Register User MODAL */}
+        {openUserModal && (
+          <AddUser
+            openUserModal={openUserModal}
+            setOpenUserModal={setOpenUserModal}
+          />
+        )}
       </main>
     </SuperAdminLayout>
   );
