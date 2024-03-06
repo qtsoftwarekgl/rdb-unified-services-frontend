@@ -1,15 +1,12 @@
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import {
   faCertificate,
   faDatabase,
   faPerson,
   faPersonCircleCheck,
 } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../components/inputs/Button';
 
 // DASHBOARD CARDS
-export const dashboardCards = [
+export const adminDashboardCards = [
   {
     title: 'Applicants',
     value: 100000,
@@ -40,8 +37,39 @@ export const dashboardCards = [
   },
 ];
 
+export const superAdminDashboardCards = [
+  {
+    title: 'Institutions',
+    value: 100,
+    icon: faDatabase,
+    change: '10',
+    route: '/super-admin/institutions',
+  },
+  {
+    title: 'Institution Admins',
+    value: 10,
+    icon: faCertificate,
+    change: -5,
+    route: '/super-admin/users?role=institution_admin',
+  },
+  {
+    title: 'Approvers',
+    value: 1,
+    icon: faPersonCircleCheck,
+    change: 0,
+    route: '/super-admin/users?role=approver',
+  },
+  {
+    title: 'External Members',
+    value: 1000,
+    icon: faPerson,
+    change: 0,
+    route: '/super-admin/users?role=external_member',
+  },
+];
+
 // RECENT ACTIVITIES
-export const RecentActivities = [
+export const recentActivities = [
   {
     title: 'Logged in',
     date: '2022-10-10, 10:00',
@@ -936,59 +964,372 @@ export const permissions = [
   },
 ];
 
-export const roleColumns = [
+export const institutions = [
   {
-    header: 'No',
-    accessorKey: 'no',
+    id: 1,
+    name: 'Yambee',
+    email: 'info@PxazSv.com',
+    created_at: '2023-05-17T14:14:28Z',
+    type: 'private_sector',
   },
   {
-    header: 'Role',
-    accessorKey: 'name',
-    filter: true
+    id: 2,
+    name: 'Voolith',
+    email: 'info@cTdTHsG.com',
+    created_at: '2023-02-02T01:47:07Z',
+    type: 'government',
+    address: 'Apt 144',
   },
   {
-    header: 'Description',
-    accessorKey: 'description',
+    id: 3,
+    name: 'Browsezoom',
+    email: 'info@wbVgSmxNOJ.com',
+    created_at: '2023-05-22T11:20:09Z',
+    type: 'government',
   },
   {
-    header: 'Permissions',
-    accessorKey: 'permissions',
-    cell: () => {
-      return (
-        <Button
-          value="View permissions"
-          className="!text-[13px] !bg-transparent"
-          styled={false}
-        />
-      );
-    },
+    id: 4,
+    name: 'Podcat',
+    email: 'info@QRvlysgcJ.com',
+    created_at: '2023-01-13T06:43:16Z',
+    type: 'government',
+    address: 'Room 1161',
   },
   {
-    header: 'Added By',
-    accessorKey: 'user_name',
-    filter: true,
+    id: 5,
+    name: 'Babblestorm',
+    email: 'info@xicTQAKyS.com',
+    created_at: '2023-01-30T09:54:41Z',
+    type: 'government',
   },
   {
-    header: 'Date Added',
-    accessorKey: 'created_at',
+    id: 6,
+    name: 'Tagfeed',
+    email: 'info@jEPWE.com',
+    created_at: '2024-02-11T20:47:17Z',
+    type: 'private_sector',
   },
   {
-    header: 'Actions',
-    accessorKey: 'actions',
-    cell: ({ row }) => {
-      return (
-        <menu className="flex items-center gap-2">
-          <FontAwesomeIcon
-            onClick={(e) => {
-              e.preventDefault();
-              return row?.original;
-            }}
-            icon={faPenToSquare}
-            className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-primary"
-          />
-        </menu>
-      );
-    },
+    id: 7,
+    name: 'Demimbu',
+    email: 'info@yABHuBAWWU.com',
+    created_at: '2024-01-28T05:07:49Z',
+    type: 'government',
+  },
+  {
+    id: 8,
+    name: 'Jaxbean',
+    email: 'info@uZRzAHE.com',
+    created_at: '2023-06-16T18:49:05Z',
+    type: 'private_sector',
+    address: 'Room 162',
+  },
+  {
+    id: 9,
+    name: 'Browsecat',
+    email: 'info@MAykIZLWh.com',
+    created_at: '2023-09-29T15:00:29Z',
+    type: 'private_sector',
+  },
+  {
+    id: 10,
+    name: 'Tagfeed',
+    email: 'info@pMbKPn.com',
+    created_at: '2023-07-09T21:30:04Z',
+    type: 'private_sector',
+    address: '5th Floor',
+  },
+  {
+    id: 11,
+    name: 'Feedfire',
+    email: 'info@DjFVuj.com',
+    created_at: '2023-10-04T19:27:39Z',
+    type: 'government',
+  },
+  {
+    id: 12,
+    name: 'Voonder',
+    email: 'info@qqtjm.com',
+    created_at: '2023-09-25T12:20:53Z',
+    type: 'private_sector',
+  },
+  {
+    id: 13,
+    name: 'Eidel',
+    email: 'info@XXTdVTH.com',
+    created_at: '2023-04-17T04:54:13Z',
+    type: 'private_sector',
+  },
+  {
+    id: 14,
+    name: 'Oba',
+    email: 'info@AOcgqKP.com',
+    created_at: '2023-05-20T16:14:09Z',
+    type: 'government',
+  },
+  {
+    id: 15,
+    name: 'Shuffletag',
+    email: 'info@JLhse.com',
+    created_at: '2023-10-08T23:36:07Z',
+    type: 'private_sector',
+  },
+  {
+    id: 16,
+    name: 'Kaymbo',
+    email: 'info@iAMQyQU.com',
+    created_at: '2023-04-20T23:37:04Z',
+    type: 'government',
+  },
+  {
+    id: 17,
+    name: 'Feedspan',
+    email: 'info@xMMHsYFmPe.com',
+    created_at: '2024-02-08T08:34:11Z',
+    type: 'government',
+  },
+  {
+    id: 18,
+    name: 'Shufflebeat',
+    email: 'info@aVWzy.com',
+    created_at: '2023-11-05T07:30:14Z',
+    type: 'private_sector',
+    address: 'Room 353',
+  },
+  {
+    id: 19,
+    name: 'Layo',
+    email: 'info@CdysPYhJUY.com',
+    created_at: '2023-07-16T11:00:23Z',
+    type: 'government',
+  },
+  {
+    id: 20,
+    name: 'Jaloo',
+    email: 'info@xPkzaoijjK.com',
+    created_at: '2023-09-23T19:39:21Z',
+    type: 'government',
+  },
+  {
+    id: 21,
+    name: 'Feedfish',
+    email: 'info@FqjkraUZjI.com',
+    created_at: '2024-01-07T15:26:14Z',
+    type: 'government',
+    address: 'Room 826',
+  },
+  {
+    id: 22,
+    name: 'Shufflester',
+    email: 'info@GYHEswVlA.com',
+    created_at: '2023-09-11T14:32:27Z',
+    type: 'government',
+  },
+  {
+    id: 23,
+    name: 'Avavee',
+    email: 'info@rDShUNhcO.com',
+    created_at: '2023-02-24T07:42:48Z',
+    type: 'private_sector',
+    address: 'PO Box 23474',
+  },
+  {
+    id: 24,
+    name: 'Blognation',
+    email: 'info@pZayFDiZ.com',
+    created_at: '2023-03-29T15:09:33Z',
+    type: 'private_sector',
+  },
+  {
+    id: 25,
+    name: 'Trilith',
+    email: 'info@tAxNRC.com',
+    created_at: '2023-04-11T20:43:07Z',
+    type: 'private_sector',
+  },
+  {
+    id: 26,
+    name: 'Wordpedia',
+    email: 'info@FXBzk.com',
+    created_at: '2023-04-18T23:36:52Z',
+    type: 'government',
+  },
+  {
+    id: 27,
+    name: 'Feedspan',
+    email: 'info@VKfGtiyHbm.com',
+    created_at: '2023-07-03T04:27:02Z',
+    type: 'government',
+    address: '1st Floor',
+  },
+  {
+    id: 28,
+    name: 'Camimbo',
+    email: 'info@iGwaWgm.com',
+    created_at: '2023-01-31T20:05:37Z',
+    type: 'private_sector',
+  },
+  {
+    id: 29,
+    name: 'Katz',
+    email: 'info@xIHnuwieTS.com',
+    created_at: '2023-06-17T02:39:46Z',
+    type: 'private_sector',
+  },
+  {
+    id: 30,
+    name: 'Realpoint',
+    email: 'info@VJthrZASJ.com',
+    created_at: '2023-10-26T03:04:16Z',
+    type: 'government',
+  },
+  {
+    id: 31,
+    name: 'Gabspot',
+    email: 'info@nMePZNGzQk.com',
+    created_at: '2023-01-28T09:03:51Z',
+    type: 'government',
+  },
+  {
+    id: 32,
+    name: 'Browsecat',
+    email: 'info@kmNqgVX.com',
+    created_at: '2023-08-23T15:55:54Z',
+    type: 'private_sector',
+  },
+  {
+    id: 33,
+    name: 'Topicware',
+    email: 'info@ZqqsUZ.com',
+    created_at: '2023-03-08T21:43:17Z',
+    type: 'private_sector',
+  },
+  {
+    id: 34,
+    name: 'Demizz',
+    email: 'info@HJJOCicCU.com',
+    created_at: '2024-02-01T06:02:53Z',
+    type: 'private_sector',
+    address: 'PO Box 88871',
+  },
+  {
+    id: 35,
+    name: 'Gigaclub',
+    email: 'info@kHGtv.com',
+    created_at: '2023-04-10T11:39:39Z',
+    type: 'government',
+    address: '18th Floor',
+  },
+  {
+    id: 36,
+    name: 'Leenti',
+    email: 'info@APtflAm.com',
+    created_at: '2023-01-17T08:00:40Z',
+    type: 'government',
+    address: 'Room 127',
+  },
+  {
+    id: 37,
+    name: 'Fivechat',
+    email: 'info@oKEmkIRqKH.com',
+    created_at: '2023-12-30T01:04:29Z',
+    type: 'government',
+    address: 'Room 1069',
+  },
+  {
+    id: 38,
+    name: 'Feednation',
+    email: 'info@jcaJSabWC.com',
+    created_at: '2023-11-30T10:35:44Z',
+    type: 'private_sector',
+  },
+  {
+    id: 39,
+    name: 'Brightbean',
+    email: 'info@dlizjEwaVI.com',
+    created_at: '2023-07-23T14:06:22Z',
+    type: 'government',
+    address: 'Room 663',
+  },
+  {
+    id: 40,
+    name: 'Rhynoodle',
+    email: 'info@EVzrtBsSF.com',
+    created_at: '2023-03-15T14:27:16Z',
+    type: 'government',
+  },
+  {
+    id: 41,
+    name: 'Kayveo',
+    email: 'info@gHtNYeUcE.com',
+    created_at: '2023-08-03T03:35:06Z',
+    type: 'private_sector',
+  },
+  {
+    id: 42,
+    name: 'Trupe',
+    email: 'info@zSPUOoqgy.com',
+    created_at: '2023-11-24T10:20:31Z',
+    type: 'private_sector',
+    address: 'PO Box 45067',
+  },
+  {
+    id: 43,
+    name: 'Tagpad',
+    email: 'info@xAHrAOmtln.com',
+    created_at: '2023-04-24T02:09:01Z',
+    type: 'government',
+  },
+  {
+    id: 44,
+    name: 'Skalith',
+    email: 'info@yyFQVlgF.com',
+    created_at: '2023-03-13T05:49:02Z',
+    type: 'government',
+  },
+  {
+    id: 45,
+    name: 'Zooxo',
+    email: 'info@FQsUb.com',
+    created_at: '2023-09-11T07:33:19Z',
+    type: 'private_sector',
+  },
+  {
+    id: 46,
+    name: 'Jabbersphere',
+    email: 'info@PsDYuaa.com',
+    created_at: '2023-11-21T15:13:10Z',
+    type: 'government',
+  },
+  {
+    id: 47,
+    name: 'Oyoba',
+    email: 'info@xVDvZMERPY.com',
+    created_at: '2023-11-02T08:52:27Z',
+    type: 'government',
+  },
+  {
+    id: 48,
+    name: 'Twitterwire',
+    email: 'info@noxSUJJDJ.com',
+    created_at: '2022-12-15T19:44:24Z',
+    type: 'private_sector',
+    address: 'Room 1405',
+  },
+  {
+    id: 49,
+    name: 'Babbleblab',
+    email: 'info@gjADaI.com',
+    created_at: '2023-10-12T00:30:56Z',
+    type: 'government',
+    address: 'Room 593',
+  },
+  {
+    id: 50,
+    name: 'Flipstorm',
+    email: 'info@bbTQQMGVqh.com',
+    created_at: '2022-12-24T10:22:44Z',
+    type: 'government',
+    address: '7th Floor',
   },
 ];
-

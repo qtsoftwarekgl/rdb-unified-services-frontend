@@ -1,11 +1,11 @@
 import DashboardCard from '../../components/cards/DashboardCard';
-import AdminLayout from '../../containers/AdminLayout';
+import SuperAdminLayout from '../../containers/SuperAdminLayout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import {
   recentActivities,
-  adminDashboardCards,
   monthsData,
+  superAdminDashboardCards,
 } from '../../constants/Dashboard';
 import Select from '../../components/inputs/Select';
 import { useState } from 'react';
@@ -15,16 +15,16 @@ import { columns, users } from '../../constants/Users';
 import RecentActivities from '../../components/cards/RecentActivities';
 import DashboardChart from '../../components/DashboardChart';
 
-const AdminDashboard = () => {
+const SuperAdminDashboard = () => {
   // STATE VARIABLES
   const [monthsDataArray, setMonthsDataArray] = useState(monthsData());
 
   return (
-    <AdminLayout>
-      <main className="flex flex-col items-center justify-center w-full gap-6 px-6">
+    <SuperAdminLayout>
+      <main className="flex flex-col gap-6 w-full items-center justify-center px-6">
         {/* DASHBOARD CARDS */}
         <menu className="flex items-start w-full justify-between gap-6 flex-wrap max-[600px]:justify-center max-[600px]:gap-4">
-          {adminDashboardCards.map((card, index) => {
+          {superAdminDashboardCards.map((card, index) => {
             return (
               <DashboardCard
                 title={card?.title}
@@ -46,8 +46,8 @@ const AdminDashboard = () => {
               <span className="flex items-center w-full max-w-[20%] max-[600px]:max-w-[80%]">
                 <Select
                   options={[
-                    { label: "Yearly", value: "year" },
-                    { label: "Monthly", value: "month" },
+                    { label: 'Yearly', value: 'year' },
+                    { label: 'Monthly', value: 'month' },
                   ]}
                   onChange={(e) => {
                     setMonthsDataArray(monthsData());
@@ -56,11 +56,11 @@ const AdminDashboard = () => {
                 />
               </span>
             </menu>
-            <DashboardChart data={monthsDataArray} dataKey='month' />
+            <DashboardChart data={monthsDataArray} dataKey="month" />
           </section>
         </menu>
         {/* RECENT USERS */}
-        <section className="flex flex-col w-full gap-6 p-6 bg-white rounded-md shadow-md">
+        <section className="w-full flex flex-col gap-6 rounded-md shadow-md bg-white p-6">
           <menu className="flex w-full items-center gap-3 justify-between max-[400px]:flex-col">
             <h1 className="text-primary text-lg font-semibold max-[400px]:text-center">
               Recent Users
@@ -94,8 +94,8 @@ const AdminDashboard = () => {
           />
         </section>
       </main>
-    </AdminLayout>
+    </SuperAdminLayout>
   );
 };
 
-export default AdminDashboard;
+export default SuperAdminDashboard;

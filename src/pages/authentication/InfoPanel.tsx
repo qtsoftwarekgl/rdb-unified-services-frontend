@@ -5,6 +5,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
+import { languages } from '../../constants/Authentication';
 
 const InfoPanel = () => {
   // STATE VARIABLES
@@ -12,17 +13,6 @@ const InfoPanel = () => {
     visibility: false,
     index: 0,
   });
-
-  const languages = [
-    {
-      label: 'English',
-      value: 'en',
-    },
-    {
-      label: 'French',
-      value: 'fr',
-    },
-  ];
 
   const carouselContent = [
     {

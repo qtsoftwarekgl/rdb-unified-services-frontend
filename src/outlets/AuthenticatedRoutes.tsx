@@ -7,7 +7,7 @@ const AuthenticatedRoutes = () => {
     // STATE VARIABLES
     const { user } = useSelector((state: RootState) => state.user);
 
-    if (user?.email?.includes("admin")) {
+    if (user?.email?.includes("info")) {
         return <Navigate to="/auth/login" />;
     }
     return <Outlet />;
