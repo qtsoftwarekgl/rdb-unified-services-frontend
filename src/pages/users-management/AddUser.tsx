@@ -3,12 +3,13 @@ import {
   useForm,
   SubmitHandler,
   FieldValues,
-} from "react-hook-form";
-import Modal from "../../components/Modal";
-import Select from "../../components/inputs/Select";
-import validateInputs from "../../helpers/Validations";
-import Input from "../../components/inputs/Input";
-import Button from "../../components/inputs/Button";
+} from 'react-hook-form';
+import Modal from '../../components/Modal';
+import Select from '../../components/inputs/Select';
+import validateInputs from '../../helpers/Validations';
+import Input from '../../components/inputs/Input';
+import Button from '../../components/inputs/Button';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   openUserModal: boolean;
@@ -61,8 +62,8 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                       <Select
                         label="Role"
                         options={[
-                          { label: "Admin", value: "admin" },
-                          { label: "User", value: "user" },
+                          { label: 'Admin', value: 'admin' },
+                          { label: 'User', value: 'user' },
                         ]}
                         {...field}
                       />
@@ -82,8 +83,8 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                         multiple={true}
                         styled
                         options={[
-                          { label: "read", value: "read" },
-                          { label: "write", value: "write" },
+                          { label: 'read', value: 'read' },
+                          { label: 'write', value: 'write' },
                         ]}
                         {...field}
                       />
@@ -104,8 +105,8 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                       <Select
                         label="Document Type"
                         options={[
-                          { label: "NID", value: "NID" },
-                          { label: "Passport", value: "passport" },
+                          { label: 'NID', value: 'NID' },
+                          { label: 'Passport', value: 'passport' },
                         ]}
                         {...field}
                       />
@@ -124,7 +125,8 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                   return (
                     <label className="flex flex-col gap-1">
                       <Input
-                        search
+                        suffixIcon={faSearch}
+                        suffixIconPrimary
                         label="ID Document No"
                         {...field}
                         required
@@ -137,7 +139,7 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                     </label>
                   );
                 }}
-                rules={{ required: "ID Document Number is required" }}
+                rules={{ required: 'ID Document Number is required' }}
               />
             </div>
           </div>
@@ -150,8 +152,8 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                       <Select
                         label="Nationality"
                         options={[
-                          { label: "Admin", value: "admin" },
-                          { label: "User", value: "user" },
+                          { label: 'Admin', value: 'admin' },
+                          { label: 'User', value: 'user' },
                         ]}
                         {...field}
                       />
@@ -184,8 +186,8 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                   );
                 }}
                 rules={{
-                  required: "Phone Number is required",
-                  validate: (value) => validateInputs(value, "tel"),
+                  required: 'Phone Number is required',
+                  validate: (value) => validateInputs(value, 'tel'),
                 }}
               />
             </div>
@@ -208,7 +210,7 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                     </label>
                   );
                 }}
-                rules={{ required: "Country is required" }}
+                rules={{ required: 'Country is required' }}
               />
             </div>
             <div className="w-1/2">
@@ -227,7 +229,7 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                     </label>
                   );
                 }}
-                rules={{ required: "Province is required" }}
+                rules={{ required: 'Province is required' }}
               />
             </div>
           </div>
@@ -246,7 +248,7 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                     </label>
                   );
                 }}
-                rules={{ required: "District is required" }}
+                rules={{ required: 'District is required' }}
                 name="district"
                 control={control}
               />
@@ -265,7 +267,7 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
                     </label>
                   );
                 }}
-                rules={{ required: "Sector is required" }}
+                rules={{ required: 'Sector is required' }}
                 name="sector"
                 control={control}
               />

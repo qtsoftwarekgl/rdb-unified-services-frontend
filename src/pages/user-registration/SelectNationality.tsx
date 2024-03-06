@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Select from '../../components/inputs/Select';
 import Input from '../../components/inputs/Input';
 import { faEllipsis, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -7,7 +7,10 @@ import Loader from '../../components/Loader';
 import { userData } from '../../constants/Authentication';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
-import { setNationalIdDetails } from '../../states/features/authSlice';
+import {
+  setNationalIdDetails,
+  setRegistrationStep,
+} from '../../states/features/authSlice';
 
 interface SelectNationalityProps {
   isOpen: boolean;
@@ -22,6 +25,10 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   const [isError, setIsError] = useState<boolean>(false);
   const [nationalIdError, setNationalIdError] = useState<boolean>(false);
   const { nationalIdDetails } = useSelector((state: RootState) => state.auth);
+
+  useEffect(() => {
+    dispatch(setNationalIdDetails(null));
+  }, [dispatch]);
 
   if (!isOpen) return null;
 
@@ -51,7 +58,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
               <Input
                 required
                 label="ID Document No"
-                search
+                suffixIconPrimary
                 suffixIcon={isLoading ? faEllipsis : faSearch}
                 suffixIconHandler={(e) => {
                   e.preventDefault();
@@ -136,7 +143,24 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         </menu>
         <menu className="flex items-center gap-6 w-full mx-auto justify-between">
           <Button value="Back" route="/auth/login" />
-          <Button value="Continue" primary />
+          <Button
+            value="Continue"
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              if (
+                nationalIdDetails &&
+                documentType === 'nid' &&
+                !nationalIdError
+              ) {
+                dispatch(setNationalIdDetails(nationalIdDetails));
+                dispatch(setRegistrationStep('rwandan-registration-form'));
+              } else if (documentType === 'passport') {
+                dispatch(setNationalIdDetails(null));
+                dispatch(setRegistrationStep('foreign-registration-form'));
+              }
+            }}
+          />
         </menu>
       </form>
     </section>

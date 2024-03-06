@@ -6,7 +6,7 @@ import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 const RegistrationNavbar = () => {
   return (
-    <header className="h-[8vh] bg-white flex items-center w-full mx-auto justify-between px-8">
+    <header className="h-[10vh] bg-white flex items-center w-full mx-auto justify-between px-8">
       <nav className="flex items-center justify-between gap-3 w-[95%] mx-auto">
         <figure className="flex items-center gap-6 justify-between max-[800px]:flex-col-reverse">
           <img
