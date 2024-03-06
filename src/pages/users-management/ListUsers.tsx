@@ -5,13 +5,16 @@ import AdminLayout from "../../containers/AdminLayout";
 import Table from "../../components/table/Table";
 import { users } from "../../constants/Users";
 import { capitalizeString, formatDate } from "../../helpers/Data";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import AddUser from "./AddUser";
+import ViewUser from "./ViewUser";
 
 const ListUsers = () => {
   // COLUMNS
   const [openUserModal, setOpenUserModal] = useState(false);
+  const [userToView, setUserToView] = useState(null);
+
   const columns = [
     {
       header: "No",
@@ -57,16 +60,17 @@ const ListUsers = () => {
     {
       header: "",
       accessorKey: "actions",
-      cell: () => {
+      cell: ({ row }: { row: unknown }) => {
         return (
-          <menu className="flex items-center gap-4">
+          <menu
+            className="flex items-center gap-4"
+            onClick={() => {
+              setUserToView(row?.original);
+            }}
+          >
             <FontAwesomeIcon
               className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-              icon={faCircleInfo}
-            />
-            <FontAwesomeIcon
-              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-              icon={faPenToSquare}
+              icon={faEye}
             />
           </menu>
         );
@@ -74,10 +78,12 @@ const ListUsers = () => {
     },
   ];
 
+  console.log("::::::::::::::::::::::::::::", userToView);
+
   return (
     <AdminLayout>
-      <main className="p-6 flex flex-col gap-6 w-full bg-white rounded-md">
-        <menu className="w-full flex items-center gap-6 justify-between">
+      <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
+        <menu className="flex items-center justify-between w-full gap-6">
           <h1 className="text-lg font-semibold uppercase">Users List</h1>
           <Button
             primary
@@ -111,6 +117,11 @@ const ListUsers = () => {
             openUserModal={openUserModal}
             setOpenUserModal={setOpenUserModal}
           />
+        )}
+
+        {/* View User Modal */}
+        {userToView && (
+          <ViewUser user={userToView} setUserToView={setUserToView} />
         )}
       </main>
     </AdminLayout>

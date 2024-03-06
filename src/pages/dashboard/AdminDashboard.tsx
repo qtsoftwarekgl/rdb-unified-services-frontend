@@ -1,14 +1,14 @@
-import DashboardCard from '../../components/cards/DashboardCard';
-import AdminLayout from '../../containers/AdminLayout';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faCircle } from '@fortawesome/free-solid-svg-icons';
-import moment from 'moment';
+import DashboardCard from "../../components/cards/DashboardCard";
+import AdminLayout from "../../containers/AdminLayout";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faCircle } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
 import {
   RecentActivities,
   dashboardCards,
   monthsData,
-} from '../../constants/Dashboard';
-import Select from '../../components/inputs/Select';
+} from "../../constants/Dashboard";
+import Select from "../../components/inputs/Select";
 import {
   XAxis,
   Tooltip,
@@ -18,11 +18,11 @@ import {
   Area,
   Legend,
   ComposedChart,
-} from 'recharts';
-import { useState } from 'react';
-import Button from '../../components/inputs/Button';
-import Table from '../../components/table/Table';
-import { columns, users } from '../../constants/Users';
+} from "recharts";
+import { useState } from "react";
+import Button from "../../components/inputs/Button";
+import Table from "../../components/table/Table";
+import { columns, users } from "../../constants/Users";
 
 const AdminDashboard = () => {
   // STATE VARIABLES
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <main className="flex flex-col gap-6 w-full items-center justify-center px-6">
+      <main className="flex flex-col items-center justify-center w-full gap-6 px-6">
         {/* DASHBOARD CARDS */}
         <menu className="flex items-start w-full justify-between gap-6 flex-wrap max-[600px]:justify-center max-[600px]:gap-4">
           {dashboardCards.map((card, index) => {
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
                     <article className="flex flex-col gap-1">
                       <h2 className="text-[14px]">{activity?.title}</h2>
                       <p className="text-[12px] text-secondary uppercase">
-                        {moment(activity?.date).format('DD/MM/YYYY, hh:mm')}
+                        {moment(activity?.date).format("DD/MM/YYYY, hh:mm")}
                       </p>
                     </article>
                   </li>
@@ -83,8 +83,8 @@ const AdminDashboard = () => {
               <span className="flex items-center w-full max-w-[20%] max-[600px]:max-w-[80%]">
                 <Select
                   options={[
-                    { label: 'Yearly', value: 'year' },
-                    { label: 'Monthly', value: 'month' },
+                    { label: "Yearly", value: "year" },
+                    { label: "Monthly", value: "month" },
                   ]}
                   onChange={(e) => {
                     setMonthsDataArray(monthsData());
@@ -93,7 +93,7 @@ const AdminDashboard = () => {
                 />
               </span>
             </menu>
-            <ResponsiveContainer height={'90%'} width={'100%'}>
+            <ResponsiveContainer height={"90%"} width={"100%"}>
               <ComposedChart compact data={monthsDataArray}>
                 <Area
                   connectNulls
@@ -113,17 +113,17 @@ const AdminDashboard = () => {
                   tickMargin={20}
                   className="!text-[12px]"
                   style={{
-                    fontSize: '12px',
+                    fontSize: "12px",
                   }}
                 />
                 <Tooltip />
-                <CartesianGrid strokeDasharray={'5 5'} y={0} vertical={false} />
+                <CartesianGrid strokeDasharray={"5 5"} y={0} vertical={false} />
               </ComposedChart>
             </ResponsiveContainer>
           </section>
         </menu>
         {/* RECENT USERS */}
-        <section className="w-full flex flex-col gap-6 rounded-md shadow-md bg-white p-6">
+        <section className="flex flex-col w-full gap-6 p-6 bg-white rounded-md shadow-md">
           <menu className="flex w-full items-center gap-3 justify-between max-[400px]:flex-col">
             <h1 className="text-primary text-lg font-semibold max-[400px]:text-center">
               Recent Users
