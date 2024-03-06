@@ -1,16 +1,16 @@
-import { useLocation } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faMoon, faUser } from '@fortawesome/free-regular-svg-icons';
-import { Link } from 'react-router-dom';
+import { useLocation } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faMoon, faUser } from "@fortawesome/free-regular-svg-icons";
+import { Link } from "react-router-dom";
 import {
   faChevronDown,
   faChevronUp,
   faRightFromBracket,
-} from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../states/store';
-import { FC } from 'react';
-import { toggleNavbar } from '../states/features/navbarSlice';
+} from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../states/store";
+import { FC } from "react";
+import { toggleNavbar } from "../states/features/navbarSlice";
 
 const Navbar = () => {
   // STATE VARIABLES
@@ -20,30 +20,30 @@ const Navbar = () => {
 
   const { pathname } = useLocation();
 
-  if (['auth/login', 'auth/register'].includes(pathname)) {
+  if (["auth/login", "auth/register"].includes(pathname)) {
     return null;
   }
 
   // NAV DROPDOWN
   const navDropdown = [
     {
-      title: 'Profile',
-      link: '/profile',
+      title: "Profile",
+      link: "/admin/profile",
       icon: faUser,
     },
     {
-      title: 'Theme',
-      link: '#',
+      title: "Theme",
+      link: "#",
       icon: faMoon,
     },
     {
-      title: 'Notifications',
-      link: '/notifications',
+      title: "Notifications",
+      link: "/notifications",
       icon: faBell,
     },
     {
-      title: 'Logout',
-      link: '/logout',
+      title: "Logout",
+      link: "/logout",
       icon: faRightFromBracket,
     },
   ];
@@ -59,9 +59,9 @@ const Navbar = () => {
           className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
           icon={faBell}
         />
-        <Link to={'#'} className="px-4 max-[600px]:px-2">
+        <Link to={"#"} className="px-4 max-[600px]:px-2">
           <menu
-            className="flex items-center justify-between gap-2 px-4 p-1 rounded-lg shadow-xs"
+            className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"
             onClick={(e) => {
               e.preventDefault();
               dispatch(toggleNavbar(!isOpen));
@@ -70,7 +70,7 @@ const Navbar = () => {
             <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
               <img
                 src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
               />
             </figure>
 
@@ -79,12 +79,12 @@ const Navbar = () => {
                 Christella
               </h1>
               <p className="text-[12px] text-gray-500">
-                {user?.email?.toLowerCase() || 'christella@qtglobal.rw'}
+                {user?.email?.toLowerCase() || "christella@qtglobal.rw"}
               </p>
             </article>
 
             <FontAwesomeIcon
-              className="ease-in-out duration-500"
+              className="duration-500 ease-in-out"
               icon={isOpen ? faChevronUp : faChevronDown}
             />
           </menu>
@@ -98,9 +98,9 @@ const Navbar = () => {
                 to={nav?.link}
                 key={index}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
-                  ['Theme', 'Notifications'].includes(nav?.title)
-                    ? 'min-[450px]:hidden'
-                    : 'flex'
+                  ["Theme", "Notifications"].includes(nav?.title)
+                    ? "min-[450px]:hidden"
+                    : "flex"
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
@@ -123,7 +123,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
   return (
     <menu
       className={`${
-        isOpen ? 'translate-y-0' : 'translate-y-[-400px]'
+        isOpen ? "translate-y-0" : "translate-y-[-400px]"
       } ease-in-out duration-500 z-[10000] absolute top-[8vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}

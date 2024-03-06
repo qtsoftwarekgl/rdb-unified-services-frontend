@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 interface InputProps {
@@ -12,6 +12,7 @@ interface InputProps {
   type?: string;
   value?: string | number;
   search?: boolean;
+  icon?: React.ReactNode;
 }
 
 const Input: FC<InputProps> = ({
@@ -21,6 +22,7 @@ const Input: FC<InputProps> = ({
   className,
   required = false,
   search = false,
+  icon = null,
   value,
   onChange,
   defaultValue,
@@ -50,33 +52,40 @@ const Input: FC<InputProps> = ({
           *
         </span>
       </p>
-      {!search && (
+      {!search && !icon && (
         <input
           defaultValue={defaultValue}
           value={value && value}
           type={type || "text"}
           onChange={onChange}
           placeholder={placeholder}
-          className={`py-[6px] px-4 flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+          className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
       )}
-      {search && (
+      {(search || icon) && (
         <div className="relative w-full">
+          <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+            {icon && icon}
+          </div>
           <input
             defaultValue={defaultValue}
             value={value && value}
             type={type || "text"}
             onChange={onChange}
             placeholder={placeholder}
-            className={`py-[6px] px-4 flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+            className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+              icon ? "ps-10" : ""
+            }`}
           />
-          <button
-            type="submit"
-            className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-primary rounded-e-lg border border-primary focus:outline-none "
-          >
-            <FontAwesomeIcon icon={faSearch} />
-            <span className="sr-only">Search</span>
-          </button>
+          {search && (
+            <button
+              type="submit"
+              className="absolute top-0 end-0 p-2.5 text-sm font-medium h-full text-white bg-primary rounded-e-lg border border-primary focus:outline-none "
+            >
+              <FontAwesomeIcon icon={faSearch} />
+              <span className="sr-only">Search</span>
+            </button>
+          )}
         </div>
       )}
     </label>
