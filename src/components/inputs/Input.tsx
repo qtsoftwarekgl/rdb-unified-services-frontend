@@ -1,7 +1,8 @@
-import { FC, MouseEventHandler } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FC, MouseEventHandler } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { Link } from 'react-router-dom';
 interface InputProps {
   label?: string;
   placeholder?: string;
@@ -15,11 +16,11 @@ interface InputProps {
   search?: boolean;
   password?: boolean;
   suffixIcon?: IconProp;
-  suffixButtonHandler?: MouseEventHandler<HTMLButtonElement> | undefined;
+  suffixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
 }
 
 const Input: FC<InputProps> = ({
-  type = "text",
+  type = 'text',
   label = null,
   placeholder,
   className,
@@ -28,11 +29,10 @@ const Input: FC<InputProps> = ({
   value,
   onChange,
   defaultValue,
-  password = false,
-  suffixIcon = faSearch,
-  suffixButtonHandler,
+  suffixIcon = null,
+  suffixIconHandler,
 }) => {
-  if (type === "checkbox") {
+  if (type === 'checkbox') {
     return (
       <label className="flex items-center gap-2">
         <input
@@ -40,7 +40,7 @@ const Input: FC<InputProps> = ({
           onChange={onChange}
           className={`w-5 h-5 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
-        <span className={`${label ? "text-[13px]" : "hidden"}`}>{label}</span>
+        <span className={`${label ? 'text-[13px]' : 'hidden'}`}>{label}</span>
       </label>
     );
   }
@@ -57,17 +57,17 @@ const Input: FC<InputProps> = ({
           *
         </span>
       </p>
-      {!search && !password && (
+      {!search && !suffixIcon && (
         <input
           defaultValue={defaultValue}
           value={value && value}
           type={type || 'text'}
           onChange={onChange}
           placeholder={placeholder}
-          className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+          className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
       )}
-      {(search || password) && (
+      {(search || suffixIcon) && (
         <div className="relative w-full">
           <input
             defaultValue={defaultValue}
@@ -75,20 +75,20 @@ const Input: FC<InputProps> = ({
             type={type || 'text'}
             onChange={onChange}
             placeholder={placeholder}
-            className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+            className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
           />
-          <button
-            onClick={suffixButtonHandler}
-            type={search ? 'submit' : 'button'}
-            className={`absolute top-0 end-0 p-2.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
+          <Link
+            to={'#'}
+            onClick={suffixIconHandler}
+            className={`absolute top-0 end-0 p-2.5 px-3.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
               search
-                ? 'bg-primary text-white'
+                ? 'bg-primary text-white border-primary border-l-none'
                 : 'border-secondary border-opacity-50 bg-white text-primary border-l-none'
             }`}
           >
             <FontAwesomeIcon icon={suffixIcon || faSearch} />
             <span className="sr-only">Search</span>
-          </button>
+          </Link>
         </div>
       )}
     </label>

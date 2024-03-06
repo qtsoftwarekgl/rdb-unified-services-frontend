@@ -42,7 +42,7 @@ const ResetPasswordRequest = () => {
   return (
     <main className="flex flex-col gap-4 w-full mx-auto">
       <header className="h-[8vh] bg-white flex items-center w-full mx-auto justify-between px-8">
-        <nav className="flex items-center justify-between gap-3 w-[95%]">
+        <nav className="flex items-center justify-between gap-3 mx-auto w-[95%]">
           <figure className="flex items-center gap-6 justify-between max-[800px]:flex-col-reverse">
             <img
               src={rdb_logo}
