@@ -1,12 +1,12 @@
-import * as React from "react";
 import { DayPicker } from "react-day-picker";
 import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ComponentProps } from "react";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = ComponentProps<typeof DayPicker>;
 
 function Calendar({
   className,
