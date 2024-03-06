@@ -15,6 +15,7 @@ interface InputProps {
   search?: boolean;
   password?: boolean;
   suffixIcon?: IconProp;
+  prefixIcon?: IconProp;
   suffixButtonHandler?: MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
@@ -30,6 +31,7 @@ const Input: FC<InputProps> = ({
   defaultValue,
   password = false,
   suffixIcon = faSearch,
+  prefixIcon = null,
   suffixButtonHandler,
 }) => {
   if (type === "checkbox") {
@@ -49,46 +51,55 @@ const Input: FC<InputProps> = ({
     <label className="flex flex-col gap-[5px] w-full">
       <p
         className={`${
-          label ? 'flex items-center gap-[5px] text-[14px]' : 'hidden'
+          label ? "flex items-center gap-[5px] text-[14px]" : "hidden"
         }`}
       >
-        {label}{' '}
-        <span className={required ? 'text-[14px] text-red-600' : 'hidden'}>
+        {label}{" "}
+        <span className={required ? "text-[14px] text-red-600" : "hidden"}>
           *
         </span>
       </p>
-      {!search && !password && (
+      {!search && !password && !prefixIcon && (
         <input
           defaultValue={defaultValue}
           value={value && value}
-          type={type || 'text'}
+          type={type || "text"}
           onChange={onChange}
           placeholder={placeholder}
           className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
       )}
-      {(search || password) && (
+      {(search || password || prefixIcon) && (
         <div className="relative w-full">
+          {prefixIcon && (
+            <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+              <FontAwesomeIcon icon={prefixIcon} />
+            </div>
+          )}
           <input
             defaultValue={defaultValue}
             value={value && value}
-            type={type || 'text'}
+            type={type || "text"}
             onChange={onChange}
             placeholder={placeholder}
-            className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
-          />
-          <button
-            onClick={suffixButtonHandler}
-            type={search ? 'submit' : 'button'}
-            className={`absolute top-0 end-0 p-2.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
-              search
-                ? 'bg-primary text-white'
-                : 'border-secondary border-opacity-50 bg-white text-primary border-l-none'
+            className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+              prefixIcon ? "ps-10" : ""
             }`}
-          >
-            <FontAwesomeIcon icon={suffixIcon || faSearch} />
-            <span className="sr-only">Search</span>
-          </button>
+          />
+          {(search || password) && (
+            <button
+              onClick={suffixButtonHandler}
+              type={search ? "submit" : "button"}
+              className={`absolute top-0 end-0 p-2.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
+                search
+                  ? "bg-primary text-white !border-none"
+                  : "border-secondary border-opacity-50 bg-white text-primary border-l-none"
+              }`}
+            >
+              <FontAwesomeIcon icon={suffixIcon || faSearch} />
+              <span className="sr-only">Search</span>
+            </button>
+          )}
         </div>
       )}
     </label>

@@ -2,7 +2,6 @@ import { Controller, useForm, FieldValues, Control } from "react-hook-form";
 import Input from "../../components/inputs/Input";
 import validateInputs from "../../helpers/Validations";
 import Divider from "../../components/Divider";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 
 interface NotificationPreferenceProps {
@@ -30,7 +29,7 @@ const NotificationPreference = ({ control }: NotificationPreferenceProps) => {
                     label="Email Address"
                     {...field}
                     placeholder="sandra@gmail.com"
-                    icon={<FontAwesomeIcon icon={faEnvelope} />}
+                    prefixIcon={faEnvelope}
                   />
                   {errors.email && (
                     <p className="text-red-600 text-[13px]">
@@ -61,7 +60,7 @@ const NotificationPreference = ({ control }: NotificationPreferenceProps) => {
                     label="Phone Number"
                     {...field}
                     placeholder="+25074656765"
-                    icon={<FontAwesomeIcon icon={faPhone} />}
+                    prefixIcon={faPhone}
                   />
                 </label>
               );
