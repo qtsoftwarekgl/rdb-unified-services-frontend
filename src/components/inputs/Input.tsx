@@ -69,7 +69,7 @@ const Input: FC<InputProps> = ({
       hiddenFileInput?.current?.click();
     };
     return (
-      <menu className="text-[12px]">
+      <menu className="text-[12px] w-full">
         <button
           type="button"
           onClick={handleClick}

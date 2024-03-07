@@ -68,9 +68,9 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
         onSubmit={handleSubmit(onSubmit)}
         className={`${
           isSuccess ? 'hidden' : 'flex'
-        } flex-col gap-6 w-[70%] mx-auto`}
+        } flex-col gap-6 w-[70%] mx-auto flex max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%]`}
       >
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="documentNo"
             rules={{ required: 'Document No is required' }}
@@ -114,7 +114,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="firstName"
             control={control}
@@ -153,7 +153,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="lastName"
             control={control}
@@ -189,7 +189,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="nationality"
             control={control}
@@ -253,7 +253,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="phone"
             control={control}
@@ -324,7 +324,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="email"
             control={control}
@@ -371,14 +371,14 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="password"
             control={control}
             rules={{ required: 'Password is required' }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
+                <label className="flex flex-col items-start gap-1 w-full mx-auto">
                   <Input
                     type={showPassword?.password ? 'text' : 'password'}
                     label="Password"
@@ -412,7 +412,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
+                <label className="flex flex-col items-start gap-1 w-full mx-auto">
                   <Input
                     type={showPassword?.confirmPassword ? 'text' : 'password'}
                     label="Confirm Password"
@@ -439,7 +439,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex flex-col items-start gap-3 my-3">
+        <menu className="w-full flex flex-col items-start gap-3 my-3 max-md:items-center">
           <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
             Attachment <span className="text-red-600">*</span>
           </h3>
@@ -449,12 +449,12 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             control={control}
             render={({ field }) => {
               return (
-                <label className="flex flex-col w-fit items-start gap-2">
-                  <ul className="flex items-center gap-3">
+                <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                  <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
                     <Input
                       type="file"
                       accept="application/pdf,image/*"
-                      className="!w-fit"
+                      className="!w-fit max-sm:!w-full"
                       onChange={(e) => {
                         field.onChange(e?.target?.files?.[0]);
                         setAttachmentFile(e?.target?.files?.[0]);
@@ -490,7 +490,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             value={isLoading ? <Loader /> : 'Submit'}
             primary
             submit
-            className="!py-3 !min-w-[40%]"
+            className="!py-3 !min-w-[40%] max-sm:!min-w-full"
           />
           <Button
             styled={false}

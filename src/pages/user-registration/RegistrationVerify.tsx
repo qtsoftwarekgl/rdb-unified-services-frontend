@@ -41,7 +41,7 @@ const RegistrationVerify = () => {
       <RegistrationNavbar />
       <section className="w-full h-full min-h-[85vh] flex flex-col items-center justify-center">
         <form
-          className="bg-white w-[35%] rounded-md shadwow-sm flex flex-col gap-6 py-8 px-6 max-w-[600px] max-[1450px]:w-[40%] max-[1300px]:w-[45%] max-[1200px]:w-[50%] max-[1100px]:w-[55%] max-[900px]:w-[55%] max-[800px]:w-[60%] max-[700px]:w-[65%] max-[600px]:w-[70%] max-[550px]:w-[75%] max-[500px]:w-[80%] max-[450px]:w-[85%] max-[400px]:w-[90%] max-[350px]:w-[95%]"
+          className="bg-white w-[35%] rounded-md shadwow-sm flex flex-col gap-6 py-8 px-6 max-w-[600px] max-[1450px]:w-[40%] max-[1300px]:w-[45%] max-[1200px]:w-[50%] max-[1100px]:w-[55%] max-lg:w-[60%] max-md:w-[65%] max-sm:w-[85%]"
           onSubmit={handleSubmit(onSubmit)}
         >
           <menu className="flex flex-col w-full gap-2 items-center justify-center">
@@ -85,7 +85,7 @@ const RegistrationVerify = () => {
                 submit
                 primary
               />
-              <p className="text-secondary text-[14px]">
+              <p className="text-secondary text-[14px] text-center">
                 If you didn't receive a code,{' '}
                 <span className="text-primary font-medium text-[14px]">
                   <Link to={'#'} className="text-[14px]">

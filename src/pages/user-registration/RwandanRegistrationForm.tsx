@@ -79,10 +79,10 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
   return (
     <section className="flex flex-col gap-5 bg-white">
       <form
-        className="w-[70%] mx-auto flex flex-col gap-6"
+        className="w-[70%] mx-auto flex flex-col gap-6 max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%] "
         onSubmit={handleSubmit(onSubmit)}
       >
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="firstName"
             defaultValue={watch('firstName') || nationalIdDetails?.first_name}
@@ -125,7 +125,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="lastName"
             defaultValue={watch('lastName') || nationalIdDetails?.last_name}
@@ -172,7 +172,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="dateOfBirth"
             control={control}
@@ -238,7 +238,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="nationality"
             control={control}
@@ -306,7 +306,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="country"
             control={control}
@@ -372,7 +372,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="district"
             control={control}
@@ -424,7 +424,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="cell"
             defaultValue={watch('cell') || nationalIdDetails?.cell}
@@ -476,7 +476,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="address"
             control={control}
@@ -504,7 +504,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="email"
             defaultValue={watch('email') || nationalIdDetails?.email}
@@ -553,14 +553,14 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="password"
             control={control}
             rules={{ required: 'Password is required' }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
+                <label className="flex flex-col items-start gap-1 w-full mx-auto">
                   <Input
                     type={showPassword?.password ? 'text' : 'password'}
                     label="Password"
@@ -594,7 +594,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
+                <label className="flex flex-col items-start gap-1 w-full mx-auto max-sm:flex-col max-sm:gap-3">
                   <Input
                     type={showPassword?.confirmPassword ? 'text' : 'password'}
                     label="Confirm Password"
@@ -626,7 +626,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             value={isLoading ? <Loader /> : 'Submit'}
             primary
             submit
-            className="!py-3 !min-w-[40%]"
+            className="!py-3 !min-w-[40%] max-sm:!min-w-full"
           />
           <Button
             styled={false}
