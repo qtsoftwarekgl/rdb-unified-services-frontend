@@ -1,22 +1,19 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../components/inputs/Button";
-import AdminLayout from "../../containers/AdminLayout";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import { RootState } from "../../states/store";
 import { useSelector } from "react-redux";
-import NotificationPreference from "./NotificationPreference";
+import UserLayout from "../../containers/UserLayout";
+import { RootState } from "../../states/store";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import Divider from "../../components/Divider";
+import RegisteredBusinessesTable from "./RegisteredBusinessesTable";
+import NotificationPreference from "./NotificationPreference";
 import UpdatePassword from "./UpdatePassowrd";
+import Divider from "../../components/Divider";
+import Button from "../../components/inputs/Button";
 
 interface UserPreferencePayload {
   email: string;
   phoneNumber: string;
 }
 
-const Profile = () => {
-  const registeredCompanies = ["YXZ LTD", "ZTD LTD", "STORE BUS"];
-  const roles = ["Verifier", "Admin", "Super Admin"];
+const UserProfile = () => {
   const { user } = useSelector((state: RootState) => state.user);
   const { handleSubmit, control } = useForm();
 
@@ -27,8 +24,8 @@ const Profile = () => {
   };
 
   return (
-    <AdminLayout>
-      <main className="flex flex-col w-full gap-6 px-32 py-16 bg-white rounded-md">
+    <UserLayout>
+      <main className="flex flex-col w-full gap-6 px-32 py-16 bg-[#f7f7f7] rounded-md">
         <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
           User Profile
         </h1>
@@ -125,6 +122,9 @@ const Profile = () => {
             </div>
           </div>
         </div>
+        {/* User Registered businesses */}
+        <h1 className=" text-tertiary w-fit">My Registered Companies</h1>
+        <RegisteredBusinessesTable />
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-12"
@@ -146,8 +146,8 @@ const Profile = () => {
           </menu>
         </form>
       </main>
-    </AdminLayout>
+    </UserLayout>
   );
 };
 
-export default Profile;
+export default UserProfile;

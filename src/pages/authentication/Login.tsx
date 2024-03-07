@@ -47,17 +47,18 @@ const Login = () => {
 
   // HANDLE SUBMIT
   const onSubmit: SubmitHandler<FieldValues | LoginPayload> = (data) => {
-    toast.success('Login successful. Redirecting...');
+    toast.success("Login successful. Redirecting...");
     dispatch(setUser(data));
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      if (data?.email?.includes('admin')) {
-        return navigate('/super-admin/dashboard');
-      } else if (data?.email?.includes('info')) {
-        return navigate('/admin/dashboard');
+      if (data?.email?.includes("admin")) {
+        return navigate("/super-admin/dashboard");
+      } else if (data?.email?.includes("info")) {
+        return navigate("/admin/dashboard");
       }
-      return navigate('/');
+
+      return navigate("/");
     }, 1000);
   };
 
@@ -85,10 +86,10 @@ const Login = () => {
           </h1>
           <Controller
             rules={{
-              required: 'Email is required',
+              required: "Email is required",
               validate: (value) => {
                 return (
-                  validateInputs(value, 'email') || 'Invalid email address'
+                  validateInputs(value, "email") || "Invalid email address"
                 );
               },
             }}
@@ -112,17 +113,16 @@ const Login = () => {
             }}
           />
           <Controller
-            rules={{ required: 'Password is required' }}
+            rules={{ required: "Password is required" }}
             name="password"
             control={control}
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="Enter password"
                     label="Password"
-                    password
                     suffixIcon={showPassword ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
                       e.preventDefault();
@@ -158,10 +158,14 @@ const Login = () => {
             <Button
               submit
               primary
-              value={isLoading ? <Loader /> : 'Login'}
+              value={isLoading ? <Loader /> : "Login"}
               className="w-full"
             />
-            <Button value="Create account" styled={false} route="/auth/register" />
+            <Button
+              value="Create account"
+              styled={false}
+              route="/auth/register"
+            />
           </menu>
         </form>
       </section>

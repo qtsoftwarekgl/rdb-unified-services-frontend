@@ -7,8 +7,8 @@ import {
 import Input from "../../components/inputs/Input";
 import Divider from "../../components/Divider";
 import Button from "../../components/inputs/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 
 interface UpdatePasswordPayload {
   oldPassword: string;
@@ -22,6 +22,11 @@ const UpdatePassword = () => {
     formState: { errors },
     control,
   } = useForm();
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+    currentPassword: false,
+    confirmPassword: false,
+  });
 
   const onSubmit: SubmitHandler<FieldValues | UpdatePasswordPayload> = (
     data
@@ -41,10 +46,20 @@ const UpdatePassword = () => {
                 <label className="flex flex-col gap-1 font-semibold text-secondary">
                   <Input
                     label="Current Password"
-                    type="password"
+                    type={showPassword?.currentPassword ? "text" : "password"}
                     {...field}
+                    password
                     placeholder="Enter current password"
-                    icon={<FontAwesomeIcon icon={faEye} />}
+                    suffixIcon={
+                      showPassword?.currentPassword ? faEyeSlash : faEye
+                    }
+                    suffixButtonHandler={(e) => {
+                      e.preventDefault();
+                      setShowPassword({
+                        ...showPassword,
+                        currentPassword: !showPassword?.currentPassword,
+                      });
+                    }}
                   />
                   {errors.oldPassword && (
                     <p className="text-red-600 text-[13px]">
@@ -68,10 +83,18 @@ const UpdatePassword = () => {
                 <label className="flex flex-col gap-1 font-semibold text-secondary">
                   <Input
                     label="New Password"
-                    type="password"
+                    password
+                    type={showPassword?.password ? "text" : "password"}
                     {...field}
                     placeholder="Enter new password"
-                    icon={<FontAwesomeIcon icon={faEye} />}
+                    suffixButtonHandler={(e) => {
+                      e.preventDefault();
+                      setShowPassword({
+                        ...showPassword,
+                        password: !showPassword?.password,
+                      });
+                    }}
+                    suffixIcon={showPassword?.password ? faEyeSlash : faEye}
                   />
                   {errors.newPassword && (
                     <p className="text-red-600 text-[13px]">
@@ -95,10 +118,20 @@ const UpdatePassword = () => {
                 <label className="flex flex-col gap-1 font-semibold text-secondary">
                   <Input
                     label="Confirm New Password"
-                    type="password"
+                    type={showPassword?.confirmPassword ? "text" : "password"}
                     {...field}
                     placeholder="Re-Type new password"
-                    icon={<FontAwesomeIcon icon={faEye} />}
+                    password
+                    suffixIcon={
+                      showPassword?.confirmPassword ? faEyeSlash : faEye
+                    }
+                    suffixButtonHandler={(e) => {
+                      e.preventDefault();
+                      setShowPassword({
+                        ...showPassword,
+                        confirmPassword: !showPassword?.confirmPassword,
+                      });
+                    }}
                   />
                   {errors.confirmPassword && (
                     <p className="text-red-600 text-[13px]">
