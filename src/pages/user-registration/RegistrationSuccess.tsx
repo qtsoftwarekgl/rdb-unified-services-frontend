@@ -3,8 +3,18 @@ import RegistrationNavbar from './RegistrationNavbar';
 import rdb_logo from '/rdb-logo.png';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Button from '../../components/inputs/Button';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setRegistrationStep } from '../../states/features/authSlice';
 
 const RegistrationSuccess = () => {
+
+  // STATE VARIABLES
+  const dispatch = useDispatch();
+
+  // NAVIGATE
+  const navigate = useNavigate();
+
   return (
     <main className="flex flex-col gap-4 w-full">
       <RegistrationNavbar />
@@ -26,7 +36,11 @@ const RegistrationSuccess = () => {
               Your account has been created Successfully. Click the button below to continue.
             </p>
           </menu>
-          <Button value='Continue' primary route='/auth/login'  />
+          <Button value='Continue' primary onClick={(e) => {
+            e.preventDefault();
+            dispatch(setRegistrationStep('select-nationality'));
+            navigate('/auth/login');
+          }}  />
         </article>
       </section>
     </main>

@@ -49,15 +49,14 @@ const RegistrationVerify = () => {
               Verify Account
             </h1>
             <p className="text-center text-secondary text-[14px] max-w-[90%]">
-              Enter the 4-digit One-time Password sent to your email. Please
-              check your spam folder if you do not find the email in your inbox.
+              Enter the 4-digit One-time Password sent to your phone number.
             </p>
           </menu>
           <menu className="flex flex-col w-full gap-4">
             <Controller
               name="otp"
               rules={{
-                required: 'Enter the 4-digit OTP sent to your email',
+                required: 'Enter the 4-digit OTP sent to your phone number',
                 validate: (value) => {
                   if (value.length !== 4) {
                     return 'Enter a valid 4-digit OTP';

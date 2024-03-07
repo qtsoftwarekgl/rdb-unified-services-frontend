@@ -325,7 +325,13 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                       value: 'RW',
                       label: 'Rwanda',
                     }}
-                    options={countriesList}
+                    options={countriesList?.map((country) => {
+                      return {
+                        ...country,
+                        label: country.name,
+                        value: country?.code,
+                      };
+                    })}
                     onChange={(e) => {
                       field.onChange(e?.value);
                     }}

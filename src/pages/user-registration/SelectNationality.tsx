@@ -81,7 +81,11 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                       }
                       if (userDetails) {
                         setNationalIdError(false);
+                        dispatch(setNationalIdDetails(nationalIdDetails));
                         dispatch(setNationalIdDetails(userDetails));
+                        dispatch(
+                          setRegistrationStep('rwandan-registration-form')
+                        );
                       }
                       setIsLoading(false);
                     }, 1500);

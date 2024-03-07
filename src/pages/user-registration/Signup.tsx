@@ -3,6 +3,7 @@ import RegistrationNavbar from './RegistrationNavbar';
 import { RootState } from '../../states/store';
 import SelectNationality from './SelectNationality';
 import RwandanRegistrationForm from './RwandanRegistrationForm';
+import ForeignRegistrationForm from './ForeignRegistrationForm';
 
 const Signup = () => {
   // STATE VARIABLES
@@ -13,7 +14,12 @@ const Signup = () => {
       <RegistrationNavbar />
       <section className="flex flex-col gap-6 bg-white rounded-md shadow-sm w-[90%] mx-auto p-8">
         <h1 className="flex items-center text-center justify-center uppercase text-2xl font-semibold">
-          User Registration
+          {registrationStep === 'rwandan-registration-form'
+            ? 'Rwandese User'
+            : registrationStep === 'foreign-registration-form'
+            ? 'Foreign User'
+            : 'User'}{' '}
+          Registration
         </h1>
         <menu className="flex flex-col gap-2 h-full justify-center">
           <SelectNationality
@@ -21,6 +27,9 @@ const Signup = () => {
           />
           <RwandanRegistrationForm
             isOpen={registrationStep === 'rwandan-registration-form'}
+          />
+          <ForeignRegistrationForm
+            isOpen={registrationStep === 'foreign-registration-form'}
           />
         </menu>
       </section>

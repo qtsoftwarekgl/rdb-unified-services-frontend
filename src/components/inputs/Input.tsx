@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler } from 'react';
+import { FC, MouseEventHandler, ReactNode, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -22,8 +22,9 @@ interface InputProps {
   suffixIconPrimary?: boolean;
   prefixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
   prefixIconPrimary?: boolean;
-  prefixText?: string;
+  prefixText?: string | ReactNode;
   checked?: boolean;
+  accept?: string;
 }
 
 const Input: FC<InputProps> = ({
@@ -43,7 +44,11 @@ const Input: FC<InputProps> = ({
   prefixText = null,
   checked = null,
   name,
+  accept = '*',
 }) => {
+
+  const hiddenFileInput = useRef(null);
+
   if (['checkbox', 'radio'].includes(type)) {
     return (
       <label className="flex items-center gap-2">
@@ -59,7 +64,31 @@ const Input: FC<InputProps> = ({
     );
   }
 
-  if (['date', 'month'].includes(type)) {
+  if (type === 'file') {
+    const handleClick = () => {
+      hiddenFileInput?.current?.click();
+    };
+    return (
+      <menu className="text-[12px]">
+        <button
+          type="button"
+          onClick={handleClick}
+          className={`!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm py-2 w-full text-[12px] text-center max-[800px]:!text-[14px] px-6 rounded-md cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${className}`}
+        >
+          Choose file
+        </button>
+        <input
+          ref={hiddenFileInput}
+          type={type}
+          accept={accept}
+          onChange={onChange}
+          className="hidden"
+        />
+      </menu>
+    );
+  }
+
+  if (['date'].includes(type)) {
     return (
       <label className="flex flex-col gap-[5px] w-full">
         <p
