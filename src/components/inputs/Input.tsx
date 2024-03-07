@@ -15,7 +15,6 @@ interface InputProps {
   submit?: boolean;
   type?: string;
   value?: string | number;
-  password?: boolean;
   suffixIcon?: IconProp;
   prefixIcon?: IconProp;
   suffixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
@@ -88,48 +87,72 @@ const Input: FC<InputProps> = ({
           *
         </span>
       </p>
-      <menu className="relative w-full">
-        <Link
-          to={'#'}
-          onClick={prefixIconHandler}
-          className={`${
-            !prefixIcon && !prefixText && 'hidden'
-          } absolute top-0 left-0 p-2.5 px-3.5 text-sm font-medium h-full rounded-l-lg border focus:outline-none ${
-            prefixIconPrimary
-              ? 'bg-primary text-white border-primary border-r-none'
-              : 'border-secondary border-opacity-50 bg-white text-primary border-r-none'
-          } ${prefixText && '!bg-background !text-black'}`}
-        >
-          {prefixText ? (
-            <p className='text-[15px]'>{prefixText}</p>
-          ) : (
-            <FontAwesomeIcon icon={prefixIcon || faSearch} />
-          )}
-        </Link>
+      {!prefixIcon && !prefixText && !suffixIcon && (
         <input
           defaultValue={defaultValue}
           value={value && value}
           type={type || 'text'}
           onChange={onChange}
           placeholder={placeholder}
-          className={`${
-            prefixIcon && '!ml-10 !w-[90%]'
-          } ${prefixText && '!ml-16 !w-[85%]'} py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+          className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
-        <Link
-          to={'#'}
-          onClick={suffixIconHandler}
-          className={`${
-            !suffixIcon && 'hidden'
-          } absolute top-0 end-0 p-2.5 px-3.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
-            suffixIconPrimary
-              ? 'bg-primary text-white border-primary border-l-none'
-              : 'border-secondary border-opacity-50 bg-white text-primary border-l-none'
-          }`}
-        >
-          <FontAwesomeIcon icon={suffixIcon || faSearch} />
-        </Link>
-      </menu>
+      )}
+      <section className="relative w-full">
+        {(prefixIcon || prefixText) && (
+          <menu className="relative w-full">
+            <label className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+              <Link to={'#'} onClick={prefixIconHandler} className="">
+                {prefixIcon && (
+                  <FontAwesomeIcon
+                    className="text-current"
+                    icon={prefixIcon}
+                  />
+                )}
+                {prefixText && <p className="text-[14px]">{prefixText}</p>}
+              </Link>
+            </label>
+            <input
+              defaultValue={defaultValue}
+              value={value && value}
+              type={type || 'text'}
+              onChange={onChange}
+              placeholder={placeholder}
+              className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
+              ${prefixIcon ? `ps-10` : ''} ${prefixText ? 'ps-[3.6rem]' : ''} `}
+            />
+          </menu>
+        )}
+        {suffixIcon && (
+          <menu className='flex items-center'>
+            <Link
+              to={'#'}
+              onClick={suffixIconHandler}
+              className={`${
+                !suffixIcon && 'hidden'
+              } absolute top-0 end-0 p-2.5 px-3.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
+                suffixIconPrimary
+                  ? 'bg-primary text-white border-primary border-l-none'
+                  : 'border-secondary border-opacity-50 bg-white text-primary border-l-none'
+              }`}
+            >
+              <FontAwesomeIcon icon={suffixIcon || faSearch} />
+            </Link>
+            <input
+              defaultValue={defaultValue}
+              value={value && value}
+              type={type || 'text'}
+              onChange={onChange}
+              placeholder={placeholder}
+              className={`${
+                prefixText && '!ml-16 !w-[85%]'
+              } py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+                prefixIcon &&
+                '!ml-[45px] !w-[90%] !border-l-none !rounded-l-none !ps-3.5'
+              }`}
+            />
+          </menu>
+        )}
+      </section>
     </label>
   );
 };
