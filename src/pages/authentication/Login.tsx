@@ -55,7 +55,7 @@ const Login = () => {
       if (data?.email?.includes('admin')) {
         return navigate('/super-admin/dashboard');
       } else if (data?.email?.includes('info')) {
-        return navigate('/dashboard');
+        return navigate('/admin/dashboard');
       }
       return navigate('/');
     }, 1000);
@@ -124,7 +124,7 @@ const Login = () => {
                     label="Password"
                     password
                     suffixIcon={showPassword ? faEyeSlash : faEye}
-                    suffixButtonHandler={(e) => {
+                    suffixIconHandler={(e) => {
                       e.preventDefault();
                       setShowPassword(!showPassword);
                     }}
@@ -161,7 +161,7 @@ const Login = () => {
               value={isLoading ? <Loader /> : 'Login'}
               className="w-full"
             />
-            <Button value="Create account" styled={false} />
+            <Button value="Create account" styled={false} route="/auth/register" />
           </menu>
         </form>
       </section>
