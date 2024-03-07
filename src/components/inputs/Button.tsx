@@ -30,7 +30,7 @@ const Button: FC<ButtonProps> = ({
     return (
       <button
         type={type || 'submit'}
-        className={`py-2 px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] ${
+        className={`py-3 max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] ${
           disabled &&
           'bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center transition-all'
         } ${
@@ -39,7 +39,7 @@ const Button: FC<ButtonProps> = ({
         } ${className} ${
           primary &&
           '!bg-primary !sha !text-white hover:!bg-primary hover:!text-white !shadow-sm'
-        } max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center`}
+        }`}
       >
         {value}
       </button>
@@ -50,7 +50,7 @@ const Button: FC<ButtonProps> = ({
     <Link
       to={route}
       onClick={onClick}
-      className={`py-2 px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${
+      className={`py-3 text-center max-[800px]:!text-[14px] shadow-md px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${
         disabled &&
         "bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center"
       } ${
@@ -60,8 +60,7 @@ const Button: FC<ButtonProps> = ({
         primary &&
         "!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm"
       }
-      ${danger && "!bg-red-600 !text-white hover:!bg-red-600 hover:!text-white !shadow-sm"}
-      max-[800px]:!text-[14px] shadow-md`}
+      ${danger && "!bg-red-600 !text-white hover:!bg-red-600 hover:!text-white !shadow-sm"}`}
     >
       {value}
     </Link>

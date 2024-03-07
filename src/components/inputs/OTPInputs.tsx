@@ -69,8 +69,8 @@ const handleKeyDown = (
         return (
           <input
             key={index}
-            ref={(ref) => (inputRefs.current[index] = ref)}
-            className={`border-[1px] border-secondary h-10 w-10 text-center form-control focus:border-[1.5px] focus:border-primary rounded outline-none  max-md:w-8 max-md:h-8`}
+            ref={(ref: never) => (inputRefs.current[Number(index)] = ref)}
+            className={`border-[1px] border-secondary h-14 w-14 text-center form-control focus:border-[1.5px] focus:border-primary rounded outline-none max-lg:w-12 max-lg:h-12  max-md:w-8 max-md:h-8`}
             type="text"
             value={value}
             onChange={(e) => {

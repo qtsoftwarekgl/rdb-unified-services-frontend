@@ -27,8 +27,10 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   const { nationalIdDetails } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(setNationalIdDetails(null));
-  }, [dispatch]);
+    if (isOpen) {
+      dispatch(setNationalIdDetails(null));
+    }
+  }, [dispatch, isOpen]);
 
   if (!isOpen) return null;
 

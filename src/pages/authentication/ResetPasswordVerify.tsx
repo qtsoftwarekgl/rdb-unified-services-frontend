@@ -1,4 +1,4 @@
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import rdb_logo from '/rdb-logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -7,7 +7,7 @@ import { languages } from '../../constants/Authentication';
 import OTPInputs from '../../components/inputs/OTPInputs';
 import { useState } from 'react';
 import Loader from '../../components/Loader';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ResetPasswordVerify = () => {
   // REACT HOOK FORM
@@ -28,7 +28,7 @@ const ResetPasswordVerify = () => {
     otp: string;
   }
 
-  const onSubmit = (data: Payload) => {
+  const onSubmit = (data: Payload | FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
       navigate('/auth/reset-password/new');
@@ -76,7 +76,15 @@ const ResetPasswordVerify = () => {
           <menu className="flex flex-col w-full gap-4">
             <Controller
               name="otp"
-              rules={{ required: 'Enter the 4-digit OTP sent to your email' }}
+              rules={{
+                required: 'Enter the 4-digit OTP sent to your email',
+                validate: (value) => {
+                  if (value.length !== 4) {
+                    return 'Enter a valid 4-digit OTP';
+                  }
+                  return true;
+                },
+              }}
               control={control}
               render={({ field }) => {
                 return (
@@ -84,7 +92,7 @@ const ResetPasswordVerify = () => {
                     <OTPInputs className="justify-center" {...field} />
                     {errors?.otp && (
                       <p className="text-red-600 text-[13px] text-center">
-                        {errors?.otp?.message}
+                        {String(errors?.otp?.message)}
                       </p>
                     )}
                   </label>
@@ -98,6 +106,14 @@ const ResetPasswordVerify = () => {
                 submit
                 primary
               />
+              <p className="text-secondary text-[14px]">
+                If you didn't receive a code,{' '}
+                <span className="text-primary font-medium text-[14px]">
+                  <Link to={'#'} className="text-[14px]">
+                    Resend it here
+                  </Link>
+                </span>
+              </p>
               <Button
                 className="!text-[14px]"
                 value={
