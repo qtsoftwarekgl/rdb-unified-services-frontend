@@ -9,6 +9,7 @@ import navbarSlice from './features/navbarSlice';
 import roleSlice from './features/roleSlice';
 import permissionSlice from './features/permissionSlice';
 import institutionSlice from './features/institutionSlice';
+import localeSlice from './features/localeSlice';
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     role: roleSlice,
     permission: permissionSlice,
     institution: institutionSlice,
+    locale: localeSlice,
   },
 });
 
