@@ -60,7 +60,7 @@ const Select: FC<SelectProps> = ({
   );
 
   return (
-    <label className={`flex flex-col gap-2 items-start w-full ${labelClassName}`}>
+    <label className={`flex flex-col gap-[5px] items-start w-full ${labelClassName}`}>
       <p className={`${label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}`}>
         {label}{' '}
         <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>

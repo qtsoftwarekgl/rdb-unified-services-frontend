@@ -2,6 +2,9 @@ import { FC, MouseEventHandler } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Link } from "react-router-dom";
+import DatePicker from "./DatePicker";
+
 interface InputProps {
   label?: string;
   placeholder?: string;
@@ -12,11 +15,14 @@ interface InputProps {
   submit?: boolean;
   type?: string;
   value?: string | number;
-  search?: boolean;
-  password?: boolean;
   suffixIcon?: IconProp;
   prefixIcon?: IconProp;
-  suffixButtonHandler?: MouseEventHandler<HTMLButtonElement> | undefined;
+  suffixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
+  name?: string;
+  suffixIconPrimary?: boolean;
+  prefixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
+  prefixIconPrimary?: boolean;
+  prefixText?: string;
 }
 
 const Input: FC<InputProps> = ({
@@ -25,24 +31,46 @@ const Input: FC<InputProps> = ({
   placeholder,
   className,
   required = false,
-  search = false,
   value,
   onChange,
   defaultValue,
-  password = false,
-  suffixIcon = faSearch,
+  suffixIcon = null,
+  suffixIconHandler,
+  suffixIconPrimary = false,
   prefixIcon = null,
-  suffixButtonHandler,
+  prefixIconHandler,
+  prefixIconPrimary = false,
+  prefixText = null,
+  name,
 }) => {
-  if (type === "checkbox") {
+  if (["checkbox", "radio"].includes(type)) {
     return (
       <label className="flex items-center gap-2">
         <input
           type={type}
+          name={name}
           onChange={onChange}
           className={`w-5 h-5 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
         <span className={`${label ? "text-[13px]" : "hidden"}`}>{label}</span>
+      </label>
+    );
+  }
+
+  if (["date", "month"].includes(type)) {
+    return (
+      <label className="flex flex-col gap-[5px] w-full">
+        <p
+          className={`${
+            label ? "flex items-center gap-[5px] text-[14px]" : "hidden"
+          }`}
+        >
+          {label}{" "}
+          <span className={required ? "text-[14px] text-red-600" : "hidden"}>
+            *
+          </span>
+        </p>
+        <DatePicker onChange={onChange} />
       </label>
     );
   }
@@ -59,49 +87,69 @@ const Input: FC<InputProps> = ({
           *
         </span>
       </p>
-      {!search && !password && !prefixIcon && (
+      {!prefixIcon && !prefixText && !suffixIcon && (
         <input
           defaultValue={defaultValue}
           value={value && value}
           type={type || "text"}
           onChange={onChange}
           placeholder={placeholder}
-          className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+          className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
       )}
-      {(search || password || prefixIcon) && (
-        <div className="relative w-full">
-          {prefixIcon && (
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-              <FontAwesomeIcon icon={prefixIcon} />
-            </div>
-          )}
-          <input
-            defaultValue={defaultValue}
-            value={value && value}
-            type={type || "text"}
-            onChange={onChange}
-            placeholder={placeholder}
-            className={`py-[10px] px-4 font-normal placeholder:!font-light placeholder:italic flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
-              prefixIcon ? "ps-10" : ""
-            }`}
-          />
-          {(search || password) && (
-            <button
-              onClick={suffixButtonHandler}
-              type={search ? "submit" : "button"}
-              className={`absolute top-0 end-0 p-2.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
-                search
-                  ? "bg-primary text-white !border-none"
+      <section className="relative w-full">
+        {(prefixIcon || prefixText) && (
+          <menu className="relative w-full">
+            <label className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+              <Link to={"#"} onClick={prefixIconHandler} className="">
+                {prefixIcon && (
+                  <FontAwesomeIcon className="text-current" icon={prefixIcon} />
+                )}
+                {prefixText && <p className="text-[14px]">{prefixText}</p>}
+              </Link>
+            </label>
+            <input
+              defaultValue={defaultValue}
+              value={value && value}
+              type={type || "text"}
+              onChange={onChange}
+              placeholder={placeholder}
+              className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
+              ${prefixIcon ? `ps-10` : ""} ${prefixText ? "ps-[3.6rem]" : ""} `}
+            />
+          </menu>
+        )}
+        {suffixIcon && (
+          <menu className="flex items-center">
+            <Link
+              to={"#"}
+              onClick={suffixIconHandler}
+              className={`${
+                !suffixIcon && "hidden"
+              } absolute top-0 end-0 p-2.5 px-3.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
+                suffixIconPrimary
+                  ? "bg-primary text-white border-primary border-l-none"
                   : "border-secondary border-opacity-50 bg-white text-primary border-l-none"
               }`}
             >
               <FontAwesomeIcon icon={suffixIcon || faSearch} />
-              <span className="sr-only">Search</span>
-            </button>
-          )}
-        </div>
-      )}
+            </Link>
+            <input
+              defaultValue={defaultValue}
+              value={value && value}
+              type={type || "text"}
+              onChange={onChange}
+              placeholder={placeholder}
+              className={`${
+                prefixText && "!ml-16 !w-[85%]"
+              } py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+                prefixIcon &&
+                "!ml-[45px] !w-[90%] !border-l-none !rounded-l-none !ps-3.5"
+              }`}
+            />
+          </menu>
+        )}
+      </section>
     </label>
   );
 };

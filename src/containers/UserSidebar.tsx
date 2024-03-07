@@ -78,7 +78,7 @@ const UserSidebar = () => {
     },
     {
       title: "Search Company",
-      path: "/search",
+      path: "/searchcompany",
       icon: faSitemap,
     },
     {

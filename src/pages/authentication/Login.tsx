@@ -123,9 +123,8 @@ const Login = () => {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter password"
                     label="Password"
-                    password
                     suffixIcon={showPassword ? faEyeSlash : faEye}
-                    suffixButtonHandler={(e) => {
+                    suffixIconHandler={(e) => {
                       e.preventDefault();
                       setShowPassword(!showPassword);
                     }}
@@ -162,7 +161,11 @@ const Login = () => {
               value={isLoading ? <Loader /> : "Login"}
               className="w-full"
             />
-            <Button value="Create account" styled={false} />
+            <Button
+              value="Create account"
+              styled={false}
+              route="/auth/register"
+            />
           </menu>
         </form>
       </section>

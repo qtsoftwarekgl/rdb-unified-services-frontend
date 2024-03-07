@@ -20,6 +20,8 @@ import ResetPasswordRequest from "./pages/authentication/ResetPasswordRequest";
 import ResetPasswordVerify from "./pages/authentication/ResetPasswordVerify";
 import ResetPasswordNew from "./pages/authentication/ResetPasswordNew";
 import UserProfile from "./pages/profiles/UserProfile";
+import "react-toastify/dist/ReactToastify.css";
+import Signup from "./pages/user-registration/Signup";
 
 const Routes = () => {
   return (
@@ -56,6 +58,9 @@ const Routes = () => {
           element={<ResetPasswordVerify />}
         />
         <Route path="/auth/reset-password/new" element={<ResetPasswordNew />} />
+
+        {/* USER REGISTRATIONS */}
+        <Route path="/auth/register" element={<Signup />} />
 
         {/* NOT FOUND */}
         <Route path="*" element={<NotFound />} />
