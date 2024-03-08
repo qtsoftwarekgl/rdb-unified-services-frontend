@@ -78,8 +78,6 @@ const ListUsers = () => {
     },
   ];
 
-  console.log("::::::::::::::::::::::::::::", userToView);
-
   return (
     <AdminLayout>
       <main className="flex flex-col w-full gap-6 p-6 bg-white rounded-md">
