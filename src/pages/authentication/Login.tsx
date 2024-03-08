@@ -21,8 +21,13 @@ import { setUser } from "../../states/features/userSlice";
 import { useState } from "react";
 import Loader from "../../components/Loader";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
+
+  // LOCALES
+  const { t } = useTranslation();
+
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -76,14 +81,13 @@ const Login = () => {
             icon={faCircleInfo}
           />
         </figure>
-        <h1 className="text-2xl font-semibold uppercase text-primary">Login</h1>
+        <h1 className="text-2xl font-semibold uppercase text-primary">
+          {t("login")}
+        </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col gap-4 w-full max-w-[50%] max-[1200px]:max-w-[55%] max-[1000px]:max-w-[60%] max-[800px]:max-w-[50%] max-[650px]:max-w-[55%] max-[600px]:max-w-[60%] max-[550px]:max-w-[65%] max-[500px]:max-w-[70%] max-[450px]:max-w-[75%]"
         >
-          <h1 className="text-2xl font-semibold uppercase text-primary">
-            Login
-          </h1>
           <Controller
             rules={{
               required: "Email is required",

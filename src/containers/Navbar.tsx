@@ -49,7 +49,7 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[8vh] fixed top-0 justify-end z-[1000] bg-background">
+    <header className="w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-end z-[1000] bg-background">
       <nav className="flex items-center gap-4 self-end max-[600px]:gap-3">
         <FontAwesomeIcon
           className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"

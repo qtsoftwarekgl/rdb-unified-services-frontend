@@ -64,7 +64,7 @@ const AddInstitution = () => {
                 <Input label="Name" {...field} placeholder='Institution name' />
                 {errors?.name && (
                   <p className="text-red-600 text-[13px]">
-                    {errors?.name?.message}
+                    {String(errors?.name?.message)}
                   </p>
                 )}
               </label>
@@ -85,7 +85,7 @@ const AddInstitution = () => {
                 <Input label="Email" {...field} placeholder='Institution email address' />
                 {errors?.email && (
                   <p className="text-red-600 text-[13px]">
-                    {errors?.email?.message}
+                    {String(errors?.email?.message)}
                   </p>
                 )}
               </label>
@@ -111,7 +111,7 @@ const AddInstitution = () => {
                 />
                 {errors?.type && (
                   <p className="text-red-600 text-[13px]">
-                    {errors?.type?.message}
+                    {String(errors?.type?.message)}
                   </p>
                 )}
               </label>

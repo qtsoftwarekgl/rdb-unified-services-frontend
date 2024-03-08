@@ -19,7 +19,7 @@ interface Option {
 
 interface SelectProps {
   options?: Option[] | undefined;
-  onChange: (e: SingleValue<Option> | MultiValue<Option>) => void;
+  onChange: ((e: SingleValue<Option> | MultiValue<Option>) => void);
   className?: string;
   disabled?: boolean;
   selectedValue?: string;
@@ -50,7 +50,7 @@ const Select: FC<SelectProps> = ({
   required = false,
   labelClassName = null,
 }) => {
-  const mappedOptions: OptionsOrGroups<Option, GroupBase<Option>> = options.map(
+  const mappedOptions: OptionsOrGroups<Option, GroupBase<Option>> = options?.map(
     (option: Option) => ({
       ...option,
       label: option.text || option.name || option.title || option.label,
@@ -60,13 +60,21 @@ const Select: FC<SelectProps> = ({
   );
 
   return (
-    <label className={`flex flex-col gap-[5px] items-start w-full ${labelClassName}`}>
-      <p className={`${label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}`}>
+    <label
+      className={`flex flex-col gap-[5px] items-start w-full ${labelClassName}`}
+    >
+      <p
+        className={`${
+          label ? 'flex items-center gap-1 text-[14px]' : 'hidden'
+        }`}
+      >
         {label}{' '}
         <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>
       </p>
       <ReactSelect
-        onChange={(e) => {
+        onChange={(
+          e: unknown | Option | SingleValue<Option> | MultiValue<Option>
+        ) => {
           if (multiple) {
             onChange(Array.isArray(e) ? e.map((item) => item?.value) : []);
           } else {
@@ -84,13 +92,13 @@ const Select: FC<SelectProps> = ({
         className={`${className}`}
         theme={(theme: ThemeConfig) => ({
           ...theme,
-          borderRadius: "0.5rem",
-          paddingTop: "0.2px",
-          fontSize: "13px",
+          borderRadius: '0.5rem',
+          paddingTop: '0.2px',
+          fontSize: '13px',
           colors: {
             ...theme.colors,
-            primary: "#005A96",
-            primary25: "#005A96",
+            primary: '#005A96',
+            primary25: '#005A96',
           },
         })}
         styles={
@@ -98,13 +106,13 @@ const Select: FC<SelectProps> = ({
             ? {
                 control: (provided) => ({
                   ...provided,
-                  display: "flex",
-                  border: "1.5px solid #D1D5DB",
-                  "&hover": {
-                    border: "1.6px solid #005A96",
+                  display: 'flex',
+                  border: '1.5px solid #D1D5DB',
+                  '&hover': {
+                    border: '1.6px solid #005A96',
                   },
-                  "&focus": {
-                    border: "1.6px solid #005A96",
+                  '&focus': {
+                    border: '1.6px solid #005A96',
                   },
                 }),
               }

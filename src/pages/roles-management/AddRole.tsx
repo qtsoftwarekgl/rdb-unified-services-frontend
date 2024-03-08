@@ -58,7 +58,7 @@ const AddRole = () => {
                 <Input label="Name" {...field} />
                 {errors.name && (
                   <p className="text-red-600 text-[13px]">
-                    {errors?.name?.message}
+                    {String(errors?.name?.message)}
                   </p>
                 )}
               </label>
