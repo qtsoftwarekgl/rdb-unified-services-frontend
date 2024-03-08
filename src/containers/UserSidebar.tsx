@@ -28,6 +28,9 @@ const UserSidebar = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.sidebar);
+  const { viewedCompany } = useSelector(
+    (state: RootState) => state.userCompanies
+  );
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
 
   // GET SCREEN WIDTH
@@ -39,54 +42,38 @@ const UserSidebar = () => {
     }
   }, [ref]);
 
-  // SIDEBAR NAVIGATION
-  const sidebarNav = [
-    {
-      title: "Home",
-      path: "/",
-      icon: faHouse,
-    },
-    {
-      title: "Register your business",
-      path: "/business-registration",
-      icon: faPen,
-    },
-    {
-      title: "Edit your registered business",
-      path: "/business-registration/edit",
-      icon: faImage,
-    },
-    {
-      title: "Amendments",
-      path: "/business-registration/amendments",
-      icon: faBook,
-    },
-    {
-      title: "Certification of GSR",
-      path: "/business-registration/certification",
-      icon: faCommentDots,
-    },
-    {
-      title: "Certitificates",
-      path: "/certificates",
-      icon: faCertificate,
-    },
-    {
-      title: "Request for VAT Certificate",
-      path: "/certificates/vat",
-      icon: faBagShopping,
-    },
-    {
-      title: "Search Company",
-      path: "/searchcompany",
-      icon: faSitemap,
-    },
+  const defaultUserSideBar = [
     {
       title: "My Profile",
       path: "/profile",
       icon: faGear,
     },
+    {
+      title: "My Applications",
+      path: "/applications",
+      icon: faHouse,
+    },
   ];
+
+  const companyDetailsSideBar = [
+    {
+      title: "Company Details",
+      path: "/company-details",
+      icon: faSitemap,
+    },
+    {
+      title: "Company Documents",
+      path: "/company-documents",
+      icon: faBook,
+    },
+    {
+      title: "Company History",
+      path: "/company-history",
+      icon: faImage,
+    },
+  ];
+
+  const sidebarNav = viewedCompany ? companyDetailsSideBar : defaultUserSideBar;
 
   // ANIMATION
   const controls = useAnimation();

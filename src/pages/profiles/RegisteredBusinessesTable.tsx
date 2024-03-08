@@ -3,8 +3,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { registeredBusinesses } from "../../constants/Dashboard";
 import Table from "../../components/table/Table";
 import { formatDate } from "../../helpers/Data";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../states/store";
+import { setViewedCompany } from "../../states/features/userCompaniesSlice";
+import { useNavigate } from "react-router";
 
 const RegisteredBusinessesTable = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const navigate = useNavigate();
+
   const colors = (status: string) => {
     if (status === "active") {
       return "bg-[#82ffa3] text-[#0d7b3e]";
@@ -55,12 +62,14 @@ const RegisteredBusinessesTable = () => {
       header: "",
       accessorKey: "actions",
       enableSorting: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-2 cursor-pointer">
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
+                dispatch(setViewedCompany(row?.original));
+                navigate("/company-details");
               }}
               icon={faEye}
               className="text-primary"

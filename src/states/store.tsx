@@ -1,15 +1,16 @@
-import { configureStore } from '@reduxjs/toolkit';
-import userSlice from './features/userSlice';
-import authSlice from './features/authSlice';
-import businessRegistrationSlice from './features/businessRegistrationSlice';
-import sidebarSlice from './features/sidebarSlice';
-import tableSlice from './features/tableSlice';
-import paginationSlice from './features/paginationSlice';
-import navbarSlice from './features/navbarSlice';
-import roleSlice from './features/roleSlice';
-import permissionSlice from './features/permissionSlice';
-import institutionSlice from './features/institutionSlice';
-import localeSlice from './features/localeSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import userSlice from "./features/userSlice";
+import authSlice from "./features/authSlice";
+import businessRegistrationSlice from "./features/businessRegistrationSlice";
+import sidebarSlice from "./features/sidebarSlice";
+import tableSlice from "./features/tableSlice";
+import paginationSlice from "./features/paginationSlice";
+import navbarSlice from "./features/navbarSlice";
+import roleSlice from "./features/roleSlice";
+import permissionSlice from "./features/permissionSlice";
+import institutionSlice from "./features/institutionSlice";
+import localeSlice from "./features/localeSlice";
+import userCompaniesSlice from "./features/userCompaniesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     permission: permissionSlice,
     institution: institutionSlice,
     locale: localeSlice,
+    userCompanies: userCompaniesSlice,
   },
 });
 

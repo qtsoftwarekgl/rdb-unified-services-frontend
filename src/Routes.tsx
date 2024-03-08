@@ -25,6 +25,7 @@ import Signup from "./pages/user-registration/Signup";
 import SuperAdminProfile from "./pages/profiles/SuperAdminProfile";
 import RegistrationVerify from "./pages/user-registration/RegistrationVerify";
 import RegistrationSuccess from "./pages/user-registration/RegistrationSuccess";
+import UserCompanyDetails from "./pages/userCompanyDetails/companyDetails";
 
 const Routes = () => {
   return (
@@ -49,6 +50,7 @@ const Routes = () => {
           />
           {/* USER PROFILE */}
           <Route path="/profile" element={<UserProfile />} />
+          <Route path="company-details" element={<UserCompanyDetails />} />
         </Route>
         {/* AUTHENTICATION */}
         <Route path="/auth/login" element={<Login />} />
