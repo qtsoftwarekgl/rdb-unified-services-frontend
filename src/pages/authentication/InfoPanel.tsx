@@ -9,8 +9,13 @@ import { languages } from '../../constants/Authentication';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLocale } from '../../states/features/localeSlice';
+import { useTranslation } from 'react-i18next';
 
 const InfoPanel = () => {
+
+  // LOCALES
+  const { t } = useTranslation();
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { locale } = useSelector((state: RootState) => state.locale);
@@ -24,19 +29,19 @@ const InfoPanel = () => {
       title: 'Business Registration',
       image: login_vector,
       description:
-        'Register your business with ease and get your business up and running in no time',
+        t('login-carousel-text-1'),
     },
     {
       title: 'Mortgange Registration',
       image: login_vector,
       description:
-        'Register your mortgage with ease and get your business up and running in no time',
+        t('login-carousel-text-2'),
     },
     {
       title: 'Debt Registration',
       image: login_vector,
       description:
-        'Register your debt with ease and get your business up and running in no time',
+        t('login-carousel-text-3'),
     },
   ];
 

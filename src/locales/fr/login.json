@@ -1,5 +1,33 @@
 {
     "translation": {
-        "login": "Se connecter"
+        "login": "Se connecter",
+        "email-label": "E-mail",
+        "confirm-password-label": "Confirmez le mot de passe",
+        "set-new-password": "Definir un nouveau mot de passe",
+        "email-required": "L'adresse e-mail est requise",
+        "email-invalid": "Adresse e-mail invalide",
+        "submit": "Soumettre",
+        "verify-account": "Vérifier le compte",
+        "resend-otp": "Renvoyer OTP",
+        "otp-required": "OTP est requis",
+        "otp-invalid": "OTP invalide",
+        "otp-not-received": "Si vous n'avez pas reçu le code",
+        "email-otp-sent": "Entrez le mot de passe à usage unique envoyé à votre adresse e-mail. Veuillez vérifier votre dossier spam si vous ne trouvez pas l'e-mail dans votre boîte de réception.",
+        "email-otp-description": "Entrez votre adresse e-mail pour vérifier la propriété du compte. Vous recevrez un mot de passe à usage unique dans votre boîte de réception.",
+        "back-to-login": "Retour à la connexion",
+        "back": "Retour",
+        "password-label": "Mot de passe",
+        "password-required": "Le mot de passe est requis",
+        "confirm-password-required": "Ressaisissez votre nouveau mot de passe pour le confirmer",
+        "password-mismatch": "Les mots de passe ne correspondent pas",
+        "forgot-password": "Mot de passe oublié",
+        "reset-password": "Réinitialiser le mot de passe",
+        "remember-me": "Rester connecté",
+        "register": "Créer un compte",
+        "email-placeholder": "Entrer l'adresse e-mail",
+        "password-placeholder": "Entrer le mot de passe",
+        "login-carousel-text-1": "Enregistrez facilement votre entreprise et démarrez votre entreprise en un rien de temps.",
+        "login-carousel-text-2": "Enregistrez facilement vos dettes et lancez votre entreprise en un rien de temps.",
+        "login-carousel-text-3": "Enregistrez facilement votre assurance et démarrez votre entreprise en un rien de temps."
     }
 }
