@@ -72,7 +72,8 @@ const RegisteredBusinessesTable = () => {
   ];
 
   return (
-    <section>
+    <section className="mb-8">
+      <h1 className=" text-tertiary w-fit">My Registered Companies</h1>
       <Table
         showFilter={false}
         showPagination={false}

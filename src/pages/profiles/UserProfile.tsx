@@ -1,31 +1,17 @@
 import { useSelector } from "react-redux";
 import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import RegisteredBusinessesTable from "./RegisteredBusinessesTable";
 import NotificationPreference from "./NotificationPreference";
 import UpdatePassword from "./UpdatePassowrd";
 import Divider from "../../components/Divider";
-import Button from "../../components/inputs/Button";
-
-interface UserPreferencePayload {
-  email: string;
-  phoneNumber: string;
-}
 
 const UserProfile = () => {
   const { user } = useSelector((state: RootState) => state.user);
-  const { handleSubmit, control } = useForm();
-
-  const onSubmit: SubmitHandler<FieldValues | UserPreferencePayload> = (
-    data
-  ) => {
-    console.log(data);
-  };
 
   return (
     <UserLayout>
-      <main className="flex flex-col w-full gap-6 px-32 py-16 bg-[#f7f7f7] rounded-md">
+      <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f7f7f7] rounded-md">
         <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
           User Profile
         </h1>
@@ -51,10 +37,9 @@ const UserProfile = () => {
           </div>
         </div>
         <Divider />
-
         {/* Personal Details */}
         <h1 className=" text-tertiary w-fit">Personal Details</h1>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-3">
           <div className="flex flex-col gap-4">
             <div className="flex items-center">
               <h1 className="w-1/2 text-base font-semibold text-secondary ">
@@ -123,28 +108,9 @@ const UserProfile = () => {
           </div>
         </div>
         {/* User Registered businesses */}
-        <h1 className=" text-tertiary w-fit">My Registered Companies</h1>
         <RegisteredBusinessesTable />
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-12"
-        >
-          <NotificationPreference control={control} />
-          <UpdatePassword />
-          <Divider />
-          <menu className="flex items-center justify-end gap-12">
-            <Button
-              value="Cancel"
-              className="bg-white border border-primary text-primary hover:!bg-primary hover:!text-white"
-            />
-            <Button
-              submit
-              primary
-              value="Save Changes"
-              className="text-white !bg-primary hover:!bg-primary"
-            />
-          </menu>
-        </form>
+        <UpdatePassword />
+        <NotificationPreference />
       </main>
     </UserLayout>
   );

@@ -1,7 +1,9 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Divider from "../../components/Divider";
 import Modal from "../../components/Modal";
 import Button from "../../components/inputs/Button";
 import { Dispatch, SetStateAction } from "react";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
 interface ViewUserProps {
   user: unknown;
@@ -22,7 +24,7 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
           User Profile
         </h1>
         {/* User Info */}
-        <div className="flex justify-between">
+        <div className="flex flex-col justify-between md:flex-row">
           <div className="flex">
             <figure className="overflow-hidden inline w-[7rem] h-[7rem] relative rounded-full mr-4">
               <img
@@ -33,15 +35,15 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
 
             <div className="flex flex-col justify-center">
               <h1 className="text-xl font-semibold text-secondary">
-                Christella
+                {user?.first_name}
               </h1>
-              <p className="text-lg font-light text-gray-500">Verifier</p>
+              <p className="text-lg font-light text-gray-500">{user?.role}</p>
               <p className="text-base font-light text-gray-500">
                 {user?.email}
               </p>
             </div>
           </div>
-          <div className="justify-between w-1/2">
+          <div className="justify-between md:w-1/2">
             <menu className="flex items-center gap-12 mt-12">
               <Button
                 value="Disable User"
@@ -57,75 +59,49 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
           </div>
         </div>
         <Divider />
-
         {/* Personal Details */}
-        <h1 className=" text-tertiary w-fit">Personal Details</h1>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-12 mb-8 md:flex-row">
+          <div className="flex flex-col flex-1 max-w-lg gap-4">
             <div className="flex items-center">
-              <h1 className="w-1/2 text-base font-semibold text-secondary ">
-                Document Type
+              <h1 className="text-base font-semibold text-secondary ">
+                Personal Details
               </h1>
-              <p className="w-1/2 text-gray-300">NID</p>
             </div>
-            <div className="flex ">
-              <h1 className="w-1/2 text-base font-semibold text-secondary">
-                Document Number
+            <div className="flex gap-8">
+              <h1 className="w-32 text-base font-semibold text-secondary">
+                First Name
               </h1>
-              <p className="w-1/2 text-gray-300">11918191819181818</p>
+              <p className="text-gray-300 ">{user.first_name}</p>
             </div>
-            <div className="flex ">
-              <h1 className="w-1/2 text-base font-semibold text-secondary">
-                Address
+            <div className="flex gap-8">
+              <h1 className="w-32 text-base font-semibold text-secondary">
+                Last Name
               </h1>
-              <p className="w-1/2 italic text-gray-300">Nyarutarama</p>
+              <p className="italic text-gray-300 ">Iriza</p>
             </div>
-            <div className="flex ">
-              <h1 className="w-1/2 text-base font-semibold text-secondary">
+            <div className="flex gap-8">
+              <h1 className="w-32 text-base font-semibold text-secondary">
                 Location
               </h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
+              <p className="italic text-gray-300 ">Nyarutarama</p>
+            </div>
+            <div className="flex gap-8">
+              <h1 className="w-32 text-base font-semibold text-secondary">
+                Email
+              </h1>
+              <p className="italic text-gray-300 ">{user.email}</p>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">First Name</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
+          <div className="flex flex-col gap-4 ">
+            <div className="flex items-center text-base font-semibold">
+              <h1 className="mr-20 text-secondary">Role</h1>
+              <menu className="cursor-pointer">
+                <FontAwesomeIcon icon={faEdit} className="text-primary" />
+              </menu>
             </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">Last Name</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-            <div className="flex text-base font-semibold">
-              <h1 className="w-1/2 text-secondary">Location</h1>
-              <p className="w-1/2 italic text-gray-300">Nyarutarama</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">Email</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">Country</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">Province</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">District</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-            <div className="flex text-base font-semibold">
-              <h1 className="w-1/2 text-secondary">Sector</h1>
-              <p className="w-1/2 italic text-gray-300">Nyarutarama</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">Cell</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
+            <p className="text-gray-300 ">Admin</p>
+            <p className="text-gray-300 ">Verifier</p>
+            <p className="text-gray-300 ">Approver</p>
           </div>
         </div>
       </main>

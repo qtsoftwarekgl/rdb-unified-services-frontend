@@ -1,16 +1,16 @@
-import { FC, useState } from 'react';
-import { Controller, FieldValue, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import Button from '../../components/inputs/Button';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
-import { setRegistrationStep } from '../../states/features/authSlice';
-import Select from '../../components/inputs/Select';
-import { countriesList } from '../../constants/Countries';
-import validateInputs from '../../helpers/Validations';
-import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { FC, useState } from "react";
+import { Controller, FieldValue, FieldValues, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import Button from "../../components/inputs/Button";
+import { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { setRegistrationStep } from "../../states/features/authSlice";
+import Select from "../../components/inputs/Select";
+import { countriesList } from "../../constants/Countries";
+import validateInputs from "../../helpers/Validations";
+import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 interface RwandanRegistrationFormProps {
   isOpen: boolean;
@@ -47,21 +47,21 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
         className="w-[70%] mx-auto flex flex-col gap-6"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="firstName"
             control={control}
-            rules={{ required: 'First name is required' }}
+            rules={{ required: "First name is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     placeholder="First name"
                     label="First name"
                     {...field}
                   />
                   {errors?.firstName && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {errors?.firstName?.message}
                     </span>
                   )}
@@ -74,7 +74,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             control={control}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     placeholder="Middle name"
                     label="Middle name"
@@ -85,13 +85,13 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="lastName"
             control={control}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input placeholder="Last name" label="Last name" {...field} />
                 </label>
               );
@@ -100,10 +100,10 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="nationalId"
             control={control}
-            rules={{ required: 'National ID is required' }}
+            rules={{ required: "National ID is required" }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-full">
+                <label className="flex flex-col w-full gap-1">
                   <Input
                     placeholder="National ID"
                     required
@@ -111,7 +111,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     {...field}
                   />
                   {errors?.nationalId && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.nationalId?.message}
                     </p>
                   )}
@@ -120,14 +120,14 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="dateOfBirth"
             control={control}
-            rules={{ required: 'Select date of birth' }}
+            rules={{ required: "Select date of birth" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     type="date"
                     label="Date of birth"
@@ -136,7 +136,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     }}
                   />
                   {errors?.dateOfBirth && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.dateOfBirth?.message}
                     </p>
                   )}
@@ -147,10 +147,10 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="gender"
             control={control}
-            rules={{ required: 'Select gender' }}
+            rules={{ required: "Select gender" }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-2 items-start w-full">
+                <label className="flex flex-col items-start w-full gap-2">
                   <p className="flex items-center gap-1 text-[15px]">
                     Gender<span className="text-red-500">*</span>
                   </p>
@@ -159,7 +159,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     <Input type="radio" label="Female" {...field} />
                   </menu>
                   {errors?.gender && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {errors?.gender?.message}
                     </span>
                   )}
@@ -168,21 +168,21 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="nationality"
             control={control}
-            rules={{ required: 'Nationality is required' }}
+            rules={{ required: "Nationality is required" }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-full">
+                <label className="flex flex-col w-full gap-1">
                   <Input
                     label="Nationality"
                     placeholder="Nationality"
                     {...field}
                   />
                   {errors?.nationality && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.nationality?.message}
                     </p>
                   )}
@@ -194,22 +194,22 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             name="phone"
             control={control}
             rules={{
-              required: 'Phone number is required',
+              required: "Phone number is required",
               validate: (value: FieldValue<FieldValues>) => {
                 if (String(value).length <= 9) {
                   return (
-                    validateInputs(String(`0${value}`), 'tel') ||
-                    'Invalid phone number'
+                    validateInputs(String(`0${value}`), "tel") ||
+                    "Invalid phone number"
                   );
                 }
                 return (
-                  validateInputs(String(value), 'tel') || 'Invalid phone number'
+                  validateInputs(String(value), "tel") || "Invalid phone number"
                 );
               },
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-full">
+                <label className="flex flex-col w-full gap-1">
                   <Input
                     label="Phone Number"
                     prefixText="+250"
@@ -217,7 +217,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     {...field}
                   />
                   {errors?.phone && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.phone?.message}
                     </p>
                   )}
@@ -226,14 +226,14 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="country"
             control={control}
-            rules={{ required: 'Select a country' }}
+            rules={{ required: "Select a country" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Select
                     isSearchable
                     label="Country"
@@ -243,7 +243,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     }}
                   />
                   {errors?.country && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.country?.message}
                     </p>
                   )}
@@ -254,17 +254,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="province"
             control={control}
-            rules={{ required: 'Province is required' }}
+            rules={{ required: "Province is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Province"
                     placeholder="Province of residence"
                     {...field}
                   />
                   {errors?.province && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.province?.message)}
                     </p>
                   )}
@@ -273,21 +273,21 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="district"
             control={control}
-            rules={{ required: 'District is required' }}
+            rules={{ required: "District is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="District"
                     placeholder="District of residence"
                     {...field}
                   />
                   {errors?.district && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.district?.message)}
                     </p>
                   )}
@@ -298,17 +298,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="sector"
             control={control}
-            rules={{ required: 'Sector is required' }}
+            rules={{ required: "Sector is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Sector"
                     placeholder="Sector of residence"
                     {...field}
                   />
                   {errors?.sector && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.sector?.message}
                     </p>
                   )}
@@ -317,21 +317,21 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="cell"
             control={control}
-            rules={{ required: 'Cell is required' }}
+            rules={{ required: "Cell is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Cell"
                     placeholder="Cell of residence"
                     {...field}
                   />
                   {errors?.cell && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.cell?.message}
                     </p>
                   )}
@@ -342,17 +342,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="village"
             control={control}
-            rules={{ required: 'Village is required' }}
+            rules={{ required: "Village is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Village"
                     placeholder="Village of residence"
                     {...field}
                   />
                   {errors?.village && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.village?.message}
                     </p>
                   )}
@@ -361,21 +361,21 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="address"
             control={control}
-            rules={{ required: 'Address is required' }}
+            rules={{ required: "Address is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Address"
                     placeholder="Address of residence"
                     {...field}
                   />
                   {errors?.address && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.address?.message}
                     </p>
                   )}
@@ -386,13 +386,13 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="poBox"
             control={control}
-            rules={{ required: 'PO Box is required' }}
+            rules={{ required: "PO Box is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input label="PO Box" placeholder="Postal Code" {...field} />
                   {errors?.poBox && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.poBox?.message}
                     </p>
                   )}
@@ -401,29 +401,29 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="email"
             control={control}
             rules={{
-              required: 'Email address is required',
+              required: "Email address is required",
               validate: (value) => {
                 return (
-                  validateInputs(String(value), 'email') ||
-                  'Invalid email address'
+                  validateInputs(String(value), "email") ||
+                  "Invalid email address"
                 );
               },
             }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Email"
                     placeholder="name@domain.com"
                     {...field}
                   />
                   {errors?.email && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {errors?.email?.message}
                     </p>
                   )}
@@ -436,7 +436,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             control={control}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     label="Preferred name"
                     placeholder="Nickname"
@@ -447,18 +447,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="flex items-start w-full gap-6">
           <Controller
             name="password"
             control={control}
-            rules={{ required: 'Password is required' }}
+            rules={{ required: "Password is required" }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
                   <Input
-                    type={showPassword?.password ? 'text' : 'password'}
+                    type={showPassword?.password ? "text" : "password"}
                     label="Password"
-                    password
                     placeholder="********"
                     suffixIcon={showPassword?.password ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
@@ -483,18 +482,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             name="confirmPassword"
             control={control}
             rules={{
-              required: 'Re-enter your new password to confirm it',
+              required: "Re-enter your new password to confirm it",
               validate: (value) =>
-                value === watch('password') || 'Passwords do not match',
+                value === watch("password") || "Passwords do not match",
             }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
                   <Input
-                    type={showPassword?.confirmPassword ? 'text' : 'password'}
+                    type={showPassword?.confirmPassword ? "text" : "password"}
                     label="Confirm Password"
                     placeholder="********"
-                    password
                     suffixIcon={
                       showPassword?.confirmPassword ? faEyeSlash : faEye
                     }
@@ -517,19 +515,24 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="flex flex-col gap-4 items-center w-full mt-4">
-          <Button value="Submit" primary submit className="!py-3 !min-w-[40%]" />
+        <menu className="flex flex-col items-center w-full gap-4 mt-4">
+          <Button
+            value="Submit"
+            primary
+            submit
+            className="!py-3 !min-w-[40%]"
+          />
           <Button
             styled={false}
             value={
-              <menu className="flex items-center gap-2 ease-in-out duration-300 hover:gap-3">
+              <menu className="flex items-center gap-2 duration-300 ease-in-out hover:gap-3">
                 <FontAwesomeIcon icon={faArrowLeft} />
                 Back
               </menu>
             }
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setRegistrationStep('select-nationality'));
+              dispatch(setRegistrationStep("select-nationality"));
             }}
           />
         </menu>
