@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { Controller, FieldValue, FieldValues, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
@@ -12,8 +12,7 @@ import moment from 'moment';
 import Select from '../../components/inputs/Select';
 import { countriesList } from '../../constants/Countries';
 import validateInputs from '../../helpers/Validations';
-import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
-import ForeignRegistrationSuccess from './ForeignRegistrationSuccess';
+import { useNavigate } from 'react-router-dom';
 
 interface ForeignRegistrationFormProps {
   isOpen: boolean;
@@ -27,19 +26,18 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     handleSubmit,
     control,
     formState: { errors },
-    watch,
-    setValue
+    setValue,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(null);
+  const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState({
-    password: false,
-    confirmPassword: false,
-  });
+
+  // NAVIGATE
+  const navigate = useNavigate();
 
   // HANDLE FORM SUBMIT
   interface Payload {
@@ -55,7 +53,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      setIsSuccess(true);
+      navigate('/auth/register/verify');
     }, 1000);
     return data;
   };
@@ -66,9 +64,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     <section className="flex flex-col gap-5 bg-white">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`${
-          isSuccess ? 'hidden' : 'flex'
-        } flex-col gap-6 w-[70%] mx-auto flex max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%]`}
+        className={`flex-col gap-6 w-[70%] mx-auto flex max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%]`}
       >
         <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
@@ -103,7 +99,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1 w-full">
-                  <Input label="Expiry Date" type="month" required {...field} />
+                  <Input label="Expiry Date" type="date" required {...field} />
                   {errors?.expiryDate && (
                     <p className="text-[13px] text-red-500">
                       {String(errors?.expiryDate?.message)}
@@ -239,9 +235,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     required
                     type="date"
                     label="Date of birth"
-                    onChange={(e) => {
-                      field.onChange(e);
-                    }}
+                    {...field}
                   />
                   {errors?.dateOfBirth && (
                     <p className="text-red-500 text-sm">
@@ -301,31 +295,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
               );
             }}
           />
-          <Controller
-            name="nationality"
-            control={control}
-            rules={{ required: 'Nationality is required' }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col gap-1 w-full">
-                  <Input
-                    required
-                    label="Nationality"
-                    placeholder="Nationality"
-                    {...field}
-                  />
-                  {errors?.nationality && (
-                    <p className="text-red-500 text-sm">
-                      {String(errors?.nationality?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-        </menu>
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
-          <Controller
+                    <Controller
             name="email"
             control={control}
             rules={{
@@ -350,89 +320,6 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     <p className="text-red-500 text-sm">
                       {String(errors?.email?.message)}
                     </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="nickname"
-            control={control}
-            render={({ field }) => {
-              return (
-                <label className="w-full flex flex-col gap-1 items-start">
-                  <Input
-                    label="Preferred name"
-                    placeholder="Nickname"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-        </menu>
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
-          <Controller
-            name="password"
-            control={control}
-            rules={{ required: 'Password is required' }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start gap-1 w-full mx-auto">
-                  <Input
-                    type={showPassword?.password ? 'text' : 'password'}
-                    label="Password"
-                    placeholder="********"
-                    suffixIcon={showPassword?.password ? faEyeSlash : faEye}
-                    suffixIconHandler={(e) => {
-                      e.preventDefault();
-                      setShowPassword({
-                        ...showPassword,
-                        password: !showPassword?.password,
-                      });
-                    }}
-                    {...field}
-                  />
-                  {errors.password && (
-                    <span className="text-[13px] text-red-500">
-                      {String(errors?.password?.message)}
-                    </span>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="confirmPassword"
-            control={control}
-            rules={{
-              required: 'Re-enter your new password to confirm it',
-              validate: (value) =>
-                value === watch('password') || 'Passwords do not match',
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start gap-1 w-full mx-auto">
-                  <Input
-                    type={showPassword?.confirmPassword ? 'text' : 'password'}
-                    label="Confirm Password"
-                    placeholder="********"
-                    suffixIcon={
-                      showPassword?.confirmPassword ? faEyeSlash : faEye
-                    }
-                    suffixIconHandler={(e) => {
-                      e.preventDefault();
-                      setShowPassword({
-                        ...showPassword,
-                        confirmPassword: !showPassword?.confirmPassword,
-                      });
-                    }}
-                    {...field}
-                  />
-                  {errors?.confirmPassword && (
-                    <span className="text-[13px] text-red-500">
-                      {String(errors?.confirmPassword?.message)}
-                    </span>
                   )}
                 </label>
               );
@@ -507,7 +394,6 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
           />
         </menu>
       </form>
-      <ForeignRegistrationSuccess isOpen={isSuccess} />
     </section>
   );
 };

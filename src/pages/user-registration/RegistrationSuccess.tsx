@@ -4,13 +4,16 @@ import rdb_logo from '/rdb-logo.png';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Button from '../../components/inputs/Button';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setRegistrationStep } from '../../states/features/authSlice';
+import { RootState } from '../../states/store';
+import ForeignRegistrationSuccess from './ForeignRegistrationSuccess';
 
 const RegistrationSuccess = () => {
 
   // STATE VARIABLES
   const dispatch = useDispatch();
+  const { registrationStep } = useSelector((state: RootState) => state.auth);
 
   // NAVIGATE
   const navigate = useNavigate();
@@ -18,7 +21,11 @@ const RegistrationSuccess = () => {
   return (
     <main className="flex flex-col gap-4 w-full">
       <RegistrationNavbar />
-      <section className="w-full h-full min-h-[85vh] flex flex-col items-center justify-center">
+      <section
+        className={`${
+          registrationStep !== 'rwandan-registration-form' && 'hidden'
+        } w-full h-full min-h-[85vh] flex flex-col items-center justify-center`}
+      >
         <article className="bg-white w-[35%] rounded-md shadwow-sm flex flex-col gap-6 py-8 px-6 max-w-[600px] max-[1450px]:w-[40%] max-[1300px]:w-[45%] max-[1200px]:w-[50%] max-[1100px]:w-[55%] max-lg:w-[60%] max-md:w-[65%] max-sm:w-[85%]">
           <figure className="flex items-center gap-6 justify-between max-[800px]:flex-col-reverse">
             <img
@@ -51,6 +58,9 @@ const RegistrationSuccess = () => {
           />
         </article>
       </section>
+      <ForeignRegistrationSuccess
+        isOpen={registrationStep === 'foreign-registration-form'}
+      />
     </main>
   );
 };

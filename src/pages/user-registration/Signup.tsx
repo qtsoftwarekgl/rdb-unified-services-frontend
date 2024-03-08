@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux';
 import RegistrationNavbar from './RegistrationNavbar';
 import { RootState } from '../../states/store';
 import SelectNationality from './SelectNationality';
-import RwandanRegistrationForm from './RwandanRegistrationForm';
 import ForeignRegistrationForm from './ForeignRegistrationForm';
 
 const Signup = () => {
@@ -23,10 +22,10 @@ const Signup = () => {
         </h1>
         <menu className="flex flex-col gap-2 h-full justify-center">
           <SelectNationality
-            isOpen={registrationStep === 'select-nationality'}
-          />
-          <RwandanRegistrationForm
-            isOpen={registrationStep === 'rwandan-registration-form'}
+            isOpen={[
+              'select-nationality',
+              'rwandan-registration-form',
+            ].includes(registrationStep)}
           />
           <ForeignRegistrationForm
             isOpen={registrationStep === 'foreign-registration-form'}

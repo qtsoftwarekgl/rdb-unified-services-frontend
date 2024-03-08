@@ -52,7 +52,7 @@ const AddInstitution = () => {
       </h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-[60%] mx-auto"
+        className="flex flex-col gap-4 w-full max-w-[80%] mx-auto"
       >
         <Controller
           name="name"
@@ -61,7 +61,7 @@ const AddInstitution = () => {
           render={({ field }) => {
             return (
               <label className="flex flex-col items-start gap-1">
-                <Input label="Name" {...field} placeholder='Institution name' />
+                <Input label="Name" {...field} placeholder="Institution name" />
                 {errors?.name && (
                   <p className="text-red-600 text-[13px]">
                     {String(errors?.name?.message)}
@@ -82,10 +82,41 @@ const AddInstitution = () => {
           render={({ field }) => {
             return (
               <label className="flex flex-col items-start gap-1">
-                <Input label="Email" {...field} placeholder='Institution email address' />
+                <Input
+                  label="Email"
+                  {...field}
+                  placeholder="Institution email address"
+                />
                 {errors?.email && (
                   <p className="text-red-600 text-[13px]">
                     {String(errors?.email?.message)}
+                  </p>
+                )}
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="phone"
+          control={control}
+          rules={{
+            required: 'Phone number is required',
+            validate: (value) => {
+              return validateInputs(value, 'tel') || 'Invalid phone number';
+            },
+          }}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col gap-1 w-full">
+                <Input
+                  label="Phone number"
+                  placeholder="07XX XXX XXX"
+                  required
+                  {...field}
+                />
+                {errors?.phone && (
+                  <p className="text-red-500 text-sm">
+                    {String(errors?.phone?.message)}
                   </p>
                 )}
               </label>
