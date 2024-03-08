@@ -27,17 +27,19 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   const { nationalIdDetails } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    dispatch(setNationalIdDetails(null));
-  }, [dispatch]);
+    if (isOpen) {
+      dispatch(setNationalIdDetails(null));
+    }
+  }, [dispatch, isOpen]);
 
   if (!isOpen) return null;
 
   return (
     <section className="flex flex-col gap-8 items-center w-full">
       <form
-        className={`flex flex-col items-center gap-6 w-[60%] mx-auto p-6 shadow-md rounded-md`}
+        className={`flex flex-col items-center gap-6 w-[70%] mx-auto p-6 shadow-md rounded-md max-2xl:w-[75%] max-xl:w-[80%] max-[1000px]:w-[85%] max-[900px]:w-[90%] max-md:w-[95%] max-sm:w-[100%]`}
       >
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col">
           <Select
             label="Document Type"
             required
@@ -50,7 +52,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
             }}
             defaultValue={{ value: 'nid', label: 'National ID' }}
             labelClassName={`${
-              documentType === 'passport' && '!w-1/2 mx-auto'
+              documentType === 'passport' && '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'
             }`}
           />
           {documentType === 'nid' && (
@@ -79,7 +81,11 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                       }
                       if (userDetails) {
                         setNationalIdError(false);
+                        dispatch(setNationalIdDetails(nationalIdDetails));
                         dispatch(setNationalIdDetails(userDetails));
+                        dispatch(
+                          setRegistrationStep('rwandan-registration-form')
+                        );
                       }
                       setIsLoading(false);
                     }, 1500);
@@ -141,7 +147,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
             </ul>
           )}
         </menu>
-        <menu className="flex items-center gap-6 w-full mx-auto justify-between">
+        <menu className="flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse">
           <Button value="Back" route="/auth/login" />
           <Button
             value="Continue"

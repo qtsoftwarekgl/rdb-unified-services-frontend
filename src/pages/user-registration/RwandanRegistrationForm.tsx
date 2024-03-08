@@ -1,16 +1,18 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValue, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
-import { setRegistrationStep } from '../../states/features/authSlice';
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setRegistrationStep, setUserDetails } from '../../states/features/authSlice';
 import Select from '../../components/inputs/Select';
 import { countriesList } from '../../constants/Countries';
 import validateInputs from '../../helpers/Validations';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router';
+import Loader from '../../components/Loader';
 
 interface RwandanRegistrationFormProps {
   isOpen: boolean;
@@ -25,18 +27,51 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
     control,
     formState: { errors },
     watch,
+    setValue,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const { nationalIdDetails } = useSelector((state: RootState) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false,
   });
 
+  // NAVIGATE
+  const navigate = useNavigate();
+
+  // SET DEFAULT VALUES
+  useEffect(() => {
+    setValue('nationalId', nationalIdDetails?.phone);
+    setValue('firstName', nationalIdDetails?.first_name);
+    setValue('lastName', nationalIdDetails?.last_name);
+    setValue('dateOfBirth', nationalIdDetails?.date_of_birth);
+    setValue('gender', nationalIdDetails?.gender);
+    setValue('nationality', nationalIdDetails?.nationality);
+    setValue('phone', nationalIdDetails?.phone);
+    setValue('country', {
+      value: 'RW',
+      label: 'Rwanda',
+    });
+    setValue('province', nationalIdDetails?.province);
+    setValue('district', nationalIdDetails?.district);
+    setValue('sector', nationalIdDetails?.sector);
+    setValue('cell', nationalIdDetails?.cell);
+    setValue('village', nationalIdDetails?.village);
+  }, [nationalIdDetails, setValue]);
+
   // HANDLE FORM SUBMIT
-  const onSubmit = (data: object) => {
-    console.log(data);
+  const onSubmit = (data: object | FieldValues) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      dispatch(setUserDetails({
+        ...data,
+      }));
+      navigate('/auth/register/verify');
+      setIsLoading(false);
+    }, 1000);
   };
 
   if (!isOpen) return null;
@@ -44,25 +79,30 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
   return (
     <section className="flex flex-col gap-5 bg-white">
       <form
-        className="w-[70%] mx-auto flex flex-col gap-6"
+        className="w-[70%] mx-auto flex flex-col gap-6 max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%] "
         onSubmit={handleSubmit(onSubmit)}
       >
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="firstName"
+            defaultValue={watch('firstName') || nationalIdDetails?.first_name}
             control={control}
             rules={{ required: 'First name is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={
+                      watch('firstName') || nationalIdDetails?.first_name
+                    }
+                    required
                     placeholder="First name"
                     label="First name"
                     {...field}
                   />
                   {errors?.firstName && (
                     <span className="text-red-500 text-sm">
-                      {errors?.firstName?.message}
+                      {String(errors?.firstName?.message)}
                     </span>
                   )}
                 </label>
@@ -85,14 +125,22 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="lastName"
+            defaultValue={watch('lastName') || nationalIdDetails?.last_name}
             control={control}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
-                  <Input placeholder="Last name" label="Last name" {...field} />
+                  <Input
+                    defaultValue={
+                      watch('lastName') || nationalIdDetails?.lastName
+                    }
+                    placeholder="Last name"
+                    label="Last name"
+                    {...field}
+                  />
                 </label>
               );
             }}
@@ -100,19 +148,23 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="nationalId"
             control={control}
+            defaultValue={watch('nationalId') || nationalIdDetails?.phone}
             rules={{ required: 'National ID is required' }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1 w-full">
                   <Input
-                    placeholder="National ID"
+                    defaultValue={
+                      watch('nationalId') || nationalIdDetails?.phone
+                    }
                     required
+                    placeholder="National ID"
                     label="National ID Number"
                     {...field}
                   />
                   {errors?.nationalId && (
                     <p className="text-red-500 text-sm">
-                      {errors?.nationalId?.message}
+                      {String(errors?.nationalId?.message)}
                     </p>
                   )}
                 </label>
@@ -120,15 +172,22 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="dateOfBirth"
             control={control}
+            defaultValue={
+              watch('dateOfBirth') || nationalIdDetails?.date_of_birth
+            }
             rules={{ required: 'Select date of birth' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={
+                      watch('dateOfBirth') || nationalIdDetails?.date_of_birth
+                    }
+                    required
                     type="date"
                     label="Date of birth"
                     onChange={(e) => {
@@ -137,7 +196,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                   />
                   {errors?.dateOfBirth && (
                     <p className="text-red-500 text-sm">
-                      {errors?.dateOfBirth?.message}
+                      {String(errors?.dateOfBirth?.message)}
                     </p>
                   )}
                 </label>
@@ -147,6 +206,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="gender"
             control={control}
+            defaultValue={watch('gender') || nationalIdDetails?.gender}
             rules={{ required: 'Select gender' }}
             render={({ field }) => {
               return (
@@ -155,12 +215,22 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     Gender<span className="text-red-500">*</span>
                   </p>
                   <menu className="flex items-center gap-4 mt-2">
-                    <Input type="radio" label="Male" {...field} />
-                    <Input type="radio" label="Female" {...field} />
+                    <Input
+                      type="radio"
+                      label="Male"
+                      checked={watch('gender') === 'Male' || undefined}
+                      {...field}
+                    />
+                    <Input
+                      type="radio"
+                      label="Female"
+                      {...field}
+                      checked={watch('gender') === 'Female' || undefined}
+                    />
                   </menu>
                   {errors?.gender && (
                     <span className="text-red-500 text-sm">
-                      {errors?.gender?.message}
+                      {String(errors?.gender?.message)}
                     </span>
                   )}
                 </label>
@@ -168,22 +238,29 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="nationality"
             control={control}
+            defaultValue={
+              watch('nationality') || nationalIdDetails?.nationality
+            }
             rules={{ required: 'Nationality is required' }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1 w-full">
                   <Input
+                    defaultValue={
+                      watch('nationality') || nationalIdDetails?.nationaly
+                    }
+                    required
                     label="Nationality"
                     placeholder="Nationality"
                     {...field}
                   />
                   {errors?.nationality && (
                     <p className="text-red-500 text-sm">
-                      {errors?.nationality?.message}
+                      {String(errors?.nationality?.message)}
                     </p>
                   )}
                 </label>
@@ -193,6 +270,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="phone"
             control={control}
+            defaultValue={watch('phone') || nationalIdDetails?.phone}
             rules={{
               required: 'Phone number is required',
               validate: (value: FieldValue<FieldValues>) => {
@@ -211,6 +289,8 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
               return (
                 <label className="flex flex-col gap-1 w-full">
                   <Input
+                    defaultValue={watch('phone') || nationalIdDetails?.phone}
+                    required
                     label="Phone Number"
                     prefixText="+250"
                     placeholder="7XX XXX XXX"
@@ -218,7 +298,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                   />
                   {errors?.phone && (
                     <p className="text-red-500 text-sm">
-                      {errors?.phone?.message}
+                      {String(errors?.phone?.message)}
                     </p>
                   )}
                 </label>
@@ -226,10 +306,14 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="country"
             control={control}
+            defaultValue={{
+              value: 'RW',
+              label: 'Rwanda',
+            }}
             rules={{ required: 'Select a country' }}
             render={({ field }) => {
               return (
@@ -237,14 +321,24 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                   <Select
                     isSearchable
                     label="Country"
-                    options={countriesList}
+                    defaultValue={{
+                      value: 'RW',
+                      label: 'Rwanda',
+                    }}
+                    options={countriesList?.map((country) => {
+                      return {
+                        ...country,
+                        label: country.name,
+                        value: country?.code,
+                      };
+                    })}
                     onChange={(e) => {
                       field.onChange(e?.value);
                     }}
                   />
                   {errors?.country && (
                     <p className="text-red-500 text-sm">
-                      {errors?.country?.message}
+                      {String(errors?.country?.message)}
                     </p>
                   )}
                 </label>
@@ -254,12 +348,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="province"
             control={control}
+            defaultValue={watch('province') || nationalIdDetails?.province}
             rules={{ required: 'Province is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={
+                      watch('province') || nationalIdDetails?.province
+                    }
                     label="Province"
+                    required
                     placeholder="Province of residence"
                     {...field}
                   />
@@ -273,15 +372,20 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="district"
             control={control}
+            defaultValue={watch('district') || nationalIdDetails?.district}
             rules={{ required: 'District is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={
+                      watch('district') || nationalIdDetails?.district
+                    }
+                    required
                     label="District"
                     placeholder="District of residence"
                     {...field}
@@ -298,18 +402,21 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="sector"
             control={control}
+            defaultValue={watch('sector') || nationalIdDetails?.sector}
             rules={{ required: 'Sector is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={watch('sector') || nationalIdDetails?.sector}
+                    required
                     label="Sector"
                     placeholder="Sector of residence"
                     {...field}
                   />
                   {errors?.sector && (
                     <p className="text-red-500 text-sm">
-                      {errors?.sector?.message}
+                      {String(errors?.sector?.message)}
                     </p>
                   )}
                 </label>
@@ -317,22 +424,25 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="cell"
+            defaultValue={watch('cell') || nationalIdDetails?.cell}
             control={control}
             rules={{ required: 'Cell is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={watch('cell') || nationalIdDetails?.cell}
+                    required
                     label="Cell"
                     placeholder="Cell of residence"
                     {...field}
                   />
                   {errors?.cell && (
                     <p className="text-red-500 text-sm">
-                      {errors?.cell?.message}
+                      {String(errors?.cell?.message)}
                     </p>
                   )}
                 </label>
@@ -342,18 +452,23 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="village"
             control={control}
+            defaultValue={watch('village') || nationalIdDetails?.village}
             rules={{ required: 'Village is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={
+                      watch('village') || nationalIdDetails?.village
+                    }
+                    required
                     label="Village"
                     placeholder="Village of residence"
                     {...field}
                   />
                   {errors?.village && (
                     <p className="text-red-500 text-sm">
-                      {errors?.village?.message}
+                      {String(errors?.village?.message)}
                     </p>
                   )}
                 </label>
@@ -361,11 +476,10 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="address"
             control={control}
-            rules={{ required: 'Address is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
@@ -374,11 +488,6 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     placeholder="Address of residence"
                     {...field}
                   />
-                  {errors?.address && (
-                    <p className="text-red-500 text-sm">
-                      {errors?.address?.message}
-                    </p>
-                  )}
                 </label>
               );
             }}
@@ -386,24 +495,19 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           <Controller
             name="poBox"
             control={control}
-            rules={{ required: 'PO Box is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input label="PO Box" placeholder="Postal Code" {...field} />
-                  {errors?.poBox && (
-                    <p className="text-red-500 text-sm">
-                      {errors?.poBox?.message}
-                    </p>
-                  )}
                 </label>
               );
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="email"
+            defaultValue={watch('email') || nationalIdDetails?.email}
             control={control}
             rules={{
               required: 'Email address is required',
@@ -418,13 +522,15 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
               return (
                 <label className="w-full flex flex-col gap-1 items-start">
                   <Input
+                    defaultValue={watch('email') || nationalIdDetails?.email}
+                    required
                     label="Email"
                     placeholder="name@domain.com"
                     {...field}
                   />
                   {errors?.email && (
                     <p className="text-red-500 text-sm">
-                      {errors?.email?.message}
+                      {String(errors?.email?.message)}
                     </p>
                   )}
                 </label>
@@ -447,18 +553,17 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6">
+        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="password"
             control={control}
             rules={{ required: 'Password is required' }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
+                <label className="flex flex-col items-start gap-1 w-full mx-auto">
                   <Input
                     type={showPassword?.password ? 'text' : 'password'}
                     label="Password"
-                    password
                     placeholder="********"
                     suffixIcon={showPassword?.password ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
@@ -472,7 +577,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                   />
                   {errors.password && (
                     <span className="text-[13px] text-red-500">
-                      {errors.password.message}
+                      {String(errors?.password?.message)}
                     </span>
                   )}
                 </label>
@@ -489,12 +594,11 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
+                <label className="flex flex-col items-start gap-1 w-full mx-auto max-sm:flex-col max-sm:gap-3">
                   <Input
                     type={showPassword?.confirmPassword ? 'text' : 'password'}
                     label="Confirm Password"
                     placeholder="********"
-                    password
                     suffixIcon={
                       showPassword?.confirmPassword ? faEyeSlash : faEye
                     }
@@ -509,7 +613,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                   />
                   {errors?.confirmPassword && (
                     <span className="text-[13px] text-red-500">
-                      {errors?.confirmPassword?.message}
+                      {String(errors?.confirmPassword?.message)}
                     </span>
                   )}
                 </label>
@@ -518,7 +622,12 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           />
         </menu>
         <menu className="flex flex-col gap-4 items-center w-full mt-4">
-          <Button value="Submit" primary submit className="!py-3 !min-w-[40%]" />
+          <Button
+            value={isLoading ? <Loader /> : 'Submit'}
+            primary
+            submit
+            className="!py-3 !min-w-[40%] max-sm:!min-w-full"
+          />
           <Button
             styled={false}
             value={

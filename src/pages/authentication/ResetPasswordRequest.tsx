@@ -97,7 +97,7 @@ const ResetPasswordRequest = () => {
                     />
                     {errors?.email && (
                       <p className="text-red-600 text-[13px]">
-                        {errors?.email?.message}
+                        {String(errors?.email?.message)}
                       </p>
                     )}
                   </label>

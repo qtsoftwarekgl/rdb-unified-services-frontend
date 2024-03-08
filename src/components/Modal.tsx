@@ -20,19 +20,16 @@ const JSX_MODAL: FC<ModalProps> = ({
   className,
   mainClassName = null,
 }) => {
-  const toggleBodyOverflow = (open: boolean) => {
-    const body = document.querySelector("body");
-    if (open) {
-      body?.classList.add("overflow-hidden");
-    } else {
-      body?.classList.remove("overflow-hidden");
-    }
-  };
 
   useEffect(() => {
-    toggleBodyOverflow(isOpen);
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'visible';
+    }
+
     return () => {
-      toggleBodyOverflow(false);
+      document.body.style.overflow = 'visible';
     };
   }, [isOpen]);
 
@@ -40,7 +37,7 @@ const JSX_MODAL: FC<ModalProps> = ({
     <main
       className={`${
         isOpen ? "opacity-1" : "opacity-0 pointer-events-none"
-      } h-screen overflow-hidden flex items-center justify-center flex-col gap-6 absolute top-0 bottom-0 left-0 right-0 z-[1000] bg-black bg-opacity-30 transition-opacity ease-in-out duration-300 ${mainClassName}`}
+      } min-h-screen flex items-center justify-center flex-col gap-6 fixed top-0 bottom-0 left-0 right-0 z-[1000] bg-black bg-opacity-30 transition-opacity ease-in-out duration-300 ${mainClassName}`}
       onClick={(e) => {
         e.preventDefault();
         onClose();

@@ -89,7 +89,7 @@ const EditInstitution = () => {
                 />
                 {errors?.name && (
                   <span className="text-red-500 text-[12px]">
-                    {errors?.name.message}
+                    {String(errors?.name.message)}
                   </span>
                 )}
               </label>
@@ -109,10 +109,10 @@ const EditInstitution = () => {
                   placeholder="Institution email"
                   {...field}
                 />
-                {errors?.name && (
-                  <span className="text-red-500 text-[12px]">
-                    {errors?.name.message}
-                  </span>
+                {errors?.email && (
+                  <p className="text-red-500 text-[12px]">
+                    {String(errors?.name.message)}
+                  </p>
                 )}
               </label>
             );
@@ -140,7 +140,7 @@ const EditInstitution = () => {
                 />
                 {errors?.type && (
                   <p className="text-red-600 text-[13px]">
-                    {errors?.type?.message}
+                    {String(errors?.type?.message)}
                   </p>
                 )}
               </label>

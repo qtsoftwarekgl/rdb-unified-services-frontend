@@ -6,9 +6,14 @@ import {
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { languages } from '../../constants/Authentication';
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLocale } from '../../states/features/localeSlice';
 
 const InfoPanel = () => {
   // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { locale } = useSelector((state: RootState) => state.locale);
   const [showCarousel, setShowCarousel] = useState({
     visibility: false,
     index: 0,
@@ -37,7 +42,13 @@ const InfoPanel = () => {
 
   return (
     <section className="info-panel bg-primary w-full flex flex-col items-center justify-center h-full relative min-h-fit p-6">
-      <select className="absolute top-8 right-6 accent-primary w-[15%] bg-transparent text-white">
+      <select
+        className="absolute top-8 right-6 accent-primary w-[15%] bg-transparent text-white"
+        onChange={(e) => {
+          dispatch(setLocale(e.target.value));
+        }}
+        defaultValue={locale || 'en'}
+      >
         {languages.map((language, index) => {
           return (
             <option
@@ -82,7 +93,9 @@ const InfoPanel = () => {
                   className="h-[40%] max-h-[250px] w-auto"
                 />
               </figure>
-              <p className="text-white font-light text-center max-[800px]:text-[14px]">{content.description}</p>
+              <p className="text-white font-light text-center max-[800px]:text-[14px]">
+                {content.description}
+              </p>
             </section>
           );
         })}
