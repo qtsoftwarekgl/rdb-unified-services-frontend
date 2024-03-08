@@ -1,5 +1,5 @@
 import "react-toastify/dist/ReactToastify.css";
-import Profile from "./pages/profiles/AdminProfile";
+import AdminProfile from "./pages/profiles/AdminProfile";
 import "react-toastify/dist/ReactToastify.css";
 import { Routes as Router, Route } from "react-router-dom";
 import AuthenticatedRoutes from "./outlets/AuthenticatedRoutes";
@@ -22,6 +22,7 @@ import ResetPasswordNew from "./pages/authentication/ResetPasswordNew";
 import UserProfile from "./pages/profiles/UserProfile";
 import "react-toastify/dist/ReactToastify.css";
 import Signup from "./pages/user-registration/Signup";
+import SuperAdminProfile from "./pages/profiles/SuperAdminProfile";
 import RegistrationVerify from "./pages/user-registration/RegistrationVerify";
 import RegistrationSuccess from "./pages/user-registration/RegistrationSuccess";
 
@@ -64,7 +65,10 @@ const Routes = () => {
         {/* USER REGISTRATIONS */}
         <Route path="/auth/register" element={<Signup />} />
         <Route path="/auth/register/verify" element={<RegistrationVerify />} />
-        <Route path="/auth/register/success" element={<RegistrationSuccess />} />
+        <Route
+          path="/auth/register/success"
+          element={<RegistrationSuccess />}
+        />
 
         {/* NOT FOUND */}
         <Route path="*" element={<NotFound />} />
@@ -77,7 +81,7 @@ const Routes = () => {
           {/* INSITUTION ADMIN DASHBOARD */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ListUsers />} />
-          <Route path="/admin/profile" element={<Profile />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
         </Route>
 
@@ -101,6 +105,7 @@ const Routes = () => {
             element={<ListInstitutions />}
           />
           {/* PROFILE */}
+          <Route path="/super-admin/profile" element={<SuperAdminProfile />} />
         </Route>
       </Router>
     </>

@@ -1,11 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../components/inputs/Button";
-import { faCircleInfo, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import AdminLayout from "../../containers/AdminLayout";
 import Table from "../../components/table/Table";
 import { users } from "../../constants/Users";
 import { capitalizeString, formatDate } from "../../helpers/Data";
-import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import AddUser from "./AddUser";
 import ViewUser from "./ViewUser";
@@ -77,8 +77,6 @@ const ListUsers = () => {
       },
     },
   ];
-
-  console.log("::::::::::::::::::::::::::::", userToView);
 
   return (
     <AdminLayout>
