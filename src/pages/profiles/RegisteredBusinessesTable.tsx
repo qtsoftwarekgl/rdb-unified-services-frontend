@@ -2,7 +2,7 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { registeredBusinesses } from "../../constants/Dashboard";
 import Table from "../../components/table/Table";
-import { formatDate } from "../../helpers/Data";
+import { formatDate } from "../../helpers/Strings";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../states/store";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";

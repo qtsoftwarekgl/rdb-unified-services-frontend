@@ -7,7 +7,7 @@ interface LoaderProps {
 
 const Loader: FC<LoaderProps> = ({ color = 'primary', size = 5 }) => {
   return (
-    <div role="status">
+    <figure role="status">
       <svg
         aria-hidden="true"
         className={`w-${size} h-${size} mr-2 text-${color} animate-spin fill-white`}
@@ -24,7 +24,7 @@ const Loader: FC<LoaderProps> = ({ color = 'primary', size = 5 }) => {
           fill="currentFill"
         />
       </svg>
-    </div>
+    </figure>
   );
 };
 

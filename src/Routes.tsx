@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
-import BusinessRegistration from "./pages/business-registration/index";
+import BusinessRegistration from "./pages/business-registration/BusinessRegistration";
 import AdminRoutes from "./outlets/AdminRoutes";
 import ListUsers from "./pages/users-management/ListUsers";
 import ListRoles from "./pages/roles-management/ListRoles";
@@ -30,6 +30,7 @@ import UserApplications from "./pages/user-applications/UserApplications";
 import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
 import CompanyHistory from "./pages/user-company-details/CompanyHistory";
 import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
+import NewBusinessRegistration from "./pages/business-registration/NewBusinessRegistration";
 
 const Routes = () => {
   return (
@@ -58,7 +59,19 @@ const Routes = () => {
           <Route path="applications" element={<UserApplications />} />
           <Route path="/company-documents" element={<CompanyDocuments />} />
           <Route path="/company-history" element={<CompanyHistory />} />
+
+          {/**
+           * BUSINESS REGISTRATION
+           */}
+
+           <Route path="/business-registration" element={<BusinessRegistration />} />
+
+          <Route
+            path="/business-registration/new"
+            element={<NewBusinessRegistration />}
+          />
         </Route>
+
         {/* AUTHENTICATION */}
         <Route path="/auth/login" element={<Login />} />
         <Route

@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { v4 as uuid } from 'uuid';
 
 export const formatPhone = (phone: string) => {
   if (!phone || phone === 'null') return '';
@@ -22,4 +23,7 @@ export const capitalizeString = (string: string) => {
 export const formatNumbers = (number: number | string) => {
   if (!number) return '';
   return new Intl.NumberFormat().format(Number(number));
+};
+export const generateUUID = () => {
+  return uuid();
 };

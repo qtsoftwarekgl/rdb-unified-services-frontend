@@ -4,7 +4,7 @@ import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import AdminLayout from "../../containers/AdminLayout";
 import Table from "../../components/table/Table";
 import { users } from "../../constants/Users";
-import { capitalizeString, formatDate } from "../../helpers/Data";
+import { capitalizeString, formatDate } from "../../helpers/Strings";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import AddUser from "./AddUser";

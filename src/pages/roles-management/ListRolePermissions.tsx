@@ -3,7 +3,7 @@ import Modal from '../../components/Modal';
 import { AppDispatch, RootState } from '../../states/store';
 import { setRolePermissionsModal } from '../../states/features/roleSlice';
 import Table from '../../components/table/Table';
-import { formatDate } from '../../helpers/Data';
+import { formatDate } from '../../helpers/Strings';
 import { permissions } from '../../constants/Dashboard';
 
 const ListRolePermissions = () => {
