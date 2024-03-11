@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import UserLayout from "../../containers/UserLayout";
 import { companyHistories } from "../../constants/Users";
 import Table from "../../components/table/Table";
+import CreateAmendment from "./CreateAmendment";
 
 const CompanyHistory = () => {
   const { t } = useTranslation();
@@ -25,9 +26,12 @@ const CompanyHistory = () => {
   return (
     <UserLayout>
       <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
-        <h1 className="w-full mb-8 text-2xl font-medium text-center text-black ">
-          {t("company history")}
-        </h1>
+        <menu className="flex justify-between">
+          <h1 className="mb-8 text-2xl font-medium text-center text-black ">
+            {t("company history")}
+          </h1>
+          <CreateAmendment />
+        </menu>
         <section className="p-2">
           <Table
             data={companyHistories}

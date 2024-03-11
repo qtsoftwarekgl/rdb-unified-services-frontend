@@ -12,12 +12,19 @@ import { AppDispatch, RootState } from "../states/store";
 import { FC } from "react";
 import { toggleNavbar } from "../states/features/navbarSlice";
 import { setViewedCompany } from "../states/features/userCompaniesSlice";
+import { languages } from "../constants/Authentication";
+import { setLocale } from "../states/features/localeSlice";
 
-const Navbar = () => {
+interface Props {
+  className?: string;
+}
+
+const Navbar = ({ className }: Props) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const { isOpen } = useSelector((state: RootState) => state.navbar);
+  const { locale } = useSelector((state: RootState) => state.locale);
 
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -45,22 +52,27 @@ const Navbar = () => {
     },
     {
       title: "Logout",
-      link: "/logout",
+      link: "/auth/login",
       icon: faRightFromBracket,
     },
   ];
 
   return (
-    <header className="w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-end z-[1000] bg-background">
+    <header
+      className={`w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-end z-[1000] bg-background ${className}`}
+    >
       <nav className="flex items-center gap-4 self-end max-[600px]:gap-3">
-        <FontAwesomeIcon
+        {/* <FontAwesomeIcon
           className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
           icon={faMoon}
         />
         <FontAwesomeIcon
           className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
           icon={faBell}
-        />
+        /> */}
+        <Link to="/">
+          <span className="text-primary">All Services</span>
+        </Link>
         <Link to={"#"} className="px-4 max-[600px]:px-2">
           <menu
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"
@@ -92,6 +104,31 @@ const Navbar = () => {
             />
           </menu>
         </Link>
+        <menu className="flex">
+          <img
+            src={`/public/languageIcons/${locale}.png`}
+            className="bg-red-200 rounded-full w-7 h-7"
+          />
+          <select
+            className="text-black bg-transparent accent-primary"
+            onChange={(e) => {
+              dispatch(setLocale(e.target.value));
+            }}
+            defaultValue={locale || "en"}
+          >
+            {languages.map((language, index) => {
+              return (
+                <option
+                  className="w-full text-primary"
+                  key={index}
+                  value={language.value}
+                >
+                  {language.label}
+                </option>
+              );
+            })}
+          </select>
+        </menu>
       </nav>
       <NavDropdown isOpen={isOpen}>
         <menu className="flex flex-col gap-1 rounded-md">

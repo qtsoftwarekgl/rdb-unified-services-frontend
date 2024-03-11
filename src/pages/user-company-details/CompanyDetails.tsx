@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import CreateAmendment from "./CreateAmendment";
 
 const CompanyDetails = () => {
   const { viewedCompany } = useSelector(
@@ -82,10 +83,13 @@ const CompanyDetails = () => {
   return (
     <UserLayout>
       <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
-        <h1 className="w-full mb-8 text-2xl font-medium text-center text-black ">
-          {t("company details")}
-        </h1>
-        <Accordion type="single" collapsible className="px-8 py-8 bg-white">
+        <menu className="flex justify-between">
+          <h1 className="mb-8 text-2xl font-medium text-center text-black ">
+            {t("company details")}
+          </h1>
+          <CreateAmendment />
+        </menu>
+        <Accordion type="single" collapsible className="p-8 bg-white">
           <AccordionItem value="item-1">
             <AccordionTrigger className="text-xl font-bold ">
               General Information

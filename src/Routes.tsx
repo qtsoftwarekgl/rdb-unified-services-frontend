@@ -3,7 +3,7 @@ import AdminProfile from "./pages/profiles/AdminProfile";
 import "react-toastify/dist/ReactToastify.css";
 import { Routes as Router, Route } from "react-router-dom";
 import AuthenticatedRoutes from "./outlets/AuthenticatedRoutes";
-import Home from "./pages/dashboard/Home";
+import Home from "./pages/home/Home";
 import Login from "./pages/authentication/Login";
 import NotFound from "./pages/NotFound";
 import { ToastContainer } from "react-toastify";
@@ -46,8 +46,8 @@ const Routes = () => {
         {/**
          * PUBLIC ROUTES
          */}
+        <Route path="/" element={<Home />} />
         <Route element={<AuthenticatedRoutes />}>
-          <Route path="/" element={<Home />} />
           {/* BUSINESS REGISTRATION */}
           <Route
             path="/business-registration/"
