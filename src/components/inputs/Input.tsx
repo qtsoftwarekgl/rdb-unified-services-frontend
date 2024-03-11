@@ -26,6 +26,7 @@ interface InputProps {
   checked?: boolean;
   accept?: string;
   min?: string | number;
+  readOnly?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -47,6 +48,7 @@ const Input: FC<InputProps> = ({
   name,
   accept = "*",
   min,
+  readOnly = false,
 }) => {
   const hiddenFileInput = useRef(null);
 
@@ -124,7 +126,8 @@ const Input: FC<InputProps> = ({
           defaultValue={defaultValue}
           min={min}
           value={value && value}
-          type={type || "text"}
+          type={type || 'text'}
+          readOnly={readOnly}
           onChange={onChange}
           placeholder={placeholder}
           className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
@@ -144,7 +147,8 @@ const Input: FC<InputProps> = ({
             <input
               defaultValue={defaultValue}
               value={value && value}
-              type={type || "text"}
+              type={type || 'text'}
+              readOnly={readOnly}
               onChange={onChange}
               placeholder={placeholder}
               className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
@@ -172,6 +176,7 @@ const Input: FC<InputProps> = ({
               value={value && value}
               type={type || "text"}
               onChange={onChange}
+              readOnly={readOnly}
               placeholder={placeholder}
               className={`${
                 prefixText && "!ml-16 !w-[85%]"

@@ -29,6 +29,7 @@ import UserCompanyDetails from "./pages/user-company-details/CompanyDetails";
 import UserApplications from "./pages/user-applications/UserApplications";
 import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
 import CompanyHistory from "./pages/user-company-details/CompanyHistory";
+import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
 
 const Routes = () => {
   return (
@@ -73,6 +74,10 @@ const Routes = () => {
         {/* USER REGISTRATIONS */}
         <Route path="/auth/register" element={<Signup />} />
         <Route path="/auth/register/verify" element={<RegistrationVerify />} />
+        <Route
+          path="/auth/register/set-password"
+          element={<RegistrationSetPassword />}
+        />
         <Route
           path="/auth/register/success"
           element={<RegistrationSuccess />}

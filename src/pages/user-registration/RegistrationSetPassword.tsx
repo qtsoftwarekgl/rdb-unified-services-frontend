@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
 
-const ResetPasswordNew = () => {
+const RegistrationSetPassword = () => {
 
   // LOCALES
   const { t } = useTranslation();
@@ -43,11 +43,8 @@ const ResetPasswordNew = () => {
   const onSubmit = (data: Payload | FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
-      toast.success('Password reset successful. Redirecting...');
       setIsLoading(false);
-      setTimeout(() => {
-        navigate('/auth/login');
-      }, 1000);
+      navigate('/auth/register/success');
     }, 1000);
     return data;
   };
@@ -148,7 +145,7 @@ const ResetPasswordNew = () => {
                   </menu>
                 }
                 styled={false}
-                route="/auth/reset-password/request"
+                route="/auth/register/verify"
               />
             </ul>
           </menu>
@@ -158,4 +155,4 @@ const ResetPasswordNew = () => {
   );
 };
 
-export default ResetPasswordNew;
+export default RegistrationSetPassword;

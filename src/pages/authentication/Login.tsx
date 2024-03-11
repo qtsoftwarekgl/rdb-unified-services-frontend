@@ -3,25 +3,25 @@ import {
   FieldValues,
   SubmitHandler,
   useForm,
-} from "react-hook-form";
-import rdb_icon from "/rdb-logo.png";
-import Input from "../../components/inputs/Input";
-import Button from "../../components/inputs/Button";
-import validateInputs from "../../helpers/Validations";
-import InfoPanel from "./InfoPanel";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../states/store";
-import Modal from "../../components/Modal";
-import { setInfoModal } from "../../states/features/authSlice";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { setUser } from "../../states/features/userSlice";
-import { useState } from "react";
-import Loader from "../../components/Loader";
-import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
-import { useTranslation } from "react-i18next";
+} from 'react-hook-form';
+import rdb_icon from '/rdb-logo.png';
+import Input from '../../components/inputs/Input';
+import Button from '../../components/inputs/Button';
+import validateInputs from '../../helpers/Validations';
+import InfoPanel from './InfoPanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../states/store';
+import Modal from '../../components/Modal';
+import { setInfoModal } from '../../states/features/authSlice';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { setUser } from '../../states/features/userSlice';
+import { useState } from 'react';
+import Loader from '../../components/Loader';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   // LOCALES
@@ -51,15 +51,15 @@ const Login = () => {
 
   // HANDLE SUBMIT
   const onSubmit: SubmitHandler<FieldValues | LoginPayload> = (data) => {
-    toast.success("Login successful. Redirecting...");
+    toast.success('Login successful. Redirecting...');
     dispatch(setUser(data));
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      if (data?.email?.includes("admin")) {
-        return navigate("/super-admin/dashboard");
-      } else if (data?.email?.includes("info")) {
-        return navigate("/admin/dashboard");
+      if (data?.email?.includes('admin')) {
+        return navigate('/super-admin/dashboard');
+      } else if (data?.email?.includes('info')) {
+        return navigate('/admin/dashboard');
       }
 
       return navigate("/profile");
@@ -81,7 +81,7 @@ const Login = () => {
           />
         </figure>
         <h1 className="text-2xl font-semibold uppercase text-primary">
-          {t("login")}
+          {t('login')}
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -89,10 +89,10 @@ const Login = () => {
         >
           <Controller
             rules={{
-              required: "Email is required",
+              required: 'Email is required',
               validate: (value) => {
                 return (
-                  validateInputs(value, "email") || "Invalid email address"
+                  validateInputs(value, 'email') || 'Invalid email address'
                 );
               },
             }}
@@ -102,8 +102,8 @@ const Login = () => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
-                    placeholder="Enter email address"
-                    label="Email"
+                    placeholder={t('email-placeholder')}
+                    label={t('email-label')}
                     {...field}
                   />
                   {errors.email && (
@@ -116,16 +116,16 @@ const Login = () => {
             }}
           />
           <Controller
-            rules={{ required: "Password is required" }}
+            rules={{ required: 'Password is required' }}
             name="password"
             control={control}
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter password"
-                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder={t('password-placeholder')}
+                    label={t('password-label')}
                     suffixIcon={showPassword ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
                       e.preventDefault();
@@ -144,7 +144,7 @@ const Login = () => {
           />
           <menu className="flex items-center gap-3 justify-between w-full my-1 max-[1050px]:flex-col max-[800px]:flex-row max-[450px]:flex-col">
             <Input
-              label="Keep me logged in"
+              label={t('remember-me')}
               type="checkbox"
               onChange={(e) => {
                 return e.target.checked;
@@ -153,7 +153,7 @@ const Login = () => {
             <Button
               styled={false}
               className="!text-[13px]"
-              value="Forgot password?"
+              value={`${t('forgot-password')}?`}
               route="/auth/reset-password/request"
             />
           </menu>
@@ -161,11 +161,11 @@ const Login = () => {
             <Button
               submit
               primary
-              value={isLoading ? <Loader /> : "Login"}
+              value={isLoading ? <Loader /> : t('login')}
               className="w-full"
             />
             <Button
-              value="Create account"
+              value={t('register')}
               styled={false}
               route="/auth/register"
             />

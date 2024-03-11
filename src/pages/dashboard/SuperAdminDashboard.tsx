@@ -66,7 +66,7 @@ const SuperAdminDashboard = () => {
               Recent Users
             </h1>
             <Button
-              route="/admin/users"
+              route="/super-admin/users"
               className="!text-[13px]"
               styled={false}
               value={

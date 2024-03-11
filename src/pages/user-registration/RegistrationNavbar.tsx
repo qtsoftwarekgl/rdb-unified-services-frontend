@@ -4,15 +4,20 @@ import Button from '../../components/inputs/Button';
 import { languages } from '../../constants/Authentication';
 import rdb_logo from '/rdb-logo.png';
 import { faBars, faRightFromBracket, faX } from '@fortawesome/free-solid-svg-icons';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { setLocale } from '../../states/features/localeSlice';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const RegistrationNavbar = () => {
 
+  // LOCALES
+  const { t } = useTranslation();
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const { locale } = useSelector((state: RootState) => state.locale);
   const [navDropdown, setNavDropdown] = useState(false);
 
   return (
@@ -32,12 +37,13 @@ const RegistrationNavbar = () => {
             value={
               <menu className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faRightFromBracket} />
-                Login
+                {t('login')}
               </menu>
             }
           />
           <select
             className=""
+            defaultValue={locale || 'en'}
             onChange={(e) => {
               dispatch(setLocale(e.target.value));
             }}

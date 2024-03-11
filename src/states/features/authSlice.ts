@@ -6,7 +6,7 @@ export const authSlice = createSlice({
     infoModal: false,
     registrationStep:
       sessionStorage.getItem('registrationStep') || 'select-nationality',
-    userDetails: sessionStorage.getItem('userDetails') || null,
+    userDetails: JSON.parse(sessionStorage.getItem('userDetails') as string) || null,
     nationalIdDetails:
       JSON.parse(sessionStorage.getItem('nationalIdDetails') as string) || null,
   },
@@ -20,7 +20,7 @@ export const authSlice = createSlice({
     },
     setUserDetails: (state, action) => {
       state.userDetails = action.payload;
-      sessionStorage.setItem('userDetails', action.payload);
+      sessionStorage.setItem('userDetails', JSON.stringify(action.payload));
     },
     setNationalIdDetails: (state, action) => {
       state.nationalIdDetails = action.payload;

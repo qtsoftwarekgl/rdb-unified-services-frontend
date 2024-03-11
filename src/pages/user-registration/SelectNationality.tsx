@@ -11,6 +11,7 @@ import {
   setNationalIdDetails,
   setRegistrationStep,
 } from '../../states/features/authSlice';
+import RwandanRegistrationForm from './RwandanRegistrationForm';
 
 interface SelectNationalityProps {
   isOpen: boolean;
@@ -24,18 +25,20 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   const [documentNo, setDocumentNo] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
   const [nationalIdError, setNationalIdError] = useState<boolean>(false);
-  const { nationalIdDetails } = useSelector((state: RootState) => state.auth);
+  const { nationalIdDetails, registrationStep } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (isOpen) {
+    if (documentType === 'passport') {
       dispatch(setNationalIdDetails(null));
+      dispatch(setNationalIdDetails(null));
+      dispatch(setRegistrationStep('foreign-registration-form'));
     }
-  }, [dispatch, isOpen]);
+  }, [dispatch, documentType]);
 
   if (!isOpen) return null;
 
   return (
-    <section className="flex flex-col gap-8 items-center w-full">
+    <section className={`flex flex-col gap-8 items-center w-full`}>
       <form
         className={`flex flex-col items-center gap-6 w-[70%] mx-auto p-6 shadow-md rounded-md max-2xl:w-[75%] max-xl:w-[80%] max-[1000px]:w-[85%] max-[900px]:w-[90%] max-md:w-[95%] max-sm:w-[100%]`}
       >
@@ -52,7 +55,8 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
             }}
             defaultValue={{ value: 'nid', label: 'National ID' }}
             labelClassName={`${
-              documentType === 'passport' && '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'
+              documentType === 'passport' &&
+              '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'
             }`}
           />
           {documentType === 'nid' && (
@@ -130,24 +134,21 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
               check the document number and try again.
             </p>
           )}
-          {nationalIdDetails && (
-            <ul className="flex flex-col gap-2 w-full">
-              <p className="">
-                Names: {nationalIdDetails.first_name}{' '}
-                {nationalIdDetails.last_name}
-              </p>
-              <p>Date of Birth: {nationalIdDetails.date_of_birth}</p>
-              <p>Gender: {nationalIdDetails.gender}</p>
-              <p>Phone: (+250) {nationalIdDetails.phone}</p>
-              <p>Province: {nationalIdDetails.district}</p>
-              <p>District: {nationalIdDetails.district}</p>
-              <p>Sector: {nationalIdDetails.cell}</p>
-              <p>Cell: {nationalIdDetails.cell}</p>
-              <p>Village: {nationalIdDetails.village}</p>
-            </ul>
-          )}
         </menu>
-        <menu className="flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse">
+        <menu
+          className={`${
+            registrationStep !== 'rwandan-registration-form' && 'mt-[-24px] h-0'
+          } w-full`}
+        >
+          <RwandanRegistrationForm
+            isOpen={registrationStep === 'rwandan-registration-form'}
+          />
+        </menu>
+        <menu
+          className={`${
+            registrationStep === 'rwandan-registration-form' && 'hidden'
+          } flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
           <Button value="Back" route="/auth/login" />
           <Button
             value="Continue"
