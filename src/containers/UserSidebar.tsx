@@ -143,7 +143,7 @@ const UserSidebar = () => {
         >
           <img
             src={isOpen ? rdb_logo : rdb_icon}
-            className={`h-auto ${isOpen ? "max-w-[100px]" : "max-w-[50px]"}`}
+            className={`h-auto ${isOpen ? "max-w-[150px]" : "max-w-[50px]"}`}
             alt="logo"
           />
           <FontAwesomeIcon
