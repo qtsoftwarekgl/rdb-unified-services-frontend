@@ -158,6 +158,78 @@ export const monthsData = () => {
   ];
 };
 
+export const companyDocuments = [
+  {
+    documentName: "Certificate of Incorporation",
+    documentType: "Certificate",
+    issuedDate: "12-06-2022",
+    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+  },
+  {
+    documentName: "Memorandum of Association",
+    documentType: "Certificate",
+    issuedDate: "12-06-2022",
+    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+  },
+  {
+    documentName: "Article of Association",
+    documentType: "Certificate",
+    issuedDate: "12-06-2022",
+    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+  },
+  {
+    documentName: "Form CAC 7",
+    documentType: "Copy Right",
+    issuedDate: "12-06-2022",
+    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+  },
+  {
+    documentName: "Form CAC 2",
+    documentType: "Copy Right",
+    issuedDate: "12-06-2022",
+    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+  },
+  {
+    documentName: "Form CAC 3",
+    documentType: "Copy Right",
+    issuedDate: "12-06-2022",
+    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+  },
+];
+
+export const userApplications = [
+  {
+    regNumber: "REG-1234",
+    serviceName: "Domestic Business Registration",
+    status: "Submitted",
+    submitionDate: "12-06-2022",
+  },
+  {
+    regNumber: "REG-1234",
+    serviceName: "Domestic Business Registration",
+    status: "Verified",
+    submitionDate: "12-06-2022",
+  },
+  {
+    regNumber: "REG-1234",
+    serviceName: "Domestic Business Registration",
+    status: "Approved",
+    submitionDate: "12-06-2022",
+  },
+  {
+    regNumber: "REG-1234",
+    serviceName: "Domestic Business Registration",
+    status: "Request for action",
+    submitionDate: "12-06-2022",
+  },
+  {
+    regNumber: "REG-1234",
+    serviceName: "Domestic Business Registration",
+    status: "Rejected",
+    submitionDate: "12-06-2022",
+  },
+];
+
 export const registeredBusinesses = [
   {
     companyCode: "C001",

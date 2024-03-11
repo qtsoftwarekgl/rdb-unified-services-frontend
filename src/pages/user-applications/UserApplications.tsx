@@ -1,42 +1,35 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { registeredBusinesses } from "../../constants/Dashboard";
+import { userApplications } from "../../constants/Dashboard";
 import Table from "../../components/table/Table";
-import { formatDate } from "../../helpers/Data";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../states/store";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
-import { useNavigate } from "react-router";
+import UserLayout from "../../containers/UserLayout";
 
-const RegisteredBusinessesTable = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
-
+const UserApplications = () => {
   const colors = (status: string) => {
-    if (status === "active") {
+    if (status === "verified") {
       return "bg-[#82ffa3] text-[#0d7b3e]";
     }
-    if (status === "closed") {
+    if (status === "rejected") {
       return "bg-[#eac3c3] text-red-500";
     }
     if (status === "approved") {
       return "bg-[#cfeaff] text-secondary";
     }
-    if (status === "dormant") {
+    if (status === "request for action") {
       return "bg-[#e4e4e4] text-[#6b6b6b]";
     }
-    if (status === "pending") {
-      return "bg-yellow-100 text-yellow-500";
+    if (status === "submitted") {
+      return "bg-[#e8ffef] text-black";
     }
   };
   const colums = [
     {
-      header: "Company Code",
-      accessorKey: "companyCode",
+      header: "Registration Number",
+      accessorKey: "regNumber",
     },
     {
-      header: "Company Name",
-      accessorKey: "companyName",
+      header: "Service Name",
+      accessorKey: "serviceName",
     },
     {
       header: "Status",
@@ -55,8 +48,8 @@ const RegisteredBusinessesTable = () => {
       },
     },
     {
-      header: "Registered Date",
-      accessorKey: "createdAt",
+      header: "Submission Date",
+      accessorKey: "submitionDate",
     },
     {
       header: "Action",
@@ -68,8 +61,7 @@ const RegisteredBusinessesTable = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setViewedCompany(row?.original));
-                navigate("/company-details");
+                console.log(row);
               }}
               icon={faEye}
               className="text-primary"
@@ -81,23 +73,24 @@ const RegisteredBusinessesTable = () => {
   ];
 
   return (
-    <section className="mb-8">
-      <h1 className=" text-tertiary w-fit">My Registered Companies</h1>
-      <Table
-        showFilter={false}
-        showPagination={false}
-        columns={colums}
-        data={registeredBusinesses.map((business, index) => {
-          return {
-            ...business,
-            no: index + 1,
-            createdAt: formatDate(business?.createdAt),
-          };
-        })}
-        className="bg-white rounded-2xl"
-      />
-    </section>
+    <UserLayout>
+      <section className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
+        <h1 className="text-lg w-fit">My Applications List</h1>
+        <Table
+          showFilter={false}
+          showPagination={false}
+          columns={colums}
+          data={userApplications.map((application, index) => {
+            return {
+              ...application,
+              no: index + 1,
+            };
+          })}
+          className="bg-white rounded-2xl"
+        />
+      </section>
+    </UserLayout>
   );
 };
 
-export default RegisteredBusinessesTable;
+export default UserApplications;

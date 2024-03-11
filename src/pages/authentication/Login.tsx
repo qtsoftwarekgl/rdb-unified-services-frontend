@@ -24,7 +24,6 @@ import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
 
 const Login = () => {
-
   // LOCALES
   const { t } = useTranslation();
 
@@ -63,7 +62,7 @@ const Login = () => {
         return navigate("/admin/dashboard");
       }
 
-      return navigate("/");
+      return navigate("/profile");
     }, 1000);
   };
 

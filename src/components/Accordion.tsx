@@ -5,15 +5,16 @@ import { forwardRef } from "react";
 
 const Accordion = AccordionPrimitive.Root;
 
+interface AccordionContentProps
+  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> {
+  underlineHeader?: boolean;
+}
+
 const AccordionItem = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item>
 >(({ className, ...props }, ref) => (
-  <AccordionPrimitive.Item
-    ref={ref}
-    className={`border-b ${className}`}
-    {...props}
-  />
+  <AccordionPrimitive.Item ref={ref} className={`${className}`} {...props} />
 ));
 AccordionItem.displayName = "AccordionItem";
 
@@ -24,7 +25,7 @@ const AccordionTrigger = forwardRef<
   <AccordionPrimitive.Header className="flex">
     <AccordionPrimitive.Trigger
       ref={ref}
-      className={`flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180 ${className}`}
+      className={`flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all [&[data-state=open]>svg]:rotate-180 ${className}`}
       {...props}
     >
       {children}
@@ -39,14 +40,17 @@ AccordionTrigger.displayName = AccordionPrimitive.Trigger.displayName;
 
 const AccordionContent = forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  AccordionContentProps
+>(({ className, underlineHeader, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className={`overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down ${className}`}
+    className={`overflow-hidden relative text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down ${className}`}
     {...props}
   >
-    <div className="pt-0 pb-4">{children}</div>
+    {underlineHeader && (
+      <div className="absolute inset-x-0 top-0 w-24 h-[5px] bg-primary"></div>
+    )}
+    <div className={`${underlineHeader ? "pt-8" : ""} pb-4`}>{children}</div>
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;

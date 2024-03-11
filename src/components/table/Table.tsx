@@ -35,6 +35,7 @@ interface TableProps {
   pageSize?: number;
   showFilter?: boolean;
   className?: string;
+  tableTitle?: string;
 }
 
 const Table: FC<TableProps> = ({
@@ -44,6 +45,7 @@ const Table: FC<TableProps> = ({
   pageSize,
   showFilter = true,
   className,
+  tableTitle,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -169,6 +171,18 @@ const Table: FC<TableProps> = ({
               className={`flex border-[1.5px] border-background flex-col gap-4 overflow-hidden ${className}`}
             >
               <table className="">
+                {tableTitle && (
+                  <thead>
+                    <tr>
+                      <th
+                        className="p-4 bg-[#5c7285] border-background capitalize text-left text-white"
+                        colSpan={columns.length}
+                      >
+                        {tableTitle}
+                      </th>
+                    </tr>
+                  </thead>
+                )}
                 <thead className="">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id} className="uppercase border-b">

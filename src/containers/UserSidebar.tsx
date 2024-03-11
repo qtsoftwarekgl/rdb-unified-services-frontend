@@ -1,15 +1,11 @@
 import {
-  faBagShopping,
   faBars,
   faBook,
-  faCertificate,
-  faCommentDots,
   faGear,
   faHouse,
-  faImage,
-  faPen,
+  faClockRotateLeft,
   faRightFromBracket,
-  faSitemap,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion, useAnimation } from "framer-motion";
 import rdb_logo from "/rdb-logo.png";
@@ -59,7 +55,7 @@ const UserSidebar = () => {
     {
       title: "Company Details",
       path: "/company-details",
-      icon: faSitemap,
+      icon: faCircleInfo,
     },
     {
       title: "Company Documents",
@@ -69,7 +65,7 @@ const UserSidebar = () => {
     {
       title: "Company History",
       path: "/company-history",
-      icon: faImage,
+      icon: faClockRotateLeft,
     },
   ];
 
@@ -138,7 +134,7 @@ const UserSidebar = () => {
     <aside className={``} ref={ref}>
       <motion.div
         animate={controls}
-        className="h-[95vh] w-full flex flex-col gap-8 items-center justify-between pl-[2vw] max-w-[350px] fixed left-0 py-6 max-[1200px]:w-[22vw] max-[1100px]:w-[25vw] max-[1000px]:w-[30vw] ease-in-out duration-500 max-[500px]:w-[30%]"
+        className="h-[95vh] flex flex-col gap-8 items-center justify-between pl-[2vw] max-w-[350px] fixed left-0 py-6 max-[1200px]:w-[22vw] max-[1100px]:w-[25vw] max-[1000px]:w-[30vw] ease-in-out duration-500 max-[500px]:w-[30%]"
       >
         <figure
           className={`w-full flex items-center justify-between pr-2 ${
@@ -166,7 +162,7 @@ const UserSidebar = () => {
               <Link
                 to={nav?.path}
                 key={index}
-                className={`flex items-center gap-5 px-4 font-semibold text-[15px] ease-in-out duration-200 hover:bg-white text-secondary rounded-md py-3 max-[1200px]:text-[14px] max-[1000px]:text-[13px] ${
+                className={`flex items-center gap-5 px-4 font-semibold text-sm md:text-[14px] 2xl:text-base ease-in-out duration-200 hover:bg-white text-secondary rounded-md py-3 max-[1200px]:text-[14px] max-[1000px]:text-[13px] ${
                   selected && "bg-white !text-primary"
                 } ${isOpen ? "justify-start" : "justify-center"}`}
               >

@@ -25,7 +25,10 @@ import Signup from "./pages/user-registration/Signup";
 import SuperAdminProfile from "./pages/profiles/SuperAdminProfile";
 import RegistrationVerify from "./pages/user-registration/RegistrationVerify";
 import RegistrationSuccess from "./pages/user-registration/RegistrationSuccess";
-import UserCompanyDetails from "./pages/userCompanyDetails/companyDetails";
+import UserCompanyDetails from "./pages/user-company-details/CompanyDetails";
+import UserApplications from "./pages/user-applications/UserApplications";
+import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
+import CompanyHistory from "./pages/user-company-details/CompanyHistory";
 
 const Routes = () => {
   return (
@@ -51,6 +54,9 @@ const Routes = () => {
           {/* USER PROFILE */}
           <Route path="/profile" element={<UserProfile />} />
           <Route path="company-details" element={<UserCompanyDetails />} />
+          <Route path="applications" element={<UserApplications />} />
+          <Route path="/company-documents" element={<CompanyDocuments />} />
+          <Route path="/company-history" element={<CompanyHistory />} />
         </Route>
         {/* AUTHENTICATION */}
         <Route path="/auth/login" element={<Login />} />
