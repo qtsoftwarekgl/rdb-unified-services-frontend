@@ -5,11 +5,12 @@ import ProgressNavigation from "./ProgressNavigation";
 import { useLocation } from "react-router-dom";
 import Tab from "../../components/business-registration/Tab";
 import { RegistrationTab } from "../../states/features/businessRegistrationSlice";
+import CompanyDetails from "./general-information/CompanyDetails";
 
 const BusinessRegistration = () => {
 
   // STATE VARIABLES
-  const { registration_tabs } = useSelector(
+  const { registration_tabs, active_step } = useSelector(
     (state: RootState) => state.businessRegistration
   );
 
@@ -29,7 +30,13 @@ const BusinessRegistration = () => {
                 isOpen={tab?.active}
                 steps={tab?.steps}
                 key={`${String(index)}-${entry_id}`}
-              />
+              >
+
+                {/* COMPANY DETAILS */}
+                <CompanyDetails
+                  isOpen={active_step?.name === 'company_details'}
+                />
+              </Tab>
             );
           })}
         </menu>

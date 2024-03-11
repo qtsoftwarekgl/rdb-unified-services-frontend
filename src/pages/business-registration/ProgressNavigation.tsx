@@ -24,7 +24,7 @@ const ProgressNavigation = () => {
               e.preventDefault();
               dispatch(setActiveTab(tab?.name));
             }}
-            className={`step w-full h-full py-[6px] flex items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:text-white hover:bg-opacity-90 rounded-md ${
+            className={`step w-full h-full py-[6px] flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:text-white hover:bg-opacity-90 rounded-md ${
               tab?.active && 'bg-primary text-white'
             }`}
             onClick={(e) => {

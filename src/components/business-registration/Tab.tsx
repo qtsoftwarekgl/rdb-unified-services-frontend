@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, ReactNode, useEffect } from 'react';
 import {
   RegistrationStep,
   setActiveStep,
@@ -12,15 +12,16 @@ import { useDispatch } from 'react-redux';
 interface TabProps {
   steps: Array<RegistrationStep>;
   isOpen: boolean;
+  children: ReactNode;
 }
 
-const Tab: FC<TabProps> = ({ steps, isOpen }) => {
+const Tab: FC<TabProps> = ({ steps, isOpen, children }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
 
   // HANDLE RENDER
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && steps?.length > 0) {
       dispatch(
         setActiveStep(
           steps?.find((step: RegistrationStep) => !step?.completed) || steps[0]
@@ -37,7 +38,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen }) => {
       <aside
         className={`${
           steps && steps?.length > 0 ? 'flex' : 'hidden'
-        } flex-col gap-2 w-full max-w-[25%]`}
+        } flex-col gap-2 w-[20%] p-3 px-4 rounded-md`}
       >
         {steps?.map(
           (
@@ -57,10 +58,10 @@ const Tab: FC<TabProps> = ({ steps, isOpen }) => {
               >
                 <figure className="flex flex-col gap-1 items-center max-w-[10%]">
                   {step?.completed ? (
-                    <FontAwesomeIcon icon={faCheck} />
+                    <FontAwesomeIcon icon={faCheck} className='p-2 bg-primary text-white rounded-full' />
                   ) : (
                     <p
-                      className={`text-[15px] p-2 px-4 rounded-full bg-white text-secondary font-semibold w-fit ${
+                      className={`text-[15px] p-[6px] px-[14px] rounded-full bg-white text-secondary font-semibold w-fit ${
                         step?.active && '!text-white !bg-primary'
                       }`}
                     >
@@ -79,6 +80,14 @@ const Tab: FC<TabProps> = ({ steps, isOpen }) => {
           }
         )}
       </aside>
+      <menu className="flex w-[80%] flex-col gap-3 bg-white rounded-md shadow-sm h-full p-5">
+        <h1 className="text-center uppercase font-semibold text-lg">
+          {steps?.find((step) => step?.active)?.label}
+        </h1>
+        <section className='w-full p-4'>
+        {children}
+        </section>
+      </menu>
     </section>
   );
 };

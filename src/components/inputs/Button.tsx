@@ -15,7 +15,7 @@ interface ButtonProps {
 }
 
 const Button: FC<ButtonProps> = ({
-  route = "#",
+  route = '#',
   value,
   onClick,
   type = null,
@@ -26,20 +26,20 @@ const Button: FC<ButtonProps> = ({
   submit = false,
   danger = false,
 }) => {
-  if (submit || type === "submit") {
+  if (submit || type === 'submit') {
     return (
       <button
-        type={type || 'submit'}
-        className={`py-2 max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] max-[800px]:!text-lg max-md:!py-2 ${
-          disabled &&
-          'bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center transition-all'
-        } ${
+        type={disabled ? 'button' : type || 'submit'}
+        className={`py-2 max-[800px]:!text-[14px] shadow-sm transition-all flex items-center justify-center text-center px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] max-[800px]:!text-lg max-md:!py-2 ${
           !styled &&
           'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary transition-all'
-        } ${className} ${
+        } ${
           primary &&
           '!bg-primary !sha !text-white hover:!bg-primary hover:!text-white !shadow-sm'
-        }`}
+        } ${
+          disabled &&
+          '!bg-background !cursor-default !shadow-none hover:!scale-[1] hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center transition-all'
+        } ${className}`}
       >
         {value}
       </button>
@@ -50,17 +50,21 @@ const Button: FC<ButtonProps> = ({
     <Link
       to={route}
       onClick={onClick}
-      className={`py-2 text-center shadow-md px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] max-[800px]:!text-lg max-md:!py-2 ${
-        disabled &&
-        "bg-secondary !shadow-none hover:!scale-[1] cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center"
-      } ${
+      className={`py-2 text-center shadow-sm px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] max-[800px]:!text-lg max-md:!py-2 ${
         !styled &&
-        "bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary"
+        'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary'
       } ${className} ${
         primary &&
-        "!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm"
+        '!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm'
       }
-      ${danger && "!bg-red-600 !text-white hover:!bg-red-600 hover:!text-white !shadow-sm"}`}
+      ${
+        danger &&
+        '!bg-red-600 !text-white hover:!bg-red-600 hover:!text-white !shadow-sm'
+      }
+      ${
+        disabled &&
+        '!bg-secondary !shadow-none hover:!scale-[1] !cursor-default hover:!bg-secondary hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center'
+      }`}
     >
       {value}
     </Link>
