@@ -1,7 +1,7 @@
 import { useLocation } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faMoon, faUser } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   faChevronDown,
   faChevronUp,
@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../states/store";
 import { FC } from "react";
 import { toggleNavbar } from "../states/features/navbarSlice";
+import { setViewedCompany } from "../states/features/userCompaniesSlice";
 
 const Navbar = () => {
   // STATE VARIABLES
@@ -19,6 +20,7 @@ const Navbar = () => {
   const { isOpen } = useSelector((state: RootState) => state.navbar);
 
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   if (["auth/login", "auth/register"].includes(pathname)) {
     return null;
@@ -28,7 +30,7 @@ const Navbar = () => {
   const navDropdown = [
     {
       title: "Profile",
-      link: "/admin/profile",
+      link: "/profile",
       icon: faUser,
     },
     {
@@ -65,6 +67,7 @@ const Navbar = () => {
             onClick={(e) => {
               e.preventDefault();
               dispatch(toggleNavbar(!isOpen));
+              dispatch(setViewedCompany(null));
             }}
           >
             <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
@@ -97,6 +100,11 @@ const Navbar = () => {
               <Link
                 to={nav?.link}
                 key={index}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`${nav?.link}`);
+                  dispatch(toggleNavbar(false));
+                }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
                   ["Theme", "Notifications"].includes(nav?.title)
                     ? "min-[450px]:hidden"
@@ -124,7 +132,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
     <menu
       className={`${
         isOpen ? "translate-y-0" : "translate-y-[-400px]"
-      } ease-in-out duration-500 z-[10000] absolute top-[8vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
+      } ease-in-out duration-500 z-[10000] absolute top-[10vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}
     </menu>
