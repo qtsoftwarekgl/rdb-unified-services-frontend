@@ -16,7 +16,10 @@ export const defaultSections = [
           to: "/branch-of-foreign-company",
           label: "Branch of Foreign Company",
         },
-        { to: "/enterprise-registration", label: "Enterprise Registration" },
+        {
+          to: "/enterprise-registration/new",
+          label: "Enterprise Registration",
+        },
         { to: "/company-continuation", label: "Continuation of Company" },
       ],
       [

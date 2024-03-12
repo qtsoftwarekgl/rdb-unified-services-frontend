@@ -31,6 +31,8 @@ import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
 import CompanyHistory from "./pages/user-company-details/CompanyHistory";
 import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
 import NewBusinessRegistration from "./pages/business-registration/NewBusinessRegistration";
+import EnterpriseRegistration from "./pages/enterprise-registration/EnterpriseRegistration";
+import NewEnterpriseRegistration from "./pages/enterprise-registration/NewEnterpriseRegistration";
 
 const Routes = () => {
   return (
@@ -64,11 +66,22 @@ const Routes = () => {
            * BUSINESS REGISTRATION
            */}
 
-           <Route path="/business-registration" element={<BusinessRegistration />} />
+          <Route
+            path="/business-registration"
+            element={<BusinessRegistration />}
+          />
+          <Route
+            path="/enterprise-registration"
+            element={<EnterpriseRegistration />}
+          />
 
           <Route
             path="/business-registration/new"
             element={<NewBusinessRegistration />}
+          />
+          <Route
+            path="/enterprise-registration/new"
+            element={<NewEnterpriseRegistration />}
           />
         </Route>
 
