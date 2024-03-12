@@ -1,7 +1,7 @@
 import { FC, ReactNode, useEffect } from 'react';
 import {
   RegistrationStep,
-  setActiveStep,
+  setBusinessActiveStep,
 } from '../../states/features/businessRegistrationSlice';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,8 +23,8 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children }) => {
   useEffect(() => {
     if (isOpen && steps?.length > 0) {
       dispatch(
-        setActiveStep(
-          steps?.find((step: RegistrationStep) => !step?.completed) || steps[0]
+        setBusinessActiveStep(
+          steps?.find((step: RegistrationStep) => !step?.completed)?.name || steps[0]?.name
         )
       );
     }
@@ -52,7 +52,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children }) => {
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setActiveStep(step));
+                  dispatch(setBusinessActiveStep(step?.name));
                 }}
                 className="w-full flex items-start gap-4"
               >
