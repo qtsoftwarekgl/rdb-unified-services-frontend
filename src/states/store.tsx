@@ -11,6 +11,7 @@ import permissionSlice from "./features/permissionSlice";
 import institutionSlice from "./features/institutionSlice";
 import localeSlice from "./features/localeSlice";
 import userCompaniesSlice from "./features/userCompaniesSlice";
+import enterpriseRegistrationSlice from "./features/enterpriseRegistrationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     institution: institutionSlice,
     locale: localeSlice,
     userCompanies: userCompaniesSlice,
+    enterpriseRegistration: enterpriseRegistrationSlice,
   },
 });
 

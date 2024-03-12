@@ -3,6 +3,8 @@ import Button from "../../components/inputs/Button";
 import Modal from "../../components/Modal";
 import Select from "../../components/inputs/Select";
 import { Link, useNavigate } from "react-router-dom";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CreateAmendment = () => {
   const [createAmandment, setCreateAmandment] = useState<boolean>(false);
@@ -69,10 +71,16 @@ const CreateAmendment = () => {
   ];
 
   return (
-    <main>
+    <menu className="flex items-center justify-end gap-3">
       <Button
-        value={"Create Amendment"}
+        primary
         onClick={() => setCreateAmandment(true)}
+        value={
+          <menu className="flex items-center gap-2">
+            <FontAwesomeIcon icon={faPlus} />
+            Add Amendment
+          </menu>
+        }
       />
       {createAmandment && (
         <Modal
@@ -126,7 +134,7 @@ const CreateAmendment = () => {
           </section>
         </Modal>
       )}
-    </main>
+    </menu>
   );
 };
 

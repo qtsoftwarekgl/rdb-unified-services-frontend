@@ -83,8 +83,8 @@ const CompanyDetails = () => {
   return (
     <UserLayout>
       <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
-        <menu className="flex justify-between">
-          <h1 className="mb-8 text-2xl font-medium text-center text-black ">
+        <menu className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-medium text-center text-black ">
             {t("company details")}
           </h1>
           <CreateAmendment />

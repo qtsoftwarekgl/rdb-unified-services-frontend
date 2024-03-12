@@ -9,7 +9,7 @@ export const defaultSections = [
       ],
       [
         {
-          to: "/domestic-business-registration",
+          to: "/business-registration/new",
           label: "Domestic Business Registration",
         },
         {
