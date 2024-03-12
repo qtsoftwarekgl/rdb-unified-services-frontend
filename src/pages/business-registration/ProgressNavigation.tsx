@@ -1,31 +1,31 @@
-import { Link } from 'react-router-dom';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  RegistrationTab,
-  setBusinessActiveTab,
-} from '../../states/features/businessRegistrationSlice';
+import { Link } from "react-router-dom";
+import { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { TabType } from "../../states/features/types";
+import { UnknownAction } from "@reduxjs/toolkit";
 
-const ProgressNavigation = () => {
+interface Props {
+  tabs: TabType[];
+  setActiveTab: (tab: string) => UnknownAction;
+}
+
+const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { business_registration_tabs } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
 
   return (
     <nav className="flex items-center gap-4 bg-white h-fit py-[5px] rounded-md shadow-sm w-full justify-evenly px-4">
-      {business_registration_tabs.map((tab: RegistrationTab, index: number) => {
+      {tabs.map((tab: TabType, index: number) => {
         return (
           <Link
             key={Number(index)}
-            to={'#'}
+            to={"#"}
             onClickCapture={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveTab(tab?.name));
+              dispatch(setActiveTab(tab?.name));
             }}
             className={`step w-full h-full py-[6px] flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:text-white hover:bg-opacity-90 rounded-md ${
-              tab?.active && 'bg-primary text-white'
+              tab?.active && "bg-primary text-white"
             }`}
             onClick={(e) => {
               e.preventDefault();
