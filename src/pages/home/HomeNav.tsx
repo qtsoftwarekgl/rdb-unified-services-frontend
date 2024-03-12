@@ -23,8 +23,11 @@ const HomeNav = () => {
           <img className="max-w-[150px]" src={rdb_logo} />
         </div>
 
-        <div className="flex items-center justify-around w-[25%] ">
-          <Link to="/auth/login" className="flex items-center justify-center">
+        <div className="flex items-center justify-around">
+          <Link
+            to="/auth/login"
+            className="flex items-center justify-center mr-4"
+          >
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
@@ -32,11 +35,11 @@ const HomeNav = () => {
               icon={faRightToBracket}
               className="mr-2 w-7 h-7"
             />
-            <span>Log In</span>
+            <span className="hidden md:block">Log In</span>
           </Link>
           <Link
             to="/auth/register"
-            className="flex items-center justify-center"
+            className="flex items-center justify-center mr-4"
           >
             <FontAwesomeIcon
               onClick={(e) => {
@@ -45,7 +48,7 @@ const HomeNav = () => {
               icon={faUser}
               className="w-8 h-8 mr-2"
             />
-            <span>Create Account</span>
+            <span className="hidden md:block">Create Account</span>
           </Link>
           <menu className="flex">
             <img

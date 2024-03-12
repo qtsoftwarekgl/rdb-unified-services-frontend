@@ -164,11 +164,11 @@ export const enterpriseRegistrationSlice = createSlice({
       );
     },
     setEnterpriseCompletedStep: (state, action) => {
-      const updatedRegistrationTabs = state.enterprise_registration_tabs.map(
+      const updatedRegistrationTabs = state.enterprise_registration_tabs?.map(
         (tab: EnterpriseRegistrationTab) => {
           return {
             ...tab,
-            steps: tab.steps.map((step: EnterpriseRegistrationStep) => {
+            steps: tab.steps?.map((step: EnterpriseRegistrationStep) => {
               return {
                 ...step,
                 completed: false,

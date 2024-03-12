@@ -1,17 +1,17 @@
-import { FC, useEffect, useState } from 'react';
-import Select from '../../components/inputs/Select';
-import Input from '../../components/inputs/Input';
-import { faEllipsis, faSearch } from '@fortawesome/free-solid-svg-icons';
-import Button from '../../components/inputs/Button';
-import Loader from '../../components/Loader';
-import { userData } from '../../constants/Authentication';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
+import { FC, useEffect, useState } from "react";
+import Select from "../../components/inputs/Select";
+import Input from "../../components/inputs/Input";
+import { faEllipsis, faSearch } from "@fortawesome/free-solid-svg-icons";
+import Button from "../../components/inputs/Button";
+import Loader from "../../components/Loader";
+import { userData } from "../../constants/Authentication";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
 import {
   setNationalIdDetails,
   setRegistrationStep,
-} from '../../states/features/authSlice';
-import RwandanRegistrationForm from './RwandanRegistrationForm';
+} from "../../states/features/authSlice";
+import RwandanRegistrationForm from "./RwandanRegistrationForm";
 
 interface SelectNationalityProps {
   isOpen: boolean;
@@ -20,18 +20,20 @@ interface SelectNationalityProps {
 const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [documentType, setDocumentType] = useState<string>('nid');
+  const [documentType, setDocumentType] = useState<string>("nid");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [documentNo, setDocumentNo] = useState<string>('');
+  const [documentNo, setDocumentNo] = useState<string>("");
   const [isError, setIsError] = useState<boolean>(false);
   const [nationalIdError, setNationalIdError] = useState<boolean>(false);
-  const { nationalIdDetails, registrationStep } = useSelector((state: RootState) => state.auth);
+  const { nationalIdDetails, registrationStep } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   useEffect(() => {
-    if (documentType === 'passport') {
+    if (documentType === "passport") {
       dispatch(setNationalIdDetails(null));
       dispatch(setNationalIdDetails(null));
-      dispatch(setRegistrationStep('foreign-registration-form'));
+      dispatch(setRegistrationStep("foreign-registration-form"));
     }
   }, [dispatch, documentType]);
 
@@ -42,25 +44,25 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
       <form
         className={`flex flex-col items-center gap-6 w-[70%] mx-auto p-6 shadow-md rounded-md max-2xl:w-[75%] max-xl:w-[80%] max-[1000px]:w-[85%] max-[900px]:w-[90%] max-md:w-[95%] max-sm:w-[100%]`}
       >
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col">
+        <menu className="flex items-start w-full gap-6 max-sm:flex-col">
           <Select
             label="Document Type"
             required
             options={[
-              { value: 'nid', label: 'National ID' },
-              { label: 'Passport', value: 'passport' },
+              { value: "nid", label: "National ID" },
+              { label: "Passport", value: "passport" },
             ]}
             onChange={(e) => {
               setDocumentType(e?.value);
             }}
-            defaultValue={{ value: 'nid', label: 'National ID' }}
+            defaultValue={{ value: "nid", label: "National ID" }}
             labelClassName={`${
-              documentType === 'passport' &&
-              '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'
+              documentType === "passport" &&
+              "!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full"
             }`}
           />
-          {documentType === 'nid' && (
-            <label className="flex flex-col gap-2 items-start w-full">
+          {documentType === "nid" && (
+            <label className="flex flex-col items-start w-full gap-2">
               <Input
                 required
                 label="ID Document No"
@@ -88,7 +90,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                         dispatch(setNationalIdDetails(nationalIdDetails));
                         dispatch(setNationalIdDetails(userDetails));
                         dispatch(
-                          setRegistrationStep('rwandan-registration-form')
+                          setRegistrationStep("rwandan-registration-form")
                         );
                       }
                       setIsLoading(false);
@@ -123,9 +125,9 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         </menu>
         <menu
           className={`${
-            documentType !== 'nid'
-              ? 'hidden'
-              : 'flex flex-col gap-1 w-full mx-auto px-2'
+            documentType !== "nid"
+              ? "hidden"
+              : "flex flex-col gap-1 w-full mx-auto px-2"
           }`}
         >
           {nationalIdError && (
@@ -137,16 +139,16 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         </menu>
         <menu
           className={`${
-            registrationStep !== 'rwandan-registration-form' && 'mt-[-24px] h-0'
+            registrationStep !== "rwandan-registration-form" && "mt-[-24px] h-0"
           } w-full`}
         >
           <RwandanRegistrationForm
-            isOpen={registrationStep === 'rwandan-registration-form'}
+            isOpen={registrationStep === "rwandan-registration-form"}
           />
         </menu>
         <menu
           className={`${
-            registrationStep === 'rwandan-registration-form' && 'hidden'
+            registrationStep === "rwandan-registration-form" && "hidden"
           } flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
           <Button value="Back" route="/auth/login" />
@@ -157,14 +159,14 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
               e.preventDefault();
               if (
                 nationalIdDetails &&
-                documentType === 'nid' &&
+                documentType === "nid" &&
                 !nationalIdError
               ) {
                 dispatch(setNationalIdDetails(nationalIdDetails));
-                dispatch(setRegistrationStep('rwandan-registration-form'));
-              } else if (documentType === 'passport') {
+                dispatch(setRegistrationStep("rwandan-registration-form"));
+              } else if (documentType === "passport") {
                 dispatch(setNationalIdDetails(null));
-                dispatch(setRegistrationStep('foreign-registration-form'));
+                dispatch(setRegistrationStep("foreign-registration-form"));
               }
             }}
           />
