@@ -133,18 +133,28 @@ export const businessRegistrationSlice = createSlice({
         active: false,
       },
     ],
-    business_active_step: JSON.parse(String(localStorage.getItem('business_active_step'))) || {
+    business_active_step: JSON.parse(
+      String(localStorage.getItem('business_active_step'))
+    ) || {
       label: 'Company Details',
       name: 'company_details',
     },
-    business_active_tab: JSON.parse(String(localStorage.getItem('business_active_tab'))) || {
+    business_active_tab: JSON.parse(
+      String(localStorage.getItem('business_active_tab'))
+    ) || {
       label: 'General Information',
       name: 'general_information',
     },
-    company_details: JSON.parse(String(localStorage.getItem('company_details'))) || null,
+    company_details:
+      JSON.parse(String(localStorage.getItem('company_details'))) || null,
+    company_address:
+      JSON.parse(String(localStorage.getItem('company_address'))) || null,
+    company_activities:
+      JSON.parse(String(localStorage.getItem('company_activities'))) || null,
+    company_business_lines:
+      JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
   },
   reducers: {
-
     // SET ACTIVE TAB
     setBusinessActiveTab: (state, action) => {
       const updatedRegistrationTabs = state.business_registration_tabs?.map(
@@ -211,7 +221,7 @@ export const businessRegistrationSlice = createSlice({
         ?.flatMap((tab: RegistrationTab) => tab?.steps)
         .find((step: RegistrationStep) => step?.name === action.payload);
 
-        // FIND TAB INDEX
+      // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === step?.tab_name
       );
@@ -225,7 +235,8 @@ export const businessRegistrationSlice = createSlice({
       updatedRegistrationTabs[tabIndex].steps[stepIndex].active = true;
 
       // SET ACTIVE STEP TO STATE AND LOCAL STORAGE
-      state.business_active_step = updatedRegistrationTabs[tabIndex].steps[stepIndex];
+      state.business_active_step =
+        updatedRegistrationTabs[tabIndex].steps[stepIndex];
       localStorage.setItem(
         'business_active_step',
         JSON.stringify(updatedRegistrationTabs[tabIndex].steps[stepIndex])
@@ -248,7 +259,6 @@ export const businessRegistrationSlice = createSlice({
             steps: tab.steps?.map((step: RegistrationStep) => {
               return {
                 ...step,
-                completed: false,
               };
             }),
           };
@@ -260,7 +270,7 @@ export const businessRegistrationSlice = createSlice({
         ?.flatMap((tab: RegistrationTab) => tab?.steps)
         .find((step: RegistrationStep) => step?.name === action.payload);
 
-        // FIND TAB INDEX
+      // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === step?.tab_name
       );
@@ -286,10 +296,38 @@ export const businessRegistrationSlice = createSlice({
       state.company_details = action.payload;
       localStorage.setItem('company_details', JSON.stringify(action.payload));
     },
+
+    // SET COMPANY ADDRESS
+    setCompanyAddress: (state, action) => {
+      state.company_address = action.payload;
+      localStorage.setItem('company_address', JSON.stringify(action.payload));
+    },
+
+    // SET COMPANY ACTIVITY
+    setCompanyActivities: (state, action) => {
+      state.company_activities = action.payload;
+      localStorage.setItem('company_activities', JSON.stringify(action.payload));
+    },
+
+    // SET COMPANY SUB ACTIVITIES
+    setCompanySubActivities: (state, action) => {
+      state.company_business_lines = action.payload;
+      localStorage.setItem(
+        'company_business_lines',
+        JSON.stringify(action.payload)
+      );
+    },
   },
 });
 
 export default businessRegistrationSlice.reducer;
 
-export const { setBusinessActiveTab, setBusinessActiveStep, setBusinessCompletedStep, setCompanyDetails } =
-  businessRegistrationSlice.actions;
+export const {
+  setBusinessActiveTab,
+  setBusinessActiveStep,
+  setBusinessCompletedStep,
+  setCompanyDetails,
+  setCompanyAddress,
+  setCompanyActivities,
+  setCompanySubActivities,
+} = businessRegistrationSlice.actions;

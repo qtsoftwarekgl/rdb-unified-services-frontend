@@ -28,7 +28,7 @@ const AddRole = () => {
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: object) => {
-    console.log({
+    return({
       ...data,
       permissions: selectedPermissions,
     });

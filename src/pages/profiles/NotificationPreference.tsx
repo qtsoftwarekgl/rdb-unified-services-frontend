@@ -25,7 +25,7 @@ const NotificationPreference = () => {
   const onSubmit: SubmitHandler<FieldValues | UserPreferencePayload> = (
     data
   ) => {
-    console.log(data);
+    return data;
   };
 
   return (

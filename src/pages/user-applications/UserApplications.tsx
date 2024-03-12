@@ -63,7 +63,7 @@ const UserApplications = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                console.log(row);
+                return row?.original;
               }}
               icon={faEye}
               className="text-primary"
