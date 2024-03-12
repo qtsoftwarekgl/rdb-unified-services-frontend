@@ -133,7 +133,6 @@ const EditInstitution = () => {
                   defaultValue={options?.find((o) => o.value === watch('type'))}
                   label="Institution type"
                   onChange={(e) => {
-                    console.log(e);
                     field.onChange(e?.value);
                   }}
                   options={options}

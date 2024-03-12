@@ -349,7 +349,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
         >
           <Button value="Back" />
           <Button
-            value={isLoading ? <Loader /> : 'Next'}
+            value={isLoading ? <Loader /> : 'Continue'}
             primary={!searchCompany?.error}
             disabled={searchCompany?.error}
             submit

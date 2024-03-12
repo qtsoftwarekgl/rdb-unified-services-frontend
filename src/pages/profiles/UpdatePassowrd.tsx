@@ -32,7 +32,7 @@ const UpdatePassword = () => {
   const onSubmit: SubmitHandler<FieldValues | UpdatePasswordPayload> = (
     data
   ) => {
-    console.log(data);
+    return data;
   };
 
   return (

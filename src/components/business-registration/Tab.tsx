@@ -32,8 +32,6 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep }) => {
 
   if (!isOpen) return null;
 
-  console.log(">>>>>>>>>>>>>>>>>>>{{{{{{{{{{{{{{{", steps);
-
   return (
     <section className="flex items-start w-full">
       <aside

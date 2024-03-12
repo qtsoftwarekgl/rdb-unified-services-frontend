@@ -142,6 +142,7 @@ export const businessRegistrationSlice = createSlice({
       name: 'general_information',
     },
     company_details: JSON.parse(String(localStorage.getItem('company_details'))) || null,
+    company_address: JSON.parse(String(localStorage.getItem('company_address'))) || null,
   },
   reducers: {
 
@@ -248,7 +249,6 @@ export const businessRegistrationSlice = createSlice({
             steps: tab.steps?.map((step: RegistrationStep) => {
               return {
                 ...step,
-                completed: false,
               };
             }),
           };
@@ -286,10 +286,21 @@ export const businessRegistrationSlice = createSlice({
       state.company_details = action.payload;
       localStorage.setItem('company_details', JSON.stringify(action.payload));
     },
+
+    // SET COMPANY ADDRESS
+    setCompanyAddress: (state, action) => {
+      state.company_address = action.payload;
+      localStorage.setItem('company_address', JSON.stringify(action.payload));
+    },
   },
 });
 
 export default businessRegistrationSlice.reducer;
 
-export const { setBusinessActiveTab, setBusinessActiveStep, setBusinessCompletedStep, setCompanyDetails } =
-  businessRegistrationSlice.actions;
+export const {
+  setBusinessActiveTab,
+  setBusinessActiveStep,
+  setBusinessCompletedStep,
+  setCompanyDetails,
+  setCompanyAddress,
+} = businessRegistrationSlice.actions;
