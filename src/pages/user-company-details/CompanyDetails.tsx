@@ -62,7 +62,7 @@ const CompanyDetails = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                console.log(row);
+                return row;
               }}
               icon={faEye}
               className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"

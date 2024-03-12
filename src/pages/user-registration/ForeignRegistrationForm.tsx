@@ -295,7 +295,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
               );
             }}
           />
-                    <Controller
+          <Controller
             name="email"
             control={control}
             rules={{

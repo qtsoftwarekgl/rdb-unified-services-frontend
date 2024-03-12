@@ -39,7 +39,7 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
   }
 
   const onSubmit: SubmitHandler<FieldValues | UserPayload> = (data) => {
-    console.log(data);
+    return data;
   };
 
   return (

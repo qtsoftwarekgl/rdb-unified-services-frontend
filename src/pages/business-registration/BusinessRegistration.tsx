@@ -1,15 +1,18 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../../states/store";
-import UserLayout from "../../containers/UserLayout";
-import ProgressNavigation from "./ProgressNavigation";
-import { useLocation } from "react-router-dom";
-import Tab from "../../components/business-registration/Tab";
+import { useSelector } from 'react-redux';
+import { RootState } from '../../states/store';
+import UserLayout from '../../containers/UserLayout';
+import ProgressNavigation from './ProgressNavigation';
+import { useLocation } from 'react-router-dom';
+import Tab from '../../components/business-registration/Tab';
 import {
   RegistrationTab,
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from "../../states/features/businessRegistrationSlice";
-import CompanyDetails from "./general-information/CompanyDetails";
+} from '../../states/features/businessRegistrationSlice';
+import CompanyDetails from './general-information/CompanyDetails';
+import CompanyAddress from './general-information/CompanyAddress';
+import BusinessActivity from './general-information/BusinessActivity';
+import BoardDirectors from './management/BoardDirectors';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -20,7 +23,7 @@ const BusinessRegistration = () => {
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entry_id = queryParams.get('entry_id');
 
   return (
     <UserLayout>
@@ -41,7 +44,22 @@ const BusinessRegistration = () => {
                 >
                   {/* COMPANY DETAILS */}
                   <CompanyDetails
-                    isOpen={business_active_step?.name === "company_details"}
+                    isOpen={business_active_step?.name === 'company_details'}
+                  />
+                  {/* COMPANY ADDRESS */}
+                  <CompanyAddress
+                    isOpen={business_active_step?.name === 'company_address'}
+                  />
+                  {/* BUSINESS ACTIVITY */}
+                  <BusinessActivity
+                    isOpen={
+                      business_active_step?.name === 'business_activity_vat'
+                    }
+                  />
+
+                  {/* BOARD OF DIRECTORS */}
+                  <BoardDirectors
+                    isOpen={business_active_step?.name === 'board_of_directors'}
                   />
                 </Tab>
               );
