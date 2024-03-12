@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, set, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';

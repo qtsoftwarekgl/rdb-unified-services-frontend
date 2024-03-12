@@ -11,6 +11,7 @@ import {
 } from '../../states/features/businessRegistrationSlice';
 import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
+import BusinessActivity from './general-information/BusinessActivity';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -47,6 +48,10 @@ const BusinessRegistration = () => {
                   {/* COMPANY ADDRESS */}
                   <CompanyAddress
                     isOpen={business_active_step?.name === 'company_address'}
+                  />
+                  {/* BUSINESS ACTIVITY */}
+                  <BusinessActivity
+                    isOpen={business_active_step?.name === 'business_activity_vat'}
                   />
                 </Tab>
               );
