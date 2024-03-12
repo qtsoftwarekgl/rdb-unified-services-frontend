@@ -10,7 +10,7 @@ import CompanyDetails from "./general-information/CompanyDetails";
 const BusinessRegistration = () => {
 
   // STATE VARIABLES
-  const { registration_tabs, active_step } = useSelector(
+  const { business_registration_tabs, business_active_step } = useSelector(
     (state: RootState) => state.businessRegistration
   );
 
@@ -24,7 +24,7 @@ const BusinessRegistration = () => {
       <main className="p-8 flex flex-col gap-6">
         <ProgressNavigation />
         <menu className="flex items-center w-full gap-5">
-          {registration_tabs?.map((tab: RegistrationTab, index: number) => {
+          {business_registration_tabs?.map((tab: RegistrationTab, index: number) => {
             return (
               <Tab
                 isOpen={tab?.active}
@@ -34,7 +34,7 @@ const BusinessRegistration = () => {
 
                 {/* COMPANY DETAILS */}
                 <CompanyDetails
-                  isOpen={active_step?.name === 'company_details'}
+                  isOpen={business_active_step?.name === 'company_details'}
                 />
               </Tab>
             );
