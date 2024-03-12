@@ -14,11 +14,9 @@ import Button from '../../../components/inputs/Button';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  RegistrationStep,
-  RegistrationTab,
-  setActiveStep,
+  setBusinessActiveStep,
   setCompanyDetails,
-  setCompletedStep,
+  setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
 
 interface CompanyDetailsProps {
@@ -37,7 +35,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { registration_tabs, company_details } = useSelector(
+  const { company_details } = useSelector(
     (state: RootState) => state.businessRegistration
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -64,25 +62,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(
-        setCompletedStep({
-          ...registration_tabs
-            ?.flatMap((tab: RegistrationTab) => tab?.steps)
-            ?.find(
-              (step: RegistrationStep) => step?.name === 'company_details'
-            ),
-          completed: true,
-        })
-      );
+      dispatch(setBusinessCompletedStep('company_details'));
 
       // SET ACTIVE STEP
-      dispatch(
-        setActiveStep(
-          registration_tabs
-            ?.flatMap((tab: RegistrationTab) => tab?.steps)
-            ?.find((step: RegistrationStep) => step?.name === 'company_address')
-        )
-      );
+      dispatch(setBusinessActiveStep('company_address'));
     }, 1000);
   };
 
