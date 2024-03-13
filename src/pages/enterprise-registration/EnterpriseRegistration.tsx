@@ -9,11 +9,15 @@ import ProgressNavigation from "../business-registration/ProgressNavigation";
 import { TabType } from "../../states/features/types";
 import Tab from "../../components/business-registration/Tab";
 import { useLocation } from "react-router-dom";
+import EnterpriseDetails from "./enterprise_details/EnterpriseDetails";
+import BusinessActivity from "./enterprise_details/BusinessActivityVAT";
+import OfficeAddress from "./enterprise_details/OfficeAddress";
+import Attachments from "./Attachements";
+import Preview from "./Preview";
 
 const EnterpriseRegistration = () => {
-  const { enterprise_registration_tabs } = useSelector(
-    (state: RootState) => state.enterpriseRegistration
-  );
+  const { enterprise_registration_tabs, enterprise_registration_active_step } =
+    useSelector((state: RootState) => state.enterpriseRegistration);
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -35,9 +39,35 @@ const EnterpriseRegistration = () => {
                 key={`${String(index)}-${entry_id}`}
                 setActiveStep={setEnterpriseActiveStep}
               >
-                <div>
-                  <h1>Enterprise Details</h1>
-                </div>
+                <EnterpriseDetails
+                  isOpen={
+                    enterprise_registration_active_step?.name ===
+                    "enterprise_details"
+                  }
+                />
+                <BusinessActivity
+                  isOpen={
+                    enterprise_registration_active_step?.name ===
+                    "business_activity_vat"
+                  }
+                />
+                <OfficeAddress
+                  isOpen={
+                    enterprise_registration_active_step?.name ===
+                    "office_address"
+                  }
+                />
+                <Attachments
+                  isOpen={
+                    enterprise_registration_active_step?.name === "attachments"
+                  }
+                />
+                <Preview
+                  isOpen={
+                    enterprise_registration_active_step?.name ===
+                    "enterprise_preview_submission"
+                  }
+                />
               </Tab>
             );
           })}

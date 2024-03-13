@@ -3,14 +3,13 @@ import { Navigate, Outlet } from "react-router-dom";
 import { RootState } from "../states/store";
 
 const AuthenticatedRoutes = () => {
+  // STATE VARIABLES
+  const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
-    // STATE VARIABLES
-    const { user } = useSelector((state: RootState) => state.user);
-
-    if (user?.email?.includes("info")) {
-        return <Navigate to="/auth/login" />;
-    }
-    return <Outlet />;
+  if (!isAuthenticated) {
+    return <Navigate to="/auth/login" />;
+  }
+  return <Outlet />;
 };
 
 export default AuthenticatedRoutes;

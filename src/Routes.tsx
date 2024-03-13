@@ -33,6 +33,8 @@ import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPa
 import NewBusinessRegistration from "./pages/business-registration/NewBusinessRegistration";
 import EnterpriseRegistration from "./pages/enterprise-registration/EnterpriseRegistration";
 import NewEnterpriseRegistration from "./pages/enterprise-registration/NewEnterpriseRegistration";
+import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
+import CessationToDormant from "./pages/cessation-dormancy/CessationToDormant";
 
 const Routes = () => {
   return (
@@ -82,6 +84,11 @@ const Routes = () => {
           <Route
             path="/enterprise-registration/new"
             element={<NewEnterpriseRegistration />}
+          />
+          <Route path="/success" element={<BusinessRegisterSuccess />} />
+          <Route
+            path="/cessation-to-dormant"
+            element={<CessationToDormant />}
           />
         </Route>
 

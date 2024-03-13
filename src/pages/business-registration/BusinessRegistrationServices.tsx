@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "../../components/Accordion";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
 interface Section {
   title: string;
@@ -16,12 +17,24 @@ interface Props {
 }
 
 const BusinessRegistrationServices: React.FC<Props> = ({ sections }) => {
-  // Render each accordion section
+  const accordionsRef = useRef<Array<HTMLButtonElement | null>>([]);
+
+  useEffect(() => {
+    // Click the first button when the component mounts
+    if (accordionsRef?.current?.length > 0) {
+      accordionsRef?.current[0]?.click();
+    }
+  }, []);
+
   const renderAccordionSections = () => {
     return sections.map((section, index) => (
       <Accordion key={index} type="single" collapsible className="p-8">
         <AccordionItem value={`item-${index + 1}`}>
-          <AccordionTrigger className="text-xl font-bold">
+          <AccordionTrigger
+            ref={(ref) => (accordionsRef.current[index] = ref)}
+            id={`accordion-${index + 1}`}
+            className="text-xl font-bold"
+          >
             {section.title}
           </AccordionTrigger>
           <AccordionContent className="relative border-none">
