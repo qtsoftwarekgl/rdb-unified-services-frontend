@@ -20,8 +20,6 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep }) => {
   const dispatch: AppDispatch = useDispatch();
   const { business_active_tab } = useSelector((state: RootState) => state.businessRegistration);
 
-  console.log(steps?.find((step) => step?.tab_name === business_active_tab?.name && step?.active === true))
-
   // HANDLE RENDER
   useEffect(() => {
     if (isOpen && steps?.length > 0) {

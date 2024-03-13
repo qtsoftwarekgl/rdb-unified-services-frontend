@@ -23,7 +23,7 @@ interface InputProps {
   prefixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
   prefixIconPrimary?: boolean;
   prefixText?: string | ReactNode;
-  checked?: boolean;
+  checked?: boolean | null | undefined;
   accept?: string;
   min?: string | number;
   readOnly?: boolean;

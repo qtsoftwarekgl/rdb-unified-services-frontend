@@ -106,7 +106,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                console.log(row?.original);
                 dispatch(
                   setSeniorManagement(
                     senior_management?.filter(

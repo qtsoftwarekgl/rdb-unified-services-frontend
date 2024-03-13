@@ -108,7 +108,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
             })}
             onChange={(e) => {
               setRandomNumber(Math.floor(Math.random() * 10) + 1);
-              console.log(e);
+              return e;
             }}
           />
           {errors.activity && (
@@ -241,7 +241,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                         icon={faMinus}
                         onClick={(e) => {
                           e.preventDefault();
-                          console.log(business_line);
                           const updatedSubActivities =
                             company_business_lines?.filter(
                               (subActivity: unknown) => {

@@ -104,7 +104,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                console.log(row?.original);
                 dispatch(
                   setBoardDirectors(
                     board_of_directors?.filter(
@@ -526,7 +525,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
                         accept="application/pdf,image/*"
                         className="!w-fit max-sm:!w-full"
                         onChange={(e) => {
-                          console.log(e?.target?.files?.[0]);
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
                           setValue('attachment', e?.target?.files?.[0]?.name);
