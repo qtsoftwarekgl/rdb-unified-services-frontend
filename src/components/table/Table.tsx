@@ -175,7 +175,7 @@ const Table: FC<TableProps> = ({
                   <thead>
                     <tr>
                       <th
-                        className="p-4 bg-[#5c7285] border-background capitalize text-left text-white"
+                        className="p-4 bg-[#5c7285] border-background uppercase font-semibold text-left text-white"
                         colSpan={columns.length}
                       >
                         {tableTitle}

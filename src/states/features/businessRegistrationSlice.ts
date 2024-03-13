@@ -153,6 +153,8 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('company_activities'))) || null,
     company_business_lines:
       JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
+    board_of_directors:
+      JSON.parse(String(localStorage.getItem('board_of_directors'))) || [],
   },
   reducers: {
     // SET ACTIVE TAB
@@ -291,6 +293,47 @@ export const businessRegistrationSlice = createSlice({
       );
     },
 
+    // REMOVE COMPLETED STEP
+    removeBusinessCompletedStep: (state, action) => {
+      const updatedRegistrationTabs = state.business_registration_tabs?.map(
+        (tab: RegistrationTab) => {
+          return {
+            ...tab,
+            steps: tab.steps?.map((step: RegistrationStep) => {
+              return {
+                ...step,
+              };
+            }),
+          };
+        }
+      );
+
+      // FIND STEP
+      const step = updatedRegistrationTabs
+        ?.flatMap((tab: RegistrationTab) => tab?.steps)
+        .find((step: RegistrationStep) => step?.name === action.payload);
+
+      // FIND TAB INDEX
+      const tabIndex = updatedRegistrationTabs?.findIndex(
+        (tab: RegistrationTab) => tab?.name === step?.tab_name
+      );
+
+      // FIND STEP INDEX
+      const stepIndex = updatedRegistrationTabs[tabIndex].steps?.findIndex(
+        (stepToFind: RegistrationStep) => stepToFind?.name === step?.name
+      );
+
+      // SET COMPLETED STEP
+      updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = false;
+
+      // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
+      state.business_registration_tabs = updatedRegistrationTabs;
+      localStorage.setItem(
+        'business_registration_tabs',
+        JSON.stringify(updatedRegistrationTabs)
+      );
+    },
+
     // SET COMPANY DETAILS
     setCompanyDetails: (state, action) => {
       state.company_details = action.payload;
@@ -306,7 +349,10 @@ export const businessRegistrationSlice = createSlice({
     // SET COMPANY ACTIVITY
     setCompanyActivities: (state, action) => {
       state.company_activities = action.payload;
-      localStorage.setItem('company_activities', JSON.stringify(action.payload));
+      localStorage.setItem(
+        'company_activities',
+        JSON.stringify(action.payload)
+      );
     },
 
     // SET COMPANY SUB ACTIVITIES
@@ -316,6 +362,12 @@ export const businessRegistrationSlice = createSlice({
         'company_business_lines',
         JSON.stringify(action.payload)
       );
+    },
+
+    // SET BOARD OF DIRECTORS
+    setBoardDirectors: (state, action) => {
+      state.board_of_directors = action.payload;
+      localStorage.setItem('board_of_directors', JSON.stringify(action.payload));
     },
   },
 });
@@ -330,4 +382,6 @@ export const {
   setCompanyAddress,
   setCompanyActivities,
   setCompanySubActivities,
+  removeBusinessCompletedStep,
+  setBoardDirectors,
 } = businessRegistrationSlice.actions;

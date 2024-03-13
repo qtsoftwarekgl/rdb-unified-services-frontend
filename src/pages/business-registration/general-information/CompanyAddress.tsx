@@ -15,6 +15,7 @@ import {
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessCompletedStep,
   setCompanyAddress,
@@ -70,8 +71,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
       setValue('fax', company_address?.fax);
       setValue('email', company_address?.email);
       setValue('phone', company_address?.phone);
+    } else {
+      dispatch(removeBusinessCompletedStep('company_address'));
     }
-  }, [company_address, setValue]);
+  }, [company_address, dispatch, setValue]);
 
   useEffect(() => {
     if (watch('province')) {
@@ -158,7 +161,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
         <menu className="w-full flex items-start gap-6">
           <Controller
             name="province"
-            defaultValue={watch('province') || company_address?.province}
+            defaultValue={company_address?.province}
             control={control}
             rules={{ required: 'Select province of residence' }}
             render={({ field }) => {
@@ -199,7 +202,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
           <Controller
             name="district"
             control={control}
-            defaultValue={watch('district') || company_address?.district}
+            defaultValue={company_address?.district}
             rules={{ required: 'Select district of residence' }}
             render={({ field }) => {
               return (
@@ -249,7 +252,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
           <Controller
             name="sector"
             control={control}
-            defaultValue={watch('sector') || company_address?.sector}
+            defaultValue={
+              company_address?.sector &&
+              company_address?.province &&
+              company_address?.district &&
+              getRwandaSectors(
+                company_address?.province,
+                company_address?.district
+              )?.find((sector: string) => sector === company_address?.sector)
+            }
             rules={{ required: 'Select sector of residence' }}
             render={({ field }) => {
               return (
@@ -301,6 +312,17 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
             name="cell"
             control={control}
             rules={{ required: 'Select cell of residence' }}
+            defaultValue={
+              company_address?.cell &&
+              company_address?.province &&
+              company_address?.district &&
+              company_address?.sector &&
+              getRwandaCells(
+                company_address?.province,
+                company_address?.district,
+                company_address?.sector
+              )?.find((cell: string) => cell === company_address?.cell)
+            }
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -353,7 +375,19 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
             name="village"
             control={control}
             rules={{ required: 'Select village of residence' }}
-            defaultValue={watch('village') || company_address?.village}
+            defaultValue={
+              company_address?.village &&
+              company_address?.province &&
+              company_address?.district &&
+              company_address?.sector &&
+              company_address?.cell &&
+              getRwandaVillages(
+                company_address?.province,
+                company_address?.district,
+                company_address?.sector,
+                company_address?.cell
+              )?.find((village: string) => village === company_address?.village)
+            }
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -536,7 +570,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('company_details'));
+            }}
+          />
           <Button value={isLoading ? <Loader /> : 'Continue'} primary submit />
         </menu>
       </form>
