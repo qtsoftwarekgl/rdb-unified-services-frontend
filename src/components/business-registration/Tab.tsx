@@ -2,28 +2,36 @@ import { FC, ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { AppDispatch } from "../../states/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
-import { Step } from "../../states/features/types";
+import { Step, TabType } from "../../states/features/types";
 
 interface TabProps {
   steps: Array<Step>;
   isOpen: boolean;
   children: ReactNode;
   setActiveStep: (step: string) => UnknownAction;
+  tab?: TabType
 }
 
 const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const { business_active_tab } = useSelector((state: RootState) => state.businessRegistration);
+
+  console.log(steps?.find((step) => step?.tab_name === business_active_tab?.name && step?.active === true))
 
   // HANDLE RENDER
   useEffect(() => {
     if (isOpen && steps?.length > 0) {
       dispatch(
         setActiveStep(
-          steps?.find((step: Step) => !step?.completed)?.name || steps[0]?.name
+          steps?.find(
+            (step) => step?.tab_name === business_active_tab?.name && step?.active === true
+          )?.name ||
+            steps?.find((step: Step) => !step?.completed)?.name ||
+            steps[0]?.name
         )
       );
     }

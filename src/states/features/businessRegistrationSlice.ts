@@ -155,6 +155,8 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
     board_of_directors:
       JSON.parse(String(localStorage.getItem('board_of_directors'))) || [],
+    senior_management:
+      JSON.parse(String(localStorage.getItem('senior_management'))) || [],
   },
   reducers: {
     // SET ACTIVE TAB
@@ -367,7 +369,19 @@ export const businessRegistrationSlice = createSlice({
     // SET BOARD OF DIRECTORS
     setBoardDirectors: (state, action) => {
       state.board_of_directors = action.payload;
-      localStorage.setItem('board_of_directors', JSON.stringify(action.payload));
+      localStorage.setItem(
+        'board_of_directors',
+        JSON.stringify(action.payload)
+      );
+    },
+
+    // SET SENIOR MANAGEMENT
+    setSeniorManagement: (state, action) => {
+      state.senior_management = action.payload;
+      localStorage.setItem(
+        'senior_management',
+        JSON.stringify(action.payload)
+      );
     },
   },
 });
@@ -384,4 +398,5 @@ export const {
   setCompanySubActivities,
   removeBusinessCompletedStep,
   setBoardDirectors,
+  setSeniorManagement,
 } = businessRegistrationSlice.actions;

@@ -13,6 +13,7 @@ import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
 import BusinessActivity from './general-information/BusinessActivity';
 import BoardDirectors from './management/BoardDirectors';
+import SeniorManagement from './management/SeniorManagement';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -60,6 +61,11 @@ const BusinessRegistration = () => {
                   {/* BOARD OF DIRECTORS */}
                   <BoardDirectors
                     isOpen={business_active_step?.name === 'board_of_directors'}
+                  />
+
+                  {/* SENIOR MANAGEMENT */}
+                  <SeniorManagement
+                    isOpen={business_active_step?.name === 'senior_management'}
                   />
                 </Tab>
               );
