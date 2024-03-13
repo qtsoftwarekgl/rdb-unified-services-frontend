@@ -10,14 +10,13 @@ import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import {
-  setBusinessActiveTab,
-  setBusinessCompletedStep,
-  setCompanyActivities,
-  setCompanySubActivities,
-} from "../../../states/features/businessRegistrationSlice";
+  setEnterpriseActiveStep,
+  setEnterpriseCompletedStep,
+  setEnterpriseBusinessActivityVat,
+  setEnterpriseBusinessLines,
+} from "../../../states/features/enterpriseRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
-import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 
@@ -29,8 +28,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
-    control,
-    watch,
     setValue,
     formState: { errors },
   } = useForm();
@@ -39,31 +36,29 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [randomNumber, setRandomNumber] = useState<number>(5);
-  const { company_business_lines, company_activities } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
+  const {
+    enterprise_business_lines,
+    enterprise_business_activity_vat,
+    enterprise_registration_active_step,
+  } = useSelector((state: RootState) => state.enterpriseRegistration);
 
   // HANDLE FORM SUBMISSION
-  const onSubmit = (data: FieldValues) => {
+  const onSubmit = () => {
     setIsLoading(true);
     setTimeout(() => {
       // UPDATE COMPANY ACTIVITIES
       dispatch(
-        setCompanyActivities({
-          vat: data?.vat,
-          turnover: data?.turnover,
-          business_lines: company_business_lines,
+        setEnterpriseBusinessActivityVat({
+          business_lines: enterprise_business_lines,
+          step: { ...enterprise_registration_active_step },
         })
       );
 
-      // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep("business_activity_vat"));
-
       // SET CURRENT TAB AS COMPLETED
-      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setEnterpriseCompletedStep("business_activity_vat"));
 
-      // SET THE NEXT TAB AS ACTIVE
-      dispatch(setBusinessActiveTab("management"));
+      // SET THE NEXT STEP AS ACTIVE
+      dispatch(setEnterpriseActiveStep("office_address"));
 
       setIsLoading(false);
     }, 1000);
@@ -71,15 +66,16 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
 
   // SET DEFAULT VALUES
   useEffect(() => {
-    if (company_activities) {
-      setValue("vat", company_activities?.vat);
-      setValue("turnover", company_activities?.turnover);
-
-      if (company_activities?.business_lines?.length > 0) {
-        dispatch(setCompanySubActivities(company_activities?.business_lines));
+    if (enterprise_business_activity_vat) {
+      if (enterprise_business_activity_vat?.business_lines?.length > 0) {
+        dispatch(
+          setEnterpriseBusinessLines(
+            enterprise_business_activity_vat?.business_lines
+          )
+        );
       }
     }
-  }, [company_activities, dispatch, setValue]);
+  }, [enterprise_business_activity_vat, dispatch, setValue]);
 
   if (!isOpen) {
     return null;
@@ -123,7 +119,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
               {businessSubActivities
                 ?.slice(0, randomNumber)
                 .map((subActivity) => {
-                  const subActivityExists = company_business_lines?.find(
+                  const subActivityExists = enterprise_business_lines?.find(
                     (activity: object) => activity?.id === subActivity?.id
                   );
                   return (
@@ -138,15 +134,17 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                           icon={faPlus}
                           onClick={(e) => {
                             e.preventDefault();
-                            if (company_business_lines?.length > 0) {
+                            if (enterprise_business_lines?.length > 0) {
                               dispatch(
-                                setCompanySubActivities([
-                                  ...company_business_lines,
+                                setEnterpriseBusinessLines([
+                                  ...enterprise_business_lines,
                                   subActivity,
                                 ])
                               );
                             } else {
-                              dispatch(setCompanySubActivities([subActivity]));
+                              dispatch(
+                                setEnterpriseBusinessLines([subActivity])
+                              );
                             }
                           }}
                         />
@@ -166,9 +164,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
           <section className="flex flex-col w-full gap-4">
             <h1 className="text-md">Selected business lines</h1>
             <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-              {company_business_lines?.map(
+              {enterprise_business_lines?.map(
                 (business_line: unknown, index: number) => {
-                  const mainExists = company_business_lines?.find(
+                  const mainExists = enterprise_business_lines?.find(
                     (activity: object) => activity?.main === true
                   );
                   const mainBusinessLine = mainExists?.id === business_line?.id;
@@ -188,8 +186,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 dispatch(
-                                  setCompanySubActivities(
-                                    company_business_lines?.map(
+                                  setEnterpriseBusinessLines(
+                                    enterprise_business_lines?.map(
                                       (activity: object) => {
                                         if (
                                           activity?.id === business_line?.id
@@ -215,8 +213,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                             onClick={(e) => {
                               e.preventDefault();
                               dispatch(
-                                setCompanySubActivities(
-                                  company_business_lines?.map(
+                                setEnterpriseBusinessLines(
+                                  enterprise_business_lines?.map(
                                     (activity: object) => {
                                       if (activity?.id === business_line?.id) {
                                         return {
@@ -242,13 +240,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                           e.preventDefault();
                           console.log(business_line);
                           const updatedSubActivities =
-                            company_business_lines?.filter(
+                            enterprise_business_lines?.filter(
                               (subActivity: unknown) => {
                                 return subActivity?.id !== business_line?.id;
                               }
                             );
                           dispatch(
-                            setCompanySubActivities(updatedSubActivities)
+                            setEnterpriseBusinessLines(updatedSubActivities)
                           );
                         }}
                       />
@@ -259,76 +257,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
             </ul>
           </section>
         </menu>
-        <section className="flex flex-col w-full gap-6">
-          <h1 className="text-lg font-semibold text-center uppercase">
-            VAT Certificate
-          </h1>
-          <menu className="w-[50%] flex flex-col gap-6">
-            <Controller
-              name="vat"
-              rules={{ required: "Select choice" }}
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-2">
-                    <p className="flex items-center gap-2 text-[15px]">
-                      Would you like to register for VAT Certificate{" "}
-                      <span className="text-red-600">*</span>
-                    </p>
-                    <menu className="flex items-center w-full gap-6">
-                      <Input
-                        type="radio"
-                        label="Yes"
-                        checked={watch("vat") === "yes"}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setValue("vat", "yes");
-                          }
-                        }}
-                        name={field?.name}
-                      />
-                      <Input
-                        type="radio"
-                        label="No"
-                        checked={watch("vat") === "no"}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setValue("vat", "no");
-                          }
-                        }}
-                        name={field?.name}
-                      />
-                      {errors?.vat && (
-                        <p className="text-[13px] text-red-500">
-                          {String(errors?.vat.message)}
-                        </p>
-                      )}
-                    </menu>
-                  </label>
-                );
-              }}
-            />
-            {watch("vat") === "yes" && (
-              <Controller
-                defaultValue={0}
-                name="turnover"
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col gap-1 w-[60%]">
-                      <Input
-                        defaultValue={watch("turnover") || 0}
-                        label="Enter expected turnover"
-                        required
-                        {...field}
-                      />
-                    </label>
-                  );
-                }}
-              />
-            )}
-          </menu>
-        </section>
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >

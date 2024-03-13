@@ -1,29 +1,29 @@
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../states/store";
-import Input from "../../components/inputs/Input";
+import { AppDispatch, RootState } from "../../../states/store";
+import Input from "../../../components/inputs/Input";
 import {
   faCheck,
   faEllipsis,
   faSearch,
   faX,
 } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../../components/Loader";
+import Loader from "../../../components/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import {
   setEnterpriseActiveStep,
   setEnterpriseCompletedStep,
   setEnterpriseDetails,
-} from "../../states/features/enterpriseRegistrationSlice";
-import Button from "../../components/inputs/Button";
-import Select from "../../components/inputs/Select";
+} from "../../../states/features/enterpriseRegistrationSlice";
+import Button from "../../../components/inputs/Button";
+import Select from "../../../components/inputs/Select";
 import {
   documentTypes,
   dummyPhones,
-} from "../../constants/BusinessRegistration";
-import { userData } from "../../constants/Authentication";
-import { countriesList } from "../../constants/Countries";
+} from "../../../constants/BusinessRegistration";
+import { userData } from "../../../constants/Authentication";
+import { countriesList } from "../../../constants/Countries";
 import moment from "moment";
 
 type EnterpriseDetailsProps = {
@@ -31,9 +31,8 @@ type EnterpriseDetailsProps = {
 };
 
 export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
-  const { enterprise_details } = useSelector(
-    (state: RootState) => state.enterpriseRegistration
-  );
+  const { enterprise_details, enterprise_registration_active_step } =
+    useSelector((state: RootState) => state.enterpriseRegistration);
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isNationalIdLoading, setIsNationalIdLoading] =
@@ -62,7 +61,16 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
-      dispatch(setEnterpriseDetails(data));
+      dispatch(
+        setEnterpriseDetails({
+          ...data,
+          company_type: "enterprise",
+          registration_category: "Domestic",
+          step: {
+            ...enterprise_registration_active_step,
+          },
+        })
+      );
       setIsLoading(false);
 
       // SET CURRENT STEP AS COMPLETED
@@ -1022,13 +1030,22 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
                   userDetails?.date_of_birth ||
                   enterprise_details?.date_of_birth
                 }
-                rules={{ required: "Date of birth is required" }}
+                rules={{
+                  required: "Date of birth is required",
+                  validate: (value) => {
+                    if (moment(value).format() < moment(new Date()).format()) {
+                      return "Select a valid Date of Birth";
+                    }
+                    return true;
+                  },
+                }}
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col items-start w-1/2 gap-2">
                       <Input
                         label="Date of Birth"
                         required
+                        type="date"
                         defaultValue={
                           watch("date_of_birth") ||
                           userDetails?.date_of_birth ||
@@ -1136,13 +1153,17 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
                             watch("gender") === "Male" ||
                             userDetails?.gender === "Male"
                           }
-                          {...field}
+                          onChange={() => {
+                            setValue("gender", "Male");
+                          }}
                         />
 
                         <Input
                           type="radio"
                           label="Female"
-                          {...field}
+                          onChange={() => {
+                            setValue("gender", "Female");
+                          }}
                           checked={
                             watch("gender") === "Female" ||
                             userDetails?.gender === "Female"
@@ -1300,7 +1321,7 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
           <Button
             value={isLoading ? <Loader /> : "Next"}
             primary={!enterprise_details?.error}
-            disabled={userDetails ? Object.keys(userDetails).length < 4 : false}
+            // disabled={userDetails ? Object.keys(userDetails).length < 4 : false}
             submit
           />
         </menu>

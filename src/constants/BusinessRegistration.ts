@@ -24,6 +24,33 @@ export const dummyPhones = [
   },
 ];
 
+export const cessationCompanies = [
+  {
+    tin: "123456789",
+    name: "Flower LTD",
+    cessation_date: "2023-04-29T23:43:17Z",
+    status: "ceased",
+  },
+  {
+    tin: "123456889",
+    name: "XYZ",
+    cessation_date: "2023-04-29T23:43:17Z",
+    status: "ceased",
+  },
+  {
+    tin: "123456789",
+    name: "Soft Drink LTD",
+    cessation_date: "2023-04-29T23:43:17Z",
+    status: "ceased",
+  },
+  {
+    tin: "123456889",
+    name: "XYZ",
+    cessation_date: "2023-04-29T23:43:17Z",
+    status: "ceased",
+  },
+];
+
 export const documentTypes = [
   {
     label: "National ID",
