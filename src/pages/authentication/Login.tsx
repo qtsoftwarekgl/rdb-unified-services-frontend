@@ -67,7 +67,7 @@ const Login = () => {
         return navigate("/admin/dashboard");
       }
 
-      return navigate("/profile");
+      return navigate("/services");
     }, 1000);
   };
 

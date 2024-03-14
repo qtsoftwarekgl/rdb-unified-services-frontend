@@ -33,7 +33,7 @@ export const defaultSections = [
     title: "Amendment",
     links: [
       [
-        { to: "/amend-company", label: "Amend Company Details" },
+        { to: "/amend-company-details", label: "Amend Company Details" },
         { to: "/new-branch", label: "Add new Branch" },
         { to: "/amalgamation", label: "Amalgamation" },
       ],

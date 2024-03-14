@@ -6,23 +6,36 @@ import {
   AccordionTrigger,
 } from "../../components/Accordion";
 import { RootState } from "../../states/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import CreateAmendment from "./CreateAmendment";
+import { useParams } from "react-router-dom";
+import { registeredBusinesses } from "../../constants/Dashboard";
+import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 
 const CompanyDetails = () => {
+  const { id } = useParams();
   const { viewedCompany } = useSelector(
     (state: RootState) => state.userCompanies
   );
 
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    if (id) {
+      dispatch(
+        setViewedCompany(
+          registeredBusinesses.find((business) => business.id === id)
+        )
+      );
+    }
   }, []);
 
   const companyManagementMembers = [

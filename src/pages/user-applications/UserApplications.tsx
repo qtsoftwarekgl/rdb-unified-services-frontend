@@ -8,34 +8,34 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const UserApplications = () => {
   const colors = (status: string) => {
-    if (status === 'verified') {
-      return 'bg-[#82ffa3] text-[#0d7b3e]';
+    if (status === "verified") {
+      return "bg-[#82ffa3] text-[#0d7b3e]";
     }
-    if (status === 'rejected') {
-      return 'bg-[#eac3c3] text-red-500';
+    if (status === "rejected") {
+      return "bg-[#eac3c3] text-red-500";
     }
-    if (status === 'approved') {
-      return 'bg-[#cfeaff] text-secondary';
+    if (status === "approved") {
+      return "bg-[#cfeaff] text-secondary";
     }
-    if (status === 'request for action') {
-      return 'bg-[#e4e4e4] text-[#6b6b6b]';
+    if (status === "request for action") {
+      return "bg-[#e4e4e4] text-[#6b6b6b]";
     }
-    if (status === 'submitted') {
-      return 'bg-[#e8ffef] text-black';
+    if (status === "submitted") {
+      return "bg-[#e8ffef] text-black";
     }
   };
   const colums = [
     {
-      header: 'Registration Number',
-      accessorKey: 'regNumber',
+      header: "Registration Number",
+      accessorKey: "regNumber",
     },
     {
-      header: 'Service Name',
-      accessorKey: 'serviceName',
+      header: "Service Name",
+      accessorKey: "serviceName",
     },
     {
-      header: 'Status',
-      accessorKey: 'status',
+      header: "Status",
+      accessorKey: "status",
       cell: ({ row }) => {
         return (
           <span
@@ -50,12 +50,12 @@ const UserApplications = () => {
       },
     },
     {
-      header: 'Submission Date',
-      accessorKey: 'submitionDate',
+      header: "Submission Date",
+      accessorKey: "submitionDate",
     },
     {
-      header: 'Action',
-      accessorKey: 'actions',
+      header: "Action",
+      accessorKey: "actions",
       enableSorting: false,
       cell: ({ row }) => {
         return (
@@ -77,8 +77,8 @@ const UserApplications = () => {
   return (
     <UserLayout>
       <section className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
-        <menu className="flex items-center gap-3 justify-between w-full">
-          <h1 className="text-lg w-fit uppercase font-semibold text-primary pl-2">
+        <menu className="flex items-center justify-between w-full gap-3">
+          <h1 className="pl-2 text-lg font-semibold uppercase w-fit text-primary">
             My Applications List
           </h1>
           <Button

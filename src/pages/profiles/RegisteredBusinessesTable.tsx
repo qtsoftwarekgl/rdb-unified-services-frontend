@@ -69,7 +69,7 @@ const RegisteredBusinessesTable = () => {
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setViewedCompany(row?.original));
-                navigate("/company-details");
+                navigate(`/company-details/${row?.original?.id}`);
               }}
               icon={faEye}
               className="text-primary"

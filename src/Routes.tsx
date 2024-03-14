@@ -37,6 +37,10 @@ import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
 import CessationToDormant from "./pages/cessation-dormancy/CessationToDormant";
 import InstitutionRegistration from "./pages/user-registration/InstitutionRegistration";
 import InstitutionRegistrationSuccess from "./pages/user-registration/InstitutionRegistrationSuccess";
+import TransferRegistration from "./pages/transfer-registration/TransferRegistration";
+import Amalgamation from "./pages/amalgamation/Amalgamate";
+import AmendCompanyDetails from "./pages/amend-company-details/AmendCompanyDetails";
+import ForeignUsers from "./pages/users-management/ForeignUsers";
 
 const Routes = () => {
   return (
@@ -52,7 +56,7 @@ const Routes = () => {
         {/**
          * PUBLIC ROUTES
          */}
-        <Route path="/" element={<Home />} />
+        <Route path="/services" element={<Home />} />
         <Route element={<AuthenticatedRoutes />}>
           {/* BUSINESS REGISTRATION */}
           <Route
@@ -61,7 +65,7 @@ const Routes = () => {
           />
           {/* USER PROFILE */}
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="company-details" element={<UserCompanyDetails />} />
+          <Route path="company-details/:id" element={<UserCompanyDetails />} />
           <Route path="applications" element={<UserApplications />} />
           <Route path="/company-documents" element={<CompanyDocuments />} />
           <Route path="/company-history" element={<CompanyHistory />} />
@@ -91,6 +95,15 @@ const Routes = () => {
           <Route
             path="/cessation-to-dormant"
             element={<CessationToDormant />}
+          />
+          <Route
+            path="/transfer-registration"
+            element={<TransferRegistration />}
+          />
+          <Route path="/amalgamation" element={<Amalgamation />} />
+          <Route
+            path="/amend-company-details"
+            element={<AmendCompanyDetails />}
           />
         </Route>
 
@@ -145,6 +158,7 @@ const Routes = () => {
           <Route path="/admin/users" element={<ListUsers />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
+          <Route path="/admin/foreign-applicants" element={<ForeignUsers />} />
         </Route>
 
         {/**

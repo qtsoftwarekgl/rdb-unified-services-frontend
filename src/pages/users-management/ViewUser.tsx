@@ -47,7 +47,7 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
             <menu className="flex items-center gap-12 mt-12">
               <Button
                 value="Disable User"
-                className=" bg-red-600 bg-opacity-[0.07] text-black border border-red-600 hover:!bg-red-700 shadow-none"
+                className=" bg-red-600 bg-opacity-[0.07] text-red-600 border border-red-600 hover:!bg-red-700 shadow-none"
               />
               <Button
                 submit

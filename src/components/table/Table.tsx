@@ -36,6 +36,7 @@ interface TableProps {
   showFilter?: boolean;
   className?: string;
   tableTitle?: string;
+  headerClassName?: string;
 }
 
 const Table: FC<TableProps> = ({
@@ -46,6 +47,7 @@ const Table: FC<TableProps> = ({
   showFilter = true,
   className,
   tableTitle,
+  headerClassName,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -183,7 +185,7 @@ const Table: FC<TableProps> = ({
                     </tr>
                   </thead>
                 )}
-                <thead className="">
+                <thead className={headerClassName}>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id} className="uppercase border-b">
                       {headerGroup.headers.map((header) => (

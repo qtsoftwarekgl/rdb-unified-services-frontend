@@ -1,30 +1,29 @@
-import { Controller, useForm, FieldValues } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import UserLayout from "../../containers/UserLayout";
 import Select from "../../components/inputs/Select";
-import { cessationCompanies } from "../../constants/businessRegistration";
-import Input from "../../components/inputs/Input";
+import { cessationCompanies } from "../../constants/BusinessRegistration";
 import { useState } from "react";
+import Input from "../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/inputs/Button";
 import Table from "../../components/table/Table";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 
 type Attachment = {
   file_name: string;
   file_size: string;
 };
 
-const CessationToDormant = () => {
+const Amalgamation = () => {
   const {
     control,
-    handleSubmit,
-    formState: { errors },
     setValue,
+    handleSubmit,
+    watch,
+    formState: { errors },
   } = useForm();
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
-
   const [attachedFIles, setAttachedFiles] = useState<Attachment[]>([]);
   const navigate = useNavigate();
 
@@ -35,11 +34,17 @@ const CessationToDormant = () => {
         {
           file_name: attachmentFile.name,
           file_size: `${attachmentFile.size} bytes`,
+          document_type: watch("document_type").label,
         },
       ]);
       setAttachmentFile(null);
       setValue("attachment", null);
     }
+  };
+
+  const onSubmit = (data: FieldValues) => {
+    console.log(data);
+    navigate("/success");
   };
 
   const columns = [
@@ -50,6 +55,10 @@ const CessationToDormant = () => {
     {
       header: "File Size",
       accessorKey: "file_size",
+    },
+    {
+      header: "Document Type",
+      accessorKey: "document_type",
     },
     {
       header: "Action",
@@ -70,32 +79,29 @@ const CessationToDormant = () => {
     },
   ];
 
-  const onSubmit = (data: FieldValues) => {
-    console.log(">>>>>>>>>>>>>>>>", data);
-    navigate("/success");
-  };
-
   return (
     <UserLayout>
       <section className="flex flex-col gap-4">
-        {/* <menu className="px-8 py-3 text-white rounded-md max-sm:w-full w-72 bg-primary">
-          Cessation to be Dormant
-        </menu> */}
+        <menu className="px-8 py-3 text-white rounded-md max-sm:w-full w-72 bg-primary">
+          Amalgamation
+        </menu>
         <section className="flex flex-col h-full gap-8 p-8 bg-white rounded-md shadow-sm">
-          <h1 className="text-xl text-center">Cessation to be Dormant</h1>
           <form
+            className="flex flex-col gap-8 w-[80%] max-sm:w-full mx-auto"
             onSubmit={handleSubmit(onSubmit)}
-            className="border max-sm:w-full w-[80%] mx-auto max-sm:p-4 p-20 flex flex-col gap-12 rounded-md border-[#e1e1e6]"
           >
-            <menu className="w-1/2 max-sm:w-full">
+            <h1 className="text-base font-semibold ">
+              Select Company to Amalgamate{" "}
+            </h1>
+            <menu className="flex px-8 py-12 border items-start w-full gap-8 rounded max-sm:flex-col border-[#e1e1e6]">
               <Controller
-                name="company"
+                name="amalgamate_from"
                 control={control}
                 rules={{ required: "Select a Company" }}
                 render={({ field }) => (
-                  <label className="flex flex-col gap-1">
+                  <label className="flex flex-col w-1/2 max-sm:w-full">
                     <Select
-                      label="Company"
+                      label="Amalgamate from"
                       options={cessationCompanies.map((company) => {
                         return {
                           value: company.name,
@@ -103,17 +109,7 @@ const CessationToDormant = () => {
                         };
                       })}
                       required
-                      onChange={(e) => {
-                        field.onChange(e?.value);
-                        setValue(
-                          "cessation_date",
-                          moment(
-                            cessationCompanies.find(
-                              (company) => company.name === e?.value
-                            )?.cessation_date
-                          ).format("DD/MM/YYYY")
-                        );
-                      }}
+                      {...field}
                     />
                     {errors.company && (
                       <p className="text-red-600 text-[13px]">
@@ -123,36 +119,71 @@ const CessationToDormant = () => {
                   </label>
                 )}
               />
-            </menu>
-            <menu className="w-1/2 max-sm:w-full">
               <Controller
+                name="amalgamate_to"
                 control={control}
-                name="cessation_date"
+                rules={{ required: "Select a Company" }}
                 render={({ field }) => (
-                  <label className="flex flex-col gap-1">
-                    <Input
-                      label="Cessation Date"
-                      placeholder="Cessation Date"
-                      defaultValue={field.value}
-                      value={field.value}
-                      onChange={field.onChange}
-                      className="border-[0.5px] border-secondary rounded-md p-2"
+                  <label className="flex flex-col w-1/2 max-sm:w-full">
+                    <Select
+                      label="Amalgamate to"
+                      options={cessationCompanies
+                        .map((company) => {
+                          return {
+                            value: company.name,
+                            label: company.tin + "          " + company.name,
+                          };
+                        })
+                        .filter(
+                          (company) =>
+                            company.value !== watch("amalgamate_from")?.value
+                        )}
+                      required
+                      {...field}
                     />
+                    {errors?.company && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.company.message)}
+                      </p>
+                    )}
                   </label>
                 )}
               />
             </menu>
-            <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
-              <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
-              </h3>
+            <h1 className="text-base font-semibold">
+              Please attach required documents to amalgamate with above company
+            </h1>
+            <menu className="flex items-start gap-8">
+              <Controller
+                control={control}
+                name="document_type"
+                rules={{ required: "Select a document type" }}
+                render={({ field }) => (
+                  <label className="flex flex-col w-1/2 gap-1 max-sm:w-full">
+                    <Select
+                      label="Document Type"
+                      options={[
+                        { value: "1", label: "Memorandum of Association" },
+                        { value: "2", label: "Artcile of Association" },
+                        { value: "3", label: "Ownership Certificate" },
+                      ]}
+                      required
+                      {...field}
+                    />
+                    {errors?.document_type && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.document_type.message)}
+                      </p>
+                    )}
+                  </label>
+                )}
+              />
               <Controller
                 name="attachment"
-                rules={{ required: "Document attachment is required" }}
                 control={control}
                 render={({ field }) => {
                   return (
-                    <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                    <label className="flex flex-col  w-1/2 self-end mb-2  items-start gap-2 max-sm:!w-full">
                       <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
                         <Input
                           type="file"
@@ -206,10 +237,10 @@ const CessationToDormant = () => {
             )}
             <menu className="flex items-center justify-center w-full p-8">
               <Button
-                value={"Submit"}
+                value={" Save & Submit"}
+                disabled={!attachedFIles.length}
                 primary
                 submit
-                disabled={!attachedFIles.length}
               />
             </menu>
           </form>
@@ -219,4 +250,4 @@ const CessationToDormant = () => {
   );
 };
 
-export default CessationToDormant;
+export default Amalgamation;
