@@ -99,7 +99,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
 
   // SET DEFAULT VALUES
   useEffect(() => {
-    if (Object.keys(share_details)?.length > 1) {
+    if (share_details && Object.keys(share_details)?.length > 1) {
       setValue('company_capital', share_details?.company_capital);
       setValue('total_value', share_details?.total_value);
       setValue('total_shares', share_details?.total_shares);
@@ -119,6 +119,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
       dispatch(
         setShareDetails({
           company_capital: data?.company_capital,
+          remaining_capital: data?.company_capital,
           total_value: data?.total_value,
           total_shares: data?.total_shares,
           shares: tableRows?.map((row) => {
@@ -278,7 +279,12 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
               console.log('Back');
             }}
           />
-          <Button value={isLoading ? <Loader /> : 'Continue'} primary submit />
+          <Button
+            value={isLoading ? <Loader /> : 'Continue'}
+            primary
+            submit
+            disabled={Object.keys(errors)?.length > 0}
+          />
         </menu>
       </form>
     </section>

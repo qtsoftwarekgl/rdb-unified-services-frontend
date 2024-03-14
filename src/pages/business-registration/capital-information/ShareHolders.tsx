@@ -16,6 +16,7 @@ import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
+  setBusinessActiveTab,
   setBusinessCompletedStep,
   setShareHolders,
 } from '../../../states/features/businessRegistrationSlice';
@@ -59,7 +60,12 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
     setTimeout(() => {
       dispatch(
         setShareHolders([
-          { ...data, attachment: null, step: 'shareholders' },
+          {
+            ...data,
+            attachment: null,
+            step: 'shareholders',
+            no: shareholders?.length - 1,
+          },
           ...shareholders,
         ])
       );
@@ -440,6 +446,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
             rules={{
               required:
                 watch('shareholder_type') === 'person' &&
+                watch('document_type') === 'passport' &&
                 'Nationality is required',
             }}
             render={({ field }) => {
@@ -702,11 +709,12 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                 watch('shareholder_type') !== 'person' &&
                 'Email address is required',
               validate: (value) => {
-                return (
-                  (watch('shareholder_type') !== 'person' &&
-                    validateInputs(String(value), 'email')) ||
-                  'Invalid email address'
-                );
+                if (watch('shareholder_type') !== 'person') {
+                  return (
+                    validateInputs(String(value), 'email') ||
+                    'Invalid email address'
+                  );
+                } else return true;
               },
             }}
             render={({ field }) => {
@@ -808,8 +816,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              console.log(errors);
-              // dispatch(setBusinessActiveStep('shareholders'));
+              dispatch(setBusinessActiveStep('share_details'));
+              dispatch(setBusinessActiveTab('capital_information'));
             }}
           />
           <Button

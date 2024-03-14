@@ -11,6 +11,7 @@ import Button from '../../../components/inputs/Button';
 import {
   setBoardDirectors,
   setBusinessActiveStep,
+  setBusinessActiveTab,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
 import { AppDispatch, RootState } from '../../../states/store';
@@ -588,6 +589,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
             onClick={(e) => {
               e.preventDefault();
               dispatch(setBusinessActiveStep('business_activity_vat'));
+              dispatch(setBusinessActiveTab('general_information'));
             }}
           />
           <Button

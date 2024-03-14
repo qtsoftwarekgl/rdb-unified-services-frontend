@@ -117,6 +117,15 @@ export const businessRegistrationSlice = createSlice({
         active: false,
         completed: false,
         name: 'beneficial_owners',
+        steps: [
+          {
+            label: 'Beneficial Owners',
+            name: 'beneficial_owners',
+            tab_name: 'beneficial_owners',
+            active: false,
+            completed: false,
+          },
+        ],
       },
       {
         no: 5,
@@ -161,7 +170,10 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('employment_info'))) || null,
     share_details:
       JSON.parse(String(localStorage.getItem('share_details'))) || null,
-      shareholders: JSON.parse(String(localStorage.getItem('shareholders'))) || [],
+    shareholders:
+      JSON.parse(String(localStorage.getItem('shareholders'))) || [],
+    capital_details:
+      JSON.parse(String(localStorage.getItem('capital_details'))) || [],
   },
   reducers: {
     // SET ACTIVE TAB
@@ -403,6 +415,15 @@ export const businessRegistrationSlice = createSlice({
       state.shareholders = action.payload;
       localStorage.setItem('shareholders', JSON.stringify(action.payload));
     },
+
+    // SET CAPITAL DETAILS
+    setCapitalDetails: (state, action) => {
+      state.capital_details = action.payload;
+      localStorage.setItem(
+        'capital_details',
+        JSON.stringify(action.payload)
+      );
+    },
   },
 });
 
@@ -422,4 +443,5 @@ export const {
   setEmploymentInfo,
   setShareDetails,
   setShareHolders,
+  setCapitalDetails
 } = businessRegistrationSlice.actions;

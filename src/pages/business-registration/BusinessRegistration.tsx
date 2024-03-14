@@ -17,6 +17,8 @@ import SeniorManagement from './management/SeniorManagement';
 import EmploymentInfo from './management/EmploymentInfo';
 import ShareDetails from './capital-information/ShareDetails';
 import ShareHolders from './capital-information/ShareHolders';
+import CapitalDetails from './capital-information/CapitalDetails';
+import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -84,6 +86,16 @@ const BusinessRegistration = () => {
                   {/* SHAREHOLDERS */}
                   <ShareHolders
                     isOpen={business_active_step?.name === 'shareholders'}
+                  />
+
+                  {/* CAPITAL DETAILS */}
+                  <CapitalDetails
+                    isOpen={business_active_step?.name === 'capital_details'}
+                  />
+
+                  {/* BENEFICIAL OWNERS */}
+                  <BeneficialOwners
+                    isOpen={business_active_step?.name === 'beneficial_owners'}
                   />
                 </Tab>
               );
