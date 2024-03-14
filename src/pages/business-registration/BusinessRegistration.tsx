@@ -15,6 +15,7 @@ import BusinessActivity from './general-information/BusinessActivity';
 import BoardDirectors from './management/BoardDirectors';
 import SeniorManagement from './management/SeniorManagement';
 import EmploymentInfo from './management/EmploymentInfo';
+import ShareDetails from './capital-information/ShareDetails';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -72,6 +73,11 @@ const BusinessRegistration = () => {
                   {/* EMPLOYMENT INFO */}
                   <EmploymentInfo
                     isOpen={business_active_step?.name === 'employment_info'}
+                  />
+
+                  {/* SHARE DETAILS */}
+                  <ShareDetails
+                    isOpen={business_active_step?.name === 'share_details'}
                   />
                 </Tab>
               );
