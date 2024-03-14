@@ -5,7 +5,7 @@ import { faRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../states/store";
 import rdb_logo from "/rdb-logo.png";
-import { languages } from "../../constants/Authentication";
+import { languages } from "../../constants/authentication";
 import { setLocale } from "../../states/features/localeSlice";
 
 const HomeNav = () => {

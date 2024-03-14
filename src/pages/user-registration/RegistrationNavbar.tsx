@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/inputs/Button';
-import { languages } from '../../constants/Authentication';
+import { languages } from '../../constants/authentication';
 import rdb_logo from '/rdb-logo.png';
 import { faBars, faRightFromBracket, faX } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch, RootState } from '../../states/store';

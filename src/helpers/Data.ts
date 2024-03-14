@@ -1,4 +1,4 @@
-import { rwandaAdministrativeUnits } from '../constants/Administration';
+import { rwandaAdministrativeUnits } from '../constants/administration';
 
 export const getRwandaProvinces = () => {
   const provinces = Object.keys(rwandaAdministrativeUnits);

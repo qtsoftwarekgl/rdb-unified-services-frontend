@@ -5,7 +5,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
-import { languages } from '../../constants/Authentication';
+import { languages } from '../../constants/authentication';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLocale } from '../../states/features/localeSlice';

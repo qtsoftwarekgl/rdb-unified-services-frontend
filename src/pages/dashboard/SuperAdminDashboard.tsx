@@ -6,7 +6,7 @@ import {
   recentActivities,
   monthsData,
   superAdminDashboardCards,
-} from '../../constants/Dashboard';
+} from '../../constants/dashboard';
 import Select from '../../components/inputs/Select';
 import { useState } from 'react';
 import Button from '../../components/inputs/Button';

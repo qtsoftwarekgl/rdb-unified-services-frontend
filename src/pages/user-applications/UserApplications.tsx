@@ -1,6 +1,6 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { userApplications } from "../../constants/Dashboard";
+import { userApplications } from "../../constants/dashboard";
 import Table from "../../components/table/Table";
 import UserLayout from "../../containers/UserLayout";
 import Button from "../../components/inputs/Button";

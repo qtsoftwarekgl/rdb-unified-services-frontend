@@ -4,7 +4,7 @@ import Select from "../../../components/inputs/Select";
 import {
   businessActivities,
   businessSubActivities,
-} from "../../../constants/BusinessRegistration";
+} from "../../../constants/businessRegistration";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";

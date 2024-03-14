@@ -4,8 +4,8 @@ import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
 import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
-import { userData } from '../../../constants/Authentication';
-import { countriesList } from '../../../constants/Countries';
+import { userData } from '../../../constants/authentication';
+import { countriesList } from '../../../constants/countries';
 import validateInputs from '../../../helpers/Validations';
 import Button from '../../../components/inputs/Button';
 import {

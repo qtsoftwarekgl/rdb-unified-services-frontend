@@ -3,7 +3,7 @@ import UserLayout from "../../containers/UserLayout";
 import Table from "../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { companyDocuments } from "../../constants/Dashboard";
+import { companyDocuments } from "../../constants/dashboard";
 import { useState } from "react";
 import ViewDocument from "./ViewDocument";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";

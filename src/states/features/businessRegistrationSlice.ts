@@ -161,6 +161,7 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('employment_info'))) || null,
     share_details:
       JSON.parse(String(localStorage.getItem('share_details'))) || null,
+      shareholders: JSON.parse(String(localStorage.getItem('shareholders'))) || [],
   },
   reducers: {
     // SET ACTIVE TAB
@@ -396,6 +397,12 @@ export const businessRegistrationSlice = createSlice({
       state.share_details = action.payload;
       localStorage.setItem('share_details', JSON.stringify(action.payload));
     },
+
+    // SET SHAREHOLDERS
+    setShareHolders: (state, action) => {
+      state.shareholders = action.payload;
+      localStorage.setItem('shareholders', JSON.stringify(action.payload));
+    },
   },
 });
 
@@ -414,4 +421,5 @@ export const {
   setSeniorManagement,
   setEmploymentInfo,
   setShareDetails,
+  setShareHolders,
 } = businessRegistrationSlice.actions;

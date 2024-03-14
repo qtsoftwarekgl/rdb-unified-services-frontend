@@ -12,7 +12,7 @@ import { AppDispatch, RootState } from "../states/store";
 import { FC } from "react";
 import { toggleNavbar } from "../states/features/navbarSlice";
 import { setViewedCompany } from "../states/features/userCompaniesSlice";
-import { languages } from "../constants/Authentication";
+import { languages } from "../constants/authentication";
 import { setLocale } from "../states/features/localeSlice";
 
 interface Props {
