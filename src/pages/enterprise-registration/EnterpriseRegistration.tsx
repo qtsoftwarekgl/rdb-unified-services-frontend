@@ -16,8 +16,11 @@ import Attachments from "./Attachements";
 import Preview from "./Preview";
 
 const EnterpriseRegistration = () => {
-  const { enterprise_registration_tabs, enterprise_registration_active_step } =
-    useSelector((state: RootState) => state.enterpriseRegistration);
+  const {
+    enterprise_registration_tabs,
+    enterprise_registration_active_step,
+    enterprise_registration_active_tab,
+  } = useSelector((state: RootState) => state.enterpriseRegistration);
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -38,6 +41,7 @@ const EnterpriseRegistration = () => {
                 steps={tab?.steps}
                 key={`${String(index)}-${entry_id}`}
                 setActiveStep={setEnterpriseActiveStep}
+                active_tab={enterprise_registration_active_tab}
               >
                 <EnterpriseDetails
                   isOpen={

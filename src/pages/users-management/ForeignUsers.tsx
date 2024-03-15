@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import AdminLayout from "../../containers/AdminLayout";
 import Table from "../../components/table/Table";
-import { foreignApplications } from "../../constants/Dashboard";
+import { foreignApplications } from "../../constants/dashboard";
 import UserCard from "./ForeignUserCard";
 
 const ForeignUsers = () => {

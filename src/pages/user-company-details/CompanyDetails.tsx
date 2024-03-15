@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import CreateAmendment from "./CreateAmendment";
 import { useParams } from "react-router-dom";
-import { registeredBusinesses } from "../../constants/Dashboard";
+import { registeredBusinesses } from "../../constants/dashboard";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 
 const CompanyDetails = () => {

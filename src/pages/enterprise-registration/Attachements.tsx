@@ -154,7 +154,13 @@ const Attachments = ({ isOpen }: AttachmentsProps) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
+          <Button
+            value="Back"
+            onClick={() => {
+              dispatch(setEnterpriseActiveTab("enterprise_details"));
+              dispatch(setEnterpriseActiveStep("office_address"));
+            }}
+          />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />
         </menu>
       </form>

@@ -564,7 +564,13 @@ const OfficeAddress = ({ isOpen }: OfficeAddressProps) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setEnterpriseActiveStep("business_activity_vat"));
+            }}
+          />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />
         </menu>
       </form>
