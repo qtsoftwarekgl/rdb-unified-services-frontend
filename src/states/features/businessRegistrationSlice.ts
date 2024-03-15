@@ -133,6 +133,15 @@ export const businessRegistrationSlice = createSlice({
         name: 'attachments',
         completed: false,
         active: false,
+        steps: [
+          {
+            label: 'Attachments',
+            name: 'attachments',
+            tab_name: 'attachments',
+            active: false,
+            completed: false,
+          },
+        ],
       },
       {
         no: 6,
@@ -140,6 +149,15 @@ export const businessRegistrationSlice = createSlice({
         name: 'preview_submission',
         completed: false,
         active: false,
+        steps: [
+          {
+            label: 'Preview & Submission',
+            name: 'preview_submission',
+            tab_name: 'preview_submission',
+            active: false,
+            completed: false,
+          },
+        ],
       },
     ],
     business_active_step: JSON.parse(
@@ -419,10 +437,7 @@ export const businessRegistrationSlice = createSlice({
     // SET CAPITAL DETAILS
     setCapitalDetails: (state, action) => {
       state.capital_details = action.payload;
-      localStorage.setItem(
-        'capital_details',
-        JSON.stringify(action.payload)
-      );
+      localStorage.setItem('capital_details', JSON.stringify(action.payload));
     },
   },
 });

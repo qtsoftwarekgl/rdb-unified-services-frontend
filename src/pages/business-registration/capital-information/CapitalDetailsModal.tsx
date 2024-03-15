@@ -167,11 +167,13 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                     <h4 className="w-full text-[15px]">{row?.label}</h4>
                     <p className="text-[12px]">
                       Total:{' '}
-                      {String(
-                        Object.entries(share_details.shares[index]).find(
-                          ([key]: string) => key === `${row.name}_no`
-                        )?.[1] || 0
-                      ) || ''}
+                      {(share_details?.shares &&
+                        String(
+                          Object.entries(share_details.shares[index]).find(
+                            ([key]: string) => key === `${row.name}_no`
+                          )?.[1] || 0
+                        )) ||
+                        ''}
                     </p>
                   </menu>
                   <td className="w-full flex flex-col gap-1">

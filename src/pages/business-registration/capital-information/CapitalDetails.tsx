@@ -160,7 +160,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
                     (acc, curr) =>
                       Number(acc) + Number(curr?.shares?.total_shares),
                     0
-                  ),
+                  ) || 0,
                 0
               )}
             </p>

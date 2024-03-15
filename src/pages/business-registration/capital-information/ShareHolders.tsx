@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
-import { shareholderTypes } from '../../../constants/businessRegistration';
+import { personnelTypes } from '../../../constants/businessRegistration';
 import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
@@ -132,7 +132,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
               <label className="flex flex-col gap-1 w-[49%]">
                 <Select
                   label="Shareholder type"
-                  options={shareholderTypes}
+                  options={personnelTypes}
                   onChange={(e) => {
                     field?.onChange(e?.value);
                   }}

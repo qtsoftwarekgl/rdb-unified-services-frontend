@@ -2,8 +2,8 @@ import { FC, ReactNode, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../states/store';
+import { useDispatch } from 'react-redux';
 import { UnknownAction } from '@reduxjs/toolkit';
 import { Step, TabType } from '../../states/features/types';
 
@@ -13,14 +13,12 @@ interface TabProps {
   children: ReactNode;
   setActiveStep: (step: string) => UnknownAction;
   tab?: TabType;
+  active_tab?: TabType;
 }
 
-const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep }) => {
+const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { business_active_tab } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
 
   // HANDLE RENDER
   useEffect(() => {
@@ -29,7 +27,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep }) => {
         setActiveStep(
           steps?.find(
             (step) =>
-              step?.tab_name === business_active_tab?.name &&
+              step?.tab_name === active_tab?.name &&
               step?.active === true
           )?.name ||
             steps?.find((step: Step) => !step?.completed)?.name ||
