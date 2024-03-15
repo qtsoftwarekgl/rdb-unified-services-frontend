@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../../components/inputs/Button";
 import Modal from "../../components/Modal";
 import Select from "../../components/inputs/Select";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -14,7 +14,7 @@ const CreateAmendment = () => {
   const amendmentTypes = [
     {
       label: "Amend Company Details",
-      value: "/amend-company",
+      value: "/amend-company-details",
       description: "Change company details such as name, address, etc.",
     },
     {

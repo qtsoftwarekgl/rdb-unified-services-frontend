@@ -70,9 +70,11 @@ const Navbar = ({ className }: Props) => {
           className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
           icon={faBell}
         /> */}
-        <Link to="/">
-          <span className="text-primary">All Services</span>
-        </Link>
+        {!/info|admin/.test(user.email) && (
+          <Link to="/services">
+            <span className="text-primary">All Services</span>
+          </Link>
+        )}
         <Link to={"#"} className="px-4 max-[600px]:px-2">
           <menu
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"

@@ -1,20 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-export interface EnterpriseRegistrationStep {
-  label: string;
-  name: string;
-  tab_name: string;
-  active: boolean;
-  completed: boolean;
-}
-
-export interface EnterpriseRegistrationTab {
-  no: number;
-  label: string;
-  name: string;
-  active: boolean;
-  steps: Array<EnterpriseRegistrationStep>;
-}
+import { Step, TabType } from "./types";
 
 export const enterpriseRegistrationSlice = createSlice({
   name: "enterpriseRegistration",
@@ -112,11 +97,13 @@ export const enterpriseRegistrationSlice = createSlice({
     enterprise_attachments:
       JSON.parse(String(localStorage.getItem("enterprise_attachments"))) ||
       null,
+    registered_enterprises:
+      JSON.parse(String(localStorage.getItem("registered_enterprises"))) || [],
   },
   reducers: {
     setEnterpriseActiveTab: (state, action) => {
       const updatedRegistrationTabs = state.enterprise_registration_tabs.map(
-        (tab: EnterpriseRegistrationTab) => {
+        (tab: TabType) => {
           return {
             ...tab,
             active: false,
@@ -124,7 +111,7 @@ export const enterpriseRegistrationSlice = createSlice({
         }
       );
       const tabIndex = updatedRegistrationTabs.findIndex(
-        (tab: EnterpriseRegistrationTab) => tab.name === action.payload
+        (tab: TabType) => tab.name === action.payload
       );
 
       updatedRegistrationTabs[tabIndex].active = true;
@@ -146,10 +133,10 @@ export const enterpriseRegistrationSlice = createSlice({
     },
     setEnterpriseActiveStep: (state, action) => {
       const updatedRegistrationTabs = state.enterprise_registration_tabs?.map(
-        (tab: EnterpriseRegistrationTab) => {
+        (tab: TabType) => {
           return {
             ...tab,
-            steps: tab?.steps?.map((step: EnterpriseRegistrationStep) => {
+            steps: tab?.steps?.map((step: Step) => {
               return {
                 ...step,
                 active: false,
@@ -161,19 +148,16 @@ export const enterpriseRegistrationSlice = createSlice({
 
       // FIND STEP
       const step = updatedRegistrationTabs
-        ?.flatMap((tab: EnterpriseRegistrationTab) => tab?.steps)
-        .find(
-          (step: EnterpriseRegistrationStep) => step?.name === action.payload
-        );
+        ?.flatMap((tab: TabType) => tab?.steps)
+        .find((step: TabType) => step?.name === action.payload);
 
       const tabIndex = updatedRegistrationTabs.findIndex(
-        (tab: EnterpriseRegistrationTab) => tab?.name === step?.tab_name
+        (tab: TabType) => tab?.name === step?.tab_name
       );
 
       // FIND STEP INDEX
       const stepIndex = updatedRegistrationTabs[tabIndex].steps?.findIndex(
-        (stepToFind: EnterpriseRegistrationStep) =>
-          stepToFind?.name === step?.name
+        (stepToFind: Step) => stepToFind?.name === step?.name
       );
 
       updatedRegistrationTabs[tabIndex].steps[stepIndex].active = true;
@@ -196,10 +180,10 @@ export const enterpriseRegistrationSlice = createSlice({
     },
     setEnterpriseCompletedStep: (state, action) => {
       const updatedRegistrationTabs = state.enterprise_registration_tabs?.map(
-        (tab: EnterpriseRegistrationTab) => {
+        (tab: TabType) => {
           return {
             ...tab,
-            steps: tab.steps?.map((step: EnterpriseRegistrationStep) => {
+            steps: tab.steps?.map((step: Step) => {
               return {
                 ...step,
               };
@@ -210,20 +194,17 @@ export const enterpriseRegistrationSlice = createSlice({
 
       // FIND STEP
       const step = updatedRegistrationTabs
-        ?.flatMap((tab: EnterpriseRegistrationTab) => tab?.steps)
-        .find(
-          (step: EnterpriseRegistrationStep) => step?.name === action.payload
-        );
+        ?.flatMap((tab: TabType) => tab?.steps)
+        .find((step: Step) => step?.name === action.payload);
 
       // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
-        (tab: EnterpriseRegistrationTab) => tab?.name === step?.tab_name
+        (tab: TabType) => tab?.name === step?.tab_name
       );
 
       // FIND STEP INDEX
       const stepIndex = updatedRegistrationTabs[tabIndex].steps?.findIndex(
-        (stepToFind: EnterpriseRegistrationStep) =>
-          stepToFind?.name === step?.name
+        (stepToFind: Step) => stepToFind?.name === step?.name
       );
 
       // SET COMPLETED STEP
@@ -240,7 +221,7 @@ export const enterpriseRegistrationSlice = createSlice({
     setEnterpriseCompletedTab: (state, action) => {
       const updatedRegistrationTabs = state.enterprise_registration_tabs;
       const tabIndex = updatedRegistrationTabs?.findIndex(
-        (tab: EnterpriseRegistrationTab) => tab?.name === action.payload
+        (tab: TabType) => tab?.name === action.payload
       );
       updatedRegistrationTabs[tabIndex].completed = true;
       state.enterprise_registration_tabs = updatedRegistrationTabs;
@@ -282,6 +263,13 @@ export const enterpriseRegistrationSlice = createSlice({
       localStorage.setItem(
         "enterprise_attachments",
         JSON.stringify(action.payload)
+      );
+    },
+    addToRegisteredEnterprises: (state, action) => {
+      state.registered_enterprises.push(action.payload);
+      localStorage.setItem(
+        "registered_enterprises",
+        JSON.stringify(state.registered_enterprises)
       );
     },
     resetToInitialState: (state) => {
@@ -386,5 +374,6 @@ export const {
   setEnterpriseBusinessActivityVat,
   setEnterpriseBusinessLines,
   setEnterpriseAttachments,
+  addToRegisteredEnterprises,
   resetToInitialState,
 } = enterpriseRegistrationSlice.actions;

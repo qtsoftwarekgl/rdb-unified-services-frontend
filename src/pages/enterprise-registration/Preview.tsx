@@ -2,9 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import Button from "../../components/inputs/Button";
 import { Step } from "../../states/features/types";
 import {
+  addToRegisteredEnterprises,
   resetToInitialState,
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
@@ -37,6 +37,14 @@ const Preview = ({ isOpen }: Props) => {
 
   const handleSubmit = () => {
     // reset all data
+    dispatch(
+      addToRegisteredEnterprises({
+        enterprise_attachments: { ...enterprise_attachments },
+        enterprise_business_lines: [...enterprise_business_lines],
+        enterprise_details: { ...enterprise_details },
+        enterprise_office_address: { ...enterprise_office_address },
+      })
+    );
     dispatch(resetToInitialState());
     navigate("/success");
   };

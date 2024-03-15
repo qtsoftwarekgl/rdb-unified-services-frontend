@@ -12,6 +12,7 @@ import institutionSlice from "./features/institutionSlice";
 import localeSlice from "./features/localeSlice";
 import userCompaniesSlice from "./features/userCompaniesSlice";
 import enterpriseRegistrationSlice from "./features/enterpriseRegistrationSlice";
+import nameReservationSlice from "./features/nameReservation";
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
     locale: localeSlice,
     userCompanies: userCompaniesSlice,
     enterpriseRegistration: enterpriseRegistrationSlice,
+    nameReservation: nameReservationSlice,
   },
 });
 

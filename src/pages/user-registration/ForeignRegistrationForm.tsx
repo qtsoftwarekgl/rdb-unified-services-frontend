@@ -1,18 +1,18 @@
-import { FC, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import Button from '../../components/inputs/Button';
-import Loader from '../../components/Loader';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faX } from '@fortawesome/free-solid-svg-icons';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
-import { setRegistrationStep } from '../../states/features/authSlice';
-import moment from 'moment';
-import Select from '../../components/inputs/Select';
-import { countriesList } from '../../constants/countries';
-import validateInputs from '../../helpers/Validations';
-import { useNavigate } from 'react-router-dom';
+import { FC, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import Button from "../../components/inputs/Button";
+import Loader from "../../components/Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faX } from "@fortawesome/free-solid-svg-icons";
+import { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { setRegistrationStep } from "../../states/features/authSlice";
+import moment from "moment";
+import Select from "../../components/inputs/Select";
+import { countriesList } from "../../constants/countries";
+import validateInputs from "../../helpers/Validations";
+import { useNavigate } from "react-router-dom";
 
 interface ForeignRegistrationFormProps {
   isOpen: boolean;
@@ -53,7 +53,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      navigate('/auth/register/verify');
+      navigate("/auth/register/verify");
     }, 1000);
     return data;
   };
@@ -66,14 +66,14 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
         onSubmit={handleSubmit(onSubmit)}
         className={`flex-col gap-6 w-[70%] mx-auto flex max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%]`}
       >
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
+        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="documentNo"
-            rules={{ required: 'Document No is required' }}
+            rules={{ required: "Document No is required" }}
             control={control}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-full">
+                <label className="flex flex-col w-full gap-1">
                   <Input label="Document No" required {...field} />
                   {errors?.documentNo && (
                     <p className="text-[13px] text-red-500">
@@ -87,10 +87,10 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
           <Controller
             name="expiryDate"
             rules={{
-              required: 'Select expiry date',
+              required: "Select expiry date",
               validate: (value) => {
                 if (moment(value).format() < moment(new Date()).format()) {
-                  return 'Select a valid expiry date';
+                  return "Select a valid expiry date";
                 }
                 return true;
               },
@@ -98,7 +98,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             control={control}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-full">
+                <label className="flex flex-col w-full gap-1">
                   <Input label="Expiry Date" type="date" required {...field} />
                   {errors?.expiryDate && (
                     <p className="text-[13px] text-red-500">
@@ -110,14 +110,14 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
+        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="firstName"
             control={control}
-            rules={{ required: 'First name is required' }}
+            rules={{ required: "First name is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     required
                     placeholder="First name"
@@ -125,7 +125,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     {...field}
                   />
                   {errors?.firstName && (
-                    <span className="text-red-500 text-sm">
+                    <span className="text-sm text-red-500">
                       {String(errors?.firstName?.message)}
                     </span>
                   )}
@@ -138,7 +138,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             control={control}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     placeholder="Middle name"
                     label="Middle name"
@@ -149,13 +149,13 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
+        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="lastName"
             control={control}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input placeholder="Last name" label="Last name" {...field} />
                 </label>
               );
@@ -164,10 +164,10 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
           <Controller
             name="gender"
             control={control}
-            rules={{ required: 'Select gender' }}
+            rules={{ required: "Select gender" }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-2 items-start w-full">
+                <label className="flex flex-col items-start w-full gap-2">
                   <p className="flex items-center gap-1 text-[15px]">
                     Gender<span className="text-red-500">*</span>
                   </p>
@@ -185,14 +185,14 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
+        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="nationality"
             control={control}
-            rules={{ required: 'Nationality is required' }}
+            rules={{ required: "Nationality is required" }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Select
                     isSearchable
                     label="Country"
@@ -208,7 +208,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     }}
                   />
                   {errors?.country && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.country?.message)}
                     </p>
                   )}
@@ -220,17 +220,17 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             name="dateOfBirth"
             control={control}
             rules={{
-              required: 'Select date of birth',
+              required: "Select date of birth",
               validate: (value) => {
                 if (moment(value).format() > moment(new Date()).format()) {
-                  return 'Select a valid date of birth';
+                  return "Select a valid date of birth";
                 }
                 return true;
               },
             }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     required
                     type="date"
@@ -238,7 +238,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     {...field}
                   />
                   {errors?.dateOfBirth && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.dateOfBirth?.message)}
                     </p>
                   )}
@@ -247,19 +247,19 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
+        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="phone"
             control={control}
             rules={{
-              required: 'Phone number is required',
+              required: "Phone number is required",
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-full">
-                  <Input label='Phone number' required type='tel' {...field} />
+                <label className="flex flex-col w-full gap-1">
+                  <Input label="Phone number" required type="tel" {...field} />
                   {errors?.phone && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.phone?.message)}
                     </p>
                   )}
@@ -271,17 +271,17 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             name="email"
             control={control}
             rules={{
-              required: 'Email address is required',
+              required: "Email address is required",
               validate: (value) => {
                 return (
-                  validateInputs(String(value), 'email') ||
-                  'Invalid email address'
+                  validateInputs(String(value), "email") ||
+                  "Invalid email address"
                 );
               },
             }}
             render={({ field }) => {
               return (
-                <label className="w-full flex flex-col gap-1 items-start">
+                <label className="flex flex-col items-start w-full gap-1">
                   <Input
                     required
                     label="Email"
@@ -289,7 +289,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     {...field}
                   />
                   {errors?.email && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.email?.message)}
                     </p>
                   )}
@@ -298,13 +298,13 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="w-full flex flex-col items-start gap-3 my-3 max-md:items-center">
+        <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
           <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
             Attachment <span className="text-red-600">*</span>
           </h3>
           <Controller
             name="attachment"
-            rules={{ required: 'Document attachment is required' }}
+            rules={{ required: "Document attachment is required" }}
             control={control}
             render={({ field }) => {
               return (
@@ -328,14 +328,14 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                           onClick={(e) => {
                             e.preventDefault();
                             setAttachmentFile(null);
-                            setValue('attachment', null);
+                            setValue("attachment", null);
                           }}
                         />
                       </p>
                     )}
                   </ul>
                   {errors?.attachment && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.attachment?.message)}
                     </p>
                   )}
@@ -344,9 +344,9 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }}
           />
         </menu>
-        <menu className="flex flex-col gap-4 items-center w-full mt-4">
+        <menu className="flex flex-col items-center w-full gap-4 mt-4">
           <Button
-            value={isLoading ? <Loader /> : 'Submit'}
+            value={isLoading ? <Loader /> : "Submit"}
             primary
             submit
             className="!py-3 !min-w-[40%] max-sm:!min-w-full"
@@ -354,14 +354,14 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
           <Button
             styled={false}
             value={
-              <menu className="flex items-center gap-2 ease-in-out duration-300 hover:gap-3">
+              <menu className="flex items-center gap-2 duration-300 ease-in-out hover:gap-3">
                 <FontAwesomeIcon icon={faArrowLeft} />
                 Back
               </menu>
             }
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setRegistrationStep('select-nationality'));
+              dispatch(setRegistrationStep("select-nationality"));
             }}
           />
         </menu>

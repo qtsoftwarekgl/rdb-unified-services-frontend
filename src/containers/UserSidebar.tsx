@@ -54,7 +54,7 @@ const UserSidebar = () => {
   const companyDetailsSideBar = [
     {
       title: "Company Details",
-      path: "/company-details",
+      path: `/company-details/${viewedCompany?.id}`,
       icon: faCircleInfo,
     },
     {

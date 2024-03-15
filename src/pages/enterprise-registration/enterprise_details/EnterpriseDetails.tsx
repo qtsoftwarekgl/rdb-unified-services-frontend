@@ -1315,11 +1315,10 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
         )}
 
         <menu
-          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+          className={`flex items-center gap-3 w-full mx-auto justify-end max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
           <Button
-            value={isLoading ? <Loader /> : "Next"}
+            value={isLoading ? <Loader /> : "Continue"}
             primary={!enterprise_details?.error}
             // disabled={userDetails ? Object.keys(userDetails).length < 4 : false}
             submit

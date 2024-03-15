@@ -1,22 +1,27 @@
-import { FC, ReactNode, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
-import { UnknownAction } from '@reduxjs/toolkit';
-import { Step, TabType } from '../../states/features/types';
+import { FC, ReactNode, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { Step, TabType } from "../../states/features/types";
 
 interface TabProps {
   steps: Array<Step>;
   isOpen: boolean;
   children: ReactNode;
   setActiveStep: (step: string) => UnknownAction;
-  tab?: TabType;
   active_tab?: TabType;
 }
 
-const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab }) => {
+const Tab: FC<TabProps> = ({
+  steps,
+  isOpen,
+  children,
+  active_tab,
+  setActiveStep,
+}) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
 
@@ -27,8 +32,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab 
         setActiveStep(
           steps?.find(
             (step) =>
-              step?.tab_name === active_tab?.name &&
-              step?.active === true
+              step?.tab_name === active_tab?.name && step?.active === true
           )?.name ||
             steps?.find((step: Step) => !step?.completed)?.name ||
             steps[0]?.name
@@ -44,13 +48,13 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab 
     <section className="flex items-start w-full">
       <aside
         className={`${
-          steps && steps?.length > 0 ? 'flex' : 'hidden'
+          steps && steps?.length > 0 ? "flex" : "hidden"
         } flex-col gap-2 w-[20%] p-3 px-4 rounded-md`}
       >
         {steps?.map((step: Step, index: number, arr: Array<Step>) => {
           return (
             <Link
-              to={'#'}
+              to={"#"}
               key={index}
               onClick={(e) => {
                 e.preventDefault();
@@ -67,7 +71,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab 
                 ) : (
                   <p
                     className={`text-[15px] p-[6px] px-[14px] rounded-full bg-white text-secondary font-semibold w-fit ${
-                      step?.active && '!text-white !bg-primary'
+                      step?.active && "!text-white !bg-primary"
                     }`}
                   >
                     {String(index + 1)}
@@ -75,7 +79,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab 
                 )}
                 <hr
                   className={`border-l-[.5px] w-0 border-secondary h-8 ${
-                    index === arr?.length - 1 && 'hidden'
+                    index === arr?.length - 1 && "hidden"
                   }`}
                 />
               </figure>
@@ -86,7 +90,7 @@ const Tab: FC<TabProps> = ({ steps, isOpen, children, setActiveStep, active_tab 
       </aside>
       <menu
         className={`flex flex-col gap-3 bg-white rounded-md shadow-sm h-full p-5 ${
-          steps?.length <= 0 ? '!w-full' : 'w-[80%]'
+          steps?.length <= 0 ? "!w-full" : "w-[80%]"
         }`}
       >
         <h1 className="text-lg font-semibold text-center uppercase">

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
   businessActivities,
@@ -260,7 +260,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setEnterpriseActiveStep("enterprise_details"));
+            }}
+          />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />
         </menu>
       </form>
