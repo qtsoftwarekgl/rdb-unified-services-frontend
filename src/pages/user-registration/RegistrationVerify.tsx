@@ -5,7 +5,7 @@ import Button from '../../components/inputs/Button';
 import OTPInputs from '../../components/inputs/OTPInputs';
 import { useState } from 'react';
 import Loader from '../../components/Loader';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import RegistrationNavbar from './RegistrationNavbar';
 import { setNationalIdDetails, setRegistrationStep } from '../../states/features/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,6 +18,9 @@ const RegistrationVerify = () => {
     control,
     formState: { errors },
   } = useForm();
+
+  // REACT NAVIGATION
+  const { pathname } = useLocation();
 
   // STATE VARIABLES
   const dispatch = useDispatch();
@@ -38,8 +41,10 @@ const RegistrationVerify = () => {
       if (registrationStep === 'rwandan-registration-form') {
         dispatch(setNationalIdDetails(null));
         navigate('/auth/register/set-password');
-      } else {
+      } else if (registrationStep === 'foreign-registration-form') {
         navigate('/auth/register/success');
+      } else if (pathname === '/auth/register/institution/verify') {
+        navigate('/auth/register/institution/success');
       }
       setIsLoading(false);
     }, 1000);

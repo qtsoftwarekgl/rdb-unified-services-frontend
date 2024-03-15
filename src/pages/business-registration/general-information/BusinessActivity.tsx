@@ -4,12 +4,13 @@ import Select from "../../../components/inputs/Select";
 import {
   businessActivities,
   businessSubActivities,
-} from "../../../constants/BusinessRegistration";
+} from "../../../constants/businessRegistration";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import {
+  setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setCompanyActivities,
@@ -107,7 +108,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
             })}
             onChange={(e) => {
               setRandomNumber(Math.floor(Math.random() * 10) + 1);
-              console.log(e);
+              return e;
             }}
           />
           {errors.activity && (
@@ -240,7 +241,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                         icon={faMinus}
                         onClick={(e) => {
                           e.preventDefault();
-                          console.log(business_line);
                           const updatedSubActivities =
                             company_business_lines?.filter(
                               (subActivity: unknown) => {
@@ -332,8 +332,11 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
-          <Button value={isLoading ? <Loader /> : "Continue"} primary submit />
+          <Button value="Back" onClick={(e) => {
+            e.preventDefault();
+            dispatch(setBusinessActiveStep('company_address'));
+          }} />
+          <Button value={isLoading ? <Loader /> : 'Continue'} primary submit />
         </menu>
       </form>
     </section>

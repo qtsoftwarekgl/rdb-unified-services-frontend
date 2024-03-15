@@ -4,7 +4,7 @@ import Input from "../../components/inputs/Input";
 import { faEllipsis, faSearch } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/inputs/Button";
 import Loader from "../../components/Loader";
-import { userData } from "../../constants/Authentication";
+import { userData } from "../../constants/authentication";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../states/store";
 import {

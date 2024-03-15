@@ -8,7 +8,7 @@ import {
 } from '../../states/features/permissionSlice';
 import { setAddRoleModal } from '../../states/features/roleSlice';
 import Table from '../../components/table/Table';
-import { permissions } from '../../constants/Dashboard';
+import { permissions } from '../../constants/dashboard';
 import { formatDate } from '../../helpers/Strings';
 import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

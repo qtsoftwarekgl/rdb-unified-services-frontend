@@ -1,6 +1,6 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { registeredBusinesses } from "../../constants/Dashboard";
+import { registeredBusinesses } from "../../constants/dashboard";
 import Table from "../../components/table/Table";
 import { formatDate } from "../../helpers/Strings";
 import { useDispatch } from "react-redux";

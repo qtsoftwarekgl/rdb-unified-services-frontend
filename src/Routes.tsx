@@ -35,6 +35,8 @@ import EnterpriseRegistration from "./pages/enterprise-registration/EnterpriseRe
 import NewEnterpriseRegistration from "./pages/enterprise-registration/NewEnterpriseRegistration";
 import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
 import CessationToDormant from "./pages/cessation-dormancy/CessationToDormant";
+import InstitutionRegistration from "./pages/user-registration/InstitutionRegistration";
+import InstitutionRegistrationSuccess from "./pages/user-registration/InstitutionRegistrationSuccess";
 
 const Routes = () => {
   return (
@@ -114,6 +116,20 @@ const Routes = () => {
         <Route
           path="/auth/register/success"
           element={<RegistrationSuccess />}
+        />
+
+        {/* INSTITUTION REGISTRATION */}
+        <Route
+          path="/auth/register/institution"
+          element={<InstitutionRegistration />}
+        />
+        <Route
+          path="/auth/register/institution/verify"
+          element={<RegistrationVerify />}
+        />
+        <Route
+          path="/auth/register/institution/success"
+          element={<InstitutionRegistrationSuccess />}
         />
 
         {/* NOT FOUND */}

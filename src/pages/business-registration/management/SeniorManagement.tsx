@@ -9,9 +9,8 @@ import { countriesList } from '../../../constants/countries';
 import validateInputs from '../../../helpers/Validations';
 import Button from '../../../components/inputs/Button';
 import {
-  setBoardDirectors,
+  setSeniorManagement,
   setBusinessActiveStep,
-  setBusinessActiveTab,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
 import { AppDispatch, RootState } from '../../../states/store';
@@ -21,11 +20,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
 
-interface BoardDirectorsProps {
+interface SeniorManagementProps {
   isOpen: boolean;
 }
 
-const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
+const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -34,13 +33,14 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
     watch,
     trigger,
     setValue,
+    clearErrors,
     reset,
     formState: { errors },
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { board_of_directors } = useSelector(
+  const { senior_management } = useSelector(
     (state: RootState) => state.businessRegistration
   );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
@@ -70,7 +70,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setBoardDirectors([data, ...board_of_directors]));
+      clearErrors('submit');
+      dispatch(setSeniorManagement([data, ...senior_management]));
       reset(undefined, { keepDirtyValues: true });
       setValue('attachment', null);
     }, 1000);
@@ -106,8 +107,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setBoardDirectors(
-                    board_of_directors?.filter(
+                  setSeniorManagement(
+                    senior_management?.filter(
                       (member: unknown) =>
                         member?.first_name !== row?.original?.first_name
                     )
@@ -136,21 +137,30 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
             rules={{ required: "Select member's position" }}
             control={control}
             render={({ field }) => {
+              const options = [
+                {
+                  value: 'md/gm',
+                  label: 'MD / GM',
+                },
+                {
+                  value: 'secretary',
+                  label: 'Secretary',
+                },
+                {
+                  value: 'accountant',
+                  label: 'Accountant',
+                },
+                {
+                  value: 'auditor',
+                  label: 'Auditor',
+                },
+              ];
               return (
                 <label className="flex flex-col gap-1 w-[49%]">
                   <Select
                     label="Select position"
                     required
-                    options={[
-                      {
-                        value: 'chairman',
-                        label: 'Chairman',
-                      },
-                      {
-                        value: 'member',
-                        label: 'Member',
-                      },
-                    ]}
+                    options={options}
                     onChange={(e) => {
                       field.onChange(e?.value);
                     }}
@@ -559,14 +569,14 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
         </section>
         <section className="w-full flex items-center justify-end">
           <Button
-            value={isLoading ? <Loader /> : 'Add board member'}
+            value={isLoading ? <Loader /> : 'Add position'}
             submit
             primary
           />
         </section>
         <section className={`flex members-table flex-col w-full`}>
           <Table
-            data={board_of_directors?.map((member, index) => {
+            data={senior_management?.map((member, index) => {
               return {
                 ...member,
                 no: index + 1,
@@ -578,8 +588,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
             columns={columns}
             showFilter={false}
             showPagination={false}
-            tableTitle="Board members"
+            tableTitle="Management members"
           />
+          {errors?.submit && (
+            <p className="text-red-500 text-[15px] text-center">
+              {String(errors?.submit?.message)}
+            </p>
+          )}
         </section>
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -588,8 +603,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('business_activity_vat'));
-              dispatch(setBusinessActiveTab('general_information'));
+              dispatch(setBusinessActiveStep('board_of_directors'));
             }}
           />
           <Button
@@ -597,8 +611,18 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessCompletedStep('board_of_directors'));
-              dispatch(setBusinessActiveStep('senior_management'));
+              if (!senior_management?.length) {
+                setError('submit', {
+                  type: 'manual',
+                  message: 'Add at least one member',
+                });
+                setTimeout(() => {
+                  clearErrors('submit');
+                }, 5000);
+                return;
+              }
+              dispatch(setBusinessCompletedStep('senior_management'));
+              dispatch(setBusinessActiveStep('employment_info'));
             }}
           />
         </menu>
@@ -607,4 +631,4 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
   );
 };
 
-export default BoardDirectors;
+export default SeniorManagement;

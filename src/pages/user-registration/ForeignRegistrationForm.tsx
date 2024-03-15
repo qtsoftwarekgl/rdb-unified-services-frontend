@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { setRegistrationStep } from '../../states/features/authSlice';
 import moment from 'moment';
 import Select from '../../components/inputs/Select';
-import { countriesList } from '../../constants/Countries';
+import { countriesList } from '../../constants/countries';
 import validateInputs from '../../helpers/Validations';
 import { useNavigate } from 'react-router-dom';
 
@@ -257,35 +257,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1 w-full">
-                  <p className="flex items-center gap-1">
-                    Phone number <span className="text-red-600">*</span>
-                  </p>
-                  <menu className="flex items-center gap-0 relative">
-                    <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-                      <select
-                        className="w-full !text-[12px]"
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                        }}
-                      >
-                        {countriesList?.map((country) => {
-                          return (
-                            <option
-                              key={country?.dial_code}
-                              value={country?.dial_code}
-                            >
-                              {`${country?.code} ${country?.dial_code}`}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </span>
-                    <input
-                      onChange={field.onChange}
-                      className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
-                      type="text"
-                    />
-                  </menu>
+                  <Input label='Phone number' required type='tel' {...field} />
                   {errors?.phone && (
                     <p className="text-red-500 text-sm">
                       {String(errors?.phone?.message)}

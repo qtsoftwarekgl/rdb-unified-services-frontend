@@ -9,7 +9,7 @@ import {
   companyCategories,
   companyPositions,
   companyTypes,
-} from '../../../constants/BusinessRegistration';
+} from '../../../constants/businessRegistration';
 import Button from '../../../components/inputs/Button';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';

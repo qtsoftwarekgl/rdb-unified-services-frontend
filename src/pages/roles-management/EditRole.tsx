@@ -10,7 +10,7 @@ import TextArea from '../../components/inputs/TextArea';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { setAddPermissionModal, setSelectedPermissions } from '../../states/features/permissionSlice';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { roles } from '../../constants/Dashboard';
+import { roles } from '../../constants/dashboard';
 import Loader from '../../components/Loader';
 
 const EditRole = () => {

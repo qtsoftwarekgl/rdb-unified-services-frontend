@@ -21,9 +21,9 @@ import Select from "../../../components/inputs/Select";
 import {
   documentTypes,
   dummyPhones,
-} from "../../../constants/BusinessRegistration";
-import { userData } from "../../../constants/Authentication";
-import { countriesList } from "../../../constants/Countries";
+} from "../../../constants/businessRegistration";
+import { userData } from "../../../constants/authentication";
+import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 
 type EnterpriseDetailsProps = {

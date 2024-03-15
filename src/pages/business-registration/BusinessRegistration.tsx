@@ -13,6 +13,12 @@ import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
 import BusinessActivity from './general-information/BusinessActivity';
 import BoardDirectors from './management/BoardDirectors';
+import SeniorManagement from './management/SeniorManagement';
+import EmploymentInfo from './management/EmploymentInfo';
+import ShareDetails from './capital-information/ShareDetails';
+import ShareHolders from './capital-information/ShareHolders';
+import CapitalDetails from './capital-information/CapitalDetails';
+import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -60,6 +66,36 @@ const BusinessRegistration = () => {
                   {/* BOARD OF DIRECTORS */}
                   <BoardDirectors
                     isOpen={business_active_step?.name === 'board_of_directors'}
+                  />
+
+                  {/* SENIOR MANAGEMENT */}
+                  <SeniorManagement
+                    isOpen={business_active_step?.name === 'senior_management'}
+                  />
+
+                  {/* EMPLOYMENT INFO */}
+                  <EmploymentInfo
+                    isOpen={business_active_step?.name === 'employment_info'}
+                  />
+
+                  {/* SHARE DETAILS */}
+                  <ShareDetails
+                    isOpen={business_active_step?.name === 'share_details'}
+                  />
+
+                  {/* SHAREHOLDERS */}
+                  <ShareHolders
+                    isOpen={business_active_step?.name === 'shareholders'}
+                  />
+
+                  {/* CAPITAL DETAILS */}
+                  <CapitalDetails
+                    isOpen={business_active_step?.name === 'capital_details'}
+                  />
+
+                  {/* BENEFICIAL OWNERS */}
+                  <BeneficialOwners
+                    isOpen={business_active_step?.name === 'beneficial_owners'}
                   />
                 </Tab>
               );

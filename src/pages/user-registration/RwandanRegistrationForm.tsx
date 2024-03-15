@@ -13,7 +13,7 @@ import validateInputs from '../../helpers/Validations';
 import { useNavigate } from 'react-router';
 import Loader from '../../components/Loader';
 import Select from '../../components/inputs/Select';
-import { userData } from '../../constants/Authentication';
+import { userData } from '../../constants/authentication';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
 

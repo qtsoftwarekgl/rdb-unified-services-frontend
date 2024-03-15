@@ -4,7 +4,7 @@ import Table from '../../components/table/Table';
 import SuperAdminLayout from '../../containers/SuperAdminLayout';
 import { capitalizeString, formatDate } from '../../helpers/Strings';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { institutions } from '../../constants/Dashboard';
+import { institutions } from '../../constants/dashboard';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
