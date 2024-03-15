@@ -30,7 +30,7 @@ const Button: FC<ButtonProps> = ({
     return (
       <button
         type={type || "submit"}
-        className={`py-3 max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] max-[800px]:!text-lg max-md:!py-2 ${
+        className={`py-[8px] max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] max-[800px]:!text-lg max-md:!py-2 ${
           disabled &&
           "!bg-background !shadow-none hover:!scale-[1] !cursor-default hover:!bg-background hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center transition-all"
         } ${
