@@ -347,7 +347,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" />
+          <Button value="Back" route='/business-registration/new' />
           <Button
             value={isLoading ? <Loader /> : 'Continue'}
             primary={!searchCompany?.error}

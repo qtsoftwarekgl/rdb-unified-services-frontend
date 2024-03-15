@@ -19,12 +19,16 @@ import ShareDetails from './capital-information/ShareDetails';
 import ShareHolders from './capital-information/ShareHolders';
 import CapitalDetails from './capital-information/CapitalDetails';
 import BeneficialOwners from './beneficial-owners/BeneficialOwners';
+import BusinessAttachments from './attachments/BusinessAttachments';
+import PreviewSubmission from './preview-submission/PreviewSubmission';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
-  const { business_registration_tabs, business_active_step } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
+  const {
+    business_registration_tabs,
+    business_active_step,
+    business_active_tab,
+  } = useSelector((state: RootState) => state.businessRegistration);
 
   // CATCH PROGRESS ID
   const { search } = useLocation();
@@ -43,6 +47,7 @@ const BusinessRegistration = () => {
             (tab: RegistrationTab, index: number) => {
               return (
                 <Tab
+                  active_tab={business_active_tab}
                   isOpen={tab?.active}
                   steps={tab?.steps}
                   key={`${String(index)}-${entry_id}`}
@@ -96,6 +101,16 @@ const BusinessRegistration = () => {
                   {/* BENEFICIAL OWNERS */}
                   <BeneficialOwners
                     isOpen={business_active_step?.name === 'beneficial_owners'}
+                  />
+
+                  {/* ATTACHMENTS */}
+                  <BusinessAttachments
+                    isOpen={business_active_step?.name === 'attachments'}
+                  />
+
+                  {/* PREVIEW AND SUBMISSINO */}
+                  <PreviewSubmission
+                    isOpen={business_active_step?.name === 'preview_submission'}
                   />
                 </Tab>
               );

@@ -458,7 +458,7 @@ export const businessSubActivities = [
   },
 ];
 
-export const shareholderTypes = [
+export const personnelTypes = [
   {
     label: 'Person',
     value: 'person',
