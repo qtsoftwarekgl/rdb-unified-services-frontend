@@ -34,6 +34,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
     watch,
     trigger,
     setValue,
+    clearErrors,
     reset,
     formState: { errors },
   } = useForm();
@@ -70,7 +71,16 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setBoardDirectors([data, ...board_of_directors]));
+      console.log({
+        ...data,
+        attachment: attachmentFile?.name,
+        step: 'board_of_directors',
+      })
+      // dispatch(setBoardDirectors([{
+      //   ...data,
+      //   attachment: attachmentFile?.name,
+      //   step: 'board_of_directors',
+      // }, ...board_of_directors]));
       reset(undefined, { keepDirtyValues: true });
       setValue('attachment', null);
     }, 1000);
@@ -453,7 +463,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
               />
             </menu>
           ) : (
-            <menu className="w-full flex items-center gap-6">
+            <menu className="w-full flex items-start gap-6">
               <Controller
                 name="phone"
                 control={control}
@@ -509,6 +519,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
               Attachment <span className="text-red-600">*</span>
             </h3>
             <Controller
+            defaultValue={attachmentFile?.name}
               name="attachment"
               rules={{
                 required:
@@ -529,11 +540,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
                           setValue('attachment', e?.target?.files?.[0]?.name);
+                          clearErrors('attachment');
                         }}
                       />
-                      {attachmentFile && (
+                      {(attachmentFile || board_of_directors?.attachment) && (
                         <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                          {attachmentFile?.name}
+                          {board_of_directors?.attachment ||
+                            attachmentFile?.name}
                           <FontAwesomeIcon
                             icon={faX}
                             className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"

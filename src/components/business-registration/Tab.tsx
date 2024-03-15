@@ -1,7 +1,7 @@
 import { FC, ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { AppDispatch } from "../../states/store";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
@@ -45,7 +45,7 @@ const Tab: FC<TabProps> = ({
   if (!isOpen) return null;
 
   return (
-    <section className="flex items-start w-full">
+    <section className="flex items-start w-full bg-white p-6 rounded-md shadow-sm">
       <aside
         className={`${
           steps && steps?.length > 0 ? "flex" : "hidden"
@@ -54,7 +54,7 @@ const Tab: FC<TabProps> = ({
         {steps?.map((step: Step, index: number, arr: Array<Step>) => {
           return (
             <Link
-              to={"#"}
+              to={'#'}
               key={index}
               onClick={(e) => {
                 e.preventDefault();
@@ -66,12 +66,12 @@ const Tab: FC<TabProps> = ({
                 {step?.completed ? (
                   <FontAwesomeIcon
                     icon={faCheck}
-                    className="p-2 text-white rounded-full bg-primary"
+                    className="py-[8px] px-[9px] text-white rounded-full bg-primary"
                   />
                 ) : (
                   <p
-                    className={`text-[15px] p-[6px] px-[14px] rounded-full bg-white text-secondary font-semibold w-fit ${
-                      step?.active && "!text-white !bg-primary"
+                    className={`text-[15px] h-[30px] w-[30px] flex items-center justify-center rounded-full bg-white text-secondary font-semibold ${
+                      step?.active && '!text-white !bg-primary'
                     }`}
                   >
                     {String(index + 1)}
@@ -79,17 +79,20 @@ const Tab: FC<TabProps> = ({
                 )}
                 <hr
                   className={`border-l-[.5px] w-0 border-secondary h-8 ${
-                    index === arr?.length - 1 && "hidden"
+                    index === arr?.length - 1 && 'hidden'
                   }`}
                 />
               </figure>
-              <h4 className="font-medium text-[15px] mt-2">{step?.label}</h4>
+              <menu className="flex items-center justify-between gap-3">
+                <h4 className="font-medium text-[15px] mt-[5px]">{step?.label}</h4>
+                {step?.active && <hr className="border-[1px] border-primary font-bold text-primary h-full min-h-[25px]" />}
+              </menu>
             </Link>
           );
         })}
       </aside>
       <menu
-        className={`flex flex-col gap-3 bg-white rounded-md shadow-sm h-full p-5 ${
+        className={`flex flex-col gap-3 h-full p-5 ${
           steps?.length <= 0 ? "!w-full" : "w-[80%]"
         }`}
       >
