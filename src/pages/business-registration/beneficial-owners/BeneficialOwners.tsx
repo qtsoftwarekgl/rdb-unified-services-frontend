@@ -1,15 +1,26 @@
 import { FC, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, FieldValues, set, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
-import { personnelTypes } from '../../../constants/businessRegistration';
+import { ownerRelationships, personnelTypes } from '../../../constants/businessRegistration';
 import Input from '../../../components/inputs/Input';
-import { faSearch, faX } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import Loader from '../../../components/Loader';
 import validateInputs from '../../../helpers/Validations';
 import { countriesList } from '../../../constants/countries';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../../components/inputs/Button';
+import Table from '../../../components/table/Table';
+import { capitalizeString } from '../../../helpers/Strings';
+import {
+  setBeneficialOwners,
+  setBusinessActiveStep,
+  setBusinessActiveTab,
+  setBusinessCompletedStep,
+} from '../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
 
 interface BeneficialOwnersProps {
   isOpen: boolean;
@@ -29,6 +40,10 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
   } = useForm();
 
   // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { beneficial_owners } = useSelector(
+    (state: RootState) => state.businessRegistration
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
@@ -41,8 +56,62 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      dispatch(setBeneficialOwners([data, ...beneficial_owners]));
+    }, 1000);
   };
+
+    // TABLE COLUMNS
+    const columns = [
+      {
+        header: 'Name',
+        accessorKey: 'name',
+      },
+      {
+        header: 'Type',
+        accessorKey: 'type',
+      },
+      {
+        header: 'Nature of ownership',
+        accessorKey: 'ownership_type',
+      },
+      {
+        header: 'Control type',
+        accessorKey: 'control_type',
+      },
+      {
+        header: 'Action',
+        accessorKey: 'action',
+        cell: ({ row }) => {
+          return (
+            <menu className="flex items-center gap-6">
+              <FontAwesomeIcon
+                className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
+                icon={faEye}
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+              />
+              <FontAwesomeIcon
+                className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                icon={faTrash}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const newBeneficialOwners = beneficial_owners?.filter(
+                    (_: unknown, index: number) => {
+                      return index !== row?.original?.no;
+                    }
+                  );
+                  dispatch(setBeneficialOwners(newBeneficialOwners));
+                }}
+              />
+            </menu>
+          );
+        },
+      },
+    ];
 
   if (!isOpen) return null;
 
@@ -364,18 +433,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                     Gender<span className="text-red-500">*</span>
                   </p>
                   <menu className="flex items-center gap-4 mt-2">
-                    <Input
-                      type="radio"
-                      label="Male"
-                      checked={searchMember?.data?.gender === 'Male'}
-                      {...field}
-                    />
-                    <Input
-                      type="radio"
-                      label="Female"
-                      checked={searchMember?.data?.gender === 'Female'}
-                      {...field}
-                    />
+                    <Input type="radio" label="Male" {...field} />
+                    <Input type="radio" label="Female" {...field} />
                   </menu>
                   {errors?.gender && (
                     <span className="text-red-500 text-[13px]">
@@ -643,11 +702,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
             rules={{
               required:
                 watch('address') === 'yes' &&
-                watch('beneficial_type') === 'person' &&
-                'Phone number is required',
+                watch('beneficial_type') === 'person'
+                  ? 'Phone number is required'
+                  : false,
               validate: (value) => {
                 if (
-                  watch('beneficial_type') === 'person' &&
+                  watch('address') === 'yes' &&
                   watch('document_type') === 'nid'
                 ) {
                   return validateInputs(value, 'tel') || 'Invalid phone number';
@@ -737,6 +797,199 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
             />
           </menu>
         </section>
+        <section
+          className={`${
+            watch('beneficial_type') !== 'person' ? 'flex' : 'hidden'
+          } flex-wrap gap-4 items-start justify-between w-full`}
+        >
+          <Controller
+            name="company_name"
+            control={control}
+            rules={{
+              required:
+                watch('beneficial_type') !== 'person'
+                  ? 'Company name is required'
+                  : false,
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <Input
+                    label="Company Name"
+                    placeholder="Company name"
+                    required
+                    {...field}
+                  />
+                  {errors?.company_name && (
+                    <p className="text-red-500 text-sm">
+                      {String(errors?.company_name?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="company_code"
+            defaultValue={searchMember?.data?.company_code}
+            control={control}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <Input
+                    label="Company code"
+                    placeholder="Company code"
+                    {...field}
+                  />
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="incorporation_country"
+            control={control}
+            rules={{
+              required:
+                watch('beneficial_type') !== 'person' &&
+                'Select country of incorporation',
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <Select
+                    required
+                    label="Country of Incorporation"
+                    options={countriesList.map((country) => {
+                      return {
+                        ...country,
+                        label: country.name,
+                        value: country.code,
+                      };
+                    })}
+                    onChange={(e) => {
+                      field.onChange(e?.value);
+                    }}
+                  />
+                  {errors?.incorporation_country && (
+                    <p className="text-red-500 text-sm">
+                      {String(errors?.incorporation_country?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="registration_date"
+            control={control}
+            rules={{
+              required:
+                watch('beneficial_type') !== 'person'
+                  ? 'Registration date is required'
+                  : false,
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <Input
+                    label="Registration Date"
+                    required
+                    type="date"
+                    {...field}
+                  />
+                  {errors?.registration_date && (
+                    <p className="text-red-500 text-sm">
+                      {String(errors?.registration_date?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="email"
+            control={control}
+            defaultValue={searchMember?.data?.email}
+            rules={{
+              required:
+                watch('beneficial_type') !== 'person' &&
+                'Email address is required',
+              validate: (value) => {
+                if (watch('beneficial_type') !== 'person') {
+                  return (
+                    validateInputs(String(value), 'email') ||
+                    'Invalid email address'
+                  );
+                } else return true;
+              },
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <Input
+                    required
+                    defaultValue={searchMember?.data?.email}
+                    label="Email"
+                    placeholder="name@domain.com"
+                    {...field}
+                  />
+                  {errors?.email && (
+                    <p className="text-red-500 text-sm">
+                      {String(errors?.email?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="company_phone"
+            control={control}
+            rules={{
+              required:
+                watch('beneficial_type') !== 'person' &&
+                'Company phone number is required',
+            }}
+            render={({ field }) => {
+              return (
+                <label className="flex flex-col gap-1 w-[49%]">
+                  <Input label="Phone number" required type="tel" {...field} />
+                  {errors?.company_phone && (
+                    <p className="text-red-500 text-sm">
+                      {String(errors?.company_phone?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="street_name"
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1">
+                  <Input
+                    label="Street Name"
+                    placeholder="Street name"
+                    {...field}
+                  />
+                </label>
+              );
+            }}
+          />
+          <Controller
+            control={control}
+            name="po_box"
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1">
+                  <Input label="PO Box" placeholder="Postal code" {...field} />
+                </label>
+              );
+            }}
+          />
+        </section>
         <menu
           className={`${
             watch('beneficial_type') ? 'flex' : 'hidden'
@@ -758,7 +1011,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                     <Select
                       label="Beneficial owner relationship"
                       required
-                      options={[]}
+                      options={ownerRelationships?.map((relationship) => {
+                        return {
+                          label: relationship?.label,
+                          value: relationship?.label,
+                        };
+                      })}
                       onChange={(e) => {
                         field.onChange(e?.value);
                       }}
@@ -844,9 +1102,59 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
           </section>
         </menu>
         <menu className="w-full flex items-center justify-end">
-          <Button value="Add beneficial owner" primary submit />
+          <Button
+            value={isLoading ? <Loader /> : 'Add beneficial owner'}
+            primary
+            submit
+          />
         </menu>
       </form>
+      <section className={`flex members-table flex-col w-full`}>
+        <Table
+          data={beneficial_owners.map(
+            (beneficial_owner: unknown, index: number) => {
+              return {
+                ...beneficial_owner,
+                no: index,
+                name: beneficial_owner?.first_name
+                  ? `${beneficial_owner?.first_name} ${beneficial_owner?.last_name}`
+                  : beneficial_owner?.company_name,
+                type: capitalizeString(beneficial_owner?.beneficial_type),
+                control_type: capitalizeString(beneficial_owner?.control_type),
+                ownership_type: capitalizeString(
+                  beneficial_owner?.ownership_type
+                ),
+              };
+            }
+          )}
+          columns={columns}
+          showFilter={false}
+          showPagination={false}
+          tableTitle="Beneficial owners"
+        />
+      </section>
+      <menu
+          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('capital_details'));
+              dispatch(setBusinessActiveTab('capital_information'));
+            }}
+          />
+          <Button
+            value="Continue"
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessCompletedStep('beneficial_owners'));
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'))
+            }}
+          />
+        </menu>
     </section>
   );
 };

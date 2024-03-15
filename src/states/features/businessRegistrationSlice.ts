@@ -192,6 +192,7 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('shareholders'))) || [],
     capital_details:
       JSON.parse(String(localStorage.getItem('capital_details'))) || [],
+      beneficial_owners: JSON.parse(String(localStorage.getItem('beneficial_owners'))) || [],
   },
   reducers: {
     // SET ACTIVE TAB
@@ -439,6 +440,12 @@ export const businessRegistrationSlice = createSlice({
       state.capital_details = action.payload;
       localStorage.setItem('capital_details', JSON.stringify(action.payload));
     },
+
+    // SET BENEFICIAL OWNERS
+    setBeneficialOwners: (state, action) => {
+      state.beneficial_owners = action.payload;
+      localStorage.setItem('beneficial_owners', JSON.stringify(action.payload));
+    },
   },
 });
 
@@ -458,5 +465,6 @@ export const {
   setEmploymentInfo,
   setShareDetails,
   setShareHolders,
-  setCapitalDetails
+  setCapitalDetails,
+  setBeneficialOwners
 } = businessRegistrationSlice.actions;

@@ -480,3 +480,15 @@ export const personnelTypes = [
     label: "Partnership Company",
   },
 ];
+
+export const ownerRelationships = [
+  {
+    label: 'Close family relationship',
+  },
+  {
+    label: 'Connection to person that possess ownership',
+  },
+  {
+    label: 'Contractual association',
+  },
+]
