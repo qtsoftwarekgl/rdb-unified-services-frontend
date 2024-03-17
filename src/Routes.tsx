@@ -41,6 +41,9 @@ import TransferRegistration from "./pages/transfer-registration/TransferRegistra
 import Amalgamation from "./pages/amalgamation/Amalgamate";
 import AmendCompanyDetails from "./pages/amend-company-details/AmendCompanyDetails";
 import ForeignUsers from "./pages/users-management/ForeignUsers";
+import NameReservation from "./pages/name-reservation/NameReservation";
+import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
+import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
 
 const Routes = () => {
   return (
@@ -64,9 +67,9 @@ const Routes = () => {
             element={<BusinessRegistration />}
           />
           {/* USER PROFILE */}
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="company-details/:id" element={<UserCompanyDetails />} />
-          <Route path="applications" element={<UserApplications />} />
+          <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/company-details/:id" element={<UserCompanyDetails />} />
+          <Route path="/user-applications" element={<UserApplications />} />
           <Route path="/company-documents" element={<CompanyDocuments />} />
           <Route path="/company-history" element={<CompanyHistory />} />
 
@@ -104,6 +107,15 @@ const Routes = () => {
           <Route
             path="/amend-company-details"
             element={<AmendCompanyDetails />}
+          />
+          <Route path="/name-reservation" element={<NameReservation />} />
+          <Route
+            path="/branch-of-foreign-company"
+            element={<ForeignBranchSplashPage />}
+          />
+          <Route
+            path="/search-company"
+            element={<SearchCompanyAvailability />}
           />
         </Route>
 

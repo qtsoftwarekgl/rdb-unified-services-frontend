@@ -41,12 +41,12 @@ const UserSidebar = () => {
   const defaultUserSideBar = [
     {
       title: "My Profile",
-      path: "/profile",
+      path: "/user-profile",
       icon: faGear,
     },
     {
       title: "My Applications",
-      path: "/applications",
+      path: "/user-applications",
       icon: faHouse,
     },
   ];

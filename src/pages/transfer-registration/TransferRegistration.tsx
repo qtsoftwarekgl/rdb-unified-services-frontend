@@ -27,6 +27,7 @@ const TransferRegistration = () => {
 
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [attachedFIles, setAttachedFiles] = useState<Attachment[]>([]);
+  const [isAddedToAttachedFiles, setIsAddedToAttachedFiles] = useState(false);
 
   const navigate = useNavigate();
 
@@ -41,6 +42,7 @@ const TransferRegistration = () => {
       ]);
       setAttachmentFile(null);
       setValue("attachment", null);
+      setIsAddedToAttachedFiles(true);
     }
   };
 
@@ -164,16 +166,11 @@ const TransferRegistration = () => {
               <Controller
                 name="attachment"
                 rules={{
-                  validate: () => {
-                    if (!attachmentFile && attachedFIles.length === 0) {
-                      return "Document attachment is required!";
-                    } else {
-                      setError("attachment", {
-                        type: "manual",
-                        message: "",
-                      });
-                      return true;
+                  validate: (value) => {
+                    if (!value && attachedFIles?.length === 0) {
+                      return "Attach a file";
                     }
+                    return true;
                   },
                 }}
                 control={control}
@@ -217,6 +214,11 @@ const TransferRegistration = () => {
                           {String(errors?.attachment?.message)}
                         </p>
                       )}
+                      {attachmentFile && !isAddedToAttachedFiles && (
+                        <p className="text-sm text-red-500">
+                          Add file to attached files
+                        </p>
+                      )}
                     </label>
                   );
                 }}
@@ -232,12 +234,7 @@ const TransferRegistration = () => {
               />
             )}
             <menu className="flex items-center justify-center w-full p-8">
-              <Button
-                value={"Submit"}
-                disabled={!attachedFIles.length}
-                primary
-                submit
-              />
+              <Button value={"Submit"} primary submit />
             </menu>
           </form>
         </section>

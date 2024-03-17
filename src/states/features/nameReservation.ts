@@ -9,22 +9,30 @@ export const nameReservationSlice = createSlice({
     ) || [
       {
         no: 1,
-        label: "Name Reservation",
-        name: "name_reservation",
+        label: "Owner Details",
+        name: "owner_details",
         active: true,
         steps: [
           {
             label: "Owner Details",
             name: "owner_details",
-            tab_name: "name_reservation",
+            tab_name: "owner_details",
             active: true,
             completed: false,
           },
+        ],
+      },
+      {
+        no: 1,
+        label: "Name Reservation",
+        name: "name_reservation",
+        active: false,
+        steps: [
           {
             label: "Name Reservation",
             name: "name_reservation",
             tab_name: "name_reservation",
-            active: false,
+            active: true,
             completed: false,
           },
         ],
@@ -53,6 +61,7 @@ export const nameReservationSlice = createSlice({
       const updatedTabs = state.name_reservation_tabs.map((tab: TabType) => {
         return {
           ...tab,
+          active: false,
         };
       });
       const tabIndex = updatedTabs.findIndex(
@@ -81,6 +90,7 @@ export const nameReservationSlice = createSlice({
           steps: tab.steps.map((step: Step) => {
             return {
               ...step,
+              active: false,
             };
           }),
         };

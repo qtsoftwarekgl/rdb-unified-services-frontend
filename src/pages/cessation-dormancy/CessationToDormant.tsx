@@ -24,7 +24,7 @@ const CessationToDormant = () => {
     setValue,
   } = useForm();
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
-
+  const [isAddedToAttachedFiles, setIsAddedToAttachedFiles] = useState(false);
   const [attachedFIles, setAttachedFiles] = useState<Attachment[]>([]);
   const navigate = useNavigate();
 
@@ -39,6 +39,7 @@ const CessationToDormant = () => {
       ]);
       setAttachmentFile(null);
       setValue("attachment", null);
+      setIsAddedToAttachedFiles(true);
     }
   };
 
@@ -148,7 +149,14 @@ const CessationToDormant = () => {
               </h3>
               <Controller
                 name="attachment"
-                rules={{ required: "Document attachment is required" }}
+                rules={{
+                  validate: (value) => {
+                    if (!value && attachedFIles?.length === 0) {
+                      return "Attach a file";
+                    }
+                    return true;
+                  },
+                }}
                 control={control}
                 render={({ field }) => {
                   return (
@@ -172,6 +180,7 @@ const CessationToDormant = () => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 setAttachmentFile(null);
+                                setIsAddedToAttachedFiles(false);
                                 setValue("attachment", null);
                               }}
                             />
@@ -185,9 +194,14 @@ const CessationToDormant = () => {
                           />
                         )}
                       </ul>
-                      {errors?.attachment && (
+                      {errors?.attachment && attachedFIles?.length === 0 && (
                         <p className="text-sm text-red-500">
                           {String(errors?.attachment?.message)}
+                        </p>
+                      )}
+                      {attachmentFile && !isAddedToAttachedFiles && (
+                        <p className="text-sm text-red-500">
+                          Add file to attached files
                         </p>
                       )}
                     </label>
@@ -205,12 +219,7 @@ const CessationToDormant = () => {
               />
             )}
             <menu className="flex items-center justify-center w-full p-8">
-              <Button
-                value={"Submit"}
-                primary
-                submit
-                disabled={!attachedFIles.length}
-              />
+              <Button value={"Submit"} primary submit />
             </menu>
           </form>
         </section>
