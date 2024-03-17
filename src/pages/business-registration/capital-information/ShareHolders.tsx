@@ -62,7 +62,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
         setShareHolders([
           {
             ...data,
-            attachment: null,
+            attachment: attachmentFile?.name,
             step: 'shareholders',
             no: shareholders?.length - 1,
           },

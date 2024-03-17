@@ -5,7 +5,12 @@ import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
-import { setBusinessActiveStep, setBusinessActiveTab, setBusinessCompletedStep, setCompanyAttachments } from '../../../states/features/businessRegistrationSlice';
+import {
+  setBusinessActiveStep,
+  setBusinessActiveTab,
+  setBusinessCompletedStep,
+  setCompanyAttachments,
+} from '../../../states/features/businessRegistrationSlice';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 

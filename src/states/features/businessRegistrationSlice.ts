@@ -192,10 +192,23 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('shareholders'))) || [],
     capital_details:
       JSON.parse(String(localStorage.getItem('capital_details'))) || [],
-      beneficial_owners: JSON.parse(String(localStorage.getItem('beneficial_owners'))) || [],
-      company_attachments: JSON.parse(String(localStorage.getItem('company_attachments'))) || [],
+    beneficial_owners:
+      JSON.parse(String(localStorage.getItem('beneficial_owners'))) || [],
+    company_attachments:
+      JSON.parse(String(localStorage.getItem('company_attachments'))) || [],
+    user_applications:
+      JSON.parse(String(localStorage.getItem('user_applications'))) || [],
   },
   reducers: {
+    // SET REGISTRATION TABS
+    setBusinessRegistrationTabs: (state, action) => {
+      state.business_registration_tabs = action.payload;
+      localStorage.setItem(
+        'business_registration_tabs',
+        JSON.stringify(action.payload)
+      );
+    },
+
     // SET ACTIVE TAB
     setBusinessActiveTab: (state, action) => {
       const updatedRegistrationTabs = state.business_registration_tabs?.map(
@@ -451,7 +464,19 @@ export const businessRegistrationSlice = createSlice({
     // SET COMPANY ATTACHMENTS
     setCompanyAttachments: (state, action) => {
       state.company_attachments = action.payload;
-      localStorage.setItem('company_attachments', JSON.stringify(action.payload));
+      localStorage.setItem(
+        'company_attachments',
+        JSON.stringify(action.payload)
+      );
+    },
+
+    // SET DOMESTIC BUSINESS REGISTRATIONS
+    setUserApplications: (state, action) => {
+      state.user_applications = [action.payload, ...state.user_applications];
+      localStorage.setItem(
+        'user_applications',
+        JSON.stringify(state.user_applications)
+      );
     },
   },
 });
@@ -475,4 +500,6 @@ export const {
   setCapitalDetails,
   setBeneficialOwners,
   setCompanyAttachments,
+  setUserApplications,
+  setBusinessRegistrationTabs
 } = businessRegistrationSlice.actions;
