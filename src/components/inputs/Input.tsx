@@ -28,6 +28,7 @@ interface InputProps {
   accept?: string;
   min?: string | number;
   readOnly?: boolean;
+  multiple?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -50,6 +51,7 @@ const Input: FC<InputProps> = ({
   accept = '*',
   min,
   readOnly = false,
+  multiple = false,
 }) => {
   const hiddenFileInput = useRef(null);
 
@@ -79,11 +81,12 @@ const Input: FC<InputProps> = ({
           onClick={handleClick}
           className={`!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm py-2 w-full text-[12px] text-center max-[800px]:!text-[14px] px-6 rounded-md cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${className}`}
         >
-          Choose file
+          Choose file{multiple ? 's' : ''}
         </button>
         <input
           ref={hiddenFileInput}
           type={type}
+          multiple={multiple}
           accept={accept}
           onChange={onChange}
           className="hidden"

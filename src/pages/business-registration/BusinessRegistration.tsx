@@ -19,7 +19,7 @@ import ShareDetails from "./capital-information/ShareDetails";
 import ShareHolders from "./capital-information/ShareHolders";
 import CapitalDetails from "./capital-information/CapitalDetails";
 import BeneficialOwners from "./beneficial-owners/BeneficialOwners";
-import BusinessAttachments from "./attachments/BusinessAttachments";
+import CompanyAttachments from "./attachments/CompanyAttachments";
 import PreviewSubmission from "./preview-submission/PreviewSubmission";
 
 const BusinessRegistration = () => {
@@ -104,7 +104,7 @@ const BusinessRegistration = () => {
                   />
 
                   {/* ATTACHMENTS */}
-                  <BusinessAttachments
+                  <CompanyAttachments
                     isOpen={business_active_step?.name === "attachments"}
                   />
 

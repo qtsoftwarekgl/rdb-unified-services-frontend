@@ -71,16 +71,11 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      console.log({
+      dispatch(setBoardDirectors([{
         ...data,
         attachment: attachmentFile?.name,
         step: 'board_of_directors',
-      })
-      // dispatch(setBoardDirectors([{
-      //   ...data,
-      //   attachment: attachmentFile?.name,
-      //   step: 'board_of_directors',
-      // }, ...board_of_directors]));
+      }, ...board_of_directors]));
       reset(undefined, { keepDirtyValues: true });
       setValue('attachment', null);
     }, 1000);

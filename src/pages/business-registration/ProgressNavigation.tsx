@@ -20,18 +20,13 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
           <Link
             key={Number(index)}
             to={'#'}
-            onClickCapture={(e) => {
+            onClick={(e) => {
               e.preventDefault();
               dispatch(setActiveTab(tab?.name));
             }}
-            className={`step w-full h-full py-[6px] flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white hover:bg-opacity-90 rounded-md ${
-              tab?.active && 'bg-primary text-white !rounded-md'
-            } ${
-              index < arr.length - 1 && 'border-r border-gray-300 !rounded-none'
-            }`}
-            onClick={(e) => {
-              e.preventDefault();
-            }}
+            className={`step rounded-none w-full h-full py-[6px] flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white ${
+              index < arr.length - 1 && 'border-r border-gray-500'
+            } ${tab?.active && 'bg-primary text-white !rounded-md'}`}
           >
             <h1 className="text-[14px] tab-name">{tab?.label}</h1>
           </Link>

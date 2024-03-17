@@ -1,7 +1,7 @@
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import UserLayout from "../../containers/UserLayout";
 import Select from "../../components/inputs/Select";
-import { cessationCompanies } from "../../constants/BusinessRegistration";
+import { cessationCompanies } from "../../constants/businessRegistration";
 import Input from "../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
