@@ -37,7 +37,7 @@ const Navbar = ({ className }: Props) => {
   const navDropdown = [
     {
       title: "Profile",
-      link: "/profile",
+      link: "/user-profile",
       icon: faUser,
     },
     {
@@ -106,7 +106,7 @@ const Navbar = ({ className }: Props) => {
             />
           </menu>
         </Link>
-        <menu className="flex">
+        <menu className="flex items-center">
           <img
             src={`/public/languageIcons/${locale}.png`}
             className="bg-red-200 rounded-full w-7 h-7"

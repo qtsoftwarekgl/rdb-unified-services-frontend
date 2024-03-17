@@ -41,12 +41,12 @@ const Preview = ({ isOpen }: Props) => {
       addToRegisteredEnterprises({
         enterprise_attachments: { ...enterprise_attachments },
         enterprise_business_lines: [...enterprise_business_lines],
-        enterprise_details: { ...enterprise_details },
+        enterprise_details: { ...enterprise_details, status: "pending" },
         enterprise_office_address: { ...enterprise_office_address },
       })
     );
     dispatch(resetToInitialState());
-    navigate("/success");
+    navigate("/success", { state: { redirectUrl: "/user-profile" } });
   };
 
   return (

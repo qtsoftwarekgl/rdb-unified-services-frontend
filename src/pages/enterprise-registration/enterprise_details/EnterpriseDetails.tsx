@@ -15,6 +15,7 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseCompletedStep,
   setEnterpriseDetails,
+  setUsedIds,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import Button from "../../../components/inputs/Button";
 import Select from "../../../components/inputs/Select";
@@ -31,7 +32,7 @@ type EnterpriseDetailsProps = {
 };
 
 export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
-  const { enterprise_details, enterprise_registration_active_step } =
+  const { enterprise_details, enterprise_registration_active_step, usedIds } =
     useSelector((state: RootState) => state.enterpriseRegistration);
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -66,11 +67,13 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
           ...data,
           company_type: "enterprise",
           registration_category: "Domestic",
+          company_name: data?.name,
           step: {
             ...enterprise_registration_active_step,
           },
         })
       );
+      dispatch(setUsedIds(data?.id_no));
       setIsLoading(false);
 
       // SET CURRENT STEP AS COMPLETED
@@ -253,6 +256,12 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
               }
               rules={{
                 required: "Document number is required",
+                validate: (value) => {
+                  if (usedIds.includes(value)) {
+                    return "ID already used. Please use another ID";
+                  }
+                  return true;
+                },
               }}
               render={({ field }) => (
                 <label className="flex flex-col items-start w-1/2 gap-2">

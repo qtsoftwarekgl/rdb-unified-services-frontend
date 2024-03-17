@@ -99,6 +99,7 @@ export const enterpriseRegistrationSlice = createSlice({
       null,
     registered_enterprises:
       JSON.parse(String(localStorage.getItem("registered_enterprises"))) || [],
+    usedIds: JSON.parse(String(localStorage.getItem("usedIds"))) || [],
   },
   reducers: {
     setEnterpriseActiveTab: (state, action) => {
@@ -272,6 +273,10 @@ export const enterpriseRegistrationSlice = createSlice({
         JSON.stringify(state.registered_enterprises)
       );
     },
+    setUsedIds: (state, action) => {
+      state.usedIds.push(action.payload);
+      localStorage.setItem("usedIds", JSON.stringify(state.usedIds));
+    },
     resetToInitialState: (state) => {
       state.enterprise_registration_tabs = [
         {
@@ -376,4 +381,5 @@ export const {
   setEnterpriseAttachments,
   addToRegisteredEnterprises,
   resetToInitialState,
+  setUsedIds,
 } = enterpriseRegistrationSlice.actions;

@@ -24,6 +24,99 @@ export const dummyPhones = [
   },
 ];
 
+export const searchedCompanies = [
+  {
+    company_name: "Flower LTD",
+    company_type: "Public",
+    location: "Kigali, Rwanda",
+  },
+  {
+    company_name: "XYZ",
+    company_type: "Public",
+    location: "Nyabugogo, Kigali",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+  {
+    company_name: "Soft Drink LTD",
+    company_type: "Public",
+    location: "Kimironko, Kigali",
+  },
+  {
+    company_name: "XVM",
+    company_type: "Public",
+    location: "Butare, South Province",
+  },
+];
+
 export const cessationCompanies = [
   {
     tin: "123456789",
