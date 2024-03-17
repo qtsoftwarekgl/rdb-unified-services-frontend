@@ -58,6 +58,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           type: data?.type,
           position: data?.position,
           articles_of_association: data?.articles_of_association,
+          step: 'company_details',
         })
       );
 
@@ -313,13 +314,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
                     type="radio"
                     label="Yes"
                     checked={
-                      watch('articles_of_association') ||
-                      company_details?.articles_of_association === true
+                      watch('articles_of_association') === 'yes' ||
+                      company_details?.articles_of_association === 'yes'
                     }
                     onChange={(e) => {
                       if (e.target.checked) {
-                        field.onChange(e?.target?.checked);
-                        setValue('articles_of_association', true);
+                        field.onChange(e?.target?.value);
+                        setValue('articles_of_association', 'yes');
                       }
                     }}
                     name={field?.name}
@@ -328,14 +329,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
                     type="radio"
                     label="No"
                     checked={
-                      watch('articles_of_association') ||
-                      company_details?.articles_of_association === false
+                      watch('articles_of_association') === 'no' ||
+                      company_details?.articles_of_association === 'no'
                     }
                     name={field?.name}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        field.onChange(e?.target?.checked);
-                        setValue('articles_of_association', false);
+                        field.onChange(e?.target?.value);
+                        setValue('articles_of_association', 'no');
                       }
                     }}
                   />

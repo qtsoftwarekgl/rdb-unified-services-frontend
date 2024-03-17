@@ -7,6 +7,8 @@ import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 const InstitutionRegistration = () => {
   // REACT HOOK FORM
@@ -40,7 +42,7 @@ const InstitutionRegistration = () => {
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 w-full max-w-[50%] mx-auto rounded-md shadow-sm"
+          className="flex flex-col gap-4 w-full max-w-[50%] mx-auto rounded-md"
         >
           <Controller
             name="name"
@@ -144,12 +146,22 @@ const InstitutionRegistration = () => {
               );
             }}
           />
-          <menu className="flex items-center gap-3 justify-between mt-3">
+          <menu className="flex flex-col items-center gap-3 justify-between mt-3">
             <Button
               value={isLoading ? <Loader /> : 'Submit'}
               submit
               primary
               className="!w-full"
+            />
+            <Button
+            route='/auth/login'
+              value={
+                <menu className="flex items-center gap-2">
+                  <FontAwesomeIcon icon={faArrowLeft} />
+                  Back
+                </menu>
+              }
+              styled={false}
             />
           </menu>
         </form>

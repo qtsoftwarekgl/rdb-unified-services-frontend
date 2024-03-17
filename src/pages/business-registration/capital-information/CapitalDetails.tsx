@@ -117,7 +117,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
     <section className="w-full flex flex-col gap-6">
       <Table
         tableTitle="Shareholders"
-        data={capital_details?.map((shareholder: unknown, index) => {
+        data={capital_details?.map((shareholder: unknown, index: number) => {
           return {
             ...shareholder,
             no: index,
@@ -161,7 +161,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
                       Number(acc) + Number(curr?.shares?.total_shares),
                     0
                   ) || 0,
-                0
+                
               )}
             </p>
           </ul>
