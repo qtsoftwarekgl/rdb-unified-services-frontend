@@ -1,7 +1,7 @@
 import { FC, ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { AppDispatch } from "../../states/store";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
@@ -48,7 +48,7 @@ const Tab: FC<TabProps> = ({
     <section className="flex items-start w-full bg-white p-6 rounded-md shadow-sm">
       <aside
         className={`${
-          steps && steps?.length > 0 ? "flex" : "hidden"
+          steps && steps?.length > 1 ? "flex" : "hidden"
         } flex-col gap-2 w-[20%] p-3 px-4 rounded-md`}
       >
         {steps?.map((step: Step, index: number, arr: Array<Step>) => {
@@ -93,7 +93,7 @@ const Tab: FC<TabProps> = ({
       </aside>
       <menu
         className={`flex flex-col gap-3 h-full p-5 ${
-          steps?.length <= 0 ? "!w-full" : "w-[80%]"
+          steps?.length <= 1 ? "!w-[90%] mx-auto" : "w-[80%]"
         }`}
       >
         <h1 className="text-lg font-semibold text-center uppercase">

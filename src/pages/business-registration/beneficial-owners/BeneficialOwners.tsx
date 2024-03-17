@@ -1048,6 +1048,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                         field.onChange(e?.value);
                       }}
                     />
+                    {errors?.control_type && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.control_type?.message)}
+                      </p>
+                    )}
                   </label>
                 );
               }}

@@ -187,6 +187,10 @@ const AdminSidebar = () => {
               {isOpen ? "Logout" : null}
             </menu>
           }
+          onClick={(e) => {
+            e.preventDefault();
+            localStorage.clear();
+          }}
         />
       </motion.div>
     </aside>

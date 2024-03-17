@@ -20,7 +20,7 @@ import ShareHolders from "./capital-information/ShareHolders";
 import CapitalDetails from "./capital-information/CapitalDetails";
 import BeneficialOwners from "./beneficial-owners/BeneficialOwners";
 import CompanyAttachments from "./attachments/CompanyAttachments";
-import PreviewSubmission from "./preview-submission/PreviewSubmission";
+import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
