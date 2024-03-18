@@ -6,7 +6,6 @@ import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import { countriesList } from '../../../constants/countries';
-import validateInputs from '../../../helpers/Validations';
 import Button from '../../../components/inputs/Button';
 import {
   setSeniorManagement,
@@ -35,7 +34,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
     setValue,
     clearErrors,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm();
 
   // STATE VARIABLES
@@ -72,11 +71,22 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
       setIsLoading(false);
       clearErrors('submit');
       dispatch(setSeniorManagement([data, ...senior_management]));
-      reset(undefined, { keepDirtyValues: true });
+      setSearchMember({
+        ...searchMember,
+        data: null,
+        loading: false,
+        error: false,
+      });
       setValue('attachment', null);
     }, 1000);
     return data;
   };
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // TABLE COLUMNS
   const columns = [
@@ -309,6 +319,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
                     required
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.first_name}
                     placeholder="First name"
                     label="First name"
@@ -331,6 +342,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
+                  readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.middle_name}
                     placeholder="Middle name"
                     label="Middle name"
@@ -348,6 +360,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.last_name}
                     placeholder="Last name"
                     label="Last name"
@@ -361,17 +374,47 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
             name="gender"
             control={control}
             defaultValue={searchMember?.data?.gender}
-            rules={{ required: 'Select gender' }}
+            rules={{
+              required:
+                watch('document_type') === 'passport' ? 'Select gender' : false,
+            }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-2 items-start w-[49%]">
                   <p className="flex items-center gap-1 text-[15px]">
                     Gender<span className="text-red-500">*</span>
                   </p>
-                  <menu className="flex items-center gap-4 mt-2">
-                    <Input type="radio" label="Male" {...field} />
-                    <Input type="radio" label="Female" {...field} />
-                  </menu>
+                  {watch('document_type') === 'nid' ? (
+                    <p className="px-2 py-1 rounded-md bg-background">
+                      {searchMember?.data?.gender || watch('gender')}
+                    </p>
+                  ) : (
+                    <menu className="flex items-center gap-4 mt-2">
+                      <Input
+                        type="radio"
+                        label="Male"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          if (e.target.checked) {
+                            setValue('gender', 'Male');
+                          }
+                        }}
+                      />
+                      <Input
+                        type="radio"
+                        label="Female"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          if (e.target.checked) {
+                            setValue('gender', 'Female');
+                          }
+                        }}
+                      />
+                    </menu>
+                  )}
+
                   {errors?.gender && (
                     <span className="text-red-500 text-[13px]">
                       {String(errors?.gender?.message)}
@@ -381,15 +424,60 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
               );
             }}
           />
+          <Controller
+            name="phone"
+            control={control}
+            defaultValue={userData?.[0]?.phone}
+            rules={{
+              required: 'Phone number is required',
+            }}
+            render={({ field }) => {
+              return (
+                <label className="flex flex-col w-[49%] gap-1">
+                  {watch('document_type') === 'passport' ? (
+                    <Input
+                      label="Phone number"
+                      required
+                      type="tel"
+                      {...field}
+                    />
+                  ) : (
+                    <Select
+                      label="Phone number"
+                      required
+                      defaultValue={{
+                        label: `(+250) ${userData?.[0]?.phone}`,
+                        value: userData?.[0]?.phone,
+                      }}
+                      options={userData?.slice(0, 3)?.map((user) => {
+                        return {
+                          ...user,
+                          label: `(+250) ${user?.phone}`,
+                          value: user?.phone,
+                        };
+                      })}
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                  )}
+                  {errors?.phone && (
+                    <p className="text-sm text-red-500">
+                      {String(errors?.phone?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
           {watch('document_type') !== 'nid' ? (
-            <menu className="w-full flex items-start gap-6 max-sm:flex-col max-sm:gap-3">
               <Controller
                 name="country"
                 control={control}
                 rules={{ required: 'Nationality is required' }}
                 render={({ field }) => {
                   return (
-                    <label className="w-full flex flex-col gap-1 items-start">
+                    <label className="w-[49%] flex flex-col gap-1 items-start">
                       <Select
                         isSearchable
                         label="Country"
@@ -413,92 +501,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
                   );
                 }}
               />
-              <Controller
-                name="phone"
-                control={control}
-                defaultValue={searchMember?.data?.phone}
-                rules={{
-                  required: 'Phone number is required',
-                }}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col gap-1 w-full">
-                      <p className="flex items-center gap-1">
-                        Phone number <span className="text-red-600">*</span>
-                      </p>
-                      <menu className="flex items-center gap-0 relative">
-                        <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-                          <select
-                            className="w-full !text-[12px]"
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                            }}
-                          >
-                            {countriesList?.map((country) => {
-                              return (
-                                <option
-                                  key={country?.dial_code}
-                                  value={country?.dial_code}
-                                >
-                                  {`${country?.code} ${country?.dial_code}`}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </span>
-                        <input
-                          onChange={field.onChange}
-                          className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
-                          type="text"
-                        />
-                      </menu>
-                      {errors?.phone && (
-                        <p className="text-red-500 text-sm">
-                          {String(errors?.phone?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
-            </menu>
           ) : (
-            <menu className="w-full flex items-center gap-6">
-              <Controller
-                name="phone"
-                control={control}
-                rules={{
-                  required: 'Phone number is required',
-                  validate: (value) => {
-                    return (
-                      validateInputs(value, 'tel') || 'Invalid phone number'
-                    );
-                  },
-                }}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col gap-1 w-full">
-                      <Input
-                        label="Phone number"
-                        placeholder="07XX XXX XXX"
-                        required
-                        {...field}
-                      />
-                      {errors?.phone && (
-                        <p className="text-red-500 text-sm">
-                          {String(errors?.phone?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
               <Controller
                 control={control}
                 name="street_name"
                 render={({ field }) => {
                   return (
-                    <label className="w-full flex flex-col gap-1">
+                    <label className="w-[49%] flex flex-col gap-1">
                       <Input
                         label="Street Name"
                         placeholder="Street name"
@@ -508,7 +517,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
                   );
                 }}
               />
-            </menu>
           )}
           <menu
             className={`${
@@ -580,7 +588,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
               return {
                 ...member,
                 no: index + 1,
-                name: `${member?.first_name} ${member?.middle_name} ${member?.last_name}`,
+                name: `${member?.first_name || ''} ${
+                  member?.middle_name || ''
+                } ${member?.last_name || ''}`,
                 position:
                   member?.position && capitalizeString(member?.position),
               };
