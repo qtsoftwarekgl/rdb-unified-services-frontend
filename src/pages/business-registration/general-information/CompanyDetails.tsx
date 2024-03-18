@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, FieldValues, set, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
 import { faCheck, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../../components/Loader';
@@ -9,6 +9,7 @@ import {
   companyCategories,
   companyPositions,
   companyTypes,
+  privateCompanyTypes,
 } from '../../../constants/businessRegistration';
 import Button from '../../../components/inputs/Button';
 import { AppDispatch, RootState } from '../../../states/store';
@@ -45,6 +46,16 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
     loading: false,
     name: '',
   });
+  const [companyTypesOptions, setCompanyTypesOptions] = useState(companyTypes);
+
+  useEffect(() => {
+    if (watch('category') === 'public') {
+      setCompanyTypesOptions(companyTypes);
+    } else if (watch('category') === 'private') {
+      setCompanyTypesOptions(privateCompanyTypes);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watch('category')]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -203,10 +214,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
                   <Select
-                    defaultValue={companyCategories?.find(
-                      (category) =>
-                        category?.value === company_details?.category
-                    )}
+                    defaultValue={
+                      companyCategories?.find(
+                        (category) =>
+                          category?.value === company_details?.category
+                      ) || companyCategories?.[0]
+                    }
                     label="Company category"
                     required
                     options={companyCategories?.map((category) => {
@@ -240,12 +253,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
                   <Select
-                    defaultValue={companyTypes?.find(
-                      (type) => type?.value === company_details?.type
-                    )}
+                    defaultValue={
+                      companyTypesOptions?.find(
+                        (type) => type?.value === company_details?.type
+                      ) || companyTypesOptions?.[0]
+                    }
                     label="Company type"
                     required
-                    options={companyTypes?.map((type) => {
+                    options={companyTypesOptions?.map((type) => {
                       return {
                         ...type,
                         value: type?.value,
@@ -348,7 +363,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" route='/business-registration/new' />
+          <Button value="Back" route="/business-registration/new" />
           <Button
             value={isLoading ? <Loader /> : 'Continue'}
             primary={!searchCompany?.error}

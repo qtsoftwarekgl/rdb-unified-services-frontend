@@ -11,136 +11,147 @@ export const companyCategories = [
 
 export const dummyPhones = [
   {
-    label: "+25078475784",
-    value: "+25078475784",
+    label: '+25078475784',
+    value: '+25078475784',
   },
   {
-    label: "+25078475782",
-    value: "+25078475782",
+    label: '+25078475782',
+    value: '+25078475782',
   },
   {
-    label: "+25078475783",
-    value: "+25078475783",
+    label: '+25078475783',
+    value: '+25078475783',
   },
 ];
 
 export const searchedCompanies = [
   {
-    company_name: "Flower LTD",
-    company_type: "Public",
-    location: "Kigali, Rwanda",
+    company_name: 'Flower LTD',
+    company_type: 'Public',
+    location: 'Kigali, Rwanda',
   },
   {
-    company_name: "XYZ",
-    company_type: "Public",
-    location: "Nyabugogo, Kigali",
+    company_name: 'XYZ',
+    company_type: 'Public',
+    location: 'Nyabugogo, Kigali',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
   {
-    company_name: "Soft Drink LTD",
-    company_type: "Public",
-    location: "Kimironko, Kigali",
+    company_name: 'Soft Drink LTD',
+    company_type: 'Public',
+    location: 'Kimironko, Kigali',
   },
   {
-    company_name: "XVM",
-    company_type: "Public",
-    location: "Butare, South Province",
+    company_name: 'XVM',
+    company_type: 'Public',
+    location: 'Butare, South Province',
   },
+];
+
+export const dormancyReasons = [
+  { label: 'Financial difficulties', value: 'financial_difficulties' },
+  {
+    label: 'Decline in demand for products/services',
+    value: 'decline_in_demand',
+  },
+  { label: 'Increased competition', value: 'increased_competition' },
+  { label: 'Management issues', value: 'management_issues' },
+  { label: 'Legal problems', value: 'legal_problems' },
 ];
 
 export const cessationCompanies = [
   {
-    tin: "123456789",
-    name: "Flower LTD",
-    cessation_date: "2023-04-29T23:43:17Z",
-    status: "ceased",
+    tin: '123456789',
+    name: 'Flower LTD',
+    cessation_date: '2023-04-29T23:43:17Z',
+    status: 'ceased',
   },
   {
-    tin: "123456889",
-    name: "XYZ",
-    cessation_date: "2023-02-28T23:43:17Z",
-    status: "ceased",
+    tin: '123456889',
+    name: 'XYZ',
+    cessation_date: '2023-02-28T23:43:17Z',
+    status: 'ceased',
   },
   {
-    tin: "123456789",
-    name: "Soft Drink LTD",
-    cessation_date: "2023-03-10T23:43:17Z",
-    status: "ceased",
+    tin: '123456789',
+    name: 'Soft Drink LTD',
+    cessation_date: '2023-03-10T23:43:17Z',
+    status: 'ceased',
   },
   {
-    tin: "1234568",
-    name: "XVM",
-    cessation_date: "2023-05-29T23:43:17Z",
-    status: "ceased",
+    tin: '1234568',
+    name: 'XVM',
+    cessation_date: '2023-05-29T23:43:17Z',
+    status: 'ceased',
   },
 ];
 
@@ -157,31 +168,41 @@ export const documentTypes = [
 
 export const companyTypes = [
   {
-    label: "Community Benefit Company (CBC)",
-    value: "community_benefit_company",
+    label: 'Community Benefit Company (CBC)',
+    value: 'community_benefit_company',
   },
   {
-    label: "Protected Cell Company (PCL)",
-    value: "protected_cell_company",
+    label: 'Protected Cell Company (PCL)',
+    value: 'protected_cell_company',
   },
   {
-    label: "Public Limited Company (PLC)",
-    value: "public_limited_company",
+    label: 'Public Limited Company (PLC)',
+    value: 'public_limited_company',
   },
+];
+
+export const privateCompanyTypes = [
+  { label: 'Limited by shares', value: 'limited_by_shares' },
+  { label: 'Limited by guarantee', value: 'limited_by_guarantee' },
+  {
+    label: 'Limited by shares and guarantee',
+    value: 'limited_by_shares_and_guarantee',
+  },
+  { label: 'Unlimited', value: 'unlimited' },
 ];
 
 export const companyPositions = [
   {
-    label: "MD/GM/CEO",
-    value: "md_gm_ceo",
+    label: 'MD/GM/CEO',
+    value: 'md_gm_ceo',
   },
   {
-    label: "Chair of Board",
-    value: "chair_of_board",
+    label: 'Chair of Board',
+    value: 'chair_of_board',
   },
   {
-    label: "Power of Attorney",
-    value: "power_of_attorney",
+    label: 'Power of Attorney',
+    value: 'power_of_attorney',
   },
 ];
 

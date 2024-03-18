@@ -11,7 +11,7 @@ import { motion, useAnimation } from "framer-motion";
 import rdb_logo from "/rdb-logo.png";
 import rdb_icon from "/rdb-icon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../states/store";
@@ -27,6 +27,10 @@ const UserSidebar = () => {
   const { viewedCompany } = useSelector(
     (state: RootState) => state.userCompanies
   );
+
+  // NAVIGATE
+  const navigate = useNavigate();
+
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
 
   // GET SCREEN WIDTH
@@ -194,6 +198,7 @@ const UserSidebar = () => {
           onClick={(e) => {
             e.preventDefault();
             localStorage.clear();
+            navigate('/auth/login')
           }}
         />
       </motion.div>

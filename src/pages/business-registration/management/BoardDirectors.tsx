@@ -578,7 +578,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
               return {
                 ...member,
                 no: index + 1,
-                name: `${member?.first_name} ${member?.middle_name} ${member?.last_name}`,
+                name: `${member?.first_name} ${member?.last_name}`,
                 position:
                   member?.position && capitalizeString(member?.position),
               };

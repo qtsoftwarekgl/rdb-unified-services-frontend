@@ -8,7 +8,6 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setBusinessRegistrationTabs,
   setCapitalDetails,
   setCompanyActivities,
   setCompanyAddress,
@@ -21,6 +20,7 @@ import {
   setShareDetails,
   setShareHolders,
   business_registration_tabs_initial_state,
+  setBusinessRegistrationTabs,
 } from "../../../states/features/businessRegistrationSlice";
 import { capitalizeString } from "../../../helpers/Strings";
 import Table from "../../../components/table/Table";

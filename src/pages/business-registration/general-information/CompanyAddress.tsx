@@ -25,7 +25,7 @@ interface CompanyAddressProps {
   isOpen: boolean;
 }
 
-interface AdministrativeUnits {
+export interface AdministrativeUnits {
   provinces: string[];
   districts: string[];
   sectors: string[];
