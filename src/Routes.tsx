@@ -47,6 +47,7 @@ import SearchCompanyAvailability from "./pages/company-availability/SearchCompan
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
 import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDetails";
 import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
+import CloseCompany from "./pages/company-closure/CloseCompany";
 
 const Routes = () => {
   return (
@@ -127,6 +128,10 @@ const Routes = () => {
           <Route
             path="/company-restoration"
             element={<CompanyRestoration />}
+          />
+          <Route
+            path="/close-company"
+            element={<CloseCompany />}
           />
           <Route
             path="/new-branch"
