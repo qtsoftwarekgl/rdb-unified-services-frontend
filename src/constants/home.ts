@@ -4,7 +4,7 @@ export const defaultSections = [
     links: [
       [
         { to: "/name-reservation", label: "Name Reservation" },
-        { to: "/name-search", label: "Name Availability Search" },
+        { to: "/name-availability", label: "Name Availability Search" },
         { to: "/search-company", label: "Search Company" },
       ],
       [

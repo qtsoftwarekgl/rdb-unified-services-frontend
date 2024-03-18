@@ -1,6 +1,6 @@
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import UserLayout from "../../containers/UserLayout";
-import { searchedCompanies } from "../../constants/BusinessRegistration";
+import { searchedCompanies } from "../../constants/businessRegistration";
 import DebouncedInput from "../../components/table/DebouncedInput";
 
 const SearchCompanyAvailability = () => {

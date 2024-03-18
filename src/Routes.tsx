@@ -44,6 +44,11 @@ import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
 import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
 import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
+import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
+import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDetails";
+import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
+import CloseCompany from "./pages/company-closure/CloseCompany";
+import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
 
 const Routes = () => {
   return (
@@ -114,8 +119,28 @@ const Routes = () => {
             element={<ForeignBranchSplashPage />}
           />
           <Route
-            path="/search-company"
+            path="/name-availability"
             element={<SearchCompanyAvailability />}
+          />
+          <Route
+            path="/search-company"
+            element={<SearchCompanyDetails />}
+          />
+          <Route
+            path="/company-restoration"
+            element={<CompanyRestoration />}
+          />
+          <Route
+            path="/company-dormancy"
+            element={<CompanyDormancy />}
+          />
+          <Route
+            path="/close-company"
+            element={<CloseCompany />}
+          />
+          <Route
+            path="/new-branch"
+            element={<BusinessNewBranch />}
           />
         </Route>
 

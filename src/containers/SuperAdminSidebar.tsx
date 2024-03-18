@@ -10,7 +10,7 @@ import { motion, useAnimation } from 'framer-motion';
 import rdb_logo from '/rdb-logo.png';
 import rdb_icon from '/rdb-icon.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../components/inputs/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../states/store';
@@ -24,6 +24,9 @@ const SuperAdminSidebar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.sidebar);
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
+
+  // NAVIGATE
+  const navigate = useNavigate();
 
   // GET SCREEN WIDTH
   const ref = useRef<HTMLDivElement>(null);
@@ -183,6 +186,7 @@ const SuperAdminSidebar = () => {
           onClick={(e) => {
             e.preventDefault();
             localStorage.clear();
+            navigate('/auth/login')
           }}
         />
       </motion.div>

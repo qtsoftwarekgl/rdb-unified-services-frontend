@@ -8,7 +8,6 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setBusinessRegistrationTabs,
   setCapitalDetails,
   setCompanyActivities,
   setCompanyAddress,
@@ -615,7 +614,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
               dispatch(setBusinessActiveTab('general_information'));
               dispatch(setBusinessActiveStep('company_details'));
               dispatch(setCompanySubActivities([]));
-              navigate('/applications');
+              navigate('/user-applications');
             }, 1000);
           }}
         />
