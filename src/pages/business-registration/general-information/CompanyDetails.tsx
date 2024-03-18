@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, set, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
 import { faCheck, faSearch } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../../components/Loader';
@@ -107,18 +107,19 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           <Controller
             name="name"
             control={control}
-            defaultValue={watch('name') || company_details?.name}
+            defaultValue={company_details?.name || watch('name')}
             rules={{ required: 'Company name is required' }}
-            render={() => {
+            render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1 items-start w-full">
                   <Input
                     label="Search company name"
                     required
-                    defaultValue={watch('name') || company_details?.name}
+                    defaultValue={company_details?.name}
                     suffixIcon={faSearch}
                     suffixIconPrimary
                     onChange={(e) => {
+                      field.onChange(e);
                       setSearchCompany({
                         ...searchCompany,
                         name: e.target.value,
@@ -129,7 +130,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
                     }}
                     suffixIconHandler={(e) => {
                       e.preventDefault();
-                      if (!searchCompany?.name) {
+                      if (!field?.value) {
                         return;
                       }
                       setSearchCompany({
@@ -208,7 +209,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           <Controller
             control={control}
             name="category"
-            defaultValue={watch('category') || company_details?.category}
+            defaultValue={
+              companyCategories?.find(
+                (category) => category?.value === company_details?.category
+              ) ||
+              companyCategories?.[0] ||
+              watch('category') ||
+              company_details?.category
+            }
             rules={{ required: 'Select company category' }}
             render={({ field }) => {
               return (
@@ -247,7 +255,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           <Controller
             control={control}
             name="type"
-            defaultValue={watch('type') || company_details?.type}
+            defaultValue={
+              companyTypesOptions?.find(
+                (type) => type?.value === company_details?.type
+              ) ||
+              companyTypesOptions?.[0] ||
+              watch('type') ||
+              company_details?.type
+            }
             rules={{ required: 'Select company type' }}
             render={({ field }) => {
               return (
@@ -283,7 +298,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           <Controller
             control={control}
             name="position"
-            defaultValue={watch('position') || company_details?.position}
+            defaultValue={
+              companyPositions?.find(
+                (position) => position?.value === company_details?.position
+              ) ||
+              company_details?.position ||
+              watch('position')
+            }
             rules={{ required: 'Select your position' }}
             render={({ field }) => {
               return (
@@ -329,7 +350,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
                     type="radio"
                     label="Yes"
                     checked={
-                      watch('articles_of_association') === 'yes' ||
+                      ((watch('articles_of_association') ||
+                        company_details?.articles_of_association) &&
+                        watch('articles_of_association') === 'yes') ||
                       company_details?.articles_of_association === 'yes'
                     }
                     onChange={(e) => {
@@ -344,7 +367,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
                     type="radio"
                     label="No"
                     checked={
-                      watch('articles_of_association') === 'no' ||
+                      ((watch('articles_of_association') ||
+                        company_details?.articles_of_association) &&
+                        watch('articles_of_association') === 'no') ||
                       company_details?.articles_of_association === 'no'
                     }
                     name={field?.name}
@@ -355,6 +380,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
                       }
                     }}
                   />
+                  {errors?.articles_of_association && (
+                    <p className="text-xs text-red-500">
+                      {String(errors?.articles_of_association?.message)}
+                    </p>
+                  )}
                 </ul>
               );
             }}

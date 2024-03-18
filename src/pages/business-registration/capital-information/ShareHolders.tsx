@@ -1,7 +1,7 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
-import { personnelTypes } from '../../../constants/businessRegistration';
+import { personnelTypes, searchedCompanies } from '../../../constants/businessRegistration';
 import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
@@ -35,8 +35,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
     watch,
     setValue,
     trigger,
+    reset,
     clearErrors,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm();
 
   // STATE VARIABLES
@@ -70,6 +71,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
         ])
       );
       setIsLoading(false);
+      window.location.reload();
     }, 1000);
   };
 
@@ -114,6 +116,18 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
       },
     },
   ];
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+      setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
 
   if (!isOpen) return null;
 
@@ -176,81 +190,86 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
               }}
             />
           )}
-          {watch('shareholder_type') !== 'person' && (
-            <Controller
-              name="company_code"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col gap-1 w-[49%]">
-                    <Input
-                      label="Company/Entreprise Code"
-                      placeholder="Company code"
-                      suffixIcon={faSearch}
-                      suffixIconPrimary
-                      suffixIconHandler={async (e) => {
-                        e.preventDefault();
-                        if (!field.value) {
-                          setError('company_code', {
-                            type: 'manual',
-                            message: 'Company code is required to search',
+          {watch('shareholder_type') &&
+            watch('shareholder_type') !== 'person' && (
+              <Controller
+                name="company_code"
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col gap-1 w-[49%]">
+                      <Input
+                        label="Company/Entreprise Code"
+                        placeholder="Company code"
+                        suffixIcon={faSearch}
+                        suffixIconPrimary
+                        suffixIconHandler={async (e) => {
+                          e.preventDefault();
+                          if (!field.value) {
+                            setError('company_code', {
+                              type: 'manual',
+                              message: 'Company code is required to search',
+                            });
+                            return;
+                          }
+                          setSearchMember({
+                            ...searchMember,
+                            loading: true,
+                            error: false,
                           });
-                          return;
-                        }
-                        setSearchMember({
-                          ...searchMember,
-                          loading: true,
-                          error: false,
-                        });
-                        setTimeout(() => {
-                          const randomNumber = Math.floor(Math.random() * 16);
-                          const userDetails = userData[randomNumber];
+                          setTimeout(() => {
+                            const randomNumber = Math.floor(Math.random() * 30);
+                            const userDetails = searchedCompanies[randomNumber];
 
-                          if (!userDetails) {
-                            setSearchMember({
-                              ...searchMember,
-                              data: null,
-                              loading: false,
-                              error: true,
-                            });
-                          }
+                            if (!userDetails) {
+                              setSearchMember({
+                                ...searchMember,
+                                data: null,
+                                loading: false,
+                                error: true,
+                              });
+                            }
 
-                          if (userDetails) {
-                            clearErrors();
-                            setSearchMember({
-                              ...searchMember,
-                              data: userDetails,
-                              loading: false,
-                              error: false,
-                            });
-                            setValue('email', userDetails?.email);
-                            setValue('gender', userDetails?.data?.gender);
-                            setValue('phone', userDetails?.data?.phone);
-                          }
-                        }, 700);
-                      }}
-                      {...field}
-                    />
-                    {searchMember?.loading && !errors?.company_code && (
-                      <p className="flex items-center gap-[2px] text-[13px]">
-                        <Loader size={4} /> Validating company code
-                      </p>
-                    )}
-                    {searchMember?.error && !searchMember?.loading && (
-                      <p className="text-red-600 text-[13px]">
-                        Invalid company code
-                      </p>
-                    )}
-                    {errors?.company_code && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.company_code?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          )}
+                            if (userDetails) {
+                              clearErrors();
+                              setSearchMember({
+                                ...searchMember,
+                                data: userDetails,
+                                loading: false,
+                                error: false,
+                              });
+                              setValue('company_name', userDetails?.company_name);
+                              setValue('email', userDetails?.email);
+                              setValue('gender', userDetails?.data?.gender);
+                              setValue('phone', userDetails?.data?.phone);
+                            }
+                          }, 700);
+                        }}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          clearErrors('company_code');
+                        }}
+                      />
+                      {searchMember?.loading && !errors?.company_code && (
+                        <p className="flex items-center gap-[2px] text-[13px]">
+                          <Loader size={4} /> Validating company code
+                        </p>
+                      )}
+                      {searchMember?.error && !searchMember?.loading && (
+                        <p className="text-red-600 text-[13px]">
+                          Invalid company code
+                        </p>
+                      )}
+                      {errors?.company_code && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.company_code?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
           {watch('document_type') === 'nid' &&
             watch('shareholder_type') === 'person' && (
               <Controller
@@ -365,6 +384,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
                     required
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.first_name}
                     placeholder="First name"
                     label="First name"
@@ -387,6 +407,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.middle_name}
                     placeholder="Middle name"
                     label="Middle name"
@@ -404,6 +425,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.last_name}
                     placeholder="Last name"
                     label="Last name"
@@ -419,7 +441,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
             defaultValue={searchMember?.data?.gender}
             rules={{
               required:
-                watch('shareholder_type') === 'person' && 'Select gender',
+                watch('shareholder_type') === 'person' &&
+                watch('document_type') !== 'nid'
+                  ? 'Select gender'
+                  : false,
             }}
             render={({ field }) => {
               return (
@@ -427,10 +452,45 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                   <p className="flex items-center gap-1 text-[15px]">
                     Gender<span className="text-red-500">*</span>
                   </p>
-                  <menu className="flex items-center gap-4 mt-2">
-                    <Input type="radio" label="Male" {...field} />
-                    <Input type="radio" label="Female" {...field} />
-                  </menu>
+                  {watch('document_type') === 'nid' ? (
+                    <p className="px-2 py-1 rounded-md bg-background">
+                      {searchMember?.data?.gender || watch('gender')}
+                    </p>
+                  ) : (
+                    <menu className="flex items-center gap-4 mt-2">
+                      <Input
+                        type="radio"
+                        checked={
+                          searchMember?.data?.gender === 'Female' ||
+                          watch('gender') === 'Male'
+                        }
+                        label="Male"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          if (e.target.checked) {
+                            setValue('gender', 'Male');
+                          }
+                        }}
+                      />
+                      <Input
+                        type="radio"
+                        checked={
+                          searchMember?.data?.gender === 'Female' ||
+                          watch('gender') === 'Female'
+                        }
+                        label="Female"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          if (e.target.checked) {
+                            setValue('gender', 'Female');
+                          }
+                        }}
+                      />
+                    </menu>
+                  )}
+
                   {errors?.gender && (
                     <span className="text-red-500 text-[13px]">
                       {String(errors?.gender?.message)}
@@ -495,37 +555,43 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
           <Controller
             name="phone"
             control={control}
-            defaultValue={searchMember?.data?.phone}
             rules={{
-              required:
-                watch('shareholder_type') === 'person' &&
-                'Phone number is required',
-              validate: (value) => {
-                if (
-                  watch('shareholder_type') === 'person' &&
-                  watch('document_type') === 'nid'
-                ) {
-                  return validateInputs(value, 'tel') || 'Invalid phone number';
-                } else {
-                  return true;
-                }
-              },
+              required: 'Phone number is required',
             }}
+            defaultValue={userData?.[0]?.phone || searchMember?.data?.phone}
             render={({ field }) => {
               return (
-                <label className="flex flex-col gap-1 w-[49%]">
-                  <Input
-                    label="Phone number"
-                    placeholder="07XX XXX XXX"
-                    required
-                    type={
-                      watch('document_type') === 'passport' ? 'tel' : 'text'
-                    }
-                    defaultValue={searchMember?.data?.phone}
-                    {...field}
-                  />
+                <label className="flex flex-col w-[49%] gap-1">
+                  {watch('document_type') === 'passport' ? (
+                    <Input
+                      label="Phone number"
+                      required
+                      defaultValue={searchMember?.data?.phone}
+                      type="tel"
+                      {...field}
+                    />
+                  ) : (
+                    <Select
+                      label="Phone number"
+                      required
+                      defaultValue={{
+                        label: `(+250) ${userData?.[0]?.phone}`,
+                        value: userData?.[0]?.phone,
+                      }}
+                      options={userData?.slice(0, 3)?.map((user) => {
+                        return {
+                          ...user,
+                          label: `(+250) ${user?.phone}`,
+                          value: user?.phone,
+                        };
+                      })}
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                  )}
                   {errors?.phone && (
-                    <p className="text-red-500 text-sm">
+                    <p className="text-sm text-red-500">
                       {String(errors?.phone?.message)}
                     </p>
                   )}
@@ -593,12 +659,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
         </section>
         <section
           className={`${
-            watch('shareholder_type') !== 'person' ? 'flex' : 'hidden'
+            watch('shareholder_type') && watch('shareholder_type') !== 'person'
+              ? 'flex'
+              : 'hidden'
           } flex-wrap gap-4 items-start justify-between w-full`}
         >
           <Controller
             name="company_name"
             control={control}
+            defaultValue={searchMember?.data?.company_name}
             rules={{
               required:
                 watch('shareholder_type') !== 'person'
@@ -612,6 +681,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                     label="Company Name"
                     placeholder="Company name"
                     required
+                    defaultValue={searchMember?.data?.company_name}
                     {...field}
                   />
                   {errors?.company_name && (
@@ -642,6 +712,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
           <Controller
             name="incorporation_country"
             control={control}
+            defaultValue={countriesList
+              ?.filter((country) => country?.code === 'RW')
+              ?.map((country) => {
+                return {
+                  ...country,
+                  label: country.name,
+                  value: country.code,
+                };
+              })}
             rules={{
               required:
                 watch('shareholder_type') !== 'person' &&
@@ -653,6 +732,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                   <Select
                     required
                     label="Country of Incorporation"
+                    defaultValue={countriesList
+                      ?.filter((country) => country?.code === 'RW')
+                      ?.map((country) => {
+                        return {
+                          ...country,
+                          label: country.name,
+                          value: country.code,
+                        };
+                      })}
                     options={countriesList.map((country) => {
                       return {
                         ...country,
@@ -798,7 +886,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                 ...shareholder,
                 no: index,
                 name: shareholder?.first_name
-                  ? `${shareholder?.first_name} ${shareholder?.last_name}`
+                  ? `${shareholder?.first_name || ''} ${shareholder?.last_name || ''}`
                   : shareholder?.company_name,
                 type: capitalizeString(shareholder?.shareholder_type),
               };

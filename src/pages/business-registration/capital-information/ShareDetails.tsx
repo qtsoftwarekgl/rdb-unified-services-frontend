@@ -195,6 +195,9 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
                       }
                       type="number"
                       onChange={(e) => {
+                        if (Number(e.target.value) < 0) {
+                          return;
+                        }
                         setValue(`${row.name}_no`, Number(e.target.value));
                         setValue(
                           `${row.name}`,
@@ -214,6 +217,9 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
                         0
                       }
                       onChange={(e) => {
+                        if (Number(e.target.value) < 0) {
+                          return;
+                        }
                         setValue(`${row.name}_value`, Number(e.target.value));
                         setValue(
                           `${row.name}`,

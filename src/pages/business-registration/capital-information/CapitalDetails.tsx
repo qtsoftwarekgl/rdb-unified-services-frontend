@@ -16,12 +16,17 @@ import {
 import CapitalDetailsModal from './CapitalDetailsModal';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
+import { useForm } from 'react-hook-form';
 
 interface CapitalDetailsProps {
   isOpen: boolean;
 }
 
 const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
+
+  // REACT HOOK FORM
+  const { setError, clearErrors } = useForm();
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -30,6 +35,33 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
   const { share_details, shareholders, capital_details } = useSelector(
     (state: RootState) => state.businessRegistration
   );
+  const [assignedShares, setAssignedShares] = useState<object>({
+    number: 0,
+    value: 0,
+  });
+
+  useEffect(() => {
+    setAssignedShares({
+      ...assignedShares,
+      number: capital_details
+        ?.filter(
+          (shareholder) => shareholder?.shares?.total_shares !== undefined
+        )
+        ?.reduce(
+          (acc, curr) => Number(acc) + Number(curr?.shares?.total_shares),
+          0
+        ),
+      value: capital_details
+        ?.filter(
+          (shareholder) => shareholder?.shares?.total_value !== undefined
+        )
+        ?.reduce(
+          (acc, curr) => Number(acc) + Number(curr?.shares?.total_value),
+          0
+        ),
+    });
+  }, [capital_details]);
+
 
   // TABLE COLUMNS
   const columns = [
@@ -79,8 +111,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
                 dispatch(
                   setShareHolders(
                     shareholders?.filter(
-                      (shareholder, index: number) =>
-                        index !== row?.original?.no
+                      (_, index: number) => index !== row?.original?.no
                     )
                   )
                 );
@@ -122,7 +153,9 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
             ...shareholder,
             no: index,
             name: shareholder?.first_name
-              ? `${shareholder?.first_name} ${shareholder?.last_name}`
+              ? `${shareholder?.first_name || ''} ${
+                  shareholder?.last_name || ''
+                }`
               : shareholder?.company_name,
             type: capitalizeString(shareholder?.shareholder_type),
             total_shares: shareholder?.shares?.total_shares || 0,
@@ -142,28 +175,31 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
         <h1 className="font-semibold text-lg uppercase text-[16px]">
           Overall capital details
         </h1>
-        <menu className="flex flex-col gap-2 w-full">
+        <menu className="flex flex-col gap-1 w-full">
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Total number of company shares</h2>
+            <h2>Total number of assignable shares</h2>
             <p>{share_details?.total_shares}</p>
           </ul>
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Total share capital of the company</h2>
-            <p>{share_details?.company_capital}</p>
+            <h2>Total number of assigned shares</h2>
+            <p>{assignedShares?.number}</p>
           </ul>
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Total remaining shares</h2>
+            <h2>Remaining number of assignable shares</h2>
             <p>
-              {String(
-                Number(share_details?.total_shares) -
-                  capital_details.reduce(
-                    (acc, curr) =>
-                      Number(acc) + Number(curr?.shares?.total_shares),
-                    0
-                  ) || 0,
-                
-              )}
+              {Number(share_details?.total_shares) -
+                Number(assignedShares?.number)}
             </p>
+          </ul>
+        </menu>
+        <menu className="flex flex-col gap-2 w-full">
+          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+            <h2>Value of assigned shares</h2>
+            <p>RWF {assignedShares?.value}</p>
+          </ul>
+          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+            <h2>Value of assignable shares</h2>
+            <p>RWF {share_details?.total_value}</p>
           </ul>
         </menu>
       </section>
@@ -186,9 +222,23 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
             setIsLoading(true);
             setTimeout(() => {
               setIsLoading(false);
-              dispatch(setBusinessCompletedStep('capital_details'));
-              dispatch(setBusinessActiveStep('beneficial_owners'));
-              dispatch(setBusinessActiveTab('beneficial_owners'));
+              // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+              if (
+                capital_details?.filter(
+                  (shareholder) => shareholder?.shares?.total_shares === 0
+                )?.length > 0
+              ) {
+                setError('total_shares', {
+                  type: 'manual',
+                  message: 'Some shareholders have 0 shares',
+                });
+                return;
+              } else {
+                clearErrors('total_shares');
+                dispatch(setBusinessCompletedStep('capital_details'));
+                dispatch(setBusinessActiveStep('beneficial_owners'));
+                dispatch(setBusinessActiveTab('beneficial_owners'));
+              }
             }, 1000);
           }}
         />

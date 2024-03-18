@@ -1,26 +1,26 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, set, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
 import {
   businessActivities,
   businessSubActivities,
-} from "../../../constants/businessRegistration";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
+} from '../../../constants/businessRegistration';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setCompanyActivities,
   setCompanySubActivities,
-} from "../../../states/features/businessRegistrationSlice";
-import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
-import Input from "../../../components/inputs/Input";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
+} from '../../../states/features/businessRegistrationSlice';
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import { Link } from 'react-router-dom';
+import Input from '../../../components/inputs/Input';
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
 
 interface BusinessActivityProps {
   isOpen: boolean;
@@ -33,6 +33,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
     control,
     watch,
     setValue,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm();
 
@@ -48,6 +50,18 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
+      // CHECK IF BUSINESS LINES ARE SELECTED
+      if (company_business_lines?.length === 0) {
+        setIsLoading(false);
+        setError('business_lines', {
+          type: 'manual',
+          message: 'Select at least one business line',
+        });
+        return;
+      }
+
+      clearErrors('business_lines');
+
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setCompanyActivities({
@@ -58,13 +72,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep("business_activity_vat"));
+      dispatch(setBusinessCompletedStep('business_activity_vat'));
 
       // SET CURRENT TAB AS COMPLETED
-      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setBusinessActiveTab('general_information'));
 
       // SET THE NEXT TAB AS ACTIVE
-      dispatch(setBusinessActiveTab("management"));
+      dispatch(setBusinessActiveTab('management'));
 
       setIsLoading(false);
     }, 1000);
@@ -73,8 +87,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
   // SET DEFAULT VALUES
   useEffect(() => {
     if (company_activities) {
-      setValue("vat", company_activities?.vat);
-      setValue("turnover", company_activities?.turnover);
+      setValue('vat', company_activities?.vat);
+      setValue('turnover', company_activities?.turnover);
 
       if (company_activities?.business_lines?.length > 0) {
         dispatch(setCompanySubActivities(company_activities?.business_lines));
@@ -149,6 +163,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                             } else {
                               dispatch(setCompanySubActivities([subActivity]));
                             }
+                            clearErrors('business_lines');
                           }}
                         />
                       ) : (
@@ -182,7 +197,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                         <p className="text-start">{business_line?.name}</p>
                         {mainExists && mainBusinessLine && (
                           <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
-                            Main{" "}
+                            Main{' '}
                             <FontAwesomeIcon
                               icon={faMinus}
                               className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
@@ -250,6 +265,12 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                           dispatch(
                             setCompanySubActivities(updatedSubActivities)
                           );
+                          if (company_business_lines?.length <= 1) {
+                            setError('business_lines', {
+                              type: 'manual',
+                              message: 'Select at least one business line',
+                            });
+                          }
                         }}
                       />
                     </li>
@@ -259,6 +280,11 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
             </ul>
           </section>
         </menu>
+        {errors.business_lines && (
+          <p className="text-[13px] text-red-500 text-center">
+            {String(errors.business_lines.message)}
+          </p>
+        )}
         <section className="flex flex-col w-full gap-6">
           <h1 className="text-lg font-semibold text-center uppercase">
             VAT Certificate
@@ -266,23 +292,23 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
           <menu className="w-[50%] flex flex-col gap-6">
             <Controller
               name="vat"
-              rules={{ required: "Select choice" }}
+              rules={{ required: 'Select choice' }}
               control={control}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-2">
                     <p className="flex items-center gap-2 text-[15px]">
-                      Would you like to register for VAT Certificate{" "}
+                      Would you like to register for VAT Certificate{' '}
                       <span className="text-red-600">*</span>
                     </p>
                     <menu className="flex items-center w-full gap-6">
                       <Input
                         type="radio"
                         label="Yes"
-                        checked={watch("vat") === "yes"}
+                        checked={watch('vat') === 'yes'}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setValue("vat", "yes");
+                            setValue('vat', 'yes');
                           }
                         }}
                         name={field?.name}
@@ -290,10 +316,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                       <Input
                         type="radio"
                         label="No"
-                        checked={watch("vat") === "no"}
+                        checked={watch('vat') === 'no'}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setValue("vat", "no");
+                            setValue('vat', 'no');
                           }
                         }}
                         name={field?.name}
@@ -308,7 +334,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                 );
               }}
             />
-            {watch("vat") === "yes" && (
+            {watch('vat') === 'yes' && (
               <Controller
                 defaultValue={0}
                 name="turnover"
@@ -317,7 +343,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
                   return (
                     <label className="flex flex-col gap-1 w-[60%]">
                       <Input
-                        defaultValue={watch("turnover") || 0}
+                        defaultValue={watch('turnover') || 0}
                         label="Enter expected turnover"
                         required
                         {...field}
@@ -332,11 +358,18 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
-          <Button value="Back" onClick={(e) => {
-            e.preventDefault();
-            dispatch(setBusinessActiveStep('company_address'));
-          }} />
-          <Button value={isLoading ? <Loader /> : 'Continue'} primary submit />
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('company_address'));
+            }}
+          />
+          <Button
+            value={isLoading ? <Loader /> : 'Continue'}
+            submit
+            primary
+          />
         </menu>
       </form>
     </section>
