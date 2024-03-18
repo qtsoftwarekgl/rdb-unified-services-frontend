@@ -44,6 +44,7 @@ import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
 import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
 import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
+import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
 
 const Routes = () => {
   return (
@@ -116,6 +117,10 @@ const Routes = () => {
           <Route
             path="/search-company"
             element={<SearchCompanyAvailability />}
+          />
+          <Route
+            path="/new-branch"
+            element={<BusinessNewBranch />}
           />
         </Route>
 
