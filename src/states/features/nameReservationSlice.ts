@@ -69,7 +69,7 @@ export const nameReservationSlice = createSlice({
       );
       updatedTabs[tabIndex].active = true;
 
-      // STE ACTIVE TAB
+      // SET ACTIVE TAB
       state.name_reservation_active_tab = updatedTabs[tabIndex];
       localStorage.setItem(
         "name_reservation_active_tab",
