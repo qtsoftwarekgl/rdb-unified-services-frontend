@@ -1,19 +1,20 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import { faCheck, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
-import Loader from '../../components/Loader';
-import { institutions } from '../../constants/dashboard';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../../components/inputs/Button';
-import { useNavigate } from 'react-router-dom';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import Loader from "../../components/Loader";
+import { institutions } from "../../constants/dashboard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "../../components/inputs/Button";
+import { useNavigate } from "react-router-dom";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  setNameReservation,
   setNameReservationActiveStep,
   setNameReservationActiveTab,
   setNameReservationOwnerDetails,
-} from '../../states/features/nameReservationSlice';
+} from "../../states/features/nameReservationSlice";
 
 type Props = {
   isOpen: boolean;
@@ -29,6 +30,10 @@ const NameReservationSearch = ({ isOpen }: Props) => {
     setError,
     clearErrors,
   } = useForm();
+
+  const { name_reservation } = useSelector(
+    (state: RootState) => state.nameReservation
+  );
 
   // NAVIGATE
   const navigate = useNavigate();
@@ -55,7 +60,8 @@ const NameReservationSearch = ({ isOpen }: Props) => {
         success: false,
       });
       dispatch(setNameReservationOwnerDetails(null));
-      navigate('/services');
+      dispatch(setNameReservation(null));
+      navigate("/services");
     }, 1000);
     return data;
   };
@@ -63,7 +69,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
   if (!isOpen) return null;
 
   return (
-    <section className="w-full flex flex-col gap-5">
+    <section className="flex flex-col w-full gap-5">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-[40%] mx-auto flex flex-col gap-5"
@@ -71,24 +77,26 @@ const NameReservationSearch = ({ isOpen }: Props) => {
         <Controller
           name="name"
           control={control}
-          rules={{ required: 'Company name is required' }}
+          defaultValue={watch("name") || name_reservation}
+          rules={{ required: "Company name is required" }}
           render={({ field }) => {
             return (
-              <label className="w-full flex flex-col gap-3">
+              <label className="flex flex-col w-full gap-3">
                 <Input
                   label="Enter the company name to reserve"
                   suffixIcon={faSearch}
+                  defaultValue={watch("name") || name_reservation}
                   suffixIconPrimary
                   suffixIconHandler={(e) => {
                     e.preventDefault();
                     if (!field?.value) {
-                      setError('name', {
-                        type: 'manual',
-                        message: 'Company name is required',
+                      setError("name", {
+                        type: "manual",
+                        message: "Company name is required",
                       });
                       return;
                     } else {
-                      clearErrors('name');
+                      clearErrors("name");
                       setIsLoading({
                         submit: false,
                         search: true,
@@ -99,10 +107,10 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                         const companyName = institutions[randomNumber];
 
                         if (!companyName) {
-                          setError('name', {
-                            type: 'manual',
+                          setError("name", {
+                            type: "manual",
                             message: `${watch(
-                              'name'
+                              "name"
                             )} is not available. Try another name`,
                           });
                           setIsLoading({
@@ -111,7 +119,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                             success: false,
                           });
                         } else {
-                          clearErrors('name');
+                          clearErrors("name");
 
                           setIsLoading({
                             submit: false,
@@ -125,7 +133,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                   required
                   onChange={(e) => {
                     field.onChange(e);
-                    clearErrors('name');
+                    clearErrors("name");
                     setIsLoading({
                       submit: false,
                       search: false,
@@ -144,11 +152,11 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                       icon={faCheck}
                       className="text-green-700"
                     />
-                    {watch('name')} is available
+                    {watch("name")} is available
                   </p>
                 )}
                 {errors?.name && (
-                  <p className="text-red-500 text-sm">
+                  <p className="text-sm text-red-500">
                     {String(errors?.name?.message)}
                   </p>
                 )}
@@ -163,12 +171,12 @@ const NameReservationSearch = ({ isOpen }: Props) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setNameReservationActiveStep('owner_details'));
-              dispatch(setNameReservationActiveTab('owner_details'));
+              dispatch(setNameReservationActiveStep("owner_details"));
+              dispatch(setNameReservationActiveTab("owner_details"));
             }}
           />
           <Button
-            value={isLoading?.submit ? <Loader /> : 'Submit'}
+            value={isLoading?.submit ? <Loader /> : "Submit"}
             primary
             submit
           />

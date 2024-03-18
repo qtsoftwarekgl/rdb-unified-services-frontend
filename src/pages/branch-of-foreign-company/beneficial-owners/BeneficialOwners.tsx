@@ -1127,7 +1127,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                 ...beneficial_owner,
                 no: index,
                 name: beneficial_owner?.first_name
-                  ? `${beneficial_owner?.first_name} ${beneficial_owner?.last_name}`
+                  ? `${beneficial_owner?.first_name} ${
+                      beneficial_owner?.last_name || ""
+                    }`
                   : beneficial_owner?.company_name,
                 type: capitalizeString(beneficial_owner?.beneficial_type),
                 control_type: capitalizeString(beneficial_owner?.control_type),

@@ -20,29 +20,24 @@ const TransferRegistration = () => {
   const {
     control,
     handleSubmit,
-    setValue,
-    setError,
     formState: { errors },
   } = useForm();
 
-  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [attachedFIles, setAttachedFiles] = useState<Attachment[]>([]);
-  const [isAddedToAttachedFiles, setIsAddedToAttachedFiles] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleAttachFile = () => {
-    if (attachmentFile) {
+  const handleAttachFile = (files: File[]) => {
+    if (files) {
       setAttachedFiles((prev) => [
         ...prev,
-        {
-          file_name: attachmentFile.name,
-          file_size: `${attachmentFile.size} bytes`,
-        },
+        ...Array.from(files).map((file) => {
+          return {
+            file_name: file.name,
+            file_size: `${file.size} bytes`,
+          };
+        }),
       ]);
-      setAttachmentFile(null);
-      setValue("attachment", null);
-      setIsAddedToAttachedFiles(true);
     }
   };
 
@@ -64,6 +59,12 @@ const TransferRegistration = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
+                setAttachedFiles((prev) => {
+                  console.log(prev, row);
+                  return prev.filter(
+                    (file) => file.file_name !== row?.original?.file_name
+                  );
+                });
               }}
               icon={faTrash}
               className="text-red-500 cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
@@ -121,6 +122,7 @@ const TransferRegistration = () => {
                 control={control}
                 name="transfer_date"
                 rules={{
+                  required: "Transfer Date is required",
                   validate: (value) => {
                     if (moment(value).format() < moment(new Date()).format()) {
                       return "Select a valid Date";
@@ -161,14 +163,14 @@ const TransferRegistration = () => {
             </menu>
             <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
+                Attachments <span className="text-red-600">*</span>
               </h3>
               <Controller
                 name="attachment"
                 rules={{
-                  validate: (value) => {
-                    if (!value && attachedFIles?.length === 0) {
-                      return "Attach a file";
+                  validate: () => {
+                    if (attachedFIles?.length === 0) {
+                      return "Attachments are required";
                     }
                     return true;
                   },
@@ -181,42 +183,17 @@ const TransferRegistration = () => {
                         <Input
                           type="file"
                           accept="application/pdf,image/*"
+                          multiple
                           className="!w-fit max-sm:!w-full"
                           onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            setAttachmentFile(e?.target?.files?.[0]);
+                            field.onChange(e?.target?.files);
+                            handleAttachFile(e?.target?.files);
                           }}
                         />
-                        {attachmentFile && (
-                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                            {attachmentFile?.name}
-                            <FontAwesomeIcon
-                              icon={faX}
-                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setAttachmentFile(null);
-                                setValue("attachment", null);
-                              }}
-                            />
-                          </p>
-                        )}
-                        {attachmentFile && (
-                          <Button
-                            primary
-                            value="Attach"
-                            onClick={handleAttachFile}
-                          />
-                        )}
                       </ul>
                       {errors?.attachment && (
                         <p className="text-sm text-red-500">
                           {String(errors?.attachment?.message)}
-                        </p>
-                      )}
-                      {attachmentFile && !isAddedToAttachedFiles && (
-                        <p className="text-sm text-red-500">
-                          Add file to attached files
                         </p>
                       )}
                     </label>

@@ -77,7 +77,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
             return (
               <menu className="flex flex-col w-full gap-3">
                 <h4 className="flex items-center gap-1 text-[15px]">
-                  Does the company have employees?{" "}
+                  Does the branch have employees?
                   <span className="text-red-600">*</span>
                 </h4>
                 <ul className="flex items-center gap-6">
