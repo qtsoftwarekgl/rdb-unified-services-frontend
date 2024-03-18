@@ -46,6 +46,7 @@ import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPag
 import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
 import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDetails";
+import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
 
 const Routes = () => {
   return (
@@ -122,6 +123,10 @@ const Routes = () => {
           <Route
             path="/search-company"
             element={<SearchCompanyDetails />}
+          />
+          <Route
+            path="/company-restoration"
+            element={<CompanyRestoration />}
           />
           <Route
             path="/new-branch"
