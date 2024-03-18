@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import CreateAmendment from "./CreateAmendment";
 import { useParams } from "react-router-dom";
-import { registeredBusinesses } from "../../constants/dashboard";
+// import { registeredBusinesses } from "../../constants/dashboard";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 
 const CompanyDetails = () => {
@@ -22,7 +22,8 @@ const CompanyDetails = () => {
   const { viewedCompany } = useSelector(
     (state: RootState) => state.userCompanies
   );
-
+  const registeredBusinesses =
+    JSON.parse(String(localStorage.getItem("registeredBusinesses"))) || [];
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -32,7 +33,7 @@ const CompanyDetails = () => {
     if (id) {
       dispatch(
         setViewedCompany(
-          registeredBusinesses.find((business) => business.id === id)
+          registeredBusinesses?.find((business) => business.id === id)
         )
       );
     }
@@ -112,25 +113,25 @@ const CompanyDetails = () => {
                 <h1 className="text-base">
                   Company Name:
                   <span className="ml-2 text-base font-semibold">
-                    {viewedCompany?.companyName || "XYZ"}
+                    {viewedCompany?.company_name || "XYZ"}
                   </span>
                 </h1>
                 <h1 className="text-base ">
                   Registration Category:
                   <span className="ml-2 text-base font-semibold">
-                    {viewedCompany?.registrationCategory || "Domestic"}
+                    {viewedCompany?.company_category || "Domestic"}
                   </span>
                 </h1>
                 <h1 className="text-base ">
                   Company Category:
                   <span className="ml-2 text-base font-semibold">
-                    {viewedCompany?.companyCategory || "Domestic"}
+                    {viewedCompany?.company_category || "Domestic"}
                   </span>
                 </h1>
                 <h1 className="text-base ">
                   Company Type:
                   <span className="ml-2 text-base font-semibold">
-                    {viewedCompany?.companyType || "Domestic"}
+                    {viewedCompany?.company_type || "Domestic"}
                   </span>
                 </h1>
               </div>

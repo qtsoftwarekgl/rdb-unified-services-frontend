@@ -16,11 +16,11 @@ import Button from "../../../components/inputs/Button";
 import Table from "../../../components/table/Table";
 import { capitalizeString } from "../../../helpers/Strings";
 import {
-  setBeneficialOwners,
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-  setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
+  setForeignBeneficialOwners,
+  setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
+  setForeignBusinessCompletedStep,
+} from "../../../states/features/foreignBranchRegistrationSlice";
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
@@ -44,8 +44,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { beneficial_owners } = useSelector(
-    (state: RootState) => state.businessRegistration
+  const { foreign_beneficial_owners } = useSelector(
+    (state: RootState) => state.foreignBranchRegistration
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
@@ -62,7 +62,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setBeneficialOwners([data, ...beneficial_owners]));
+      dispatch(
+        setForeignBeneficialOwners([data, ...foreign_beneficial_owners])
+      );
     }, 1000);
   };
 
@@ -102,12 +104,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                const newBeneficialOwners = beneficial_owners?.filter(
+                const newBeneficialOwners = foreign_beneficial_owners?.filter(
                   (_: unknown, index: number) => {
                     return index !== row?.original?.no;
                   }
                 );
-                dispatch(setBeneficialOwners(newBeneficialOwners));
+                dispatch(setForeignBeneficialOwners(newBeneficialOwners));
               }}
             />
           </menu>
@@ -1119,7 +1121,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
       </form>
       <section className={`flex members-table flex-col w-full`}>
         <Table
-          data={beneficial_owners.map(
+          data={foreign_beneficial_owners.map(
             (beneficial_owner: unknown, index: number) => {
               return {
                 ...beneficial_owner,
@@ -1148,8 +1150,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setBusinessActiveStep("capital_details"));
-            dispatch(setBusinessActiveTab("capital_information"));
+            dispatch(setForeignBusinessActiveStep("employment_info"));
+            dispatch(setForeignBusinessActiveTab("management"));
           }}
         />
         <Button
@@ -1157,9 +1159,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
           primary
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setBusinessCompletedStep("beneficial_owners"));
-            dispatch(setBusinessActiveStep("attachments"));
-            dispatch(setBusinessActiveTab("attachments"));
+            dispatch(setForeignBusinessCompletedStep("beneficial_owners"));
+            dispatch(setForeignBusinessActiveStep("attachments"));
+            dispatch(setForeignBusinessActiveTab("attachments"));
           }}
         />
       </menu>

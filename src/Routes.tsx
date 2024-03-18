@@ -44,6 +44,7 @@ import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
 import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
 import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
+import ForeignBranchRegistration from "./pages/branch-of-foreign-company/ForeignBranchRegistration";
 
 const Routes = () => {
   return (
@@ -61,11 +62,6 @@ const Routes = () => {
          */}
         <Route path="/services" element={<Home />} />
         <Route element={<AuthenticatedRoutes />}>
-          {/* BUSINESS REGISTRATION */}
-          <Route
-            path="/business-registration/"
-            element={<BusinessRegistration />}
-          />
           {/* USER PROFILE */}
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/company-details/:id" element={<UserCompanyDetails />} />
@@ -80,6 +76,10 @@ const Routes = () => {
           <Route
             path="/business-registration"
             element={<BusinessRegistration />}
+          />
+          <Route
+            path="/foreign-branch-registration"
+            element={<ForeignBranchRegistration />}
           />
           <Route
             path="/enterprise-registration"

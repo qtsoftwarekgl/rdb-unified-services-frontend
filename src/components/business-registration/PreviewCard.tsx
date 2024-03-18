@@ -1,9 +1,9 @@
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, ReactNode } from 'react';
-import { AppDispatch } from '../../states/store';
-import { useDispatch } from 'react-redux';
-import { UnknownAction } from '@reduxjs/toolkit';
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FC, ReactNode } from "react";
+import { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 interface PreviewCardProps {
   header: string;
@@ -26,9 +26,11 @@ const PreviewCard: FC<PreviewCardProps> = ({
   const dispatch: AppDispatch = useDispatch();
 
   return (
-    <section className="flex w-full flex-col gap-3">
-      <menu className="w-full flex items-center gap-3 justify-between">
-        <h2 className="uppercase text-lg text-primary font-semibold">{header}</h2>
+    <section className="flex flex-col w-full gap-3">
+      <menu className="flex items-center justify-between w-full gap-3">
+        <h2 className="text-lg font-semibold uppercase text-primary">
+          {header}
+        </h2>
         <FontAwesomeIcon
           icon={faPenToSquare}
           onClick={(e) => {
@@ -36,10 +38,10 @@ const PreviewCard: FC<PreviewCardProps> = ({
             dispatch(setActiveStep(stepName));
             dispatch(setActiveTab(tabName));
           }}
-          className='text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]'
+          className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
         />
       </menu>
-      <section className="w-full flex flex-col gap-3 my-2">{children}</section>
+      <section className="flex flex-col w-full gap-3 my-2">{children}</section>
     </section>
   );
 };

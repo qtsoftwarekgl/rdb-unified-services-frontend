@@ -1,52 +1,71 @@
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Table from '../../components/table/Table';
-import UserLayout from '../../containers/UserLayout';
-import Button from '../../components/inputs/Button';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../states/store';
-import { capitalizeString } from '../../helpers/Strings';
-import { useNavigate } from 'react-router-dom';
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Table from "../../components/table/Table";
+import UserLayout from "../../containers/UserLayout";
+import Button from "../../components/inputs/Button";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../states/store";
+import { capitalizeString } from "../../helpers/Strings";
+import { useNavigate } from "react-router-dom";
+import {
+  business_registration_tabs_initial_state,
+  setBeneficialOwners,
+  setBoardDirectors,
+  setBusinessActiveStep,
+  setBusinessActiveTab,
+  setBusinessRegistrationTabs,
+  setCapitalDetails,
+  setCompanyActivities,
+  setCompanyAddress,
+  setCompanyAttachments,
+  setCompanyDetails,
+  setCompanySubActivities,
+  setEmploymentInfo,
+  setSeniorManagement,
+  setShareDetails,
+  setShareHolders,
+} from "../../states/features/businessRegistrationSlice";
 
 const UserApplications = () => {
   // STATE VARIABLES
   const { user_applications } = useSelector(
     (state: RootState) => state.businessRegistration
   );
+  const dispatch = useDispatch();
 
   // NAVIGATE
   const navigate = useNavigate();
 
   const colors = (status: string) => {
-    if (status === 'verified') {
-      return 'bg-[#82ffa3] text-[#0d7b3e]';
+    if (status === "verified") {
+      return "bg-[#82ffa3] text-[#0d7b3e]";
     }
-    if (status === 'rejected') {
-      return 'bg-[#eac3c3] text-red-500';
+    if (status === "rejected") {
+      return "bg-[#eac3c3] text-red-500";
     }
-    if (status === 'approved') {
-      return 'bg-[#cfeaff] text-secondary';
+    if (status === "approved") {
+      return "bg-[#cfeaff] text-secondary";
     }
-    if (status === 'request for action') {
-      return 'bg-[#e4e4e4] text-[#6b6b6b]';
+    if (status === "request for action") {
+      return "bg-[#e4e4e4] text-[#6b6b6b]";
     }
-    if (status === 'submitted') {
-      return 'bg-[#e8ffef] text-black';
+    if (status === "submitted") {
+      return "bg-[#e8ffef] text-black";
     }
   };
   const colums = [
     {
-      header: 'Registration Number',
-      accessorKey: 'regNumber',
+      header: "Registration Number",
+      accessorKey: "regNumber",
     },
     {
-      header: 'Service Name',
-      accessorKey: 'serviceName',
+      header: "Service Name",
+      accessorKey: "serviceName",
     },
     {
-      header: 'Status',
-      accessorKey: 'status',
+      header: "Status",
+      accessorKey: "status",
       cell: ({ row }) => {
         return (
           <span
@@ -61,12 +80,12 @@ const UserApplications = () => {
       },
     },
     {
-      header: 'Submission Date',
-      accessorKey: 'submissionDate',
+      header: "Submission Date",
+      accessorKey: "submissionDate",
     },
     {
-      header: 'Action',
-      accessorKey: 'actions',
+      header: "Action",
+      accessorKey: "actions",
       enableSorting: false,
       cell: ({ row }) => {
         return (
@@ -95,6 +114,27 @@ const UserApplications = () => {
           <Button
             primary
             route="/business-registration/new"
+            onClick={() => {
+              dispatch(setCompanyDetails(null));
+              dispatch(setCompanyAddress(null));
+              dispatch(setCompanyActivities(null));
+              dispatch(setBoardDirectors([]));
+              dispatch(setSeniorManagement([]));
+              dispatch(setEmploymentInfo(null));
+              dispatch(setShareDetails(null));
+              dispatch(setShareHolders([]));
+              dispatch(setCapitalDetails([]));
+              dispatch(setBeneficialOwners([]));
+              dispatch(setCompanyAttachments([]));
+              dispatch(setCompanySubActivities([]));
+              dispatch(
+                setBusinessRegistrationTabs(
+                  business_registration_tabs_initial_state
+                )
+              );
+              dispatch(setBusinessActiveTab("general_information"));
+              dispatch(setBusinessActiveStep("company_details"));
+            }}
             value={
               <menu className="flex items-center gap-2">
                 <FontAwesomeIcon icon={faPlus} />
@@ -112,18 +152,18 @@ const UserApplications = () => {
               return {
                 ...application,
                 regNumber: `REG-${application?.entry_id
-                  ?.split('-')[0]
+                  ?.split("-")[0]
                   ?.toUpperCase()}`,
                 serviceName: capitalizeString(application?.type),
                 submissionDate: new Date().toLocaleDateString(),
                 path: `/business-registration?entry_id=${application?.entry_id}`,
-                status: 'Submitted',
+                status: "Submitted",
               };
             })}
             className="bg-white rounded-2xl"
           />
         ) : (
-          <span className="w-full flex items-center justify-start">
+          <span className="flex items-center justify-start w-full">
             <h1 className="uppercase text-primary ">
               You have no applications yet
             </h1>

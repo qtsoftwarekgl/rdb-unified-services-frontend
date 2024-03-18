@@ -1,7 +1,7 @@
-import { FC, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../states/store';
-import PreviewCard from '../../../components/business-registration/PreviewCard';
+import { FC, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../states/store";
+import PreviewCard from "../../../components/business-registration/PreviewCard";
 import {
   setBeneficialOwners,
   setBoardDirectors,
@@ -20,13 +20,14 @@ import {
   setSeniorManagement,
   setShareDetails,
   setShareHolders,
-} from '../../../states/features/businessRegistrationSlice';
-import { capitalizeString } from '../../../helpers/Strings';
-import Table from '../../../components/table/Table';
-import { countriesList } from '../../../constants/countries';
-import Button from '../../../components/inputs/Button';
-import { useLocation, useNavigate } from 'react-router-dom';
-import Loader from '../../../components/Loader';
+  business_registration_tabs_initial_state,
+} from "../../../states/features/businessRegistrationSlice";
+import { capitalizeString } from "../../../helpers/Strings";
+import Table from "../../../components/table/Table";
+import { countriesList } from "../../../constants/countries";
+import Button from "../../../components/inputs/Button";
+import { useLocation, useNavigate } from "react-router-dom";
+import Loader from "../../../components/Loader";
 
 interface PreviewSubmissionProps {
   isOpen: boolean;
@@ -56,97 +57,97 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
   // TABLE COLUMNS
   const managementColumns = [
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Phone number',
-      accessorKey: 'phone',
+      header: "Phone number",
+      accessorKey: "phone",
     },
     {
-      header: 'Position',
-      accessorKey: 'position',
+      header: "Position",
+      accessorKey: "position",
     },
     {
-      header: 'Country',
-      accessorKey: 'country',
+      header: "Country",
+      accessorKey: "country",
     },
   ];
 
   const shareholdersColumns = [
     {
-      header: 'Shareholder',
-      accessorKey: 'name',
+      header: "Shareholder",
+      accessorKey: "name",
     },
     {
-      header: 'Type',
-      accessorKey: 'type',
+      header: "Type",
+      accessorKey: "type",
     },
     {
-      header: 'Phone number',
-      accessorKey: 'phone',
+      header: "Phone number",
+      accessorKey: "phone",
     },
     {
-      header: 'Country',
-      accessorKey: 'country',
+      header: "Country",
+      accessorKey: "country",
     },
   ];
 
   const capitalDetailsColumns = [
     {
-      header: 'Shareholder',
-      accessorKey: 'name',
+      header: "Shareholder",
+      accessorKey: "name",
     },
     {
-      header: 'Type',
-      accessorKey: 'type',
+      header: "Type",
+      accessorKey: "type",
     },
     {
-      header: 'Phone number',
-      accessorKey: 'phone',
+      header: "Phone number",
+      accessorKey: "phone",
     },
     {
-      header: 'Total shares',
-      accessorKey: 'total_shares',
+      header: "Total shares",
+      accessorKey: "total_shares",
     },
     {
-      header: 'Total value',
-      accessorKey: 'total_value',
+      header: "Total value",
+      accessorKey: "total_value",
     },
     {
-      header: 'Country',
-      accessorKey: 'country',
+      header: "Country",
+      accessorKey: "country",
     },
   ];
 
   const beneficialOwnersColumns = [
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Phone number',
-      accessorKey: 'phone',
+      header: "Phone number",
+      accessorKey: "phone",
     },
     {
-      header: 'Control type',
-      accessorKey: 'control_type',
+      header: "Control type",
+      accessorKey: "control_type",
     },
     {
-      header: 'Ownership type',
-      accessorKey: 'ownership_type',
+      header: "Ownership type",
+      accessorKey: "ownership_type",
     },
   ];
 
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get('entry_id');
+  const entry_id = queryParams.get("entry_id");
 
   if (!isOpen) return null;
 
   return (
-    <section className="w-full flex flex-col gap-6 h-full overflow-y-scroll">
+    <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
       {company_details && (
         <PreviewCard
@@ -157,13 +158,13 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
           setActiveTab={setBusinessActiveTab}
         >
           {Object?.entries(company_details)
-            ?.filter(([key]) => key !== 'step')
+            ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
                 <p key={index} className="flex items-center gap-1">
                   <span className="font-semibold">
                     {capitalizeString(key)}:
-                  </span>{' '}
+                  </span>{" "}
                   {String(value) && capitalizeString(String(value))}
                 </p>
               );
@@ -181,13 +182,13 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
           setActiveTab={setBusinessActiveTab}
         >
           {Object?.entries(company_address)
-            ?.filter(([key]) => key !== 'step')
+            ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
                 <p key={index} className="flex items-center gap-1">
                   <span className="font-semibold">
                     {capitalizeString(key)}:
-                  </span>{' '}
+                  </span>{" "}
                   {String(value)}
                 </p>
               );
@@ -204,22 +205,22 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
         setActiveTab={setBusinessActiveTab}
       >
         <p className="font-semibold">
-          Register for VAT:{' '}
+          Register for VAT:{" "}
           <span className="font-normal">
             {company_activities?.vat &&
               capitalizeString(company_activities?.vat)}
           </span>
         </p>
         <p className="font-semibold">
-          Annual turnover:{' '}
+          Annual turnover:{" "}
           <span className="font-normal">
             {company_activities?.turnover
               ? String(capitalizeString(company_activities?.turnover))
-              : 'N/A'}
+              : "N/A"}
           </span>
         </p>
         <menu className="flex flex-col gap-3">
-          <h3 className="font-semibold text-md underline">Business lines: </h3>
+          <h3 className="font-semibold underline text-md">Business lines: </h3>
           <ul className="flex flex-col gap-2">
             {company_activities?.business_lines?.map((line, index) => {
               return (
@@ -297,15 +298,15 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
         setActiveTab={setBusinessActiveTab}
       >
         <p className="font-semibold">
-          Company has employees:{' '}
+          Company has employees:{" "}
           <span className="font-normal">
             {employment_info?.has_employees &&
               capitalizeString(employment_info?.has_employees)}
           </span>
         </p>
-        {employment_info?.has_employees !== 'no' && (
+        {employment_info?.has_employees !== "no" && (
           <p className="font-semibold">
-            Number of employees:{' '}
+            Number of employees:{" "}
             <span className="font-normal">
               {employment_info?.number_of_employees}
             </span>
@@ -313,9 +314,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
         )}
         <p>
           <span className="font-semibold">
-            Account reference date:{' '}
+            Account reference date:{" "}
             <span className="font-normal">
-              {employment_info?.reference_date || 'N/A'}
+              {employment_info?.reference_date || "N/A"}
             </span>
           </span>
         </p>
@@ -330,23 +331,23 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
         setActiveTab={setBusinessActiveTab}
       >
         <p className="font-semibold">
-          Total business capital:{' '}
+          Total business capital:{" "}
           <span className="font-normal">
             RWF {share_details?.company_capital}
           </span>
         </p>
         <p className="font-semibold">
-          Total assignable shares:{' '}
+          Total assignable shares:{" "}
           <span className="font-normal">{share_details?.total_shares}</span>
         </p>
         <p className="font-semibold">
-          Total assignable shares' values:{' '}
+          Total assignable shares' values:{" "}
           <span className="font-normal">RWF {share_details?.total_value}</span>
         </p>
         <p className="font-semibold">
-          Remaining capital:{' '}
+          Remaining capital:{" "}
           <span className="font-normal">
-            RWF{' '}
+            RWF{" "}
             {Number(share_details?.company_capital) -
               Number(share_details?.total_value)}
           </span>
@@ -458,7 +459,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
       >
         <section className="flex flex-col gap-5">
           <menu className="flex flex-col gap-3">
-            <h3 className="text-md font-semibold uppercase">
+            <h3 className="font-semibold uppercase text-md">
               Board of directors
             </h3>
             {board_of_directors?.map((director, index) => {
@@ -466,9 +467,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                 return (
                   <p
                     key={index}
-                    className="flex items-center font-normal gap-6 w-full justify-between"
+                    className="flex items-center justify-between w-full gap-6 font-normal"
                   >
-                    {director?.first_name} {director?.last_name}:{' '}
+                    {director?.first_name} {director?.last_name}:{" "}
                     <span className="font-semibold">
                       {director?.attachment}
                     </span>
@@ -478,7 +479,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
             })}
           </menu>
           <menu className="flex flex-col gap-3">
-            <h3 className="text-md font-semibold uppercase">
+            <h3 className="font-semibold uppercase text-md">
               Senior management
             </h3>
             {senior_management?.map((senior, index) => {
@@ -486,9 +487,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                 return (
                   <p
                     key={index}
-                    className="flex items-center font-normal gap-6 w-full justify-between"
+                    className="flex items-center justify-between w-full gap-6 font-normal"
                   >
-                    {senior?.first_name} {senior?.last_name}:{' '}
+                    {senior?.first_name} {senior?.last_name}:{" "}
                     <span className="font-semibold">{senior?.attachment}</span>
                   </p>
                 );
@@ -496,16 +497,16 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
             })}
           </menu>
           <menu className="flex flex-col gap-3">
-            <h3 className="text-md font-semibold uppercase">Shareholders</h3>
+            <h3 className="font-semibold uppercase text-md">Shareholders</h3>
             {shareholders?.map((shareholder, index) => {
               if (shareholder?.attachment) {
-                if (shareholder?.shareholder_type === 'person') {
+                if (shareholder?.shareholder_type === "person") {
                   return (
                     <p
                       key={index}
-                      className="flex items-center font-normal gap-6 w-full justify-between"
+                      className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {shareholder?.first_name} {shareholder?.last_name}:{' '}
+                      {shareholder?.first_name} {shareholder?.last_name}:{" "}
                       <span className="font-semibold">
                         {shareholder?.attachment}
                       </span>
@@ -515,9 +516,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                   return (
                     <p
                       key={index}
-                      className="flex items-center font-normal gap-6 w-full justify-between"
+                      className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {shareholder?.company_name}:{' '}
+                      {shareholder?.company_name}:{" "}
                       <span className="font-semibold">
                         {shareholder?.attachment}
                       </span>
@@ -528,19 +529,19 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
             })}
           </menu>
           <menu className="flex flex-col gap-3">
-            <h3 className="text-md font-semibold uppercase">
+            <h3 className="font-semibold uppercase text-md">
               Beneficial owners
             </h3>
             {beneficial_owners?.map((beneficial_owner, index) => {
               if (beneficial_owner?.attachment) {
-                if (beneficial_owner?.beneficial_type === 'person') {
+                if (beneficial_owner?.beneficial_type === "person") {
                   return (
                     <p
                       key={index}
-                      className="flex items-center font-normal gap-6 w-full justify-between"
+                      className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {beneficial_owner?.first_name}{' '}
-                      {beneficial_owner?.last_name}:{' '}
+                      {beneficial_owner?.first_name}{" "}
+                      {beneficial_owner?.last_name}:{" "}
                       <span className="font-semibold">
                         {beneficial_owner?.attachment}
                       </span>
@@ -550,9 +551,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                   return (
                     <p
                       key={index}
-                      className="flex items-center font-normal gap-6 w-full justify-between"
+                      className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {beneficial_owner?.company_name}:{' '}
+                      {beneficial_owner?.company_name}:{" "}
                       <span className="font-semibold">
                         {beneficial_owner?.attachment}
                       </span>
@@ -571,12 +572,12 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setBusinessActiveStep('attachments'));
-            dispatch(setBusinessActiveTab('attachments'));
+            dispatch(setBusinessActiveStep("attachments"));
+            dispatch(setBusinessActiveTab("attachments"));
           }}
         />
         <Button
-          value={isLoading ? <Loader /> : 'Submit'}
+          value={isLoading ? <Loader /> : "Submit"}
           primary
           onClick={(e) => {
             e.preventDefault();
@@ -586,8 +587,11 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
               dispatch(
                 setUserApplications({
                   entry_id,
-                  type: 'business_registration',
-                  company_details,
+                  type: "business_registration",
+                  company_details: {
+                    ...company_details,
+                    created_at: Date.now(),
+                  },
                   company_address,
                   company_activities,
                   board_of_directors,
@@ -611,11 +615,16 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
               dispatch(setCapitalDetails([]));
               dispatch(setBeneficialOwners([]));
               dispatch(setCompanyAttachments([]));
-              dispatch(setBusinessCompletedStep('preview_submission'));
-              dispatch(setBusinessActiveTab('general_information'));
-              dispatch(setBusinessActiveStep('company_details'));
+              dispatch(setBusinessCompletedStep("preview_submission"));
+              dispatch(setBusinessActiveTab("general_information"));
+              dispatch(setBusinessActiveStep("company_details"));
               dispatch(setCompanySubActivities([]));
-              navigate('/applications');
+              dispatch(
+                setBusinessRegistrationTabs(
+                  business_registration_tabs_initial_state
+                )
+              );
+              navigate("/success", { state: { redirectUrl: "/user-profile" } });
             }, 1000);
           }}
         />
