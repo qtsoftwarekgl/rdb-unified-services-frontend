@@ -45,6 +45,7 @@ import NameReservation from "./pages/name-reservation/NameReservation";
 import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
 import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
+import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDetails";
 
 const Routes = () => {
   return (
@@ -115,8 +116,12 @@ const Routes = () => {
             element={<ForeignBranchSplashPage />}
           />
           <Route
-            path="/search-company"
+            path="/name-availability"
             element={<SearchCompanyAvailability />}
+          />
+          <Route
+            path="/search-company"
+            element={<SearchCompanyDetails />}
           />
           <Route
             path="/new-branch"
