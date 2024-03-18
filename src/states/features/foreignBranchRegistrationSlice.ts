@@ -16,7 +16,7 @@ export interface RegistrationTab {
   steps: Array<RegistrationStep>;
 }
 
-export const business_registration_tabs_initial_state: Array<RegistrationTab> =
+export const foreign_business_registration_tabs_initial_state: Array<RegistrationTab> =
   [
     {
       no: 1,
@@ -79,36 +79,6 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
       ],
     },
     {
-      no: 3,
-      label: "Capital Information",
-      name: "capital_information",
-      active: false,
-      completed: false,
-      steps: [
-        {
-          label: "Share Details",
-          name: "share_details",
-          tab_name: "capital_information",
-          active: false,
-          completed: false,
-        },
-        {
-          label: "Shareholders",
-          name: "shareholders",
-          tab_name: "capital_information",
-          active: false,
-          completed: false,
-        },
-        {
-          label: "Capital Details",
-          name: "capital_details",
-          tab_name: "capital_information",
-          active: false,
-          completed: false,
-        },
-      ],
-    },
-    {
       no: 4,
       label: "Beneficial Owners",
       active: false,
@@ -158,71 +128,78 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
   ];
 
-export const businessRegistrationSlice = createSlice({
-  name: "businessRegistration",
+export const foreignBranchRegistrationSlice = createSlice({
+  name: "foreignBranchRegistration",
   initialState: {
-    business_registration_tabs:
-      JSON.parse(String(localStorage.getItem("business_registration_tabs"))) ||
-      business_registration_tabs_initial_state,
-    business_active_step: JSON.parse(
+    foreign_business_registration_tabs:
+      JSON.parse(
+        String(localStorage.getItem("foreign_business_registration_tabs"))
+      ) || foreign_business_registration_tabs_initial_state,
+    foreign_business_active_step: JSON.parse(
       String(localStorage.getItem("business_active_step"))
     ) || {
       label: "Company Details",
       name: "company_details",
     },
-    business_active_tab: JSON.parse(
+    foreign_business_active_tab: JSON.parse(
       String(localStorage.getItem("business_active_tab"))
     ) || {
       label: "General Information",
       name: "general_information",
     },
-    company_details:
-      JSON.parse(String(localStorage.getItem("company_details"))) || null,
-    company_address:
-      JSON.parse(String(localStorage.getItem("company_address"))) || null,
-    company_activities:
-      JSON.parse(String(localStorage.getItem("company_activities"))) || null,
-    company_business_lines:
-      JSON.parse(String(localStorage.getItem("company_business_lines"))) || [],
-    board_of_directors:
-      JSON.parse(String(localStorage.getItem("board_of_directors"))) || [],
-    senior_management:
-      JSON.parse(String(localStorage.getItem("senior_management"))) || [],
-    employment_info:
-      JSON.parse(String(localStorage.getItem("employment_info"))) || null,
-    share_details:
-      JSON.parse(String(localStorage.getItem("share_details"))) || null,
-    shareholders:
-      JSON.parse(String(localStorage.getItem("shareholders"))) || [],
-    capital_details:
-      JSON.parse(String(localStorage.getItem("capital_details"))) || [],
-    beneficial_owners:
-      JSON.parse(String(localStorage.getItem("beneficial_owners"))) || [],
-    company_attachments:
-      JSON.parse(String(localStorage.getItem("company_attachments"))) || [],
-    user_applications:
-      JSON.parse(String(localStorage.getItem("user_applications"))) || [],
+    foreign_company_details:
+      JSON.parse(String(localStorage.getItem("foreign_company_details"))) ||
+      null,
+    foreign_company_address:
+      JSON.parse(String(localStorage.getItem("foreign_company_address"))) ||
+      null,
+    foreign_company_activities:
+      JSON.parse(String(localStorage.getItem("foreign_company_activities"))) ||
+      null,
+    foreign_company_business_lines:
+      JSON.parse(
+        String(localStorage.getItem("foreign_company_business_lines"))
+      ) || [],
+    foreign_board_of_directors:
+      JSON.parse(String(localStorage.getItem("foreign_board_of_directors"))) ||
+      [],
+    foreign_senior_management:
+      JSON.parse(String(localStorage.getItem("foreign_senior_management"))) ||
+      [],
+    foreign_employment_info:
+      JSON.parse(String(localStorage.getItem("foreign_employment_info"))) ||
+      null,
+    foreign_beneficial_owners:
+      JSON.parse(String(localStorage.getItem("foreign_beneficial_owners"))) ||
+      [],
+    foreign_company_attachments:
+      JSON.parse(String(localStorage.getItem("foreign_company_attachments"))) ||
+      [],
+    foreign_user_applications:
+      JSON.parse(String(localStorage.getItem("foreign_user_applications"))) ||
+      [],
   },
   reducers: {
     // SET REGISTRATION TABS
-    setBusinessRegistrationTabs: (state, action) => {
-      state.business_registration_tabs = action.payload;
+    setForeignBusinessRegistrationTabs: (state, action) => {
+      state.foreign_business_registration_tabs = action.payload;
       localStorage.setItem(
-        "business_registration_tabs",
+        "foreign_business_registration_tabs",
         JSON.stringify(action.payload)
       );
     },
 
     // SET ACTIVE TAB
-    setBusinessActiveTab: (state, action) => {
-      const updatedRegistrationTabs = state.business_registration_tabs?.map(
-        (tab: RegistrationTab) => {
-          return {
-            ...tab,
-            active: false,
-          };
-        }
-      );
+    setForeignBusinessActiveTab: (state, action) => {
+      const updatedRegistrationTabs =
+        state.foreign_business_registration_tabs?.map(
+          (tab: RegistrationTab) => {
+            return {
+              ...tab,
+              active: false,
+            };
+          }
+        );
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === action.payload
       );
@@ -230,49 +207,50 @@ export const businessRegistrationSlice = createSlice({
       updatedRegistrationTabs[tabIndex].completed = false;
 
       // SET ACTIVE TAB TO STATE AND LOCAL STORAGE
-      state.business_active_tab = updatedRegistrationTabs[tabIndex];
+      state.foreign_business_active_tab = updatedRegistrationTabs[tabIndex];
       localStorage.setItem(
-        "business_active_tab",
+        "foreign_business_active_tab",
         JSON.stringify(updatedRegistrationTabs[tabIndex])
       );
 
       // SET UPDATED REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.foreign_business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        "foreign_business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
       );
     },
 
     // SET COMPLETED TAB
-    setBusinessCompletedTab: (state, action) => {
-      const updatedRegistrationTabs = state.business_registration_tabs;
+    setForeignBusinessCompletedTab: (state, action) => {
+      const updatedRegistrationTabs = state.foreign_business_registration_tabs;
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === action.payload
       );
       updatedRegistrationTabs[tabIndex].completed = true;
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.foreign_business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        "foreign_business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
       );
     },
 
     // SET ACTIVE STEP
-    setBusinessActiveStep: (state, action) => {
-      const updatedRegistrationTabs = state.business_registration_tabs?.map(
-        (tab: RegistrationTab) => {
-          return {
-            ...tab,
-            steps: tab?.steps?.map((step: RegistrationStep) => {
-              return {
-                ...step,
-                active: false,
-              };
-            }),
-          };
-        }
-      );
+    setForeignBusinessActiveStep: (state, action) => {
+      const updatedRegistrationTabs =
+        state.foreign_business_registration_tabs?.map(
+          (tab: RegistrationTab) => {
+            return {
+              ...tab,
+              steps: tab?.steps?.map((step: RegistrationStep) => {
+                return {
+                  ...step,
+                  active: false,
+                };
+              }),
+            };
+          }
+        );
 
       // FIND STEP
       const step = updatedRegistrationTabs
@@ -293,35 +271,36 @@ export const businessRegistrationSlice = createSlice({
       updatedRegistrationTabs[tabIndex].steps[stepIndex].active = true;
 
       // SET ACTIVE STEP TO STATE AND LOCAL STORAGE
-      state.business_active_step =
+      state.foreign_business_active_step =
         updatedRegistrationTabs[tabIndex].steps[stepIndex];
       localStorage.setItem(
-        "business_active_step",
+        "foreign_business_active_step",
         JSON.stringify(updatedRegistrationTabs[tabIndex].steps[stepIndex])
       );
 
       // SET UPDATED REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.foreign_business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        "foreign_business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
       );
     },
 
     // SET COMPLETED STEP
-    setBusinessCompletedStep: (state, action) => {
-      const updatedRegistrationTabs = state.business_registration_tabs?.map(
-        (tab: RegistrationTab) => {
-          return {
-            ...tab,
-            steps: tab.steps?.map((step: RegistrationStep) => {
-              return {
-                ...step,
-              };
-            }),
-          };
-        }
-      );
+    setForeignBusinessCompletedStep: (state, action) => {
+      const updatedRegistrationTabs =
+        state.foreign_business_registration_tabs?.map(
+          (tab: RegistrationTab) => {
+            return {
+              ...tab,
+              steps: tab.steps?.map((step: RegistrationStep) => {
+                return {
+                  ...step,
+                };
+              }),
+            };
+          }
+        );
 
       // FIND STEP
       const step = updatedRegistrationTabs
@@ -342,27 +321,28 @@ export const businessRegistrationSlice = createSlice({
       updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = true;
 
       // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.foreign_business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        "foreign_business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
       );
     },
 
     // REMOVE COMPLETED STEP
-    removeBusinessCompletedStep: (state, action) => {
-      const updatedRegistrationTabs = state.business_registration_tabs?.map(
-        (tab: RegistrationTab) => {
-          return {
-            ...tab,
-            steps: tab.steps?.map((step: RegistrationStep) => {
-              return {
-                ...step,
-              };
-            }),
-          };
-        }
-      );
+    removeForeignBusinessCompletedStep: (state, action) => {
+      const updatedRegistrationTabs =
+        state.foreign_business_registration_tabs?.map(
+          (tab: RegistrationTab) => {
+            return {
+              ...tab,
+              steps: tab.steps?.map((step: RegistrationStep) => {
+                return {
+                  ...step,
+                };
+              }),
+            };
+          }
+        );
 
       // FIND STEP
       const step = updatedRegistrationTabs
@@ -383,127 +363,124 @@ export const businessRegistrationSlice = createSlice({
       updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = false;
 
       // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.foreign_business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        "foreign_business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
       );
     },
 
     // SET COMPANY DETAILS
-    setCompanyDetails: (state, action) => {
-      state.company_details = action.payload;
-      localStorage.setItem("company_details", JSON.stringify(action.payload));
+    setForeignCompanyDetails: (state, action) => {
+      state.foreign_company_details = action.payload;
+      localStorage.setItem(
+        "foreign_company_details",
+        JSON.stringify(action.payload)
+      );
     },
 
     // SET COMPANY ADDRESS
-    setCompanyAddress: (state, action) => {
-      state.company_address = action.payload;
-      localStorage.setItem("company_address", JSON.stringify(action.payload));
+    setForeignCompanyAddress: (state, action) => {
+      state.foreign_company_address = action.payload;
+      localStorage.setItem(
+        "foreign_company_address",
+        JSON.stringify(action.payload)
+      );
     },
 
     // SET COMPANY ACTIVITY
-    setCompanyActivities: (state, action) => {
-      state.company_activities = action.payload;
+    setForeignCompanyActivities: (state, action) => {
+      state.foreign_company_activities = action.payload;
       localStorage.setItem(
-        "company_activities",
+        "foreign_company_activities",
         JSON.stringify(action.payload)
       );
     },
 
     // SET COMPANY SUB ACTIVITIES
-    setCompanySubActivities: (state, action) => {
-      state.company_business_lines = action.payload;
+    setForeignCompanySubActivities: (state, action) => {
+      state.foreign_company_business_lines = action.payload;
       localStorage.setItem(
-        "company_business_lines",
+        "foreign_company_business_lines",
         JSON.stringify(action.payload)
       );
     },
 
     // SET BOARD OF DIRECTORS
-    setBoardDirectors: (state, action) => {
-      state.board_of_directors = action.payload;
+    setForeignBoardDirectors: (state, action) => {
+      state.foreign_board_of_directors = action.payload;
       localStorage.setItem(
-        "board_of_directors",
+        "foreign_board_of_directors",
         JSON.stringify(action.payload)
       );
     },
 
     // SET SENIOR MANAGEMENT
-    setSeniorManagement: (state, action) => {
-      state.senior_management = action.payload;
-      localStorage.setItem("senior_management", JSON.stringify(action.payload));
+    setForeignSeniorManagement: (state, action) => {
+      state.foreign_senior_management = action.payload;
+      localStorage.setItem(
+        "foreign_senior_management",
+        JSON.stringify(action.payload)
+      );
     },
 
     // SET EMPLOYMENT INFO
-    setEmploymentInfo: (state, action) => {
-      state.employment_info = action.payload;
-      localStorage.setItem("employment_info", JSON.stringify(action.payload));
-    },
-
-    // SHARE DETAILS
-    setShareDetails: (state, action) => {
-      state.share_details = action.payload;
-      localStorage.setItem("share_details", JSON.stringify(action.payload));
-    },
-
-    // SET SHAREHOLDERS
-    setShareHolders: (state, action) => {
-      state.shareholders = action.payload;
-      localStorage.setItem("shareholders", JSON.stringify(action.payload));
-    },
-
-    // SET CAPITAL DETAILS
-    setCapitalDetails: (state, action) => {
-      state.capital_details = action.payload;
-      localStorage.setItem("capital_details", JSON.stringify(action.payload));
+    setForeignEmploymentInfo: (state, action) => {
+      state.foreign_employment_info = action.payload;
+      localStorage.setItem(
+        "foreign_employment_info",
+        JSON.stringify(action.payload)
+      );
     },
 
     // SET BENEFICIAL OWNERS
-    setBeneficialOwners: (state, action) => {
-      state.beneficial_owners = action.payload;
-      localStorage.setItem("beneficial_owners", JSON.stringify(action.payload));
+    setForeignBeneficialOwners: (state, action) => {
+      state.foreign_beneficial_owners = action.payload;
+      localStorage.setItem(
+        "foreign_beneficial_owners",
+        JSON.stringify(action.payload)
+      );
     },
 
     // SET COMPANY ATTACHMENTS
-    setCompanyAttachments: (state, action) => {
-      state.company_attachments = action.payload;
+    setForeignCompanyAttachments: (state, action) => {
+      state.foreign_company_attachments = action.payload;
       localStorage.setItem(
-        "company_attachments",
+        "foreign_company_attachments",
         JSON.stringify(action.payload)
       );
     },
 
     // SET DOMESTIC BUSINESS REGISTRATIONS
-    setUserApplications: (state, action) => {
-      state.user_applications = [action.payload, ...state.user_applications];
+    setForeignUserApplications: (state, action) => {
+      state.foreign_user_applications = [
+        action.payload,
+        ...state.foreign_user_applications,
+      ];
       localStorage.setItem(
-        "user_applications",
-        JSON.stringify(state.user_applications)
+        "foreign_user_applications",
+        JSON.stringify(state.foreign_user_applications)
       );
     },
   },
 });
 
-export default businessRegistrationSlice.reducer;
+export default foreignBranchRegistrationSlice.reducer;
 
 export const {
-  setBusinessActiveTab,
-  setBusinessActiveStep,
-  setBusinessCompletedStep,
-  setCompanyDetails,
-  setCompanyAddress,
-  setCompanyActivities,
-  setCompanySubActivities,
-  removeBusinessCompletedStep,
-  setBoardDirectors,
-  setSeniorManagement,
-  setEmploymentInfo,
-  setShareDetails,
-  setShareHolders,
-  setCapitalDetails,
-  setBeneficialOwners,
-  setCompanyAttachments,
-  setUserApplications,
-  setBusinessRegistrationTabs,
-} = businessRegistrationSlice.actions;
+  setForeignBusinessActiveTab,
+  setForeignBusinessActiveStep,
+  setForeignBusinessCompletedStep,
+  setForeignCompanyDetails,
+  setForeignCompanyAddress,
+  setForeignCompanyActivities,
+  setForeignCompanySubActivities,
+  removeForeignBusinessCompletedStep,
+  setForeignBoardDirectors,
+  setForeignSeniorManagement,
+  setForeignEmploymentInfo,
+  setForeignBeneficialOwners,
+  setForeignCompanyAttachments,
+  setForeignUserApplications,
+  setForeignBusinessRegistrationTabs,
+} = foreignBranchRegistrationSlice.actions;

@@ -44,6 +44,7 @@ import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
 import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
 import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
+import ForeignBranchRegistration from "./pages/branch-of-foreign-company/ForeignBranchRegistration";
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
 import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDetails";
 import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
@@ -66,11 +67,6 @@ const Routes = () => {
          */}
         <Route path="/services" element={<Home />} />
         <Route element={<AuthenticatedRoutes />}>
-          {/* BUSINESS REGISTRATION */}
-          <Route
-            path="/business-registration/"
-            element={<BusinessRegistration />}
-          />
           {/* USER PROFILE */}
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/company-details/:id" element={<UserCompanyDetails />} />
@@ -85,6 +81,10 @@ const Routes = () => {
           <Route
             path="/business-registration"
             element={<BusinessRegistration />}
+          />
+          <Route
+            path="/foreign-branch-registration"
+            element={<ForeignBranchRegistration />}
           />
           <Route
             path="/enterprise-registration"
@@ -122,26 +122,11 @@ const Routes = () => {
             path="/name-availability"
             element={<SearchCompanyAvailability />}
           />
-          <Route
-            path="/search-company"
-            element={<SearchCompanyDetails />}
-          />
-          <Route
-            path="/company-restoration"
-            element={<CompanyRestoration />}
-          />
-          <Route
-            path="/company-dormancy"
-            element={<CompanyDormancy />}
-          />
-          <Route
-            path="/close-company"
-            element={<CloseCompany />}
-          />
-          <Route
-            path="/new-branch"
-            element={<BusinessNewBranch />}
-          />
+          <Route path="/search-company" element={<SearchCompanyDetails />} />
+          <Route path="/company-restoration" element={<CompanyRestoration />} />
+          <Route path="/company-dormancy" element={<CompanyDormancy />} />
+          <Route path="/close-company" element={<CloseCompany />} />
+          <Route path="/new-branch" element={<BusinessNewBranch />} />
         </Route>
 
         {/* AUTHENTICATION */}

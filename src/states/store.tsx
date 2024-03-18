@@ -12,6 +12,7 @@ import institutionSlice from "./features/institutionSlice";
 import localeSlice from "./features/localeSlice";
 import userCompaniesSlice from "./features/userCompaniesSlice";
 import enterpriseRegistrationSlice from "./features/enterpriseRegistrationSlice";
+import foreignBranchRegistrationSlice from "./features/foreignBranchRegistrationSlice";
 import nameReservationSlice from "./features/nameReservationSlice";
 
 export const store = configureStore({
@@ -29,6 +30,7 @@ export const store = configureStore({
     locale: localeSlice,
     userCompanies: userCompaniesSlice,
     enterpriseRegistration: enterpriseRegistrationSlice,
+    foreignBranchRegistration: foreignBranchRegistrationSlice,
     nameReservation: nameReservationSlice,
   },
 });

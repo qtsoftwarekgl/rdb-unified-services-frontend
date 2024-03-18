@@ -11,7 +11,7 @@ const ForeignBranchSplashPage = () => {
     involves 6 steps. You may be required to provide documents that you
     do not have at this moment. Feel free to pause the process and
     resume whenever is convenient for you. Your progress will be saved."
-      path={`/business-registration?entry_id=${generateUUID()}`}
+      path={`/foreign-branch-registration?entry_id=${generateUUID()}`}
     />
   );
 };

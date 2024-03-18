@@ -9,7 +9,7 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type Props = {
   isOpen: boolean;
@@ -25,6 +25,9 @@ const Preview = ({ isOpen }: Props) => {
   } = useSelector((state: RootState) => state.enterpriseRegistration);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const entry_id = queryParams.get("entry_id");
 
   if (!isOpen) {
     return null;
@@ -41,8 +44,13 @@ const Preview = ({ isOpen }: Props) => {
       addToRegisteredEnterprises({
         enterprise_attachments: { ...enterprise_attachments },
         enterprise_business_lines: [...enterprise_business_lines],
-        enterprise_details: { ...enterprise_details, status: "pending" },
+        enterprise_details: {
+          ...enterprise_details,
+          status: "pending",
+          created_at: Date.now(),
+        },
         enterprise_office_address: { ...enterprise_office_address },
+        entry_id,
       })
     );
     dispatch(resetToInitialState());

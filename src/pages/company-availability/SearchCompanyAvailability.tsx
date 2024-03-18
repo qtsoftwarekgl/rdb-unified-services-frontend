@@ -2,6 +2,7 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import UserLayout from "../../containers/UserLayout";
 import { searchedCompanies } from "../../constants/businessRegistration";
 import DebouncedInput from "../../components/table/DebouncedInput";
+import Button from "../../components/inputs/Button";
 
 const SearchCompanyAvailability = () => {
   const {
@@ -85,6 +86,11 @@ const SearchCompanyAvailability = () => {
               )}
             </menu>
           )}
+          <Button
+            value={"Back"}
+            route="/services"
+            className="w-20 border border-primary"
+          />
         </section>
       </section>
     </UserLayout>

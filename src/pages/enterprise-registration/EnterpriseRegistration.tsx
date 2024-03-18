@@ -33,7 +33,7 @@ const EnterpriseRegistration = () => {
           tabs={enterprise_registration_tabs}
           setActiveTab={setEnterpriseActiveTab}
         />
-        <menu className="flex items-center w-full gap-5 p-8 rounded bg-[#f8f9fa]">
+        <menu className="flex items-center w-full gap-5 p-8 rounded ">
           {enterprise_registration_tabs?.map((tab: TabType, index: number) => {
             return (
               <Tab
