@@ -4,12 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { Step } from "../../states/features/types";
 import {
-  addToRegisteredEnterprises,
   resetToInitialState,
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useLocation, useNavigate } from "react-router-dom";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
+import moment from "moment";
 
 type Props = {
   isOpen: boolean;
@@ -41,20 +42,22 @@ const Preview = ({ isOpen }: Props) => {
   const handleSubmit = () => {
     // reset all data
     dispatch(
-      addToRegisteredEnterprises({
+      setUserApplications({
         enterprise_attachments: { ...enterprise_attachments },
         enterprise_business_lines: [...enterprise_business_lines],
         enterprise_details: {
           ...enterprise_details,
           status: "pending",
-          created_at: Date.now(),
         },
+        type: "enterprise",
+        path: `/enterprise-registration?entry_id=${entry_id}`,
         enterprise_office_address: { ...enterprise_office_address },
         entry_id,
+        created_at: moment(Date.now()).format("DD/MM/YYYY"),
       })
     );
     dispatch(resetToInitialState());
-    navigate("/success", { state: { redirectUrl: "/user-profile" } });
+    navigate("/success", { state: { redirectUrl: "/user-applications" } });
   };
 
   return (

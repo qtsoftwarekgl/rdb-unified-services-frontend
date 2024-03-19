@@ -175,9 +175,6 @@ export const foreignBranchRegistrationSlice = createSlice({
     foreign_company_attachments:
       JSON.parse(String(localStorage.getItem("foreign_company_attachments"))) ||
       [],
-    foreign_user_applications:
-      JSON.parse(String(localStorage.getItem("foreign_user_applications"))) ||
-      [],
   },
   reducers: {
     // SET REGISTRATION TABS
@@ -450,18 +447,6 @@ export const foreignBranchRegistrationSlice = createSlice({
         JSON.stringify(action.payload)
       );
     },
-
-    // SET DOMESTIC BUSINESS REGISTRATIONS
-    setForeignUserApplications: (state, action) => {
-      state.foreign_user_applications = [
-        action.payload,
-        ...state.foreign_user_applications,
-      ];
-      localStorage.setItem(
-        "foreign_user_applications",
-        JSON.stringify(state.foreign_user_applications)
-      );
-    },
   },
 });
 
@@ -481,6 +466,5 @@ export const {
   setForeignEmploymentInfo,
   setForeignBeneficialOwners,
   setForeignCompanyAttachments,
-  setForeignUserApplications,
   setForeignBusinessRegistrationTabs,
 } = foreignBranchRegistrationSlice.actions;

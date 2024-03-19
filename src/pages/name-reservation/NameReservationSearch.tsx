@@ -14,7 +14,9 @@ import {
   setNameReservationActiveStep,
   setNameReservationActiveTab,
   setNameReservationOwnerDetails,
+  setReservedNames,
 } from "../../states/features/nameReservationSlice";
+import { generateUUID } from "../../helpers/Strings";
 
 type Props = {
   isOpen: boolean;
@@ -61,6 +63,15 @@ const NameReservationSearch = ({ isOpen }: Props) => {
       });
       dispatch(setNameReservationOwnerDetails(null));
       dispatch(setNameReservation(null));
+      dispatch(
+        setReservedNames({
+          name: data.name,
+          status: "Approved",
+          created_at: Date.now(),
+          id: generateUUID(),
+          registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
+        })
+      );
       navigate("/services");
     }, 1000);
     return data;

@@ -7,7 +7,7 @@ import {
 } from "../../../constants/businessRegistration";
 import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData } from "../../../constants/authentication";
+import { userData, workingIds } from "../../../constants/authentication";
 import Loader from "../../../components/Loader";
 import validateInputs from "../../../helpers/Validations";
 import { countriesList } from "../../../constants/countries";
@@ -277,6 +277,29 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                       <Input
                         required
                         suffixIcon={faSearch}
+                        onChange={(e) => {
+                          e.preventDefault();
+                          field.onChange(e.target.value);
+                          setSearchMember({
+                            ...searchMember,
+                            loading: false,
+                            error: false,
+                          });
+                          if (
+                            e.target.value.length > 16 ||
+                            e.target.value.length < 16
+                          ) {
+                            setError("document_no", {
+                              type: "manual",
+                              message: "Invalid document number",
+                            });
+                          } else if (e.target.value.length === 16) {
+                            setError("document_no", {
+                              type: "manual",
+                              message: "",
+                            });
+                          }
+                        }}
                         suffixIconHandler={async (e) => {
                           e.preventDefault();
                           if (!field.value) {
@@ -292,9 +315,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                             error: false,
                           });
                           setTimeout(() => {
-                            const randomNumber = Math.floor(Math.random() * 16);
-                            const userDetails = userData[randomNumber];
-
+                            const index = workingIds.indexOf(field.value);
+                            const userDetails = userData[index];
                             if (!userDetails) {
                               setSearchMember({
                                 ...searchMember,
@@ -302,10 +324,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                                 loading: false,
                                 error: true,
                               });
-                            }
-
-                            if (userDetails) {
-                              clearErrors();
+                            } else {
                               setSearchMember({
                                 ...searchMember,
                                 data: userDetails,
@@ -323,18 +342,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
                         label="ID Document No"
                         suffixIconPrimary
                         placeholder="1 XXXX X XXXXXXX X XX"
-                        onChange={async (e) => {
-                          field.onChange(e);
-                          await trigger("document_no");
-                        }}
                       />
-                      {searchMember?.loading &&
-                        !errors?.document_no &&
-                        !searchMember?.error && (
-                          <span className="flex items-center gap-[2px] text-[13px]">
-                            <Loader size={4} /> Validating document
-                          </span>
-                        )}
+                      {searchMember?.loading && (
+                        <span className="flex items-center gap-[2px] text-[13px]">
+                          <Loader size={4} /> Validating document
+                        </span>
+                      )}
                       {searchMember?.error && !searchMember?.loading && (
                         <span className="text-red-600 text-[13px]">
                           Invalid document number

@@ -97,8 +97,6 @@ export const enterpriseRegistrationSlice = createSlice({
     enterprise_attachments:
       JSON.parse(String(localStorage.getItem("enterprise_attachments"))) ||
       null,
-    registered_enterprises:
-      JSON.parse(String(localStorage.getItem("registered_enterprises"))) || [],
     usedIds: JSON.parse(String(localStorage.getItem("usedIds"))) || [],
   },
   reducers: {
@@ -266,13 +264,6 @@ export const enterpriseRegistrationSlice = createSlice({
         JSON.stringify(action.payload)
       );
     },
-    addToRegisteredEnterprises: (state, action) => {
-      state.registered_enterprises.push(action.payload);
-      localStorage.setItem(
-        "registered_enterprises",
-        JSON.stringify(state.registered_enterprises)
-      );
-    },
     setUsedIds: (state, action) => {
       state.usedIds.push(action.payload);
       localStorage.setItem("usedIds", JSON.stringify(state.usedIds));
@@ -379,7 +370,6 @@ export const {
   setEnterpriseBusinessActivityVat,
   setEnterpriseBusinessLines,
   setEnterpriseAttachments,
-  addToRegisteredEnterprises,
   resetToInitialState,
   setUsedIds,
 } = enterpriseRegistrationSlice.actions;

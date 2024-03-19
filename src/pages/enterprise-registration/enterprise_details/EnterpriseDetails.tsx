@@ -23,7 +23,11 @@ import {
   documentTypes,
   dummyPhones,
 } from "../../../constants/businessRegistration";
-import { userData } from "../../../constants/authentication";
+import {
+  availableNames,
+  userData,
+  workingIds,
+} from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 
@@ -135,8 +139,12 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
                         success: false,
                       });
                       setTimeout(() => {
-                        const randomNumber = Math.floor(Math.random() * 10);
-                        if (randomNumber < 7) {
+                        const index = availableNames.findIndex(
+                          (name) =>
+                            name.toLocaleLowerCase() ===
+                            searchEnterprise.name.toLocaleLowerCase()
+                        );
+                        if (index !== -1) {
                           setValue("name", searchEnterprise.name);
                           setSearchEnterprise({
                             ...searchEnterprise,
@@ -157,7 +165,7 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
                   />
                   <menu
                     className={`flex flex-col gap-1 w-full my-1 ${
-                      !Object.values(searchEnterprise).includes(true) &&
+                      !Object.values(searchEnterprise)?.includes(true) &&
                       "hidden"
                     }`}
                   >
@@ -257,7 +265,7 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
               rules={{
                 required: "Document number is required",
                 validate: (value) => {
-                  if (usedIds.includes(value)) {
+                  if (usedIds?.includes(value)) {
                     return "ID already used. Please use another ID";
                   }
                   return true;
@@ -304,12 +312,14 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
                       } else {
                         setIsNationalIdLoading(true);
                         setTimeout(() => {
-                          const randomNumber = Math.floor(Math.random() * 16);
-                          const userDetails = userData[randomNumber];
+                          setUserDetails(null);
+                          const index = workingIds.findIndex(
+                            (id) => id === watch("id_no")
+                          );
+                          const userDetails = userData[index];
                           if (!userDetails) {
                             setNationalIdError(true);
-                          }
-                          if (userDetails) {
+                          } else {
                             setNationalIdError(false);
                             setUserDetails({
                               ...userDetails,
@@ -863,16 +873,6 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
               </menu>
             </section>
           )}
-
-        {/* <DomesticUserDetails
-          userDetails={userDetails}
-          enterprise_details={enterprise_details}
-        />
-
-        <ForeignUserDetails
-          userDetails={userDetails}
-          enterprise_details={enterprise_details}
-        /> */}
 
         {userDetails?.document_type === "passport" && (
           <section>

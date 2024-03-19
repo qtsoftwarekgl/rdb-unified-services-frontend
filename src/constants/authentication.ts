@@ -16,6 +16,9 @@ export const languages = [
   },
 ];
 
+export const workingIds = ["1199980040660153", "1199980040660151"];
+export const availableNames = ["Inyambo", "xyz", "umurava"];
+
 export const userData = [
   {
     id: 1,

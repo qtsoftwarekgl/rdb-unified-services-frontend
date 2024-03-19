@@ -1,4 +1,5 @@
 import { generateUUID } from "../../helpers/Strings";
+import { setEnterpriseDetails } from "../../states/features/enterpriseRegistrationSlice";
 import { NewRegistration } from "../business-registration/NewBusinessRegistration";
 
 const NewEnterpriseRegistration = () => {
@@ -9,6 +10,7 @@ const NewEnterpriseRegistration = () => {
     do not have at this moment. Feel free to pause the process and
     resume whenever is convenient for you. Your progress will be saved."
       path={`/enterprise-registration?entry_id=${generateUUID()}`}
+      setDetails={setEnterpriseDetails}
     />
   );
 };
