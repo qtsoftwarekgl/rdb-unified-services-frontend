@@ -30,7 +30,7 @@ const Button: FC<ButtonProps> = ({
     return (
       <button
         type={type || 'submit'}
-        className={`py-[8px] max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] max-[800px]:!text-lg max-md:!py-2 ${
+        className={`py-[8px] max-[800px]:!text-[14px] shadow-md transition-all flex items-center justify-center text-center px-6 rounded-md text-[14px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-100 hover:scale-[1.01] max-[800px]:!text-lg max-md:!py-2 ${
           disabled &&
           '!bg-background !shadow-none hover:!scale-[1] !cursor-default hover:!bg-background hover:text-opacity-80 !duration-0 text-white text-opacity-80 !border-none text-center transition-all'
         } ${
@@ -38,7 +38,7 @@ const Button: FC<ButtonProps> = ({
           'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary transition-all'
         } ${className} ${
           primary &&
-          '!bg-primary !sha !text-white hover:!bg-primary hover:!text-white !shadow-sm'
+          '!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm'
         }`}
         disabled={disabled}
       >
@@ -51,7 +51,7 @@ const Button: FC<ButtonProps> = ({
     <Link
       to={route}
       onClick={onClick}
-      className={`py-2 text-center border-[1px] border-primary px-6 rounded-md text-[15px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] max-[800px]:!text-lg max-md:!py-2 ${
+      className={`py-2 text-center border-[1px] border-primary px-6 rounded-md text-[14px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] max-[800px]:!text-lg max-md:!py-2 ${
         !styled &&
         'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary'
       } ${className} ${

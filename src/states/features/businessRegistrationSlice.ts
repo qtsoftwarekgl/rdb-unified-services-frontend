@@ -493,6 +493,22 @@ export const businessRegistrationSlice = createSlice({
       state.addReviewCommentsModal = action.payload;
     },
 
+    // UPDATE REVIEW COMMENT
+    updateReviewComment: (state, action) => {
+      const updatedComments = [...state.business_review_comments];
+      const commentIndex = updatedComments?.findIndex(
+        (comment) => comment?.step?.name === action.payload?.step?.name
+      );
+      if (commentIndex) {
+        updatedComments[commentIndex] = action.payload;
+        state.business_review_comments = updatedComments;
+        localStorage.setItem(
+          'business_review_comments',
+          JSON.stringify(state.business_review_comments)
+        );
+      }
+    },
+
     // SET ACTION COMMENTS
     setReviewComments: (state, action) => {
       state.business_review_comments = action.payload;
@@ -532,5 +548,6 @@ export const {
   setBusinessCompletedTab,
   setAddReviewCommentsModal,
   setReviewComments,
-  setListCommentsModal
+  setListCommentsModal,
+  updateReviewComment
 } = businessRegistrationSlice.actions;

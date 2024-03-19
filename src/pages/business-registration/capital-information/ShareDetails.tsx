@@ -141,7 +141,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
   return (
     <section className="w-full flex flex-col gap-6">
       <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2'>
-        <fieldset disabled className="w-full flex flex-col gap-6">
+        <fieldset className="w-full flex flex-col gap-6">
           <Controller
             name="company_capital"
             control={control}

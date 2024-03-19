@@ -4,17 +4,20 @@ import { AppDispatch, RootState } from '../../../states/store';
 import {
   setReviewComments,
   setAddReviewCommentsModal,
+  updateReviewComment,
 } from '../../../states/features/businessRegistrationSlice';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import TextArea from '../../../components/inputs/TextArea';
 import Button from '../../../components/inputs/Button';
 import { useEffect, useRef, useState } from 'react';
 import Loader from '../../../components/Loader';
+import { Step, TabType } from '../../../states/features/types';
+import moment from 'moment';
 
 export type ReviewComment = {
   comment: string;
-  step: string;
-  tab: string;
+  step: Step;
+  tab: TabType;
   created_at: string;
 };
 
@@ -34,6 +37,7 @@ const AddReviewComments = () => {
     addReviewCommentsModal,
     business_active_step,
     business_review_comments,
+    business_active_tab,
   } = useSelector((state: RootState) => state.businessRegistration);
   const [isLoading, setIsLoading] = useState(false);
   const [comment, setComment] = useState<ReviewComment | null>(null);
@@ -46,12 +50,15 @@ const AddReviewComments = () => {
     if (!addReviewCommentsModal) {
       reset();
       commentRef.current?.blur();
+      if (commentRef?.current?.value) {
+        commentRef.current.value = '';
+      }
       setComment(null);
     } else if (addReviewCommentsModal) {
       commentRef.current?.focus();
       const commentExists = business_review_comments?.find(
         (business_comment: ReviewComment) =>
-          business_comment?.step === business_active_step?.name
+          business_comment?.step?.name === business_active_step?.name
       );
       if (commentExists) {
         setComment(commentExists);
@@ -69,7 +76,7 @@ const AddReviewComments = () => {
     if (business_review_comments?.length > 0) {
       const commentExists = business_review_comments?.find(
         (business_comment: ReviewComment) =>
-          business_comment?.step === business_active_step?.name
+          business_comment?.step?.name === business_active_step?.name
       );
       if (commentExists) {
         setValue('comment', commentExists?.comment);
@@ -92,17 +99,20 @@ const AddReviewComments = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(
-        setReviewComments([
-          {
-            comment: data.comment,
-            step: business_active_step?.name,
-            tab: business_active_step?.tab_name,
-            created_at: new Date().toISOString(),
-          },
-          ...business_review_comments,
-        ])
-      );
+      const newComment = {
+        comment: data?.comment,
+        step: business_active_step,
+        tab: {
+          name: business_active_tab?.name,
+          label: business_active_tab?.label,
+        },
+        created_at: moment().format(),
+      };
+      if (comment) {
+        dispatch(updateReviewComment(newComment));
+      } else {
+        dispatch(setReviewComments([newComment, ...business_review_comments]));
+      }
       if (commentRef?.current?.value) {
         commentRef.current.value = '';
       }

@@ -139,7 +139,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-6 w-full"
       >
-        <fieldset disabled>
+        <fieldset>
         <Controller
           name="shareholder_type"
           control={control}

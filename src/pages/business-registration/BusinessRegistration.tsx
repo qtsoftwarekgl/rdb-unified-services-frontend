@@ -22,7 +22,7 @@ import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 import CompanyAttachments from './attachments/CompanyAttachments';
 import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
 import AddReviewComments from './applications-review/AddReviewComments';
-import ReviewNavigation from './applications-review/ReviewNavigation';
+import ReviewNavigation from './ReviewNavigation';
 import ListReviewComments from './applications-review/ListReviewComments';
 
 const BusinessRegistration = () => {
@@ -120,10 +120,15 @@ const BusinessRegistration = () => {
             }
           )}
         </menu>
-      </main>
-      <ReviewNavigation />
+        <ReviewNavigation
+        setActiveStep={setBusinessActiveStep}
+        setActiveTab={setBusinessActiveTab}
+        tabs={business_registration_tabs}
+        activeStep={business_active_step}
+      />
       <AddReviewComments />
       <ListReviewComments />
+      </main>
     </UserLayout>
   );
 };
