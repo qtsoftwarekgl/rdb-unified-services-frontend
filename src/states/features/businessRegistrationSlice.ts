@@ -200,10 +200,9 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem('beneficial_owners'))) || [],
     company_attachments:
       JSON.parse(String(localStorage.getItem('company_attachments'))) || [],
-    user_applications:
-      JSON.parse(String(localStorage.getItem('user_applications'))) || [],
     addReviewCommentsModal: false,
     listCommentsModal: false,
+    capitalDetailsModal: false,
     business_review_comments:
       JSON.parse(String(localStorage.getItem('business_review_comments'))) ||
       [],
@@ -479,15 +478,6 @@ export const businessRegistrationSlice = createSlice({
       );
     },
 
-    // SET DOMESTIC BUSINESS REGISTRATIONS
-    setUserApplications: (state, action) => {
-      state.user_applications = [action.payload, ...state.user_applications];
-      localStorage.setItem(
-        'user_applications',
-        JSON.stringify(state.user_applications)
-      );
-    },
-
     // SET REVIEW COMMENTS MODAL
     setAddReviewCommentsModal: (state, action) => {
       state.addReviewCommentsModal = action.payload;
@@ -522,8 +512,13 @@ export const businessRegistrationSlice = createSlice({
     setListCommentsModal: (state, action) => {
       state.listCommentsModal = action.payload;
     },
+
+    // SET CAPITAL DETAILS MODAL
+    setCapitalDetailsModal: (state, action) => {
+      state.capitalDetailsModal = action.payload;
   },
-});
+
+}});
 
 export default businessRegistrationSlice.reducer;
 
@@ -549,5 +544,6 @@ export const {
   setAddReviewCommentsModal,
   setReviewComments,
   setListCommentsModal,
-  updateReviewComment
+  updateReviewComment,
+  setCapitalDetailsModal,
 } = businessRegistrationSlice.actions;

@@ -124,9 +124,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
           total_shares: data?.total_shares,
           shares: tableRows?.map((row) => {
             return {
-              [`${row.name}_no`]: data[`${row.name}_no`],
-              [`${row.name}_value`]: data[`${row.name}_value`],
-              [`${row.name}`]: data[`${row.name}`],
+              name: row?.name,
+              no_shares: data?.[`${row.name}_no`],
+              share_value: data?.[`${row.name}_value`],
+              remaining_shares: data?.[`${row.name}_no`],
             };
           }),
         })

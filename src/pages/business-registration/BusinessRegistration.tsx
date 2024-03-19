@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../states/store';
 import UserLayout from '../../containers/UserLayout';
 import ProgressNavigation from './ProgressNavigation';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Tab from '../../components/business-registration/Tab';
 import {
   RegistrationTab,
@@ -22,21 +22,40 @@ import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 import CompanyAttachments from './attachments/CompanyAttachments';
 import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
 import AddReviewComments from './applications-review/AddReviewComments';
-import ReviewNavigation from './ReviewNavigation';
 import ListReviewComments from './applications-review/ListReviewComments';
+import { useEffect } from 'react';
+import { setUserApplications } from '../../states/features/userApplicationSlice';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
   const {
     business_registration_tabs,
     business_active_step,
     business_active_tab,
   } = useSelector((state: RootState) => state.businessRegistration);
 
+  // NAVIGATION
+  const navigate = useNavigate();
+
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const entry_id = queryParams.get('entry_id');
+
+  useEffect(() => {
+    if (entry_id) {
+      dispatch(
+        setUserApplications({
+          entry_id,
+          status: 'in_progress',
+          type: 'business_registration'
+        })
+      );
+    } else {
+      navigate('/business-registration/new');
+    }
+  }, [dispatch, entry_id, navigate]);
 
   return (
     <UserLayout>
@@ -58,6 +77,7 @@ const BusinessRegistration = () => {
                 >
                   {/* COMPANY DETAILS */}
                   <CompanyDetails
+                    entry_id={entry_id}
                     isOpen={business_active_step?.name === 'company_details'}
                   />
                   {/* COMPANY ADDRESS */}
@@ -120,14 +140,14 @@ const BusinessRegistration = () => {
             }
           )}
         </menu>
-        <ReviewNavigation
+        {/* <ReviewNavigation
         setActiveStep={setBusinessActiveStep}
         setActiveTab={setBusinessActiveTab}
         tabs={business_registration_tabs}
         activeStep={business_active_step}
-      />
-      <AddReviewComments />
-      <ListReviewComments />
+      /> */}
+        <AddReviewComments />
+        <ListReviewComments />
       </main>
     </UserLayout>
   );
