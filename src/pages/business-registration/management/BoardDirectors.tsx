@@ -6,7 +6,6 @@ import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import { countriesList } from '../../../constants/countries';
-import validateInputs from '../../../helpers/Validations';
 import Button from '../../../components/inputs/Button';
 import {
   setBoardDirectors,
@@ -128,6 +127,11 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
     if (isSubmitSuccessful) {
       reset();
       setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
     }
   }, [isSubmitSuccessful, reset]);
 

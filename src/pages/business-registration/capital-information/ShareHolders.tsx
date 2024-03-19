@@ -1,7 +1,10 @@
 import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
-import { personnelTypes, searchedCompanies } from '../../../constants/businessRegistration';
+import {
+  personnelTypes,
+  searchedCompanies,
+} from '../../../constants/businessRegistration';
 import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
@@ -71,7 +74,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
         ])
       );
       setIsLoading(false);
-      window.location.reload();
     }, 1000);
   };
 
@@ -140,12 +142,16 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
         <Controller
           name="shareholder_type"
           control={control}
+          defaultValue={watch('shareholder_type')}
           rules={{ required: 'Select shareholder type' }}
           render={({ field }) => {
             return (
               <label className="flex flex-col gap-1 w-[49%]">
                 <Select
                   label="Shareholder type"
+                  defaultValue={personnelTypes?.find(
+                    (person) => person?.value === watch('shareholder_type')
+                  )}
                   options={personnelTypes}
                   onChange={(e) => {
                     field?.onChange(e?.value);
@@ -238,7 +244,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                                 loading: false,
                                 error: false,
                               });
-                              setValue('company_name', userDetails?.company_name);
+                              setValue(
+                                'company_name',
+                                userDetails?.company_name
+                              );
                               setValue('email', userDetails?.email);
                               setValue('gender', userDetails?.data?.gender);
                               setValue('phone', userDetails?.data?.phone);
@@ -376,8 +385,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
             defaultValue={searchMember?.data?.first_name}
             rules={{
               required:
-                watch('shareholder_type') === 'person' &&
-                'First name is required',
+                watch('shareholder_type') === 'person'
+                  ? 'First name is required'
+                  : false,
             }}
             render={({ field }) => {
               return (
@@ -515,6 +525,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Select
                     isSearchable
+                    required
                     label="Country"
                     options={countriesList?.map((country) => {
                       return {
@@ -556,7 +567,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
             name="phone"
             control={control}
             rules={{
-              required: 'Phone number is required',
+              required:
+                watch('shareholder_type') === 'person' &&
+                'Phone number is required',
             }}
             defaultValue={userData?.[0]?.phone || searchMember?.data?.phone}
             render={({ field }) => {
@@ -886,7 +899,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                 ...shareholder,
                 no: index,
                 name: shareholder?.first_name
-                  ? `${shareholder?.first_name || ''} ${shareholder?.last_name || ''}`
+                  ? `${shareholder?.first_name || ''} ${
+                      shareholder?.last_name || ''
+                    }`
                   : shareholder?.company_name,
                 type: capitalizeString(shareholder?.shareholder_type),
               };
