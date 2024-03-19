@@ -19,7 +19,7 @@ import {
   setCompanyDetails,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
-import { updateUserApplication } from '../../../states/features/userApplicationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 interface CompanyDetailsProps {
   isOpen: boolean;
@@ -74,7 +74,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
         })
       );
 
-      dispatch(updateUserApplication({
+      dispatch(setUserApplications({
         entry_id,
         company_details: {
           ...company_details,
