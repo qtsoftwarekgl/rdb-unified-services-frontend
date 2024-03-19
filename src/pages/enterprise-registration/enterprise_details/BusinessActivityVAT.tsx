@@ -16,9 +16,10 @@ import {
   setEnterpriseBusinessLines,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
+import { updateUserApplication } from "../../../states/features/userApplicationSlice";
 
 interface BusinessActivityProps {
   isOpen: boolean;
@@ -42,6 +43,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
     enterprise_registration_active_step,
   } = useSelector((state: RootState) => state.enterpriseRegistration);
 
+  const { search } = useLocation();
+  const queryParams = new URLSearchParams(search);
+  const entry_id = queryParams.get("entry_id");
+
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
     setIsLoading(true);
@@ -50,6 +55,14 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
       dispatch(
         setEnterpriseBusinessActivityVat({
           business_lines: enterprise_business_lines,
+          step: { ...enterprise_registration_active_step },
+        })
+      );
+
+      dispatch(
+        updateUserApplication({
+          business_lines: enterprise_business_lines,
+          entry_id,
           step: { ...enterprise_registration_active_step },
         })
       );

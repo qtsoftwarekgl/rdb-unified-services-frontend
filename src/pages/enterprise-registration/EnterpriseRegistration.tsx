@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
 import {
@@ -14,6 +14,8 @@ import BusinessActivity from "./enterprise_details/BusinessActivityVAT";
 import OfficeAddress from "./enterprise_details/OfficeAddress";
 import Attachments from "./Attachements";
 import Preview from "./Preview";
+import { useEffect } from "react";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
 
 const EnterpriseRegistration = () => {
   const {
@@ -25,6 +27,16 @@ const EnterpriseRegistration = () => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const entry_id = queryParams.get("entry_id");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setUserApplications({
+        entry_id,
+        status: "in-progress",
+      })
+    );
+  }, []);
 
   return (
     <UserLayout>
