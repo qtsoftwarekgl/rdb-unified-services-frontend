@@ -58,7 +58,7 @@ const UserSidebar = () => {
   const companyDetailsSideBar = [
     {
       title: "Company Details",
-      path: `/company-details/${viewedCompany?.id}`,
+      path: `/company-details/${viewedCompany?.entry_id}`,
       icon: faCircleInfo,
     },
     {
@@ -198,7 +198,7 @@ const UserSidebar = () => {
           onClick={(e) => {
             e.preventDefault();
             localStorage.clear();
-            navigate('/auth/login')
+            navigate("/auth/login");
           }}
         />
       </motion.div>

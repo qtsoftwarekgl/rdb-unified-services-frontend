@@ -13,7 +13,6 @@ import {
   setForeignCompanyAttachments,
   setForeignCompanyDetails,
   setForeignCompanySubActivities,
-  setForeignUserApplications,
   setForeignEmploymentInfo,
   setForeignSeniorManagement,
   setForeignBusinessRegistrationTabs,
@@ -25,6 +24,8 @@ import { countriesList } from "../../../constants/countries";
 import Button from "../../../components/inputs/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import moment from "moment";
 
 interface PreviewSubmissionProps {
   isOpen: boolean;
@@ -336,9 +337,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
             setTimeout(() => {
               setIsLoading(false);
               dispatch(
-                setForeignUserApplications({
+                setUserApplications({
                   entry_id,
-                  type: "business_registration",
+                  type: "foreign_branch_registration",
                   foreign_company_details: {
                     ...foreign_company_details,
                     created_at: Date.now(),
@@ -350,6 +351,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                   foreign_employment_info,
                   foreign_beneficial_owners,
                   foreign_company_attachments,
+                  path: `/foreign-branch-registration?entry_id=${entry_id}`,
+                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
                 })
               );
               dispatch(setForeignCompanyDetails(null));
@@ -369,7 +372,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                   foreign_business_registration_tabs_initial_state
                 )
               );
-              navigate("/success", { state: { redirectUrl: "/user-profile" } });
+              navigate("/success", {
+                state: { redirectUrl: "/user-applications" },
+              });
             }, 1000);
           }}
         />

@@ -14,7 +14,6 @@ import {
   setCompanyAttachments,
   setCompanyDetails,
   setCompanySubActivities,
-  setUserApplications,
   setEmploymentInfo,
   setSeniorManagement,
   setShareDetails,
@@ -28,6 +27,8 @@ import { countriesList } from "../../../constants/countries";
 import Button from "../../../components/inputs/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import moment from "moment";
 
 interface PreviewSubmissionProps {
   isOpen: boolean;
@@ -588,10 +589,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                 setUserApplications({
                   entry_id,
                   type: "business_registration",
-                  company_details: {
-                    ...company_details,
-                    created_at: Date.now(),
-                  },
+                  company_details,
                   company_address,
                   company_activities,
                   board_of_directors,
@@ -602,6 +600,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                   capital_details,
                   beneficial_owners,
                   company_attachments,
+                  path: `/business-registration/?entry_id=${entry_id}`,
+                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
                 })
               );
               dispatch(setCompanyDetails(null));
@@ -624,7 +624,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
                   business_registration_tabs_initial_state
                 )
               );
-              navigate("/success", { state: { redirectUrl: "/user-profile" } });
+              navigate("/success", {
+                state: { redirectUrl: "/user-applications" },
+              });
             }, 1000);
           }}
         />

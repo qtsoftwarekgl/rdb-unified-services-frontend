@@ -2,60 +2,15 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
 import { formatDate } from "../../helpers/Strings";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../states/store";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { useNavigate } from "react-router";
+import { registeredBusinesses } from "../../constants/dashboard";
 
 const RegisteredBusinessesTable = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { foreign_user_applications } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
-  const { user_applications } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
-  const { registered_enterprises } = useSelector(
-    (state: RootState) => state.enterpriseRegistration
-  );
-
-  let registeredBusinesses = user_applications?.length
-    ? user_applications?.concat(
-        foreign_user_applications,
-        registered_enterprises
-      )
-    : [].concat(foreign_user_applications, registered_enterprises);
-
-  registeredBusinesses = registeredBusinesses
-    .map((business) => {
-      return {
-        ...business?.company_details,
-        ...business?.foreign_company_details,
-        ...business?.enterprise_details,
-        company_name:
-          business?.company_details?.name ||
-          business?.enterprise_details?.name ||
-          business?.foreign_company_details?.name,
-        company_code:
-          business?.company_code || Math.floor(Math.random() * 9000) + 1000,
-        status: business?.status?.toLowerCase() || "submitted",
-        id:
-          business?.id ||
-          business?.entry_id ||
-          Math.floor(Math.random() * 9000) + 1000,
-      };
-    })
-    .sort((a, b) => {
-      return (
-        new Date(b?.created_at).getTime() - new Date(a?.created_at).getTime()
-      );
-    });
-
-  localStorage.setItem(
-    "registeredBusinesses",
-    JSON.stringify(registeredBusinesses)
-  );
 
   const colors = (status: string) => {
     if (status === "active") {
@@ -72,9 +27,6 @@ const RegisteredBusinessesTable = () => {
     }
     if (status === "pending") {
       return "bg-yellow-100 text-yellow-500";
-    }
-    if (status === "submitted") {
-      return "bg-[#e8ffef] text-black";
     }
   };
   const colums = [

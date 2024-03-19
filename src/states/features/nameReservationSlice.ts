@@ -54,6 +54,8 @@ export const nameReservationSlice = createSlice({
       JSON.parse(String(localStorage.getItem("owner_details"))) || null,
     name_reservation:
       JSON.parse(String(localStorage.getItem("name_reservation"))) || null,
+    reservedNames:
+      JSON.parse(String(localStorage.getItem("reservedNames"))) || [],
   },
 
   reducers: {
@@ -209,6 +211,13 @@ export const nameReservationSlice = createSlice({
       localStorage.removeItem("owner_details");
       localStorage.removeItem("name_reservation");
     },
+    setReservedNames: (state, action) => {
+      state.reservedNames = [action.payload, ...state.reservedNames];
+      localStorage.setItem(
+        "reservedNames",
+        JSON.stringify(state.reservedNames)
+      );
+    },
   },
 });
 
@@ -221,4 +230,5 @@ export const {
   setNameReservationOwnerDetails,
   setNameReservation,
   resetToInitialState,
+  setReservedNames,
 } = nameReservationSlice.actions;

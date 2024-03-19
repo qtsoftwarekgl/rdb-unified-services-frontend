@@ -70,7 +70,9 @@ const Home = () => {
                   key={index}
                   to={"#"}
                   className={` w-1/2 rounded text-center p-6 ${
-                    selected ? "bg-primary text-white" : "border border-primary"
+                    selected
+                      ? "bg-primary text-white shadow-xl"
+                      : "border border-primary"
                   }`}
                   onClick={(e) => {
                     e.preventDefault();

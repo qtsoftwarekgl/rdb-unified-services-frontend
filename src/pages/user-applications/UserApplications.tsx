@@ -26,16 +26,46 @@ import {
   setShareDetails,
   setShareHolders,
 } from "../../states/features/businessRegistrationSlice";
+import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 
 const UserApplications = () => {
   // STATE VARIABLES
   const { user_applications } = useSelector(
-    (state: RootState) => state.businessRegistration
+    (state: RootState) => state.userApplication
   );
+
   const dispatch = useDispatch();
 
   // NAVIGATE
   const navigate = useNavigate();
+
+  const registeredBusinesses = user_applications
+    .map((business) => {
+      return {
+        ...business?.company_details,
+        ...business?.foreign_company_details,
+        ...business?.enterprise_details,
+        company_name:
+          business?.company_details?.name ||
+          business?.enterprise_details?.name ||
+          business?.foreign_company_details?.name,
+        status: business?.status?.toLowerCase() || "submitted",
+        id:
+          business?.id ||
+          business?.entry_id ||
+          Math.floor(Math.random() * 9000) + 1000,
+        reg_number: `REG-${business?.entry_id?.split("-")[0]?.toUpperCase()}`,
+        service_name: capitalizeString(business?.type),
+        submission_date: business.created_at,
+        path: business?.path,
+      };
+    })
+    .sort((a, b) => {
+      return (
+        new Date(b?.submissionDate).getTime() -
+        new Date(a?.submissionDate).getTime()
+      );
+    });
 
   const colors = (status: string) => {
     if (status === "verified") {
@@ -57,11 +87,15 @@ const UserApplications = () => {
   const colums = [
     {
       header: "Registration Number",
-      accessorKey: "regNumber",
+      accessorKey: "reg_number",
+    },
+    {
+      header: "Company Name",
+      accessorKey: "company_name",
     },
     {
       header: "Service Name",
-      accessorKey: "serviceName",
+      accessorKey: "service_name",
     },
     {
       header: "Status",
@@ -81,7 +115,7 @@ const UserApplications = () => {
     },
     {
       header: "Submission Date",
-      accessorKey: "submissionDate",
+      accessorKey: "submission_date",
     },
     {
       header: "Action",
@@ -93,7 +127,8 @@ const UserApplications = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                navigate(`${row?.original.path}`);
+                dispatch(setViewedCompany(row?.original));
+                navigate(`/company-details/${row?.original?.id}`);
               }}
               icon={faEye}
               className="text-primary"
@@ -148,18 +183,7 @@ const UserApplications = () => {
             showFilter={false}
             showPagination={false}
             columns={colums}
-            data={user_applications?.map((application, index) => {
-              return {
-                ...application,
-                regNumber: `REG-${application?.entry_id
-                  ?.split("-")[0]
-                  ?.toUpperCase()}`,
-                serviceName: capitalizeString(application?.type),
-                submissionDate: new Date().toLocaleDateString(),
-                path: `/business-registration?entry_id=${application?.entry_id}`,
-                status: "Submitted",
-              };
-            })}
+            data={registeredBusinesses}
             className="bg-white rounded-2xl"
           />
         ) : (

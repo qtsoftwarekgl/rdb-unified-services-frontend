@@ -200,8 +200,6 @@ export const businessRegistrationSlice = createSlice({
       JSON.parse(String(localStorage.getItem("beneficial_owners"))) || [],
     company_attachments:
       JSON.parse(String(localStorage.getItem("company_attachments"))) || [],
-    user_applications:
-      JSON.parse(String(localStorage.getItem("user_applications"))) || [],
   },
   reducers: {
     // SET REGISTRATION TABS
@@ -473,15 +471,6 @@ export const businessRegistrationSlice = createSlice({
         JSON.stringify(action.payload)
       );
     },
-
-    // SET DOMESTIC BUSINESS REGISTRATIONS
-    setUserApplications: (state, action) => {
-      state.user_applications = [action.payload, ...state.user_applications];
-      localStorage.setItem(
-        "user_applications",
-        JSON.stringify(state.user_applications)
-      );
-    },
   },
 });
 
@@ -504,6 +493,5 @@ export const {
   setCapitalDetails,
   setBeneficialOwners,
   setCompanyAttachments,
-  setUserApplications,
   setBusinessRegistrationTabs,
 } = businessRegistrationSlice.actions;

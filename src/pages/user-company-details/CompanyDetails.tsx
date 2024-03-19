@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import CreateAmendment from "./CreateAmendment";
 import { useParams } from "react-router-dom";
-// import { registeredBusinesses } from "../../constants/dashboard";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 
 const CompanyDetails = () => {
@@ -23,7 +22,7 @@ const CompanyDetails = () => {
     (state: RootState) => state.userCompanies
   );
   const registeredBusinesses =
-    JSON.parse(String(localStorage.getItem("registeredBusinesses"))) || [];
+    JSON.parse(String(localStorage.getItem("user_applications"))) || [];
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -33,7 +32,7 @@ const CompanyDetails = () => {
     if (id) {
       dispatch(
         setViewedCompany(
-          registeredBusinesses?.find((business) => business.id === id)
+          registeredBusinesses?.find((business) => business.entry_id === id)
         )
       );
     }
@@ -57,6 +56,8 @@ const CompanyDetails = () => {
       position: "MD",
     },
   ];
+
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", viewedCompany);
 
   const managementMemberColumns = [
     {
