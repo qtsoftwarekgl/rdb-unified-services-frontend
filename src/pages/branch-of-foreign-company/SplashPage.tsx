@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { generateUUID } from "../../helpers/Strings";
 import { NewRegistration } from "../business-registration/NewBusinessRegistration";
+import { setForeignCompanyDetails } from "../../states/features/foreignBranchRegistrationSlice";
 
 const ForeignBranchSplashPage = () => {
   useEffect(() => {}, []);
@@ -12,6 +13,7 @@ const ForeignBranchSplashPage = () => {
     do not have at this moment. Feel free to pause the process and
     resume whenever is convenient for you. Your progress will be saved."
       path={`/foreign-branch-registration?entry_id=${generateUUID()}`}
+      setDetails={setForeignCompanyDetails}
     />
   );
 };

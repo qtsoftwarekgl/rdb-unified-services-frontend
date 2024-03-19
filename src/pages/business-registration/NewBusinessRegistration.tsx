@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../../components/inputs/Button";
 import UserLayout from "../../containers/UserLayout";
 import { generateUUID } from "../../helpers/Strings";
@@ -8,19 +8,33 @@ import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { removeFromReservedNames } from "../../states/features/nameReservationSlice";
+import Modal from "../../components/Modal";
+import { useNavigate } from "react-router-dom";
+import { setCompanyDetails } from "../../states/features/businessRegistrationSlice";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { useState } from "react";
 
 interface NewRegistrationProps {
   description: string;
   path: string;
+  setDetails?: (data: object) => UnknownAction;
 }
 
 export const NewRegistration = ({
   description,
   path,
+  setDetails,
 }: NewRegistrationProps) => {
   const { reservedNames } = useSelector(
     (state: RootState) => state.nameReservation
   );
+
+  const [useReservedNames, setUseReservedNames] = useState(false);
+  const [reservedName, setReservedName] = useState("");
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const reservedNamesCols = [
     {
@@ -49,6 +63,8 @@ export const NewRegistration = ({
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
+                setReservedName(row?.original?.name);
+                setUseReservedNames(true);
               }}
               icon={faCheck}
               className="text-primary"
@@ -152,6 +168,44 @@ export const NewRegistration = ({
           </section>
         </section>
       </main>
+      {useReservedNames && (
+        <Modal
+          isOpen={useReservedNames}
+          onClose={() => setUseReservedNames(false)}
+        >
+          <section className="flex flex-col gap-4 p-8 bg-white rounded-md">
+            <h1 className="text-2xl font-bold">Use Reserved Name</h1>
+            <menu className="flex flex-col gap-4">
+              <h3 className="text-base font-semibold">
+                You are about to use a reserved name for this application
+              </h3>
+              <h3 className="text-base font-semibold">
+                Are you sure you want to use this name?
+              </h3>
+              <menu className="flex items-center justify-between">
+                <Button value="No" onClick={() => setUseReservedNames(false)} />
+                <Button
+                  value="Yes"
+                  route="#"
+                  primary
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setDetails &&
+                      dispatch(
+                        setDetails({
+                          name: reservedName,
+                        })
+                      );
+                    dispatch(removeFromReservedNames(reservedName));
+                    navigate(path);
+                    setUseReservedNames(false);
+                  }}
+                />
+              </menu>
+            </menu>
+          </section>
+        </Modal>
+      )}
     </UserLayout>
   );
 };
@@ -164,6 +218,7 @@ const NewBusinessRegistration = () => {
       do not have at this moment. Feel free to pause the process and
       resume whenever is convenient for you. Your progress will be saved."
       path={`/business-registration?entry_id=${generateUUID()}`}
+      setDetails={setCompanyDetails}
     />
   );
 };

@@ -18,20 +18,9 @@ export const userApplicationsSlice = createSlice({
         JSON.stringify(state.user_applications)
       );
     },
-    setUserUncompletedApplications: (state, action) => {
-      state.user_uncompleted_applications = [
-        ...state.user_uncompleted_applications,
-        action.payload,
-      ];
-      localStorage.setItem(
-        "user_uncompleted_applications",
-        JSON.stringify(state.user_uncompleted_applications)
-      );
-    },
   },
 });
 
 export default userApplicationsSlice.reducer;
 
-export const { setUserApplications, setUserUncompletedApplications } =
-  userApplicationsSlice.actions;
+export const { setUserApplications } = userApplicationsSlice.actions;

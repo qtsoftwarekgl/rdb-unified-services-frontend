@@ -218,6 +218,15 @@ export const nameReservationSlice = createSlice({
         JSON.stringify(state.reservedNames)
       );
     },
+    removeFromReservedNames: (state, action) => {
+      state.reservedNames = state.reservedNames.filter(
+        (reserved) => reserved?.name !== action.payload
+      );
+      localStorage.setItem(
+        "reservedNames",
+        JSON.stringify(state.reservedNames)
+      );
+    },
   },
 });
 
@@ -231,4 +240,5 @@ export const {
   setNameReservation,
   resetToInitialState,
   setReservedNames,
+  removeFromReservedNames,
 } = nameReservationSlice.actions;
