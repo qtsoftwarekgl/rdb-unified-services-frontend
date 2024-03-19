@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 export interface RegistrationStep {
   label: string;
@@ -20,29 +20,29 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
   [
     {
       no: 1,
-      label: "General Information",
-      name: "general_information",
+      label: 'General Information',
+      name: 'general_information',
       completed: false,
       active: true,
       steps: [
         {
-          label: "Company Details",
-          name: "company_details",
-          tab_name: "general_information",
+          label: 'Company Details',
+          name: 'company_details',
+          tab_name: 'general_information',
           active: true,
           completed: false,
         },
         {
-          label: "Company Address",
-          name: "company_address",
-          tab_name: "general_information",
+          label: 'Company Address',
+          name: 'company_address',
+          tab_name: 'general_information',
           active: false,
           completed: false,
         },
         {
-          label: "Business Activity & VAT",
-          name: "business_activity_vat",
-          tab_name: "general_information",
+          label: 'Business Activity & VAT',
+          name: 'business_activity_vat',
+          tab_name: 'general_information',
           active: false,
           completed: false,
         },
@@ -50,29 +50,29 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 2,
-      label: "Management",
-      name: "management",
+      label: 'Management',
+      name: 'management',
       active: false,
       completed: false,
       steps: [
         {
-          label: "Board of Directors",
-          name: "board_of_directors",
-          tab_name: "management",
+          label: 'Board of Directors',
+          name: 'board_of_directors',
+          tab_name: 'management',
           active: false,
           completed: false,
         },
         {
-          label: "Senior Management",
-          name: "senior_management",
-          tab_name: "management",
+          label: 'Senior Management',
+          name: 'senior_management',
+          tab_name: 'management',
           active: false,
           completed: false,
         },
         {
-          label: "Employment Info",
-          name: "employment_info",
-          tab_name: "management",
+          label: 'Employment Info',
+          name: 'employment_info',
+          tab_name: 'management',
           active: false,
           completed: false,
         },
@@ -80,29 +80,29 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 3,
-      label: "Capital Information",
-      name: "capital_information",
+      label: 'Capital Information',
+      name: 'capital_information',
       active: false,
       completed: false,
       steps: [
         {
-          label: "Share Details",
-          name: "share_details",
-          tab_name: "capital_information",
+          label: 'Share Details',
+          name: 'share_details',
+          tab_name: 'capital_information',
           active: false,
           completed: false,
         },
         {
-          label: "Shareholders",
-          name: "shareholders",
-          tab_name: "capital_information",
+          label: 'Shareholders',
+          name: 'shareholders',
+          tab_name: 'capital_information',
           active: false,
           completed: false,
         },
         {
-          label: "Capital Details",
-          name: "capital_details",
-          tab_name: "capital_information",
+          label: 'Capital Details',
+          name: 'capital_details',
+          tab_name: 'capital_information',
           active: false,
           completed: false,
         },
@@ -110,15 +110,15 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 4,
-      label: "Beneficial Owners",
+      label: 'Beneficial Owners',
       active: false,
       completed: false,
-      name: "beneficial_owners",
+      name: 'beneficial_owners',
       steps: [
         {
-          label: "Beneficial Owners",
-          name: "beneficial_owners",
-          tab_name: "beneficial_owners",
+          label: 'Beneficial Owners',
+          name: 'beneficial_owners',
+          tab_name: 'beneficial_owners',
           active: false,
           completed: false,
         },
@@ -126,15 +126,15 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 5,
-      label: "Attachments",
-      name: "attachments",
+      label: 'Attachments',
+      name: 'attachments',
       completed: false,
       active: false,
       steps: [
         {
-          label: "Attachments",
-          name: "attachments",
-          tab_name: "attachments",
+          label: 'Attachments',
+          name: 'attachments',
+          tab_name: 'attachments',
           active: false,
           completed: false,
         },
@@ -142,15 +142,15 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 6,
-      label: "Preview & Submission",
-      name: "preview_submission",
+      label: 'Preview & Submission',
+      name: 'preview_submission',
       completed: false,
       active: false,
       steps: [
         {
-          label: "Preview & Submission",
-          name: "preview_submission",
-          tab_name: "preview_submission",
+          label: 'Preview & Submission',
+          name: 'preview_submission',
+          tab_name: 'preview_submission',
           active: false,
           completed: false,
         },
@@ -159,54 +159,61 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
   ];
 
 export const businessRegistrationSlice = createSlice({
-  name: "businessRegistration",
+  name: 'businessRegistration',
   initialState: {
     business_registration_tabs:
-      JSON.parse(String(localStorage.getItem("business_registration_tabs"))) ||
+      JSON.parse(String(localStorage.getItem('business_registration_tabs'))) ||
       business_registration_tabs_initial_state,
     business_active_step: JSON.parse(
-      String(localStorage.getItem("business_active_step"))
+      String(localStorage.getItem('business_active_step'))
     ) || {
-      label: "Company Details",
-      name: "company_details",
+      label: 'Company Details',
+      name: 'company_details',
     },
     business_active_tab: JSON.parse(
-      String(localStorage.getItem("business_active_tab"))
+      String(localStorage.getItem('business_active_tab'))
     ) || {
-      label: "General Information",
-      name: "general_information",
+      label: 'General Information',
+      name: 'general_information',
     },
     company_details:
-      JSON.parse(String(localStorage.getItem("company_details"))) || null,
+      JSON.parse(String(localStorage.getItem('company_details'))) || null,
     company_address:
-      JSON.parse(String(localStorage.getItem("company_address"))) || null,
+      JSON.parse(String(localStorage.getItem('company_address'))) || null,
     company_activities:
-      JSON.parse(String(localStorage.getItem("company_activities"))) || null,
+      JSON.parse(String(localStorage.getItem('company_activities'))) || null,
     company_business_lines:
-      JSON.parse(String(localStorage.getItem("company_business_lines"))) || [],
+      JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
     board_of_directors:
-      JSON.parse(String(localStorage.getItem("board_of_directors"))) || [],
+      JSON.parse(String(localStorage.getItem('board_of_directors'))) || [],
     senior_management:
-      JSON.parse(String(localStorage.getItem("senior_management"))) || [],
+      JSON.parse(String(localStorage.getItem('senior_management'))) || [],
     employment_info:
-      JSON.parse(String(localStorage.getItem("employment_info"))) || null,
+      JSON.parse(String(localStorage.getItem('employment_info'))) || null,
     share_details:
-      JSON.parse(String(localStorage.getItem("share_details"))) || null,
+      JSON.parse(String(localStorage.getItem('share_details'))) || null,
     shareholders:
-      JSON.parse(String(localStorage.getItem("shareholders"))) || [],
+      JSON.parse(String(localStorage.getItem('shareholders'))) || [],
     capital_details:
-      JSON.parse(String(localStorage.getItem("capital_details"))) || [],
+      JSON.parse(String(localStorage.getItem('capital_details'))) || [],
     beneficial_owners:
-      JSON.parse(String(localStorage.getItem("beneficial_owners"))) || [],
+      JSON.parse(String(localStorage.getItem('beneficial_owners'))) || [],
     company_attachments:
-      JSON.parse(String(localStorage.getItem("company_attachments"))) || [],
+      JSON.parse(String(localStorage.getItem('company_attachments'))) || [],
+    user_applications:
+      JSON.parse(String(localStorage.getItem('user_applications'))) || [],
+    addReviewCommentsModal: false,
+    listCommentsModal: false,
+    business_review_comments:
+      JSON.parse(String(localStorage.getItem('business_review_comments'))) ||
+      [],
   },
   reducers: {
     // SET REGISTRATION TABS
     setBusinessRegistrationTabs: (state, action) => {
       state.business_registration_tabs = action.payload;
       localStorage.setItem(
-        "business_registration_tabs",
+        'business_registration_tabs',
         JSON.stringify(action.payload)
       );
     },
@@ -230,14 +237,14 @@ export const businessRegistrationSlice = createSlice({
       // SET ACTIVE TAB TO STATE AND LOCAL STORAGE
       state.business_active_tab = updatedRegistrationTabs[tabIndex];
       localStorage.setItem(
-        "business_active_tab",
+        'business_active_tab',
         JSON.stringify(updatedRegistrationTabs[tabIndex])
       );
 
       // SET UPDATED REGISTRATION TABS TO STATE AND LOCAL STORAGE
       state.business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
     },
@@ -251,7 +258,7 @@ export const businessRegistrationSlice = createSlice({
       updatedRegistrationTabs[tabIndex].completed = true;
       state.business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
     },
@@ -294,14 +301,14 @@ export const businessRegistrationSlice = createSlice({
       state.business_active_step =
         updatedRegistrationTabs[tabIndex].steps[stepIndex];
       localStorage.setItem(
-        "business_active_step",
+        'business_active_step',
         JSON.stringify(updatedRegistrationTabs[tabIndex].steps[stepIndex])
       );
 
       // SET UPDATED REGISTRATION TABS TO STATE AND LOCAL STORAGE
       state.business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
     },
@@ -342,7 +349,7 @@ export const businessRegistrationSlice = createSlice({
       // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
       state.business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
     },
@@ -383,7 +390,7 @@ export const businessRegistrationSlice = createSlice({
       // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
       state.business_registration_tabs = updatedRegistrationTabs;
       localStorage.setItem(
-        "business_registration_tabs",
+        'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
     },
@@ -391,20 +398,20 @@ export const businessRegistrationSlice = createSlice({
     // SET COMPANY DETAILS
     setCompanyDetails: (state, action) => {
       state.company_details = action.payload;
-      localStorage.setItem("company_details", JSON.stringify(action.payload));
+      localStorage.setItem('company_details', JSON.stringify(action.payload));
     },
 
     // SET COMPANY ADDRESS
     setCompanyAddress: (state, action) => {
       state.company_address = action.payload;
-      localStorage.setItem("company_address", JSON.stringify(action.payload));
+      localStorage.setItem('company_address', JSON.stringify(action.payload));
     },
 
     // SET COMPANY ACTIVITY
     setCompanyActivities: (state, action) => {
       state.company_activities = action.payload;
       localStorage.setItem(
-        "company_activities",
+        'company_activities',
         JSON.stringify(action.payload)
       );
     },
@@ -413,7 +420,7 @@ export const businessRegistrationSlice = createSlice({
     setCompanySubActivities: (state, action) => {
       state.company_business_lines = action.payload;
       localStorage.setItem(
-        "company_business_lines",
+        'company_business_lines',
         JSON.stringify(action.payload)
       );
     },
@@ -422,7 +429,7 @@ export const businessRegistrationSlice = createSlice({
     setBoardDirectors: (state, action) => {
       state.board_of_directors = action.payload;
       localStorage.setItem(
-        "board_of_directors",
+        'board_of_directors',
         JSON.stringify(action.payload)
       );
     },
@@ -430,46 +437,74 @@ export const businessRegistrationSlice = createSlice({
     // SET SENIOR MANAGEMENT
     setSeniorManagement: (state, action) => {
       state.senior_management = action.payload;
-      localStorage.setItem("senior_management", JSON.stringify(action.payload));
+      localStorage.setItem('senior_management', JSON.stringify(action.payload));
     },
 
     // SET EMPLOYMENT INFO
     setEmploymentInfo: (state, action) => {
       state.employment_info = action.payload;
-      localStorage.setItem("employment_info", JSON.stringify(action.payload));
+      localStorage.setItem('employment_info', JSON.stringify(action.payload));
     },
 
     // SHARE DETAILS
     setShareDetails: (state, action) => {
       state.share_details = action.payload;
-      localStorage.setItem("share_details", JSON.stringify(action.payload));
+      localStorage.setItem('share_details', JSON.stringify(action.payload));
     },
 
     // SET SHAREHOLDERS
     setShareHolders: (state, action) => {
       state.shareholders = action.payload;
-      localStorage.setItem("shareholders", JSON.stringify(action.payload));
+      localStorage.setItem('shareholders', JSON.stringify(action.payload));
     },
 
     // SET CAPITAL DETAILS
     setCapitalDetails: (state, action) => {
       state.capital_details = action.payload;
-      localStorage.setItem("capital_details", JSON.stringify(action.payload));
+      localStorage.setItem('capital_details', JSON.stringify(action.payload));
     },
 
     // SET BENEFICIAL OWNERS
     setBeneficialOwners: (state, action) => {
       state.beneficial_owners = action.payload;
-      localStorage.setItem("beneficial_owners", JSON.stringify(action.payload));
+      localStorage.setItem('beneficial_owners', JSON.stringify(action.payload));
     },
 
     // SET COMPANY ATTACHMENTS
     setCompanyAttachments: (state, action) => {
       state.company_attachments = action.payload;
       localStorage.setItem(
-        "company_attachments",
+        'company_attachments',
         JSON.stringify(action.payload)
       );
+    },
+
+    // SET DOMESTIC BUSINESS REGISTRATIONS
+    setUserApplications: (state, action) => {
+      state.user_applications = [action.payload, ...state.user_applications];
+      localStorage.setItem(
+        'user_applications',
+        JSON.stringify(state.user_applications)
+      );
+    },
+
+    // SET REVIEW COMMENTS MODAL
+    setAddReviewCommentsModal: (state, action) => {
+      state.addReviewCommentsModal = action.payload;
+    },
+
+    // SET ACTION COMMENTS
+    setReviewComments: (state, action) => {
+      state.business_review_comments = action.payload;
+      localStorage.setItem(
+        'business_review_comments',
+        JSON.stringify(state.business_review_comments)
+      );
+    },
+
+    // SET LIST COMMENTS MODAL
+    setListCommentsModal: (state, action) => {
+      state.listCommentsModal = action.payload;
     },
   },
 });
@@ -494,4 +529,8 @@ export const {
   setBeneficialOwners,
   setCompanyAttachments,
   setBusinessRegistrationTabs,
+  setBusinessCompletedTab,
+  setAddReviewCommentsModal,
+  setReviewComments,
+  setListCommentsModal
 } = businessRegistrationSlice.actions;

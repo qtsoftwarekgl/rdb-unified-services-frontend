@@ -140,158 +140,159 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
 
   return (
     <section className="w-full flex flex-col gap-6">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col gap-6"
-      >
-        <Controller
-          name="company_capital"
-          control={control}
-          defaultValue={share_details?.company_capital}
-          rules={{ required: 'Total company capital is required' }}
-          render={({ field }) => {
-            return (
-              <label className="w-[49%] flex flex-col gap-1">
-                <Input
-                  prefixText="RWF"
-                  required
-                  label="Enter company capital"
-                  {...field}
-                />
-                {errors?.company_capital && (
-                  <p className="text-[13px] text-red-600">
-                    {String(errors?.company_capital?.message)}
-                  </p>
-                )}
-              </label>
-            );
-          }}
-        />
-        <table className="w-full flex flex-col gap-3">
-          <thead className="w-full flex items-center justify-between">
-            {tableHeaders?.map((header, index) => {
+      <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2'>
+        <fieldset disabled className="w-full flex flex-col gap-6">
+          <Controller
+            name="company_capital"
+            control={control}
+            defaultValue={share_details?.company_capital}
+            rules={{ required: 'Total company capital is required' }}
+            render={({ field }) => {
               return (
-                <tr
-                  key={index}
-                  className="flex flex-row gap-3 w-full font-normal bg-primary text-white p-3 text-center"
-                >
-                  <th className="font-medium text-center">{header}</th>
-                </tr>
+                <label className="w-[49%] flex flex-col gap-1">
+                  <Input
+                    prefixText="RWF"
+                    required
+                    label="Enter company capital"
+                    {...field}
+                  />
+                  {errors?.company_capital && (
+                    <p className="text-[13px] text-red-600">
+                      {String(errors?.company_capital?.message)}
+                    </p>
+                  )}
+                </label>
               );
-            })}
-          </thead>
-          <tbody className="w-full flex flex-col items-center justify-between gap-4 p-2">
-            {tableRows?.map((row, index) => {
-              return (
-                <tr key={index} className="flex flex-row gap-3 w-full">
-                  <h4 className="w-full text-[15px]">{row?.label}</h4>
-                  <td className="w-full flex flex-col gap-1">
-                    <Input
-                      required
-                      defaultValue={
-                        watch(`${row.name}_no`) ||
-                        share_details?.shares?.[index]?.[`${row.name}_no`] ||
-                        0
-                      }
-                      type="number"
-                      onChange={(e) => {
-                        if (Number(e.target.value) < 0) {
-                          return;
-                        }
-                        setValue(`${row.name}_no`, Number(e.target.value));
-                        setValue(
-                          `${row.name}`,
-                          Number(watch(`${row.name}_value`)) *
-                            Number(e.target.value)
-                        );
-                      }}
-                    />
-                  </td>
-                  <td className="w-full flex flex-col gap-1">
-                    <Input
-                      required
-                      type="number"
-                      defaultValue={
-                        watch(`${row.name}_value`) ||
-                        share_details?.shares?.[index]?.[`${row.name}_value`] ||
-                        0
-                      }
-                      onChange={(e) => {
-                        if (Number(e.target.value) < 0) {
-                          return;
-                        }
-                        setValue(`${row.name}_value`, Number(e.target.value));
-                        setValue(
-                          `${row.name}`,
-                          Number(watch(`${row.name}_no`)) *
-                            Number(e.target.value)
-                        );
-                      }}
-                    />
-                  </td>
-                  <td className="w-full flex flex-col gap-1">
-                    <Input
-                      required
-                      readOnly
-                      value={watch(row.name)}
-                      type="number"
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot className="w-full flex flex-row items-center justify-between">
-            <tr className="w-full flex flex-row items-center gap-3 justify-between p-3">
-              <h2 className="uppercase font-semibold w-full">Total</h2>
-              <td className="w-full flex flex-col gap-1">
-                <Input required readOnly value={watch('total_shares')} />
-              </td>
-              <span className="w-full"></span>
-
-              <td className="w-full flex flex-col gap-1">
-                <Input
-                  required
-                  readOnly
-                  onChange={(e) => {
-                    setValue(
-                      'company_capital',
-                      tableRows
-                        ?.map((row) => watch(row.name))
-                        ?.filter((row) => Number(row) === row)
-                        ?.reduce((a, b) => a + b, 0)
-                    );
-                  }}
-                  value={watch('total_value')}
-                />
-              </td>
-            </tr>
-          </tfoot>
-          {errors?.total_value && (
-            <caption className="w-full text-[14px] text-red-600 caption-bottom">
-              {String(errors?.total_value?.message)}
-            </caption>
-          )}
-        </table>
-        <menu
-          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-        >
-          <Button
-            value="Back"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setBusinessActiveStep('employment_info'));
-              dispatch(setBusinessActiveTab('management'));
-              console.log('Back');
             }}
           />
-          <Button
-            value={isLoading ? <Loader /> : 'Continue'}
-            primary
-            submit
-            disabled={Object.keys(errors)?.length > 0}
-          />
-        </menu>
+          <table className="w-full flex flex-col gap-3">
+            <thead className="w-full flex items-center justify-between">
+              {tableHeaders?.map((header, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className="flex flex-row gap-3 w-full font-normal bg-primary text-white p-3 text-center"
+                  >
+                    <th className="font-medium text-center">{header}</th>
+                  </tr>
+                );
+              })}
+            </thead>
+            <tbody className="w-full flex flex-col items-center justify-between gap-4 p-2">
+              {tableRows?.map((row, index) => {
+                return (
+                  <tr key={index} className="flex flex-row gap-3 w-full">
+                    <h4 className="w-full text-[15px]">{row?.label}</h4>
+                    <td className="w-full flex flex-col gap-1">
+                      <Input
+                        required
+                        defaultValue={
+                          watch(`${row.name}_no`) ||
+                          share_details?.shares?.[index]?.[`${row.name}_no`] ||
+                          0
+                        }
+                        type="number"
+                        onChange={(e) => {
+                          if (Number(e.target.value) < 0) {
+                            return;
+                          }
+                          setValue(`${row.name}_no`, Number(e.target.value));
+                          setValue(
+                            `${row.name}`,
+                            Number(watch(`${row.name}_value`)) *
+                              Number(e.target.value)
+                          );
+                        }}
+                      />
+                    </td>
+                    <td className="w-full flex flex-col gap-1">
+                      <Input
+                        required
+                        type="number"
+                        defaultValue={
+                          watch(`${row.name}_value`) ||
+                          share_details?.shares?.[index]?.[
+                            `${row.name}_value`
+                          ] ||
+                          0
+                        }
+                        onChange={(e) => {
+                          if (Number(e.target.value) < 0) {
+                            return;
+                          }
+                          setValue(`${row.name}_value`, Number(e.target.value));
+                          setValue(
+                            `${row.name}`,
+                            Number(watch(`${row.name}_no`)) *
+                              Number(e.target.value)
+                          );
+                        }}
+                      />
+                    </td>
+                    <td className="w-full flex flex-col gap-1">
+                      <Input
+                        required
+                        readOnly
+                        value={watch(row.name)}
+                        type="number"
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="w-full flex flex-row items-center justify-between">
+              <tr className="w-full flex flex-row items-center gap-3 justify-between p-3">
+                <h2 className="uppercase font-semibold w-full">Total</h2>
+                <td className="w-full flex flex-col gap-1">
+                  <Input required readOnly value={watch('total_shares')} />
+                </td>
+                <span className="w-full"></span>
+
+                <td className="w-full flex flex-col gap-1">
+                  <Input
+                    required
+                    readOnly
+                    onChange={(e) => {
+                      setValue(
+                        'company_capital',
+                        tableRows
+                          ?.map((row) => watch(row.name))
+                          ?.filter((row) => Number(row) === row)
+                          ?.reduce((a, b) => a + b, 0)
+                      );
+                    }}
+                    value={watch('total_value')}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+            {errors?.total_value && (
+              <caption className="w-full text-[14px] text-red-600 caption-bottom">
+                {String(errors?.total_value?.message)}
+              </caption>
+            )}
+          </table>
+        </fieldset>
+        <menu
+            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+          >
+            <Button
+              value="Back"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessActiveStep('employment_info'));
+                dispatch(setBusinessActiveTab('management'));
+                console.log('Back');
+              }}
+            />
+            <Button
+              value={isLoading ? <Loader /> : 'Continue'}
+              primary
+              submit
+              disabled={Object.keys(errors)?.length > 0}
+            />
+          </menu>
       </form>
     </section>
   );
