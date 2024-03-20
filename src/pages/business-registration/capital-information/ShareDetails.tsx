@@ -4,8 +4,8 @@ import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -13,11 +13,24 @@ import {
   setShareDetails,
 } from '../../../states/features/businessRegistrationSlice';
 
-interface ShareDetailsProps {
-  isOpen: boolean;
+export interface business_share_details {
+  company_capital: number;
+  total_value: number;
+  total_shares: number;
+  shares: {
+    name: string;
+    no_shares: number;
+    share_value: number;
+    remaining_shares: number;
+  }[];
 }
 
-const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
+interface ShareDetailsProps {
+  isOpen: boolean;
+  share_details: business_share_details;
+}
+
+const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -31,9 +44,6 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { share_details } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [isLoading, setIsLoading] = useState(false);
 
   // TABLE HEADERS
@@ -255,6 +265,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen }) => {
                     required
                     readOnly
                     onChange={(e) => {
+                      e.preventDefault();
                       setValue(
                         'company_capital',
                         tableRows

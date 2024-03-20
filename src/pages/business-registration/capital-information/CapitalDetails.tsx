@@ -19,11 +19,24 @@ import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
 
-interface CapitalDetailsProps {
-  isOpen: boolean;
+export interface business_capital_details {
+  no: number;
+  first_name?: string;
+  last_name?: string;
+  company_name?: string;
+  shareholder_type?: string;
+  shares: {
+    total_shares?: number;
+    total_value?: number;
+  };
 }
 
-const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
+interface CapitalDetailsProps {
+  isOpen: boolean;
+  capital_details: business_capital_details[];
+}
+
+const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) => {
 
   // REACT HOOK FORM
   const {
@@ -36,7 +49,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
-  const { share_details, shareholders, capital_details } = useSelector(
+  const { share_details, shareholders } = useSelector(
     (state: RootState) => state.businessRegistration
   );
   const [assignedShares, setAssignedShares] = useState<object>({
@@ -153,36 +166,38 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
 
   return (
     <section className="w-full flex flex-col gap-6">
-     <menu className='flex flex-col gap-2 w-full'>
-     <Table
-        tableTitle="Shareholders"
-        data={capital_details?.map((shareholder: unknown, index: number) => {
-          return {
-            ...shareholder,
-            no: index,
-            name: shareholder?.first_name
-              ? `${shareholder?.first_name || ''} ${
-                  shareholder?.last_name || ''
-                }`
-              : shareholder?.company_name,
-            type: capitalizeString(shareholder?.shareholder_type),
-            total_shares: shareholder?.shares?.total_shares || 0,
-            total_value: `RWF ${shareholder?.shares?.total_value || 0}`,
-          };
-        })}
-        columns={columns}
-        showFilter={false}
-        showPagination={false}
-      />
-      {errors?.total_shares && (
-        <p className="text-red-500 text-[13px] text-center">
-          {String(errors?.total_shares?.message)}
-        </p>
-      )}
-     </menu>
-      <CapitalDetailsModal
-        shareholder={shareholderShareDetails}
-      />
+      <menu className="flex flex-col gap-2 w-full">
+        <Table
+          tableTitle="Shareholders"
+          data={
+            capital_details?.length > 0
+              ? capital_details?.map((shareholder: unknown, index: number) => {
+                  return {
+                    ...shareholder,
+                    no: index,
+                    name: shareholder?.first_name
+                      ? `${shareholder?.first_name || ''} ${
+                          shareholder?.last_name || ''
+                        }`
+                      : shareholder?.company_name,
+                    type: capitalizeString(shareholder?.shareholder_type),
+                    total_shares: shareholder?.shares?.total_shares || 0,
+                    total_value: `RWF ${shareholder?.shares?.total_value || 0}`,
+                  };
+                })
+              : []
+          }
+          columns={columns}
+          showFilter={false}
+          showPagination={false}
+        />
+        {errors?.total_shares && (
+          <p className="text-red-500 text-[13px] text-center">
+            {String(errors?.total_shares?.message)}
+          </p>
+        )}
+      </menu>
+      <CapitalDetailsModal shareholder={shareholderShareDetails} />
       <section className="flex flex-col gap-4">
         <h1 className="font-semibold text-lg uppercase text-[16px]">
           Overall capital details
@@ -242,7 +257,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
               ) {
                 setError('total_shares', {
                   type: 'manual',
-                  message: 'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+                  message:
+                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
                 });
                 return;
               } else {

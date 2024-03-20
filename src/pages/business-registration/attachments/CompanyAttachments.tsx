@@ -14,11 +14,18 @@ import {
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 
-interface CompanyAttachmentsProps {
-  isOpen: boolean;
+export interface business_company_attachments {
+  name: string;
+  size: number;
+  type: string;
 }
 
-const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
+interface CompanyAttachmentsProps {
+  isOpen: boolean;
+  company_attachments: business_company_attachments[];
+}
+
+const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen, company_attachments }) => {
   // REACT HOOK FORM
   const {
     control,
@@ -30,7 +37,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { company_details, company_attachments } = useSelector(
+  const { company_details } = useSelector(
     (state: RootState) => state.businessRegistration
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);

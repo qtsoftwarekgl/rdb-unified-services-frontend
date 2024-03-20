@@ -12,18 +12,25 @@ import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
 
-interface SeniorManagementProps {
-  isOpen: boolean;
+export interface business_senior_management {
+  first_name: string;
+  middle_name: string;
+  last_name: string;
 }
 
-const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
+interface SeniorManagementProps {
+  isOpen: boolean;
+  senior_management: business_senior_management[];
+}
+
+const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen, senior_management }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -39,9 +46,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { senior_management } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
@@ -342,7 +346,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
-                  readOnly={watch('document_type') === 'nid'}
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.middle_name}
                     placeholder="Middle name"
                     label="Middle name"
@@ -471,52 +475,52 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
             }}
           />
           {watch('document_type') !== 'nid' ? (
-              <Controller
-                name="country"
-                control={control}
-                rules={{ required: 'Nationality is required' }}
-                render={({ field }) => {
-                  return (
-                    <label className="w-[49%] flex flex-col gap-1 items-start">
-                      <Select
-                        isSearchable
-                        label="Country"
-                        options={countriesList?.map((country) => {
-                          return {
-                            ...country,
-                            label: country.name,
-                            value: country?.code,
-                          };
-                        })}
-                        onChange={(e) => {
-                          field.onChange(e?.value);
-                        }}
-                      />
-                      {errors?.country && (
-                        <p className="text-red-500 text-sm">
-                          {String(errors?.country?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
+            <Controller
+              name="country"
+              control={control}
+              rules={{ required: 'Nationality is required' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Select
+                      isSearchable
+                      label="Country"
+                      options={countriesList?.map((country) => {
+                        return {
+                          ...country,
+                          label: country.name,
+                          value: country?.code,
+                        };
+                      })}
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.country && (
+                      <p className="text-red-500 text-sm">
+                        {String(errors?.country?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
           ) : (
-              <Controller
-                control={control}
-                name="street_name"
-                render={({ field }) => {
-                  return (
-                    <label className="w-[49%] flex flex-col gap-1">
-                      <Input
-                        label="Street Name"
-                        placeholder="Street name"
-                        {...field}
-                      />
-                    </label>
-                  );
-                }}
-              />
+            <Controller
+              control={control}
+              name="street_name"
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Input
+                      label="Street Name"
+                      placeholder="Street name"
+                      {...field}
+                    />
+                  </label>
+                );
+              }}
+            />
           )}
           <menu
             className={`${
@@ -584,17 +588,21 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
         </section>
         <section className={`flex members-table flex-col w-full`}>
           <Table
-            data={senior_management?.map((member, index) => {
-              return {
-                ...member,
-                no: index + 1,
-                name: `${member?.first_name || ''} ${
-                  member?.middle_name || ''
-                } ${member?.last_name || ''}`,
-                position:
-                  member?.position && capitalizeString(member?.position),
-              };
-            })}
+            data={
+              senior_management?.length > 0
+                ? senior_management?.map((member, index) => {
+                    return {
+                      ...member,
+                      no: index + 1,
+                      name: `${member?.first_name || ''} ${
+                        member?.middle_name || ''
+                      } ${member?.last_name || ''}`,
+                      position:
+                        member?.position && capitalizeString(member?.position),
+                    };
+                  })
+                : []
+            }
             columns={columns}
             showFilter={false}
             showPagination={false}

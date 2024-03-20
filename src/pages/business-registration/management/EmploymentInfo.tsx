@@ -2,8 +2,8 @@ import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -12,11 +12,20 @@ import {
 } from '../../../states/features/businessRegistrationSlice';
 import Loader from '../../../components/Loader';
 
-interface EmploymentInfoProps {
-  isOpen: boolean;
+export interface business_employment_info {
+  has_employees: string;
+  hiring_date?: string;
+  employees_no?: number;
+  reference_date?: string;
+  number_of_employees?: number;
 }
 
-const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
+interface EmploymentInfoProps {
+  isOpen: boolean;
+  employment_info: business_employment_info;
+}
+
+const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen, employment_info }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -28,9 +37,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { employment_info } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // SET DEFAULT VALUES

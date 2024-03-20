@@ -22,11 +22,18 @@ import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 
-interface BusinessActivityProps {
-  isOpen: boolean;
+export interface business_company_activities {
+  vat: string;
+  turnover: number | string;
+  business_lines: Array<object>;
 }
 
-const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
+interface BusinessActivityProps {
+  isOpen: boolean;
+  company_activities: business_company_activities;
+}
+
+const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen, company_activities }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -42,7 +49,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [randomNumber, setRandomNumber] = useState<number>(5);
-  const { company_business_lines, company_activities } = useSelector(
+  const { company_business_lines } = useSelector(
     (state: RootState) => state.businessRegistration
   );
 

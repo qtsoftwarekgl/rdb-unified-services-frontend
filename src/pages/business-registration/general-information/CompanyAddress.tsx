@@ -12,8 +12,8 @@ import {
   getRwandaSectors,
   getRwandaVillages,
 } from '../../../helpers/Data';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import {
   removeBusinessCompletedStep,
   setBusinessActiveStep,
@@ -21,8 +21,22 @@ import {
   setCompanyAddress,
 } from '../../../states/features/businessRegistrationSlice';
 
+export interface business_company_address {
+  province: string;
+  district: string;
+  sector: string;
+  cell: string;
+  village: string;
+  street_name: string;
+  po_box: string;
+  fax: string;
+  email: string;
+  phone: string;
+}
+
 interface CompanyAddressProps {
   isOpen: boolean;
+  company_address: business_company_address | null;
 }
 
 export interface AdministrativeUnits {
@@ -33,7 +47,7 @@ export interface AdministrativeUnits {
   villages: string[];
 }
 
-const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
+const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, company_address }) => {
   // REACT HOOK FORM
   const {
     control,
@@ -45,9 +59,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { company_address } = useSelector(
-    (state: RootState) => state?.businessRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [administrativeValues, setAdministrativeValues] =
     useState<AdministrativeUnits>({

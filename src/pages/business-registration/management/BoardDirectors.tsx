@@ -13,18 +13,25 @@ import {
   setBusinessActiveTab,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
 
-interface BoardDirectorsProps {
-  isOpen: boolean;
+export interface business_board_of_directors {
+  first_name: string;
+  middle_name: string;
+  last_name: string;
 }
 
-const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
+interface BoardDirectorsProps {
+  isOpen: boolean;
+  board_of_directors: business_board_of_directors[];
+}
+
+const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen, board_of_directors }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -40,9 +47,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { board_of_directors } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
@@ -581,17 +585,21 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
         </section>
         <section className={`flex members-table flex-col w-full`}>
           <Table
-            data={board_of_directors?.map((member, index) => {
-              return {
-                ...member,
-                no: index + 1,
-                name: `${member?.first_name || ''} ${
-                  member?.middle_name || ''
-                } ${member?.last_name || ''}`,
-                position:
-                  member?.position && capitalizeString(member?.position),
-              };
-            })}
+            data={
+              board_of_directors?.length > 0
+                ? board_of_directors?.map((member, index) => {
+                    return {
+                      ...member,
+                      no: index + 1,
+                      name: `${member?.first_name || ''} ${
+                        member?.middle_name || ''
+                      } ${member?.last_name || ''}`,
+                      position:
+                        member?.position && capitalizeString(member?.position),
+                    };
+                  })
+                : []
+            }
             columns={columns}
             showFilter={false}
             showPagination={false}
