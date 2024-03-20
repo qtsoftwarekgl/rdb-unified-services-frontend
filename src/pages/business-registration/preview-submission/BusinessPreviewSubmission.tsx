@@ -177,7 +177,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
       {company_address && (
         <PreviewCard
           header="Company Address"
-          tabName="company_address"
+          tabName="general_information"
           stepName="company_address"
           setActiveStep={setBusinessActiveStep}
           setActiveTab={setBusinessActiveTab}
