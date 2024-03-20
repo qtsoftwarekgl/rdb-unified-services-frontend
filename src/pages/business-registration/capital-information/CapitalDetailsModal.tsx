@@ -7,18 +7,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../states/store';
 import Button from '../../../components/inputs/Button';
 import {
-  setCapitalDetails,
   setCapitalDetailsModal,
-  setShareDetails,
 } from '../../../states/features/businessRegistrationSlice';
 import Loader from '../../../components/Loader';
 import { capitalizeString } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { business_capital_details } from './CapitalDetails';
+import { business_share_details } from './ShareDetails';
 
 interface CapitalDetailsModalProps {
   shareholder: object | null;
+  entry_id: string | null;
+  capital_details: business_capital_details[];
+  share_details: business_share_details;
 }
 
-const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({ shareholder }) => {
+const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
+  shareholder,
+  entry_id,
+  capital_details,
+  share_details,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -32,7 +41,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({ shareholder }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { share_details, capital_details, capitalDetailsModal } = useSelector(
+  const { capitalDetailsModal } = useSelector(
     (state: RootState) => state.businessRegistration
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -59,10 +68,10 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({ shareholder }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      console.log(data);
       dispatch(
-        setCapitalDetails(
-          capital_details?.map((capital) => {
+        setUserApplications({
+          entry_id,
+          capital_details: capital_details?.map((capital) => {
             if (capital?.no === shareholder?.no) {
               return {
                 ...capital,
@@ -78,24 +87,29 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({ shareholder }) => {
               };
             }
             return capital;
-          })
-        )
+          }),
+        })
       );
       dispatch(
-        setShareDetails({
-          ...share_details,
-          remaining_capital:
-            Number(share_details?.remaining_capital) -
-            Number(data?.total_value),
-          shares: tableRows?.map((row) => {
-            const newShare = share_details?.shares?.find(
-              (share) => share?.name === row.name
-            );
-            return {
-              ...newShare,
-              remaining_shares: Number(data?.[`${row.name}_remaining_shares`]),
-            };
-          }),
+        setUserApplications({
+          entry_id,
+          share_details: {
+            ...share_details,
+            remaining_capital:
+              Number(share_details?.remaining_capital) -
+              Number(data?.total_value),
+            shares: tableRows?.map((row) => {
+              const newShare = share_details?.shares?.find(
+                (share) => share?.name === row.name
+              );
+              return {
+                ...newShare,
+                remaining_shares: Number(
+                  data?.[`${row.name}_remaining_shares`]
+                ),
+              };
+            }),
+          },
         })
       );
       dispatch(setCapitalDetailsModal(false));

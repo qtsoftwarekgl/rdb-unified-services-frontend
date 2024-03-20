@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import {
@@ -15,21 +15,36 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../../components/inputs/Button';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import Table from '../../../components/table/Table';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setShareHolders,
 } from '../../../states/features/businessRegistrationSlice';
 import { capitalizeString } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+
+export interface business_shareholders {
+  shareholder_type: string;
+  document_type: string;
+  document_no: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+}
 
 interface ShareHoldersProps {
   isOpen: boolean;
+  shareholders: business_shareholders[];
+  entry_id: string | null;
 }
 
-const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
+const ShareHolders: FC<ShareHoldersProps> = ({
+  isOpen,
+  shareholders = [],
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -45,9 +60,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { shareholders } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
@@ -63,15 +75,18 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
     setIsLoading(true);
     setTimeout(() => {
       dispatch(
-        setShareHolders([
-          {
-            ...data,
-            attachment: attachmentFile?.name,
-            step: 'shareholders',
-            no: shareholders?.length - 1,
-          },
-          ...shareholders,
-        ])
+        setUserApplications({
+          entry_id,
+          shareholders: [
+            {
+              ...data,
+              attachment: attachmentFile?.name,
+              step: 'shareholders',
+              no: shareholders?.length - 1,
+            },
+            ...shareholders,
+          ],
+        })
       );
       setIsLoading(false);
       reset();
@@ -117,7 +132,12 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
                     return index !== row?.original?.no;
                   }
                 );
-                dispatch(setShareHolders(newShareholders));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    shareholders: newShareholders,
+                  })
+                );
               }}
             />
           </menu>
@@ -679,7 +699,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
           <section
             className={`${
               watch('shareholder_type') &&
-              watch('shareholder_type') !== 'person' && searchMember?.data
+              watch('shareholder_type') !== 'person' &&
+              searchMember?.data
                 ? 'flex'
                 : 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
@@ -901,7 +922,11 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
               }}
             />
           </section>
-          <article className={`${watch('shareholder_type') ? 'flex' : 'hidden'} w-full items-center justify-end`}>
+          <article
+            className={`${
+              watch('shareholder_type') ? 'flex' : 'hidden'
+            } w-full items-center justify-end`}
+          >
             <Button
               value={isLoading ? <Loader /> : 'Add shareholder'}
               primary
@@ -910,18 +935,22 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen }) => {
           </article>
           <section className={`flex members-table flex-col w-full`}>
             <Table
-              data={shareholders?.map((shareholder: unknown, index: number) => {
-                return {
-                  ...shareholder,
-                  no: index,
-                  name: shareholder?.first_name
-                    ? `${shareholder?.first_name || ''} ${
-                        shareholder?.last_name || ''
-                      }`
-                    : shareholder?.company_name,
-                  type: capitalizeString(shareholder?.shareholder_type),
-                };
-              })}
+              data={
+                shareholders?.length > 0
+                  ? shareholders?.map((shareholder: unknown, index: number) => {
+                      return {
+                        ...shareholder,
+                        no: index,
+                        name: shareholder?.first_name
+                          ? `${shareholder?.first_name || ''} ${
+                              shareholder?.last_name || ''
+                            }`
+                          : shareholder?.company_name,
+                        type: capitalizeString(shareholder?.shareholder_type),
+                      };
+                    })
+                  : []
+              }
               columns={columns}
               showFilter={false}
               showPagination={false}

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,21 +10,43 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setCapitalDetails,
   setCapitalDetailsModal,
-  setShareHolders,
 } from '../../../states/features/businessRegistrationSlice';
 import CapitalDetailsModal from './CapitalDetailsModal';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { business_share_details } from './ShareDetails';
+import { business_shareholders } from './ShareHolders';
+
+export interface business_capital_details {
+  no: number;
+  first_name?: string;
+  last_name?: string;
+  company_name?: string;
+  shareholder_type?: string;
+  shares: {
+    total_shares?: number;
+    total_value?: number;
+  };
+}
 
 interface CapitalDetailsProps {
   isOpen: boolean;
+  capital_details: business_capital_details[];
+  entry_id: string | null;
+  share_details: business_share_details;
+  shareholders: business_shareholders;
 }
 
-const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
-
+const CapitalDetails: FC<CapitalDetailsProps> = ({
+  isOpen,
+  capital_details = [],
+  entry_id,
+  share_details,
+  shareholders = [],
+}) => {
   // REACT HOOK FORM
   const {
     setError,
@@ -36,9 +58,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
-  const { share_details, shareholders, capital_details } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [assignedShares, setAssignedShares] = useState<object>({
     number: 0,
     value: 0,
@@ -65,7 +84,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
         ),
     });
   }, [capital_details]);
-
 
   // TABLE COLUMNS
   const columns = [
@@ -106,18 +124,20 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setCapitalDetails(
-                    capital_details?.filter(
+                  setUserApplications({
+                    entry_id,
+                    capital_details: capital_details?.filter(
                       (capital) => capital?.no !== row?.original?.no
-                    )
-                  )
+                    ),
+                  })
                 );
                 dispatch(
-                  setShareHolders(
-                    shareholders?.filter(
+                  setUserApplications({
+                    entry_id,
+                    shareholders: shareholders?.filter(
                       (_, index: number) => index !== row?.original?.no
-                    )
-                  )
+                    ),
+                  })
                 );
               }}
             />
@@ -134,17 +154,18 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
       shareholders?.length > capital_details?.length
     ) {
       dispatch(
-        setCapitalDetails(
-          shareholders?.map((shareholder, index) => {
+        setUserApplications({
+          entry_id,
+          capital_details: shareholders?.map((shareholder, index) => {
             return {
               ...shareholder,
               no: index,
               shares: {
                 total_shares: 0,
-              }
+              },
             };
-          })
-        )
+          }),
+        })
       );
     }
   }, [dispatch, shareholders]);
@@ -153,34 +174,41 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
 
   return (
     <section className="w-full flex flex-col gap-6">
-     <menu className='flex flex-col gap-2 w-full'>
-     <Table
-        tableTitle="Shareholders"
-        data={capital_details?.map((shareholder: unknown, index: number) => {
-          return {
-            ...shareholder,
-            no: index,
-            name: shareholder?.first_name
-              ? `${shareholder?.first_name || ''} ${
-                  shareholder?.last_name || ''
-                }`
-              : shareholder?.company_name,
-            type: capitalizeString(shareholder?.shareholder_type),
-            total_shares: shareholder?.shares?.total_shares || 0,
-            total_value: `RWF ${shareholder?.shares?.total_value || 0}`,
-          };
-        })}
-        columns={columns}
-        showFilter={false}
-        showPagination={false}
-      />
-      {errors?.total_shares && (
-        <p className="text-red-500 text-[13px] text-center">
-          {String(errors?.total_shares?.message)}
-        </p>
-      )}
-     </menu>
+      <menu className="flex flex-col gap-2 w-full">
+        <Table
+          tableTitle="Shareholders"
+          data={
+            capital_details?.length > 0
+              ? capital_details?.map((shareholder: unknown, index: number) => {
+                  return {
+                    ...shareholder,
+                    no: index,
+                    name: shareholder?.first_name
+                      ? `${shareholder?.first_name || ''} ${
+                          shareholder?.last_name || ''
+                        }`
+                      : shareholder?.company_name,
+                    type: capitalizeString(shareholder?.shareholder_type),
+                    total_shares: shareholder?.shares?.total_shares || 0,
+                    total_value: `RWF ${shareholder?.shares?.total_value || 0}`,
+                  };
+                })
+              : []
+          }
+          columns={columns}
+          showFilter={false}
+          showPagination={false}
+        />
+        {errors?.total_shares && (
+          <p className="text-red-500 text-[13px] text-center">
+            {String(errors?.total_shares?.message)}
+          </p>
+        )}
+      </menu>
       <CapitalDetailsModal
+        capital_details={capital_details}
+        share_details={share_details}
+        entry_id={entry_id}
         shareholder={shareholderShareDetails}
       />
       <section className="flex flex-col gap-4">
@@ -206,12 +234,22 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
         </menu>
         <menu className="flex flex-col gap-2 w-full">
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+            <h2>Total value of assignable shares</h2>
+            <p>RWF {share_details?.total_value}</p>
+          </ul>
+          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Value of assigned shares</h2>
             <p>RWF {assignedShares?.value}</p>
           </ul>
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Value of assignable shares</h2>
-            <p>RWF {share_details?.total_value}</p>
+            <h2 className="font-medium uppercase underline">
+              Remaning value of assignable shares
+            </h2>
+            <p className="underline">
+              RWF{' '}
+              {Number(share_details?.total_value) -
+                Number(assignedShares?.value)}
+            </p>
           </ul>
         </menu>
       </section>
@@ -242,7 +280,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
               ) {
                 setError('total_shares', {
                   type: 'manual',
-                  message: 'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+                  message:
+                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
                 });
                 return;
               } else {

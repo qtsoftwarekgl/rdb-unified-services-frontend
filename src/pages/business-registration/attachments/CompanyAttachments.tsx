@@ -9,16 +9,24 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setCompanyAttachments,
 } from '../../../states/features/businessRegistrationSlice';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+
+export interface business_company_attachments {
+  name: string;
+  size: number;
+  type: string;
+}
 
 interface CompanyAttachmentsProps {
   isOpen: boolean;
+  company_attachments: business_company_attachments[];
+  entry_id: string | null;
 }
 
-const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
+const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen, company_attachments = [], entry_id }) => {
   // REACT HOOK FORM
   const {
     control,
@@ -30,7 +38,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { company_details, company_attachments } = useSelector(
+  const { company_details } = useSelector(
     (state: RootState) => state.businessRegistration
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -44,15 +52,16 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setCompanyAttachments(
-          Array.from(attachmentFiles)?.map((file: File) => {
+        setUserApplications({
+          entry_id,
+          company_attachments: Array.from(attachmentFiles)?.map((file: File) => {
             return {
               name: file.name,
               size: file.size,
               type: file.type,
             };
           })
-        )
+        })
       );
       dispatch(setBusinessCompletedStep('attachments'));
       dispatch(setBusinessActiveStep('preview_submission'));
@@ -168,9 +177,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
                           e.target.files &&
                           Object.values(e.target.files)?.concat();
                         files &&
-                          files.forEach((file: File) => {
-                            setAttachmentFiles([file, ...attachmentFiles]);
-                          });
+                          setAttachmentFiles([...files, ...attachmentFiles]);
                       }}
                     />
                   </ul>
@@ -192,7 +199,9 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
                 onClick={(e) => {
                   e.preventDefault();
                   setAttachmentFiles([]);
-                  dispatch(setCompanyAttachments([]));
+                  dispatch(
+                    setUserApplications({ entry_id, company_attachments: [] })
+                  );
                 }}
               />
             </menu>
