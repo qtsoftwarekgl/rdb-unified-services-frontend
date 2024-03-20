@@ -8,14 +8,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/inputs/Button';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../states/store';
-import {
-  setAddReviewCommentsModal,
-  setListCommentsModal,
-} from '../../states/features/businessRegistrationSlice';
 import { Step, TabType } from '../../states/features/types';
 import { Link } from 'react-router-dom';
 import { FC, useState } from 'react';
 import { UnknownAction } from '@reduxjs/toolkit';
+import {
+  setAddReviewCommentsModal,
+  setListReviewCommentsModal,
+} from '../../states/features/userApplicationSlice';
 
 interface ReviewNavigationProps {
   tabs: Array<TabType>;
@@ -94,7 +94,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               value="View comments"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setListCommentsModal(true));
+                dispatch(setListReviewCommentsModal(true));
                 setShowMenu(false);
               }}
             />
@@ -114,7 +114,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                 to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setListCommentsModal(true));
+                  dispatch(setListReviewCommentsModal(true));
                   setShowMenu(false);
                 }}
               >

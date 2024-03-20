@@ -1,27 +1,32 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../../components/Modal';
 import { AppDispatch, RootState } from '../../../states/store';
-import {
-  setReviewComments,
-  setAddReviewCommentsModal,
-  updateReviewComment,
-} from '../../../states/features/businessRegistrationSlice';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import TextArea from '../../../components/inputs/TextArea';
 import Button from '../../../components/inputs/Button';
-import { useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import Loader from '../../../components/Loader';
 import { Step, TabType } from '../../../states/features/types';
 import moment from 'moment';
+import {
+  setAddReviewCommentsModal,
+  setApplicationReviewComments,
+  updateReviewComment,
+} from '../../../states/features/userApplicationSlice';
 
 export type ReviewComment = {
   comment: string;
   step: Step;
   tab: TabType;
   created_at: string;
+  entry_id?: string | null;
 };
 
-const AddReviewComments = () => {
+interface AddReviewCommentsProps {
+  entry_id?: string | null;
+}
+
+const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -33,12 +38,12 @@ const AddReviewComments = () => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const {
-    addReviewCommentsModal,
-    business_active_step,
-    business_review_comments,
-    business_active_tab,
-  } = useSelector((state: RootState) => state.businessRegistration);
+  const { business_active_step, business_active_tab } = useSelector(
+    (state: RootState) => state.businessRegistration
+  );
+  const { addReviewCommentsModal, application_review_comments } = useSelector(
+    (state: RootState) => state.userApplication
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [comment, setComment] = useState<ReviewComment | null>(null);
 
@@ -56,9 +61,10 @@ const AddReviewComments = () => {
       setComment(null);
     } else if (addReviewCommentsModal) {
       commentRef.current?.focus();
-      const commentExists = business_review_comments?.find(
+      const commentExists = application_review_comments?.find(
         (business_comment: ReviewComment) =>
-          business_comment?.step?.name === business_active_step?.name
+          business_comment?.step?.name === business_active_step?.name &&
+          business_comment?.entry_id === entry_id
       );
       if (commentExists) {
         setComment(commentExists);
@@ -66,15 +72,16 @@ const AddReviewComments = () => {
     }
   }, [
     business_active_step?.name,
-    business_review_comments,
+    application_review_comments,
     reset,
     addReviewCommentsModal,
+    entry_id,
   ]);
 
   // SET DEFAULT VALUE
   useEffect(() => {
-    if (business_review_comments?.length > 0) {
-      const commentExists = business_review_comments?.find(
+    if (application_review_comments?.length > 0) {
+      const commentExists = application_review_comments?.find(
         (business_comment: ReviewComment) =>
           business_comment?.step?.name === business_active_step?.name
       );
@@ -89,7 +96,7 @@ const AddReviewComments = () => {
     }
   }, [
     business_active_step?.name,
-    business_review_comments,
+    application_review_comments,
     setValue,
     addReviewCommentsModal,
   ]);
@@ -102,6 +109,7 @@ const AddReviewComments = () => {
       const newComment = {
         comment: data?.comment,
         step: business_active_step,
+        entry_id,
         tab: {
           name: business_active_tab?.name,
           label: business_active_tab?.label,
@@ -111,7 +119,12 @@ const AddReviewComments = () => {
       if (comment) {
         dispatch(updateReviewComment(newComment));
       } else {
-        dispatch(setReviewComments([newComment, ...business_review_comments]));
+        dispatch(
+          setApplicationReviewComments([
+            newComment,
+            ...application_review_comments,
+          ])
+        );
       }
       if (commentRef?.current?.value) {
         commentRef.current.value = '';

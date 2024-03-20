@@ -208,14 +208,14 @@ const BusinessRegistration = () => {
             }
           )}
         </menu>
-        {/* <ReviewNavigation
+        <ReviewNavigation
         setActiveStep={setBusinessActiveStep}
         setActiveTab={setBusinessActiveTab}
         tabs={business_registration_tabs}
         activeStep={business_active_step}
-      /> */}
-        <AddReviewComments />
-        <ListReviewComments />
+      />
+        <AddReviewComments entry_id={entry_id} />
+        <ListReviewComments entry_id={entry_id} />
       </main>
     </UserLayout>
   );
