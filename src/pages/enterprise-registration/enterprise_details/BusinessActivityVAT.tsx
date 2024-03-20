@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
@@ -12,8 +12,6 @@ import { AppDispatch, RootState } from "../../../states/store";
 import {
   setEnterpriseActiveStep,
   setEnterpriseCompletedStep,
-  setEnterpriseBusinessActivityVat,
-  setEnterpriseBusinessLines,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
@@ -22,15 +20,13 @@ import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BusinessActivityProps {
-  isOpen: boolean;
   entry_id: string | null;
 }
 
-const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
+const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm();
 
@@ -38,24 +34,22 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [randomNumber, setRandomNumber] = useState<number>(5);
-  const {
-    enterprise_business_lines,
-    enterprise_business_activity_vat,
-    enterprise_registration_active_step,
-  } = useSelector((state: RootState) => state.enterpriseRegistration);
+  const { enterprise_registration_active_step } = useSelector(
+    (state: RootState) => state.enterpriseRegistration
+  );
+
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+
+  const enterprise_business_lines =
+    user_applications.find((app) => app.entry_id === entry_id)?.business_lines
+      ?.enterprise_business_lines || [];
 
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
     setIsLoading(true);
     setTimeout(() => {
-      // UPDATE COMPANY ACTIVITIES
-      dispatch(
-        setEnterpriseBusinessActivityVat({
-          business_lines: enterprise_business_lines,
-          step: { ...enterprise_registration_active_step },
-        })
-      );
-
       dispatch(
         setUserApplications({
           business_lines: {
@@ -75,23 +69,6 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
       setIsLoading(false);
     }, 1000);
   };
-
-  // SET DEFAULT VALUES
-  useEffect(() => {
-    if (enterprise_business_activity_vat) {
-      if (enterprise_business_activity_vat?.business_lines?.length > 0) {
-        dispatch(
-          setEnterpriseBusinessLines(
-            enterprise_business_activity_vat?.business_lines
-          )
-        );
-      }
-    }
-  }, [enterprise_business_activity_vat, dispatch, setValue]);
-
-  if (!isOpen) {
-    return null;
-  }
 
   return (
     <section className="flex flex-col w-full gap-5">
@@ -148,14 +125,24 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                             e.preventDefault();
                             if (enterprise_business_lines?.length > 0) {
                               dispatch(
-                                setEnterpriseBusinessLines([
-                                  ...enterprise_business_lines,
-                                  subActivity,
-                                ])
+                                setUserApplications({
+                                  business_lines: {
+                                    enterprise_business_lines: [
+                                      ...enterprise_business_lines,
+                                      subActivity,
+                                    ],
+                                  },
+                                  entry_id,
+                                })
                               );
                             } else {
                               dispatch(
-                                setEnterpriseBusinessLines([subActivity])
+                                setUserApplications({
+                                  business_lines: {
+                                    enterprise_business_lines: [subActivity],
+                                  },
+                                  entry_id,
+                                })
                               );
                             }
                           }}
@@ -197,22 +184,26 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                               className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
                               onClick={(e) => {
                                 e.preventDefault();
-                                dispatch(
-                                  setEnterpriseBusinessLines(
-                                    enterprise_business_lines?.map(
-                                      (activity: object) => {
-                                        if (
-                                          activity?.id === business_line?.id
-                                        ) {
-                                          return {
-                                            ...activity,
-                                            main: false,
-                                          };
-                                        }
-                                        return activity;
+                                const updatedActivities =
+                                  enterprise_business_lines?.map(
+                                    (activity: object) => {
+                                      if (activity?.id === business_line?.id) {
+                                        return {
+                                          ...activity,
+                                          main: false,
+                                        };
                                       }
-                                    )
-                                  )
+                                      return activity;
+                                    }
+                                  );
+                                dispatch(
+                                  setUserApplications({
+                                    business_lines: {
+                                      enterprise_business_lines:
+                                        updatedActivities,
+                                    },
+                                    entry_id,
+                                  })
                                 );
                               }}
                             />
@@ -225,19 +216,25 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                             onClick={(e) => {
                               e.preventDefault();
                               dispatch(
-                                setEnterpriseBusinessLines(
-                                  enterprise_business_lines?.map(
-                                    (activity: object) => {
-                                      if (activity?.id === business_line?.id) {
-                                        return {
-                                          ...activity,
-                                          main: true,
-                                        };
-                                      }
-                                      return activity;
-                                    }
-                                  )
-                                )
+                                setUserApplications({
+                                  business_lines: {
+                                    enterprise_business_lines:
+                                      enterprise_business_lines?.map(
+                                        (activity: object) => {
+                                          if (
+                                            activity?.id === business_line?.id
+                                          ) {
+                                            return {
+                                              ...activity,
+                                              main: true,
+                                            };
+                                          }
+                                          return activity;
+                                        }
+                                      ),
+                                  },
+                                  entry_id,
+                                })
                               );
                             }}
                           >
@@ -250,7 +247,6 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                         icon={faMinus}
                         onClick={(e) => {
                           e.preventDefault();
-                          console.log(business_line);
                           const updatedSubActivities =
                             enterprise_business_lines?.filter(
                               (subActivity: unknown) => {
@@ -258,7 +254,12 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                               }
                             );
                           dispatch(
-                            setEnterpriseBusinessLines(updatedSubActivities)
+                            setUserApplications({
+                              business_lines: {
+                                enterprise_business_lines: updatedSubActivities,
+                              },
+                              entry_id,
+                            })
                           );
                         }}
                       />

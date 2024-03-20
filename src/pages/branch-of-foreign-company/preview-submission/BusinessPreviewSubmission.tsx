@@ -25,27 +25,33 @@ import Button from "../../../components/inputs/Button";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import moment from "moment";
 
 interface PreviewSubmissionProps {
-  isOpen: boolean;
   entry_id: string | null;
+  current_application: any;
 }
 
-const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
+const PreviewSubmission = ({
+  entry_id,
+  current_application,
+}: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {
-    foreign_company_details,
-    foreign_company_address,
-    foreign_company_activities,
-    foreign_board_of_directors,
-    foreign_senior_management,
-    foreign_employment_info,
-    foreign_beneficial_owners,
-    foreign_company_attachments,
-  } = useSelector((state: RootState) => state.foreignBranchRegistration);
+
+  const foreign_company_details = current_application?.foreign_company_details;
+  const foreign_company_address = current_application?.foreign_company_address;
+  const foreign_company_activities =
+    current_application?.foreign_company_activities;
+  const foreign_board_of_directors =
+    current_application?.foreign_board_of_directors;
+  const foreign_senior_management =
+    current_application?.foreign_senior_management;
+  const foreign_employment_info = current_application?.foreign_employment_info;
+  const foreign_beneficial_owners =
+    current_application?.foreign_beneficial_owners;
+  const foreign_company_attachments =
+    current_application?.foreign_company_attachments?.attachments;
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -88,8 +94,6 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       accessorKey: "ownership_type",
     },
   ];
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
@@ -336,8 +340,6 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
                 setUserApplications({
                   entry_id,
                   status: "submitted",
-                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
-                  path: `/foreign-branch-registration?entry_id=${entry_id}`,
                 })
               );
               dispatch(setForeignCompanyDetails(null));

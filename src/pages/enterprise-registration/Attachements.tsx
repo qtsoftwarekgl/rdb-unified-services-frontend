@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import Button from "../../components/inputs/Button";
 import Input from "../../components/inputs/Input";
@@ -8,7 +8,6 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-  setEnterpriseAttachments,
   setEnterpriseCompletedStep,
   setEnterpriseCompletedTab,
 } from "../../states/features/enterpriseRegistrationSlice";
@@ -17,7 +16,6 @@ import { RootState } from "../../states/store";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 
 type AttachmentsProps = {
-  isOpen: boolean;
   entry_id: string | null;
 };
 
@@ -26,7 +24,7 @@ type Attachment = {
   file: File | null;
 };
 
-const Attachments = ({ isOpen, entry_id }: AttachmentsProps) => {
+const Attachments = ({ entry_id }: AttachmentsProps) => {
   const {
     handleSubmit,
     control,
@@ -42,8 +40,16 @@ const Attachments = ({ isOpen, entry_id }: AttachmentsProps) => {
     []
   );
 
-  const { enterprise_attachments, enterprise_registration_active_step } =
-    useSelector((state: RootState) => state.enterpriseRegistration);
+  const { enterprise_registration_active_step } = useSelector(
+    (state: RootState) => state.enterpriseRegistration
+  );
+
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+  const enterprise_attachments = user_applications?.find(
+    (app) => app.entry_id === entry_id
+  )?.enterprise_attachments?.fileNames;
 
   const dispatch = useDispatch();
 
@@ -53,13 +59,6 @@ const Attachments = ({ isOpen, entry_id }: AttachmentsProps) => {
     console.log(data);
     setIsLoading(true);
     setTimeout(() => {
-      dispatch(
-        setEnterpriseAttachments({
-          fileNames,
-          step: { ...enterprise_registration_active_step },
-        })
-      );
-
       dispatch(
         setUserApplications({
           entry_id,
@@ -85,11 +84,8 @@ const Attachments = ({ isOpen, entry_id }: AttachmentsProps) => {
 
   useEffect(() => {
     // SET ATTACHMENTS FROM PERSISTED STATE
-    if (
-      enterprise_attachments &&
-      Object.keys(enterprise_attachments)?.length > 0
-    ) {
-      setAttachmentFilesNames(enterprise_attachments?.fileNames);
+    if (enterprise_attachments?.length > 0) {
+      setAttachmentFilesNames(enterprise_attachments);
     }
   }, []);
 
@@ -104,10 +100,6 @@ const Attachments = ({ isOpen, entry_id }: AttachmentsProps) => {
     newAttachments[index].file = null;
     setAttachmentFiles(newAttachments);
   };
-
-  if (!isOpen) {
-    return null;
-  }
 
   return (
     <section className="flex flex-col w-full gap-6">

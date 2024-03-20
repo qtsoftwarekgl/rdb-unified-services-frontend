@@ -19,7 +19,6 @@ import {
   setEnterpriseActiveTab,
   setEnterpriseCompletedStep,
   setEnterpriseCompletedTab,
-  setEnterpriseOfficeAddress,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
@@ -31,11 +30,10 @@ interface AdministrativeUnits {
   villages: string[];
 }
 interface OfficeAddressProps {
-  isOpen: boolean;
   entry_id: string | null;
 }
 
-const OfficeAddress = ({ isOpen, entry_id }: OfficeAddressProps) => {
+const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
   const {
     control,
     handleSubmit,
@@ -46,8 +44,9 @@ const OfficeAddress = ({ isOpen, entry_id }: OfficeAddressProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { enterprise_office_address, enterprise_registration_active_step } =
-    useSelector((state: RootState) => state?.enterpriseRegistration);
+  const { enterprise_registration_active_step } = useSelector(
+    (state: RootState) => state?.enterpriseRegistration
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [administrativeValues, setAdministrativeValues] =
     useState<AdministrativeUnits>({
@@ -57,6 +56,13 @@ const OfficeAddress = ({ isOpen, entry_id }: OfficeAddressProps) => {
       cells: [],
       villages: [],
     });
+
+  const { user_applications } = useSelector(
+    (state: RootState) => state?.userApplication
+  );
+  const enterprise_office_address =
+    user_applications?.find((app) => app?.entry_id === entry_id)
+      ?.office_address || null;
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -142,13 +148,6 @@ const OfficeAddress = ({ isOpen, entry_id }: OfficeAddressProps) => {
     setIsLoading(true);
     setTimeout(() => {
       dispatch(
-        setEnterpriseOfficeAddress({
-          ...data,
-          step: { ...enterprise_registration_active_step },
-        })
-      );
-
-      dispatch(
         setUserApplications({
           entry_id,
           office_address: {
@@ -166,8 +165,6 @@ const OfficeAddress = ({ isOpen, entry_id }: OfficeAddressProps) => {
       setIsLoading(false);
     }, 1000);
   };
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-6">

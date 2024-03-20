@@ -7,14 +7,12 @@ import {
 } from "../../../constants/businessRegistration";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../states/store";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-  setForeignCompanyActivities,
-  setForeignCompanySubActivities,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
@@ -24,11 +22,14 @@ import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BusinessActivityProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_company_activities: any;
 }
 
-const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
+const BusinessActivity = ({
+  entry_id,
+  foreign_company_activities,
+}: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -42,8 +43,6 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [randomNumber, setRandomNumber] = useState<number>(5);
-  const { foreign_company_business_lines, foreign_company_activities } =
-    useSelector((state: RootState) => state.foreignBranchRegistration);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -51,20 +50,12 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
     setTimeout(() => {
       // UPDATE COMPANY ACTIVITIES
       dispatch(
-        setForeignCompanyActivities({
-          vat: data?.vat,
-          turnover: data?.turnover,
-          business_lines: foreign_company_business_lines,
-        })
-      );
-
-      dispatch(
         setUserApplications({
           entry_id,
           foreign_company_activities: {
             vat: data?.vat,
             turnover: data?.turnover,
-            business_lines: foreign_company_business_lines,
+            business_lines: foreign_company_activities?.business_lines,
             step: "business_activity_vat",
           },
         })
@@ -88,20 +79,8 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
     if (foreign_company_activities) {
       setValue("vat", foreign_company_activities?.vat);
       setValue("turnover", foreign_company_activities?.turnover);
-
-      if (foreign_company_activities?.business_lines?.length > 0) {
-        dispatch(
-          setForeignCompanySubActivities(
-            foreign_company_activities?.business_lines
-          )
-        );
-      }
     }
   }, [foreign_company_activities, dispatch, setValue]);
-
-  if (!isOpen) {
-    return null;
-  }
 
   return (
     <section className="flex flex-col w-full gap-5">
@@ -142,7 +121,7 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                 ?.slice(0, randomNumber)
                 .map((subActivity) => {
                   const subActivityExists =
-                    foreign_company_business_lines?.find(
+                    foreign_company_activities?.business_lines?.find(
                       (activity: object) => activity?.id === subActivity?.id
                     );
                   return (
@@ -157,16 +136,31 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                           icon={faPlus}
                           onClick={(e) => {
                             e.preventDefault();
-                            if (foreign_company_business_lines?.length > 0) {
+                            if (
+                              foreign_company_activities?.business_lines
+                                ?.length > 0
+                            ) {
                               dispatch(
-                                setForeignCompanySubActivities([
-                                  ...foreign_company_business_lines,
-                                  subActivity,
-                                ])
+                                setUserApplications({
+                                  foreign_company_activities: {
+                                    ...foreign_company_activities,
+                                    business_lines: [
+                                      ...foreign_company_activities.business_lines,
+                                      subActivity,
+                                    ],
+                                  },
+                                  entry_id,
+                                })
                               );
                             } else {
                               dispatch(
-                                setForeignCompanySubActivities([subActivity])
+                                setUserApplications({
+                                  foreign_company_activities: {
+                                    ...foreign_company_activities,
+                                    business_lines: [subActivity],
+                                  },
+                                  entry_id,
+                                })
                               );
                             }
                           }}
@@ -187,11 +181,12 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
           <section className="flex flex-col w-full gap-4">
             <h1 className="text-md">Selected business lines</h1>
             <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-              {foreign_company_business_lines?.map(
+              {foreign_company_activities?.business_lines?.map(
                 (business_line: unknown, index: number) => {
-                  const mainExists = foreign_company_business_lines?.find(
-                    (activity: object) => activity?.main === true
-                  );
+                  const mainExists =
+                    foreign_company_activities?.business_lines?.find(
+                      (activity: object) => activity?.main === true
+                    );
                   const mainBusinessLine = mainExists?.id === business_line?.id;
                   return (
                     <li
@@ -209,21 +204,26 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                               onClick={(e) => {
                                 e.preventDefault();
                                 dispatch(
-                                  setForeignCompanySubActivities(
-                                    foreign_company_business_lines?.map(
-                                      (activity: object) => {
-                                        if (
-                                          activity?.id === business_line?.id
-                                        ) {
-                                          return {
-                                            ...activity,
-                                            main: false,
-                                          };
-                                        }
-                                        return activity;
-                                      }
-                                    )
-                                  )
+                                  setUserApplications({
+                                    foreign_company_activities: {
+                                      ...foreign_company_activities,
+                                      business_lines:
+                                        foreign_company_activities?.business_lines?.map(
+                                          (activity: object) => {
+                                            if (
+                                              activity?.id === business_line?.id
+                                            ) {
+                                              return {
+                                                ...activity,
+                                                main: false,
+                                              };
+                                            }
+                                            return activity;
+                                          }
+                                        ),
+                                    },
+                                    entry_id,
+                                  })
                                 );
                               }}
                             />
@@ -236,19 +236,25 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                             onClick={(e) => {
                               e.preventDefault();
                               dispatch(
-                                setForeignCompanySubActivities(
-                                  foreign_company_business_lines?.map(
-                                    (activity: object) => {
-                                      if (activity?.id === business_line?.id) {
-                                        return {
-                                          ...activity,
-                                          main: true,
-                                        };
-                                      }
-                                      return activity;
-                                    }
-                                  )
-                                )
+                                setUserApplications({
+                                  foreign_company_activities: {
+                                    business_lines:
+                                      foreign_company_activities?.business_lines?.map(
+                                        (activity: object) => {
+                                          if (
+                                            activity?.id === business_line?.id
+                                          ) {
+                                            return {
+                                              ...activity,
+                                              main: true,
+                                            };
+                                          }
+                                          return activity;
+                                        }
+                                      ),
+                                  },
+                                  entry_id,
+                                })
                               );
                             }}
                           >
@@ -262,13 +268,19 @@ const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
                         onClick={(e) => {
                           e.preventDefault();
                           const updatedSubActivities =
-                            foreign_company_business_lines?.filter(
+                            foreign_company_activities?.business_lines?.filter(
                               (subActivity: unknown) => {
                                 return subActivity?.id !== business_line?.id;
                               }
                             );
                           dispatch(
-                            setForeignCompanySubActivities(updatedSubActivities)
+                            setUserApplications({
+                              foreign_company_activities: {
+                                ...foreign_company_activities,
+                                business_lines: updatedSubActivities,
+                              },
+                              entry_id,
+                            })
                           );
                         }}
                       />

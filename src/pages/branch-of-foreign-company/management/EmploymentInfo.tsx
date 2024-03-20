@@ -14,11 +14,14 @@ import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface EmploymentInfoProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_employment_info: any;
 }
 
-const EmploymentInfo = ({ isOpen, entry_id }: EmploymentInfoProps) => {
+const EmploymentInfo = ({
+  entry_id,
+  foreign_employment_info,
+}: EmploymentInfoProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -30,9 +33,6 @@ const EmploymentInfo = ({ isOpen, entry_id }: EmploymentInfoProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_employment_info } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // SET DEFAULT VALUES
@@ -51,12 +51,6 @@ const EmploymentInfo = ({ isOpen, entry_id }: EmploymentInfoProps) => {
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setForeignEmploymentInfo({
-          ...data,
-          step: "employment_info",
-        })
-      );
-      dispatch(
         setUserApplications({
           entry_id,
           foreign_employment_info: {
@@ -70,8 +64,6 @@ const EmploymentInfo = ({ isOpen, entry_id }: EmploymentInfoProps) => {
       dispatch(setForeignBusinessActiveTab("beneficial_owners"));
     }, 1000);
   };
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-6">
