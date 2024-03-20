@@ -1,17 +1,18 @@
-import { forwardRef, FC } from 'react';
+import { forwardRef, FC, LegacyRef } from 'react';
 
 interface TextAreaProps {
   cols?: number;
   rows?: number;
   className?: string;
-  defaultValue?: string | null | undefined;
+  defaultValue?: string | number | readonly string[] | undefined;
   resize?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  placeholder?: string | null | undefined;
+  placeholder?: string | undefined;
   required?: boolean;
   readonly?: boolean;
   onBlur?: () => void | undefined;
   label?: string | JSX.Element;
+  ref: LegacyRef<HTMLTextAreaElement> | undefined;
 }
 
 const TextArea: FC<TextAreaProps> = forwardRef(
@@ -20,10 +21,10 @@ const TextArea: FC<TextAreaProps> = forwardRef(
       cols = 50,
       rows = 5,
       className,
-      defaultValue = null,
+      defaultValue = undefined,
       resize = false,
       onChange,
-      placeholder = null,
+      placeholder = undefined,
       required = false,
       readonly,
       onBlur,
@@ -47,12 +48,12 @@ const TextArea: FC<TextAreaProps> = forwardRef(
           ref={ref}
           readOnly={readonly}
           placeholder={placeholder}
-          className={`border-[1.5px] border-opacity-50 text-[15px] border-secondary flex items-center justify-center px-4 py-[8px] w-full focus:border-[1.3px] focus:outline-none focus:border-primary rounded-md ${
+          className={`border-[1.5px] border-opacity-50 text-[15px] placeholder:text-[13px] border-secondary flex items-center justify-center px-4 py-[8px] w-full focus:border-[1.3px] focus:outline-none focus:border-primary rounded-md ${
             resize ? null : 'resize-none'
           } ${className}`}
           onChange={onChange}
           onBlur={onBlur}
-          defaultValue={defaultValue && defaultValue}
+          defaultValue={defaultValue}
         ></textarea>
       </label>
     );
