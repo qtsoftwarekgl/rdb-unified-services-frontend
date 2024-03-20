@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
@@ -11,12 +11,14 @@ import {
   setForeignEmploymentInfo,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Loader from "../../../components/Loader";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface EmploymentInfoProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
+const EmploymentInfo = ({ isOpen, entry_id }: EmploymentInfoProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -52,6 +54,15 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
         setForeignEmploymentInfo({
           ...data,
           step: "employment_info",
+        })
+      );
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_employment_info: {
+            ...data,
+            step: "employment_info",
+          },
         })
       );
       dispatch(setForeignBusinessCompletedStep("employment_info"));

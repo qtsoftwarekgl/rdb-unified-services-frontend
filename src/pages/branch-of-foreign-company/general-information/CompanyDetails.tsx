@@ -18,12 +18,14 @@ import {
   setForeignCompanyDetails,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface CompanyDetailsProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
+const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -59,6 +61,20 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           position: data?.position,
           articles_of_association: data?.articles_of_association,
           step: "company_details",
+        })
+      );
+
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_company_details: {
+            name: data?.name,
+            category: data?.category,
+            type: data?.type,
+            position: data?.position,
+            articles_of_association: data?.articles_of_association,
+            step: "company_details",
+          },
         })
       );
 

@@ -16,7 +16,7 @@ export const userApplicationsSlice = createSlice({
       const userApplicationIndex = state.user_applications?.findIndex(
         (app) => app?.entry_id === action?.payload?.entry_id
       );
-      console.log("userApplicationIndex", userApplicationIndex);
+
       if (userApplicationIndex === -1)
         state.user_applications = [...state.user_applications, action.payload];
       else
@@ -30,24 +30,9 @@ export const userApplicationsSlice = createSlice({
         JSON.stringify(state.user_applications)
       );
     },
-    updateUserApplication: (state, action) => {
-      state.user_applications = state.user_applications.map((app) => {
-        if (app?.entry_id === action?.payload?.entry_id) {
-          return {
-            ...app,
-            ...action?.payload,
-          };
-        }
-      });
-      localStorage.setItem(
-        "user_applications",
-        JSON.stringify(state.user_applications)
-      );
-    },
   },
 });
 
 export default userApplicationsSlice.reducer;
 
-export const { setUserApplications, updateUserApplication } =
-  userApplicationsSlice.actions;
+export const { setUserApplications } = userApplicationsSlice.actions;

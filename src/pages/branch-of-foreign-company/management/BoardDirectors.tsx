@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import Loader from "../../../components/Loader";
@@ -20,19 +20,20 @@ import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { capitalizeString } from "../../../helpers/Strings";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BoardDirectorsProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
+const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
     setError,
     watch,
-    trigger,
     setValue,
     clearErrors,
     reset,
@@ -80,6 +81,19 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen }) => {
           },
           ...foreign_board_of_directors,
         ])
+      );
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_board_of_directors: [
+            {
+              ...data,
+              attachment: attachmentFile?.name,
+              step: "board_of_directors",
+            },
+            ...foreign_board_of_directors,
+          ],
+        })
       );
       reset(undefined, { keepDirtyValues: true });
       setValue("attachment", null);

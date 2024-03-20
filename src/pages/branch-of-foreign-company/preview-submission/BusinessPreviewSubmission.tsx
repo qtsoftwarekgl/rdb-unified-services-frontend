@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import PreviewCard from "../../../components/business-registration/PreviewCard";
@@ -22,16 +22,17 @@ import { capitalizeString } from "../../../helpers/Strings";
 import Table from "../../../components/table/Table";
 import { countriesList } from "../../../constants/countries";
 import Button from "../../../components/inputs/Button";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import moment from "moment";
 
 interface PreviewSubmissionProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
+const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -87,11 +88,6 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
       accessorKey: "ownership_type",
     },
   ];
-
-  // CATCH PROGRESS ID
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
 
   if (!isOpen) return null;
 
@@ -339,20 +335,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({ isOpen }) => {
               dispatch(
                 setUserApplications({
                   entry_id,
-                  type: "foreign_branch_registration",
-                  foreign_company_details: {
-                    ...foreign_company_details,
-                    created_at: Date.now(),
-                  },
-                  foreign_company_address,
-                  foreign_company_activities,
-                  foreign_board_of_directors,
-                  foreign_senior_management,
-                  foreign_employment_info,
-                  foreign_beneficial_owners,
-                  foreign_company_attachments,
-                  path: `/foreign-branch-registration?entry_id=${entry_id}`,
+                  status: "submitted",
                   created_at: moment(Date.now()).format("DD/MM/YYYY"),
+                  path: `/foreign-branch-registration?entry_id=${entry_id}`,
                 })
               );
               dispatch(setForeignCompanyDetails(null));

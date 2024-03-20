@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
@@ -24,18 +24,19 @@ import {
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BeneficialOwnersProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
+const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
     formState: { errors },
-    trigger,
     setValue,
     setError,
     clearErrors,
@@ -64,6 +65,18 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen }) => {
       setIsLoading(false);
       dispatch(
         setForeignBeneficialOwners([data, ...foreign_beneficial_owners])
+      );
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_beneficial_owners: [
+            {
+              ...data,
+              step: "beneficial_owners",
+            },
+            ...foreign_beneficial_owners,
+          ],
+        })
       );
     }, 1000);
   };

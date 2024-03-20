@@ -6,7 +6,7 @@ import { RootState } from "../../states/store";
 import Table from "../../components/table/Table";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-regular-svg-icons";
+import { faEye, faFile } from "@fortawesome/free-regular-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { removeFromReservedNames } from "../../states/features/nameReservationSlice";
 import Modal from "../../components/Modal";
@@ -28,6 +28,13 @@ export const NewRegistration = ({
 }: NewRegistrationProps) => {
   const { reservedNames } = useSelector(
     (state: RootState) => state.nameReservation
+  );
+
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+  const applicationsInProgress = user_applications.filter(
+    (app) => app.status === "in_progress"
   );
 
   const [useReservedNames, setUseReservedNames] = useState(false);
@@ -75,6 +82,33 @@ export const NewRegistration = ({
     },
   ];
 
+  function renderActionCell({ row }) {
+    return (
+      <menu className="flex items-center gap-2 cursor-pointer">
+        <FontAwesomeIcon
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+          icon={faEye}
+          className="text-primary"
+        />
+      </menu>
+    );
+  }
+
+  const applicationsInprogressColumns = [
+    { header: "Registration Number", accessorKey: "reg_number" },
+    { header: "Company Name", accessorKey: "company_name" },
+    { header: "Service Name", accessorKey: "service_name" },
+    { header: "Submission Date", accessorKey: "submission_date" },
+    {
+      header: "Action",
+      accessorKey: "actions",
+      enableSorting: false,
+      cell: renderActionCell,
+    },
+  ];
+
   const requiredAttachments = [
     {
       name: "Attachment 1",
@@ -112,25 +146,41 @@ export const NewRegistration = ({
           <section className="flex flex-col w-1/2 gap-8 max-md:w-full">
             <menu className="flex flex-col gap-2 max-md:w-full">
               <h1 className="text-base font-bold">Your Reserved Names</h1>
-              <Table
-                data={reservedNames}
-                columns={reservedNamesCols}
-                showFilter={false}
-                showPagination={false}
-                headerClassName="bg-primary text-white"
-                className="bg-white rounded-2xl "
-              />
+              {reservedNames?.length > 0 ? (
+                <Table
+                  data={reservedNames}
+                  columns={reservedNamesCols}
+                  showFilter={false}
+                  showPagination={false}
+                  headerClassName="bg-primary text-white"
+                  className="bg-white rounded-2xl "
+                />
+              ) : (
+                <span className="flex items-center justify-start w-full">
+                  <h1 className="uppercase text-primary ">
+                    You have no reserved names yet
+                  </h1>
+                </span>
+              )}
             </menu>
             <menu className="flex flex-col gap-2 max-md:w-full">
               <h1 className="text-base font-bold">Uncompleted Applications</h1>
-              <Table
-                data={reservedNames}
-                columns={reservedNamesCols}
-                showFilter={false}
-                showPagination={false}
-                headerClassName="bg-primary text-white"
-                className="bg-white rounded-2xl "
-              />
+              {applicationsInProgress.length > 0 ? (
+                <Table
+                  data={applicationsInProgress}
+                  columns={applicationsInprogressColumns}
+                  showFilter={false}
+                  showPagination={false}
+                  headerClassName="bg-primary text-white"
+                  className="bg-white rounded-2xl "
+                />
+              ) : (
+                <span className="flex items-center justify-start w-full">
+                  <h1 className="uppercase text-primary ">
+                    You have no incomplete applications
+                  </h1>
+                </span>
+              )}
             </menu>
           </section>
           <section className="flex flex-col w-1/2 gap-4 max-md:w-full">
@@ -174,7 +224,10 @@ export const NewRegistration = ({
           onClose={() => setUseReservedNames(false)}
         >
           <section className="flex flex-col gap-4 p-8 bg-white rounded-md">
-            <h1 className="text-2xl font-bold">Use Reserved Name</h1>
+            <h1 className="text-2xl font-bold">
+              Use Reserved Name{" "}
+              <span className="text-primary"> ( {reservedName} )</span>
+            </h1>
             <menu className="flex flex-col gap-4">
               <h3 className="text-base font-semibold">
                 You are about to use a reserved name for this application

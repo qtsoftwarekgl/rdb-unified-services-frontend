@@ -1,10 +1,12 @@
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import UserLayout from "../../containers/UserLayout";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import Table from "../../components/table/Table";
+import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
+import { capitalizeString } from "../../helpers/Strings";
 import {
   setBeneficialOwners,
   setBoardDirectors,
@@ -20,8 +22,26 @@ import {
   setShareDetails,
   setShareHolders,
 } from "../../states/features/businessRegistrationSlice";
-import { useNavigate } from "react-router-dom";
-import { capitalizeString } from "../../helpers/Strings";
+import {
+  setEnterpriseActiveStep,
+  setEnterpriseActiveTab,
+  setEnterpriseAttachments,
+  setEnterpriseBusinessLines,
+  setEnterpriseDetails,
+  setEnterpriseOfficeAddress,
+} from "../../states/features/enterpriseRegistrationSlice";
+import {
+  setForeignBeneficialOwners,
+  setForeignBoardDirectors,
+  setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
+  setForeignCompanyActivities,
+  setForeignCompanyAddress,
+  setForeignCompanyAttachments,
+  setForeignCompanyDetails,
+  setForeignEmploymentInfo,
+  setForeignSeniorManagement,
+} from "../../states/features/foreignBranchRegistrationSlice";
 
 const AmendCompanyDetails = () => {
   const { user_applications } = useSelector(
@@ -30,132 +50,150 @@ const AmendCompanyDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Format company data
+  const formatCompanyData = (business) => {
+    const company =
+      business?.company_details ||
+      business?.foreign_company_details ||
+      business?.enterprise_details;
+    return {
+      ...company,
+      company_name: company?.name,
+      status: (business?.status || "submitted").toLowerCase(),
+      id:
+        business?.id ||
+        business?.entry_id ||
+        Math.floor(Math.random() * 9000) + 1000,
+      reg_number: `REG-${(
+        business?.entry_id?.split("-")[0] || ""
+      ).toUpperCase()}`,
+      service_name: capitalizeString(business?.type),
+      submission_date: business.created_at,
+      path: business?.path,
+    };
+  };
+
+  // Sort by submission date
+  const sortBySubmissionDate = (a, b) => {
+    return (
+      new Date(b?.submissionDate).getTime() -
+      new Date(a?.submissionDate).getTime()
+    );
+  };
+
   const companies = user_applications
-    .map((business) => {
-      return {
-        ...business?.company_details,
-        ...business?.foreign_company_details,
-        ...business?.enterprise_details,
-        company_name:
-          business?.company_details?.name ||
-          business?.enterprise_details?.name ||
-          business?.foreign_company_details?.name,
-        status: business?.status?.toLowerCase() || "submitted",
-        id:
-          business?.id ||
-          business?.entry_id ||
-          Math.floor(Math.random() * 9000) + 1000,
-        reg_number: `REG-${business?.entry_id?.split("-")[0]?.toUpperCase()}`,
-        service_name: capitalizeString(business?.type),
-        submission_date: business.created_at,
-        path: business?.path,
-      };
-    })
-    .sort((a, b) => {
-      return (
-        new Date(b?.submissionDate).getTime() -
-        new Date(a?.submissionDate).getTime()
-      );
-    });
+    .map(formatCompanyData)
+    .sort(sortBySubmissionDate);
+
+  // Render status cell
+  const renderStatusCell = ({ row }) => {
+    const statusColors = {
+      verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#e8ffef] text-[#409261]",
+      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
+      submitted: "bg-[#e8ffef] text-black",
+    };
+    const statusColor = statusColors[row?.original?.status] || "";
+    return (
+      <span
+        className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
+      >
+        <span className="w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
+        <span className="text-sm font-light">{row?.original?.status}</span>
+      </span>
+    );
+  };
+
+  const renderActionCell = ({ row }) => {
+    return (
+      <menu className="flex items-center gap-2">
+        <FontAwesomeIcon
+          onClick={(e) => handleEditClick(e, row)}
+          icon={faEdit}
+          className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+        />
+      </menu>
+    );
+  };
 
   const columns = [
-    {
-      header: "Company Code",
-      accessorKey: "reg_number",
-    },
-    {
-      header: "Company/Enterprise Name",
-      accessorKey: "company_name",
-    },
-    {
-      header: "Company/Enterprise Type",
-      accessorKey: "service_name",
-    },
+    { header: "Company Code", accessorKey: "reg_number" },
+    { header: "Company/Enterprise Name", accessorKey: "company_name" },
+    { header: "Company/Enterprise Type", accessorKey: "service_name" },
     {
       header: "Application Status",
       accessorKey: "status",
-      cell: ({ row }) => {
-        return (
-          <span
-            className={`px-3 py-1 rounded-full flex w-fit items-center ${colors(
-              row?.original?.status.toLowerCase()
-            )}`}
-          >
-            <span className=" w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-            <span className="text-sm font-light ">{row?.original?.status}</span>
-          </span>
-        );
-      },
+      cell: renderStatusCell,
     },
-    {
-      header: "Registration Date",
-      accessorKey: "registration_date",
-    },
+    { header: "Registration Date", accessorKey: "registration_date" },
     {
       header: "Action",
       accessorKey: "action",
       enableSorting: false,
-      cell: ({ row }: { row: unknown }) => {
-        return (
-          <menu className="flex items-center gap-2">
-            <FontAwesomeIcon
-              onClick={(e) => {
-                e.preventDefault();
-                const company = user_applications?.find(
-                  (application) => application.entry_id === row?.original?.id
-                );
-                if (company === "business_registration") {
-                  dispatch(setBusinessActiveTab("general_information"));
-                  dispatch(setBusinessActiveStep("company_details"));
-                  dispatch(setCompanyDetails(company?.company_details || {}));
-                  dispatch(setCompanyAddress(company?.company_address || {}));
-                  dispatch(
-                    setCompanyActivities(company?.company_activities || {})
-                  );
-                  dispatch(
-                    setBeneficialOwners(company?.beneficial_owners || [])
-                  );
-                  dispatch(
-                    setBoardDirectors(company?.board_of_directors || [])
-                  );
-                  dispatch(setCapitalDetails(company?.capital_details || []));
-                  dispatch(
-                    setCompanyAttachments(company?.company_attachments || [])
-                  );
-                  dispatch(setEmploymentInfo(company?.employment_info || {}));
-                  dispatch(
-                    setSeniorManagement(company?.senior_management || [])
-                  );
-                  dispatch(setShareDetails(company?.share_details || {}));
-                  dispatch(setShareHolders(company?.shareholders || []));
-                }
-                navigate(row.original?.path);
-              }}
-              icon={faEdit}
-              className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
-            />
-          </menu>
-        );
-      },
+      cell: renderActionCell,
     },
   ];
 
-  const colors = (status: string) => {
-    if (status === "verified") {
-      return "bg-[#82ffa3] text-[#0d7b3e]";
+  const handleEditClick = (e, row) => {
+    e.preventDefault();
+    const company = user_applications?.find(
+      (application) => application.entry_id === row?.original?.id
+    );
+    if (!company) return;
+
+    if (company.type === "business_registration") {
+      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setBusinessActiveStep("company_details"));
+      dispatch(setCompanyDetails(company?.company_details || {}));
+      dispatch(setCompanyAddress(company?.company_address || {}));
+      dispatch(setCompanyActivities(company?.company_activities || {}));
+      dispatch(setBeneficialOwners(company?.beneficial_owners || []));
+      dispatch(setBoardDirectors(company?.board_of_directors || []));
+      dispatch(setCapitalDetails(company?.capital_details || []));
+      dispatch(setCompanyAttachments(company?.company_attachments || []));
+      dispatch(setEmploymentInfo(company?.employment_info || {}));
+      dispatch(setSeniorManagement(company?.senior_management || []));
+      dispatch(setShareDetails(company?.share_details || {}));
+      dispatch(setShareHolders(company?.shareholders || []));
+    } else if (company.type === "enterprise") {
+      dispatch(setEnterpriseActiveTab("enterprise_details"));
+      dispatch(setEnterpriseActiveStep("enterprise_details"));
+      dispatch(setEnterpriseDetails(company?.enterprise_details || {}));
+      dispatch(setEnterpriseBusinessLines(company?.business_lines || []));
+      dispatch(setEnterpriseOfficeAddress(company?.office_address || {}));
+      dispatch(setEnterpriseAttachments(company?.enterprise_attachments));
+    } else if (company.type === "foreign_branch") {
+      dispatch(setForeignBusinessActiveTab("general_information"));
+      dispatch(setForeignBusinessActiveStep("company_details"));
+      dispatch(
+        setForeignCompanyDetails(company?.foreign_company_details || {})
+      );
+      dispatch(
+        setForeignCompanyAddress(company?.foreign_company_address || {})
+      );
+      dispatch(
+        setForeignCompanyActivities(company?.foreign_company_activities || {})
+      );
+      dispatch(
+        setForeignBoardDirectors(company?.foreign_board_of_directors || [])
+      );
+      dispatch(
+        setForeignSeniorManagement(company?.foreign_senior_management || [])
+      );
+      dispatch(
+        setForeignEmploymentInfo(company?.foreign_employment_info || {})
+      );
+      dispatch(
+        setForeignCompanyAttachments(
+          company?.foreign_company_attachments?.attachments || []
+        )
+      );
+      dispatch(
+        setForeignBeneficialOwners(company?.foreign_beneficial_owners || [])
+      );
     }
-    if (status === "rejected") {
-      return "bg-[#eac3c3] text-red-500";
-    }
-    if (status === "approved") {
-      return "bg-[#e8ffef] text-[#409261]";
-    }
-    if (status === "request for action") {
-      return "bg-[#e4e4e4] text-[#6b6b6b]";
-    }
-    if (status === "submitted") {
-      return "bg-[#e8ffef] text-black";
-    }
+    navigate(row.original?.path);
   };
 
   return (

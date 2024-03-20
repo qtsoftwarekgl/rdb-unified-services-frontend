@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
@@ -21,12 +21,14 @@ import { Link } from "react-router-dom";
 import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BusinessActivityProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
+const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -53,6 +55,18 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
           vat: data?.vat,
           turnover: data?.turnover,
           business_lines: foreign_company_business_lines,
+        })
+      );
+
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_company_activities: {
+            vat: data?.vat,
+            turnover: data?.turnover,
+            business_lines: foreign_company_business_lines,
+            step: "business_activity_vat",
+          },
         })
       );
 

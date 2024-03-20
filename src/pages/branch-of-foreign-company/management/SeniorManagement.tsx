@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import Loader from "../../../components/Loader";
@@ -19,19 +19,20 @@ import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { capitalizeString } from "../../../helpers/Strings";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface SeniorManagementProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
+const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
     setError,
     watch,
-    trigger,
     setValue,
     clearErrors,
     reset,
@@ -73,6 +74,15 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen }) => {
       clearErrors("submit");
       dispatch(
         setForeignSeniorManagement([data, ...foreign_senior_management])
+      );
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_senior_management: [
+            { ...data, step: "senior_management" },
+            ...foreign_senior_management,
+          ],
+        })
       );
       reset(undefined, { keepDirtyValues: true });
       setValue("attachment", null);

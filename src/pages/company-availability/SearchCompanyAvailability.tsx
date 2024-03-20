@@ -30,7 +30,6 @@ const SearchCompanyAvailability = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const onSubmit = (data: FieldValues) => {
-    console.log("...................");
     dispatch(setNameReservation(data.name));
     navigate("/name-reservation");
   };

@@ -30,14 +30,17 @@ import {
 } from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
 import moment from "moment";
-import { updateUserApplication } from "../../../states/features/userApplicationSlice";
-import { useLocation } from "react-router-dom";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 type EnterpriseDetailsProps = {
   isOpen: boolean;
+  entry_id: string | null;
 };
 
-export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
+export const EnterpriseDetails = ({
+  isOpen,
+  entry_id,
+}: EnterpriseDetailsProps) => {
   const { enterprise_details, enterprise_registration_active_step, usedIds } =
     useSelector((state: RootState) => state.enterpriseRegistration);
   const dispatch: AppDispatch = useDispatch();
@@ -49,9 +52,6 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
 
   const [searchEnterprise, setSearchEnterprise] = useState({
     error: false,
@@ -74,22 +74,16 @@ export const EnterpriseDetails = ({ isOpen }: EnterpriseDetailsProps) => {
       dispatch(
         setEnterpriseDetails({
           ...data,
-          company_type: "enterprise",
-          registration_category: "Domestic",
-          company_name: data?.name,
           step: {
             ...enterprise_registration_active_step,
           },
         })
       );
       dispatch(
-        updateUserApplication({
+        setUserApplications({
           entry_id,
           enterprise_details: {
             ...data,
-            company_type: "enterprise",
-            registration_category: "Domestic",
-            company_name: data?.name,
             step: {
               ...enterprise_registration_active_step,
             },

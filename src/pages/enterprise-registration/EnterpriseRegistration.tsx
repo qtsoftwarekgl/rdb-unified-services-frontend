@@ -33,10 +33,11 @@ const EnterpriseRegistration = () => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: "in-progress",
+        status: "in_progress",
+        type: "enterprise",
       })
     );
-  }, []);
+  }, [entry_id, dispatch]);
 
   return (
     <UserLayout>
@@ -56,29 +57,34 @@ const EnterpriseRegistration = () => {
                 active_tab={enterprise_registration_active_tab}
               >
                 <EnterpriseDetails
+                  entry_id={entry_id}
                   isOpen={
                     enterprise_registration_active_step?.name ===
                     "enterprise_details"
                   }
                 />
                 <BusinessActivity
+                  entry_id={entry_id}
                   isOpen={
                     enterprise_registration_active_step?.name ===
                     "business_activity_vat"
                   }
                 />
                 <OfficeAddress
+                  entry_id={entry_id}
                   isOpen={
                     enterprise_registration_active_step?.name ===
                     "office_address"
                   }
                 />
                 <Attachments
+                  entry_id={entry_id}
                   isOpen={
                     enterprise_registration_active_step?.name === "attachments"
                   }
                 />
                 <Preview
+                  entry_id={entry_id}
                   isOpen={
                     enterprise_registration_active_step?.name ===
                     "enterprise_preview_submission"

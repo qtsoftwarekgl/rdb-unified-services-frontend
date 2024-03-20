@@ -14,9 +14,11 @@ import {
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
 
 type AttachmentsProps = {
   isOpen: boolean;
+  entry_id: string | null;
 };
 
 type Attachment = {
@@ -24,7 +26,7 @@ type Attachment = {
   file: File | null;
 };
 
-const Attachments = ({ isOpen }: AttachmentsProps) => {
+const Attachments = ({ isOpen, entry_id }: AttachmentsProps) => {
   const {
     handleSubmit,
     control,
@@ -57,6 +59,17 @@ const Attachments = ({ isOpen }: AttachmentsProps) => {
           step: { ...enterprise_registration_active_step },
         })
       );
+
+      dispatch(
+        setUserApplications({
+          entry_id,
+          enterprise_attachments: {
+            fileNames,
+            step: { ...enterprise_registration_active_step },
+          },
+        })
+      );
+
       setIsLoading(false);
 
       // SET CURRENT STEP AS COMPLETED
@@ -76,7 +89,7 @@ const Attachments = ({ isOpen }: AttachmentsProps) => {
       enterprise_attachments &&
       Object.keys(enterprise_attachments)?.length > 0
     ) {
-      setAttachmentFilesNames(enterprise_attachments.fileNames);
+      setAttachmentFilesNames(enterprise_attachments?.fileNames);
     }
   }, []);
 
@@ -126,7 +139,7 @@ const Attachments = ({ isOpen }: AttachmentsProps) => {
                           handleFileChange(index, e?.target?.files?.[0]);
                         }}
                       />
-                      {(file?.file || attachmentFilesNames.length > 0) && (
+                      {(file?.file || attachmentFilesNames?.length > 0) && (
                         <p className="flex items-center gap-2 text-[14px] text-black font-normal">
                           {file.file?.name || attachmentFilesNames[index]}
                           <FontAwesomeIcon
