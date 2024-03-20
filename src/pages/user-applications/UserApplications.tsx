@@ -1,9 +1,8 @@
-import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { faEye, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
 import UserLayout from "../../containers/UserLayout";
 import Button from "../../components/inputs/Button";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { capitalizeString } from "../../helpers/Strings";
@@ -29,115 +28,92 @@ import {
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 
 const UserApplications = () => {
-  // STATE VARIABLES
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
-
   const dispatch = useDispatch();
-
-  // NAVIGATE
   const navigate = useNavigate();
 
   const registeredBusinesses = user_applications
-    .map((business) => {
-      return {
-        ...business?.company_details,
-        ...business?.foreign_company_details,
-        ...business?.enterprise_details,
-        company_name:
-          business?.company_details?.name ||
-          business?.enterprise_details?.name ||
-          business?.foreign_company_details?.name,
-        status: business?.status?.toLowerCase() || "submitted",
-        id:
-          business?.id ||
-          business?.entry_id ||
-          Math.floor(Math.random() * 9000) + 1000,
-        reg_number: `REG-${business?.entry_id?.split("-")[0]?.toUpperCase()}`,
-        service_name: capitalizeString(business?.type),
-        submission_date: business?.created_at,
-        path: business?.path,
-      };
-    })
-    .sort((a, b) => {
-      return (
+    .map((business) => ({
+      ...business?.company_details,
+      ...business?.foreign_company_details,
+      ...business?.enterprise_details,
+      company_name:
+        business?.company_details?.name ||
+        business?.enterprise_details?.name ||
+        business?.foreign_company_details?.name,
+      status: (business?.status || "submitted").toLowerCase(),
+      id:
+        business?.id ||
+        business?.entry_id ||
+        Math.floor(Math.random() * 9000) + 1000,
+      reg_number: `REG-${(
+        business?.entry_id?.split("-")[0] || ""
+      ).toUpperCase()}`,
+      service_name: capitalizeString(business?.type),
+      submission_date: business?.created_at,
+      path: business?.path,
+    }))
+    .sort(
+      (a, b) =>
         new Date(b?.submissionDate).getTime() -
         new Date(a?.submissionDate).getTime()
-      );
-    });
+    );
 
   const colors = (status: string) => {
-    if (status === "verified") {
-      return "bg-[#82ffa3] text-[#0d7b3e]";
-    }
-    if (status === "rejected") {
-      return "bg-[#eac3c3] text-red-500";
-    }
-    if (status === "approved") {
-      return "bg-[#cfeaff] text-secondary";
-    }
-    if (status === "request for action") {
-      return "bg-[#e4e4e4] text-[#6b6b6b]";
-    }
-    if (status === "submitted") {
-      return "bg-[#e8ffef] text-black";
-    }
+    const colorMap = {
+      verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#cfeaff] text-secondary",
+      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
+      submitted: "bg-[#e8ffef] text-black",
+    };
+    return colorMap[status] || "";
   };
-  const colums = [
-    {
-      header: "Registration Number",
-      accessorKey: "reg_number",
-    },
-    {
-      header: "Company Name",
-      accessorKey: "company_name",
-    },
-    {
-      header: "Service Name",
-      accessorKey: "service_name",
-    },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: ({ row }) => {
-        return (
-          <span
-            className={`px-3 py-1 rounded-full flex w-fit items-center ${colors(
-              row?.original?.status?.toLowerCase()
-            )}`}
-          >
-            <span className=" w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-            <span className="text-sm font-light ">{row?.original.status}</span>
-          </span>
-        );
-      },
-    },
-    {
-      header: "Submission Date",
-      accessorKey: "submission_date",
-    },
+
+  const columns = [
+    { header: "Registration Number", accessorKey: "reg_number" },
+    { header: "Company Name", accessorKey: "company_name" },
+    { header: "Service Name", accessorKey: "service_name" },
+    { header: "Status", accessorKey: "status", cell: renderStatusCell },
+    { header: "Submission Date", accessorKey: "submission_date" },
     {
       header: "Action",
       accessorKey: "actions",
       enableSorting: false,
-      cell: ({ row }) => {
-        return (
-          <menu className="flex items-center gap-2 cursor-pointer">
-            <FontAwesomeIcon
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setViewedCompany(row?.original));
-                navigate(`/company-details/${row?.original?.id}`);
-              }}
-              icon={faEye}
-              className="text-primary"
-            />
-          </menu>
-        );
-      },
+      cell: renderActionCell,
     },
   ];
+
+  function renderStatusCell({ row }) {
+    return (
+      <span
+        className={`px-3 py-1 rounded-full flex w-fit items-center ${colors(
+          row?.original?.status?.toLowerCase()
+        )}`}
+      >
+        <span className="w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
+        <span className="text-sm font-light ">{row?.original.status}</span>
+      </span>
+    );
+  }
+
+  function renderActionCell({ row }) {
+    return (
+      <menu className="flex items-center gap-2 cursor-pointer">
+        <FontAwesomeIcon
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(setViewedCompany(row?.original));
+            navigate(`/company-details/${row?.original?.id}`);
+          }}
+          icon={faEye}
+          className="text-primary"
+        />
+      </menu>
+    );
+  }
 
   return (
     <UserLayout>
@@ -182,13 +158,13 @@ const UserApplications = () => {
           <Table
             showFilter={false}
             showPagination={false}
-            columns={colums}
+            columns={columns}
             data={registeredBusinesses}
             className="bg-white rounded-2xl"
           />
         ) : (
           <span className="flex items-center justify-start w-full">
-            <h1 className="uppercase text-primary ">
+            <h1 className="uppercase text-primary">
               You have no applications yet
             </h1>
           </span>
