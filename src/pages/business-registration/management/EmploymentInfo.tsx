@@ -8,9 +8,9 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setEmploymentInfo,
 } from '../../../states/features/businessRegistrationSlice';
 import Loader from '../../../components/Loader';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_employment_info {
   has_employees: string;
@@ -23,9 +23,14 @@ export interface business_employment_info {
 interface EmploymentInfoProps {
   isOpen: boolean;
   employment_info: business_employment_info;
+  entry_id: string | null;
 }
 
-const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen, employment_info }) => {
+const EmploymentInfo: FC<EmploymentInfoProps> = ({
+  isOpen,
+  employment_info,
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -55,9 +60,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen, employment_info }) =>
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setEmploymentInfo({
-          ...data,
-          step: 'employment_info',
+        setUserApplications({
+          entry_id,
+          employment_info: {
+            ...data,
+            step: 'employment_info',
+          },
         })
       );
       dispatch(setBusinessCompletedStep('employment_info'));

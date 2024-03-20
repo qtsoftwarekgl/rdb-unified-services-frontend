@@ -18,8 +18,8 @@ import {
   removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessCompletedStep,
-  setCompanyAddress,
 } from '../../../states/features/businessRegistrationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_company_address {
   province: string;
@@ -37,6 +37,7 @@ export interface business_company_address {
 interface CompanyAddressProps {
   isOpen: boolean;
   company_address: business_company_address | null;
+  entry_id: string | null;
 }
 
 export interface AdministrativeUnits {
@@ -47,7 +48,7 @@ export interface AdministrativeUnits {
   villages: string[];
 }
 
-const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, company_address }) => {
+const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, company_address, entry_id }) => {
   // REACT HOOK FORM
   const {
     control,
@@ -155,7 +156,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, company_address }) =>
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setCompanyAddress(data));
+      dispatch(
+        setUserApplications({
+          entry_id,
+          status: 'in_progress',
+          company_address: {
+            ...data,
+          },
+        })
+      );
       dispatch(setBusinessActiveStep('business_activity_vat'));
       dispatch(setBusinessCompletedStep('company_address'));
     }, 1000);

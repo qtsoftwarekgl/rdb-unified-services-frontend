@@ -1,29 +1,29 @@
-import { FC, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
+import { FC, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
 import {
   ownerRelationships,
   personnelTypes,
-} from "../../../constants/businessRegistration";
-import Input from "../../../components/inputs/Input";
-import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData } from "../../../constants/authentication";
-import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/Validations";
-import { countriesList } from "../../../constants/countries";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../../components/inputs/Button";
-import Table from "../../../components/table/Table";
-import { capitalizeString } from "../../../helpers/Strings";
+} from '../../../constants/businessRegistration';
+import Input from '../../../components/inputs/Input';
+import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
+import { userData } from '../../../constants/authentication';
+import Loader from '../../../components/Loader';
+import validateInputs from '../../../helpers/Validations';
+import { countriesList } from '../../../constants/countries';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../../components/inputs/Button';
+import Table from '../../../components/table/Table';
+import { capitalizeString } from '../../../helpers/Strings';
 import {
-  setBeneficialOwners,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { AppDispatch } from "../../../states/store";
-import { useDispatch } from "react-redux";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
+} from '../../../states/features/businessRegistrationSlice';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_beneficial_owners {
   no: number;
@@ -36,9 +36,14 @@ export interface business_beneficial_owners {
 interface BeneficialOwnersProps {
   isOpen: boolean;
   beneficial_owners: business_beneficial_owners[];
+  entry_id: string | null;
 }
 
-const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners }) => {
+const BeneficialOwners: FC<BeneficialOwnersProps> = ({
+  isOpen,
+  beneficial_owners = [],
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -49,6 +54,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
     setError,
     clearErrors,
     watch,
+    reset,
   } = useForm();
 
   // STATE VARIABLES
@@ -68,31 +74,37 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setBeneficialOwners([data, ...beneficial_owners]));
+      dispatch(
+        setUserApplications({
+          entry_id,
+          beneficial_owners: [{ ...data }, ...beneficial_owners],
+        })
+      );
     }, 1000);
+    reset();
   };
 
   // TABLE COLUMNS
   const columns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: 'Type',
+      accessorKey: 'type',
     },
     {
-      header: "Nature of ownership",
-      accessorKey: "ownership_type",
+      header: 'Nature of ownership',
+      accessorKey: 'ownership_type',
     },
     {
-      header: "Control type",
-      accessorKey: "control_type",
+      header: 'Control type',
+      accessorKey: 'control_type',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -113,7 +125,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
                     return index !== row?.original?.no;
                   }
                 );
-                dispatch(setBeneficialOwners(newBeneficialOwners));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    beneficial_owners: newBeneficialOwners,
+                  })
+                );
               }}
             />
           </menu>
@@ -648,7 +665,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
           )}
         <section
           className={`${
-            watch('address') === 'yes' ? 'flex' : 'hidden'
+            watch('address') === 'no' ? 'flex' : 'hidden'
           } flex-wrap gap-4 items-start justify-between w-full`}
         >
           <Controller
@@ -656,7 +673,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
             control={control}
             rules={{
               required:
-                watch('address') === 'yes' &&
+                watch('address') === 'no' &&
                 watch('beneficial_type') === 'person' &&
                 watch('document_type') === 'passport' &&
                 'Nationality is required',
@@ -710,13 +727,13 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
             defaultValue={searchMember?.data?.phone}
             rules={{
               required:
-                watch('address') === 'yes' &&
+                watch('address') === 'no' &&
                 watch('beneficial_type') === 'person'
                   ? 'Phone number is required'
                   : false,
               validate: (value) => {
                 if (
-                  watch('address') === 'yes' &&
+                  watch('address') === 'no' &&
                   watch('document_type') === 'nid'
                 ) {
                   return validateInputs(value, 'tel') || 'Invalid phone number';
@@ -759,7 +776,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({ isOpen, beneficial_owners
               name="residential_attachment"
               rules={{
                 required:
-                  watch('address') === 'yes' &&
+                  watch('address') === 'no' &&
                   watch('document_type') === 'passport' &&
                   watch('beneficial_type') === 'person'
                     ? 'Document attachment is required'

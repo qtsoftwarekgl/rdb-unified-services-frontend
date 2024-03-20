@@ -223,7 +223,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id, company_det
               companyCategories?.find(
                 (category) => category?.value === company_details?.category
               ) ||
-              companyCategories?.[0] ||
+              companyCategories?.[0]?.value ||
               watch('category') ||
               company_details?.category
             }

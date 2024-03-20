@@ -8,7 +8,6 @@ import { userData } from '../../../constants/authentication';
 import { countriesList } from '../../../constants/countries';
 import Button from '../../../components/inputs/Button';
 import {
-  setSeniorManagement,
   setBusinessActiveStep,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
@@ -18,6 +17,7 @@ import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_senior_management {
   first_name: string;
@@ -28,9 +28,10 @@ export interface business_senior_management {
 interface SeniorManagementProps {
   isOpen: boolean;
   senior_management: business_senior_management[];
+  entry_id: string | null;
 }
 
-const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen, senior_management }) => {
+const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen, senior_management = [], entry_id }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -74,7 +75,17 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen, senior_management
     setTimeout(() => {
       setIsLoading(false);
       clearErrors('submit');
-      dispatch(setSeniorManagement([data, ...senior_management]));
+      dispatch(
+        setUserApplications({
+          entry_id,
+          senior_management: [
+            {
+              ...data,
+            },
+            ...senior_management,
+          ],
+        })
+      );
       setSearchMember({
         ...searchMember,
         data: null,
@@ -121,12 +132,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({ isOpen, senior_management
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setSeniorManagement(
-                    senior_management?.filter(
+                  setUserApplications({
+                    entry_id,
+                    senior_management: senior_management?.filter(
                       (member: unknown) =>
                         member?.first_name !== row?.original?.first_name
-                    )
-                  )
+                    ),
+                  })
                 );
               }}
             />

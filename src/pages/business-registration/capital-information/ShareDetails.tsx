@@ -10,8 +10,8 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setShareDetails,
 } from '../../../states/features/businessRegistrationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_share_details {
   company_capital: number;
@@ -28,9 +28,14 @@ export interface business_share_details {
 interface ShareDetailsProps {
   isOpen: boolean;
   share_details: business_share_details;
+  entry_id: string | null;
 }
 
-const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
+const ShareDetails: FC<ShareDetailsProps> = ({
+  isOpen,
+  share_details,
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -68,17 +73,17 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
     setValue(
       'total_shares',
       tableRows
-        ?.map((row) => watch(`${row.name}_no`))
+        ?.map((row) => watch(`${row.name}_no_shares`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
   }, [
-    watch('ordinary_share_no'),
-    watch('preference_share_no'),
-    watch('non_voting_share_no'),
-    watch('redeemable_share_no'),
-    watch('redeemable_share_no'),
-    watch('irredeemable_share_no'),
+    watch('ordinary_share_no_shares'),
+    watch('preference_share_no_shares'),
+    watch('non_voting_share_no_shares'),
+    watch('redeemable_share_no_shares'),
+    watch('redeemable_share_no_shares'),
+    watch('irredeemable_share_no_shares'),
   ]);
 
   // HANDLE CAPITAL TOTAL OVERFLOW
@@ -86,7 +91,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
     setValue(
       'total_value',
       tableRows
-        ?.map((row) => watch(row.name))
+        ?.map((row) => watch(`${row.name}_total_value`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
@@ -99,11 +104,11 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
       clearErrors('total_value');
     }
   }, [
-    watch('ordinary_share'),
-    watch('preference_share'),
-    watch('non_voting_share'),
-    watch('redeemable_share'),
-    watch('irredeemable_share'),
+    watch('ordinary_share_total_value'),
+    watch('preference_share_total_value'),
+    watch('non_voting_share_total_value'),
+    watch('redeemable_share_total_value'),
+    watch('irredeemable_share_total_value'),
     watch('company_capital'),
   ]);
 
@@ -114,9 +119,9 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
       setValue('total_value', share_details?.total_value);
       setValue('total_shares', share_details?.total_shares);
       share_details?.shares?.forEach((row: unknown) => {
-        Object.entries(row).forEach(([key, value]) => {
-          setValue(key, value);
-        });
+        setValue(`${row?.name}_no_shares`, row?.no_shares);
+        setValue(`${row?.name}_share_value`, row?.share_value);
+        setValue(`${row?.name}_total_value`, row?.no_shares * row?.share_value);
       });
     }
   }, [setValue, share_details]);
@@ -127,19 +132,22 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setShareDetails({
-          company_capital: data?.company_capital,
-          remaining_capital: data?.company_capital,
-          total_value: data?.total_value,
-          total_shares: data?.total_shares,
-          shares: tableRows?.map((row) => {
-            return {
-              name: row?.name,
-              no_shares: data?.[`${row.name}_no`],
-              share_value: data?.[`${row.name}_value`],
-              remaining_shares: data?.[`${row.name}_no`],
-            };
-          }),
+        setUserApplications({
+          entry_id,
+          share_details: {
+            company_capital: data?.company_capital,
+            remaining_capital: data?.company_capital,
+            total_value: data?.total_value,
+            total_shares: data?.total_shares,
+            shares: tableRows?.map((row) => {
+              return {
+                name: row?.name,
+                no_shares: data?.[`${row.name}_no_shares`],
+                share_value: data?.[`${row.name}_share_value`],
+                remaining_shares: data?.[`${row.name}_no_shares`],
+              };
+            }),
+          },
         })
       );
       dispatch(setBusinessActiveStep('shareholders'));
@@ -151,7 +159,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
 
   return (
     <section className="w-full flex flex-col gap-6">
-      <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-2'>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
         <fieldset className="w-full flex flex-col gap-6">
           <Controller
             name="company_capital"
@@ -198,8 +206,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
                       <Input
                         required
                         defaultValue={
-                          watch(`${row.name}_no`) ||
-                          share_details?.shares?.[index]?.[`${row.name}_no`] ||
+                          watch(`${row.name}_no_shares`) ||
+                          share_details?.shares?.find(
+                            (share) => share?.name === row?.name
+                          )?.no_shares ||
                           0
                         }
                         type="number"
@@ -207,10 +217,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
                           if (Number(e.target.value) < 0) {
                             return;
                           }
-                          setValue(`${row.name}_no`, Number(e.target.value));
+                          setValue(`${row.name}_no_shares`, Number(e.target.value));
                           setValue(
-                            `${row.name}`,
-                            Number(watch(`${row.name}_value`)) *
+                            `${row.name}_total_value`,
+                            Number(watch(`${row.name}_share_value`)) *
                               Number(e.target.value)
                           );
                         }}
@@ -221,20 +231,20 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
                         required
                         type="number"
                         defaultValue={
-                          watch(`${row.name}_value`) ||
-                          share_details?.shares?.[index]?.[
-                            `${row.name}_value`
-                          ] ||
+                          watch(`${row.name}_share_value`) ||
+                          share_details?.shares?.find(
+                            (share) => share?.name === row?.name
+                          )?.share_value ||
                           0
                         }
                         onChange={(e) => {
                           if (Number(e.target.value) < 0) {
                             return;
                           }
-                          setValue(`${row.name}_value`, Number(e.target.value));
+                          setValue(`${row.name}_share_value`, Number(e.target.value));
                           setValue(
-                            `${row.name}`,
-                            Number(watch(`${row.name}_no`)) *
+                            `${row.name}_total_value`,
+                            Number(watch(`${row.name}_no_shares`)) *
                               Number(e.target.value)
                           );
                         }}
@@ -244,7 +254,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
                       <Input
                         required
                         readOnly
-                        value={watch(row.name)}
+                        value={watch(`${row.name}_total_value`)}
                         type="number"
                       />
                     </td>
@@ -264,16 +274,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
                   <Input
                     required
                     readOnly
-                    onChange={(e) => {
-                      e.preventDefault();
-                      setValue(
-                        'company_capital',
-                        tableRows
-                          ?.map((row) => watch(row.name))
-                          ?.filter((row) => Number(row) === row)
-                          ?.reduce((a, b) => a + b, 0)
-                      );
-                    }}
+                    defaultValue={share_details?.total_value}
                     value={watch('total_value')}
                   />
                 </td>
@@ -287,24 +288,24 @@ const ShareDetails: FC<ShareDetailsProps> = ({ isOpen, share_details }) => {
           </table>
         </fieldset>
         <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('employment_info'));
-                dispatch(setBusinessActiveTab('management'));
-                console.log('Back');
-              }}
-            />
-            <Button
-              value={isLoading ? <Loader /> : 'Continue'}
-              primary
-              submit
-              disabled={Object.keys(errors)?.length > 0}
-            />
-          </menu>
+          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('employment_info'));
+              dispatch(setBusinessActiveTab('management'));
+              console.log('Back');
+            }}
+          />
+          <Button
+            value={isLoading ? <Loader /> : 'Continue'}
+            primary
+            submit
+            disabled={Object.keys(errors)?.length > 0}
+          />
+        </menu>
       </form>
     </section>
   );

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, set, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import {
   businessActivities,
@@ -13,7 +13,6 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setCompanyActivities,
   setCompanySubActivities,
 } from '../../../states/features/businessRegistrationSlice';
 import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
@@ -21,6 +20,7 @@ import { Link } from 'react-router-dom';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_company_activities {
   vat: string;
@@ -31,9 +31,14 @@ export interface business_company_activities {
 interface BusinessActivityProps {
   isOpen: boolean;
   company_activities: business_company_activities;
+  entry_id: string | null;
 }
 
-const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen, company_activities }) => {
+const BusinessActivity: FC<BusinessActivityProps> = ({
+  isOpen,
+  company_activities,
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -71,10 +76,14 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen, company_activitie
 
       // UPDATE COMPANY ACTIVITIES
       dispatch(
-        setCompanyActivities({
-          vat: data?.vat,
-          turnover: data?.turnover,
-          business_lines: company_business_lines,
+        setUserApplications({
+          entry_id,
+          company_activities: {
+            ...company_activities,
+            vat: data?.vat,
+            turnover: data?.turnover,
+            business_lines: company_business_lines,
+          },
         })
       );
 
@@ -372,11 +381,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen, company_activitie
               dispatch(setBusinessActiveStep('company_address'));
             }}
           />
-          <Button
-            value={isLoading ? <Loader /> : 'Continue'}
-            submit
-            primary
-          />
+          <Button value={isLoading ? <Loader /> : 'Continue'} submit primary />
         </menu>
       </form>
     </section>

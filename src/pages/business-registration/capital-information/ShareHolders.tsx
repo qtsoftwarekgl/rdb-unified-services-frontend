@@ -21,9 +21,9 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setShareHolders,
 } from '../../../states/features/businessRegistrationSlice';
 import { capitalizeString } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_shareholders {
   shareholder_type: string;
@@ -37,9 +37,14 @@ export interface business_shareholders {
 interface ShareHoldersProps {
   isOpen: boolean;
   shareholders: business_shareholders[];
+  entry_id: string | null;
 }
 
-const ShareHolders: FC<ShareHoldersProps> = ({ isOpen, shareholders }) => {
+const ShareHolders: FC<ShareHoldersProps> = ({
+  isOpen,
+  shareholders = [],
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -70,15 +75,18 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen, shareholders }) => {
     setIsLoading(true);
     setTimeout(() => {
       dispatch(
-        setShareHolders([
-          {
-            ...data,
-            attachment: attachmentFile?.name,
-            step: 'shareholders',
-            no: shareholders?.length - 1,
-          },
-          ...shareholders,
-        ])
+        setUserApplications({
+          entry_id,
+          shareholders: [
+            {
+              ...data,
+              attachment: attachmentFile?.name,
+              step: 'shareholders',
+              no: shareholders?.length - 1,
+            },
+            ...shareholders,
+          ],
+        })
       );
       setIsLoading(false);
       reset();
@@ -124,7 +132,12 @@ const ShareHolders: FC<ShareHoldersProps> = ({ isOpen, shareholders }) => {
                     return index !== row?.original?.no;
                   }
                 );
-                dispatch(setShareHolders(newShareholders));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    shareholders: newShareholders,
+                  })
+                );
               }}
             />
           </menu>

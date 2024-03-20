@@ -10,9 +10,9 @@ import {
 } from '../../../states/features/businessRegistrationSlice';
 import { formatDate } from '../../../helpers/Strings';
 import { ReviewComment } from './AddReviewComments';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const ListReviewComments = () => {
   // STATE VARIABLES

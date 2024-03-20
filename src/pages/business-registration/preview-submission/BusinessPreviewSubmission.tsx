@@ -183,7 +183,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {business_application?.company_address && (
         <PreviewCard
           header="Company Address"
-          tabName="company_address"
+          tabName="general_information"
           stepName="company_address"
           setActiveStep={setBusinessActiveStep}
           setActiveTab={setBusinessActiveTab}
@@ -262,7 +262,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               ? business_application?.board_of_directors?.map((director) => {
                   return {
                     ...director,
-                    name: `${director?.first_name} ${director?.last_name}`,
+                    name: `${director?.first_name || ''} ${director?.last_name || ''}`,
                     phone: director?.phone,
                     position:
                       director?.position &&
@@ -295,7 +295,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               ? business_application?.senior_management?.map((director) => {
                   return {
                     ...director,
-                    name: `${director?.first_name} ${director?.last_name}`,
+                    name: `${director?.first_name || ''} ${director?.last_name || ''}`,
                     phone: director?.phone,
                     position:
                       director?.position &&
@@ -397,7 +397,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     ...shareholder,
                     name: shareholder?.company_name
                       ? shareholder?.company_name
-                      : `${shareholder?.first_name} ${shareholder?.last_name}`,
+                      : `${shareholder?.first_name || ''} ${shareholder?.last_name || ''}`,
                     type:
                       shareholder?.shareholder_type &&
                       capitalizeString(shareholder?.shareholder_type),
@@ -436,7 +436,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     ...shareholder,
                     name: shareholder?.company_name
                       ? shareholder?.company_name
-                      : `${shareholder?.first_name} ${shareholder?.last_name}`,
+                      : `${shareholder?.first_name || ''} ${shareholder?.last_name || ''}`,
                     type:
                       shareholder?.shareholder_type &&
                       capitalizeString(shareholder?.shareholder_type),
@@ -475,7 +475,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     ...owner,
                     name: owner?.company_name
                       ? owner?.company_name
-                      : `${owner?.first_name} ${owner?.last_name}`,
+                      : `${owner?.first_name || ''} ${owner?.last_name || ''}`,
                     phone: owner?.phone || owner?.company_phone,
                     control_type: capitalizeString(owner?.control_type),
                     ownership_type: capitalizeString(owner?.ownership_type),
@@ -511,7 +511,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       key={index}
                       className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {director?.first_name} {director?.last_name}:{' '}
+                      {director?.first_name || ''} {director?.last_name || ''}:{' '}
                       <span className="font-semibold">
                         {director?.attachment}
                       </span>
@@ -532,7 +532,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     key={index}
                     className="flex items-center justify-between w-full gap-6 font-normal"
                   >
-                    {senior?.first_name} {senior?.last_name}:{' '}
+                    {senior?.first_name || ''} {senior?.last_name || ''}:{' '}
                     <span className="font-semibold">{senior?.attachment}</span>
                   </p>
                 );
@@ -549,7 +549,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       key={index}
                       className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {shareholder?.first_name} {shareholder?.last_name}:{' '}
+                      {shareholder?.first_name || ''} {shareholder?.last_name || ''}:{' '}
                       <span className="font-semibold">
                         {shareholder?.attachment}
                       </span>
@@ -561,7 +561,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       key={index}
                       className="flex items-center justify-between w-full gap-6 font-normal"
                     >
-                      {shareholder?.company_name}:{' '}
+                      {shareholder?.company_name || ''}:{' '}
                       <span className="font-semibold">
                         {shareholder?.attachment}
                       </span>
@@ -584,8 +584,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                         key={index}
                         className="flex items-center justify-between w-full gap-6 font-normal"
                       >
-                        {beneficial_owner?.first_name}{' '}
-                        {beneficial_owner?.last_name}:{' '}
+                        {beneficial_owner?.first_name || ''}{' '}
+                        {beneficial_owner?.last_name || ''}:{' '}
                         <span className="font-semibold">
                           {beneficial_owner?.attachment}
                         </span>
@@ -597,7 +597,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                         key={index}
                         className="flex items-center justify-between w-full gap-6 font-normal"
                       >
-                        {beneficial_owner?.company_name}:{' '}
+                        {beneficial_owner?.company_name || ''}:{' '}
                         <span className="font-semibold">
                           {beneficial_owner?.attachment}
                         </span>

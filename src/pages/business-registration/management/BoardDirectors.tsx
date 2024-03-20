@@ -8,7 +8,6 @@ import { userData } from '../../../constants/authentication';
 import { countriesList } from '../../../constants/countries';
 import Button from '../../../components/inputs/Button';
 import {
-  setBoardDirectors,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
@@ -19,6 +18,7 @@ import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_board_of_directors {
   first_name: string;
@@ -29,9 +29,14 @@ export interface business_board_of_directors {
 interface BoardDirectorsProps {
   isOpen: boolean;
   board_of_directors: business_board_of_directors[];
+  entry_id: string | null;
 }
 
-const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen, board_of_directors }) => {
+const BoardDirectors: FC<BoardDirectorsProps> = ({
+  isOpen,
+  board_of_directors = [],
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -74,11 +79,19 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen, board_of_directors })
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setBoardDirectors([{
-        ...data,
-        attachment: attachmentFile?.name,
-        step: 'board_of_directors',
-      }, ...board_of_directors]));
+      dispatch(
+        setUserApplications({
+          entry_id,
+          board_of_directors: [
+            {
+              ...data,
+              attachment: attachmentFile?.name,
+              step: 'board_of_directors',
+            },
+            ...board_of_directors,
+          ],
+        })
+      );
     }, 1000);
     return data;
   };
@@ -112,12 +125,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({ isOpen, board_of_directors })
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setBoardDirectors(
-                    board_of_directors?.filter(
+                  setUserApplications({
+                    entry_id,
+                    board_of_directors: board_of_directors?.filter(
                       (member: unknown) =>
                         member?.first_name !== row?.original?.first_name
-                    )
-                  )
+                    ),
+                  })
                 );
               }}
             />

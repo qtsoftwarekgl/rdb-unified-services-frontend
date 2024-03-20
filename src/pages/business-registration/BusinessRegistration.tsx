@@ -25,6 +25,7 @@ import AddReviewComments from './applications-review/AddReviewComments';
 import ListReviewComments from './applications-review/ListReviewComments';
 import { useEffect } from 'react';
 import { setUserApplications } from '../../states/features/userApplicationSlice';
+import ReviewNavigation from './ReviewNavigation';
 
 const BusinessRegistration = () => {
 
@@ -95,6 +96,7 @@ const BusinessRegistration = () => {
                     <CompanyAddress
                       isOpen={business_active_step?.name === 'company_address'}
                       company_address={businessApplication?.company_address}
+                      entry_id={entry_id}
                     />
                   )}
                   {/* BUSINESS ACTIVITY */}
@@ -106,6 +108,7 @@ const BusinessRegistration = () => {
                       company_activities={
                         businessApplication?.company_activities
                       }
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -118,6 +121,7 @@ const BusinessRegistration = () => {
                       board_of_directors={
                         businessApplication?.board_of_directors
                       }
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -128,6 +132,7 @@ const BusinessRegistration = () => {
                         business_active_step?.name === 'senior_management'
                       }
                       senior_management={businessApplication?.senior_management}
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -136,6 +141,7 @@ const BusinessRegistration = () => {
                     <EmploymentInfo
                       isOpen={business_active_step?.name === 'employment_info'}
                       employment_info={businessApplication?.employment_info}
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -144,6 +150,7 @@ const BusinessRegistration = () => {
                     <ShareDetails
                       isOpen={business_active_step?.name === 'share_details'}
                       share_details={businessApplication?.share_details}
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -152,6 +159,7 @@ const BusinessRegistration = () => {
                     <ShareHolders
                       isOpen={business_active_step?.name === 'shareholders'}
                       shareholders={businessApplication?.shareholders}
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -160,6 +168,9 @@ const BusinessRegistration = () => {
                     <CapitalDetails
                       isOpen={business_active_step?.name === 'capital_details'}
                       capital_details={businessApplication?.capital_details}
+                      entry_id={entry_id}
+                      share_details={businessApplication?.share_details}
+                      shareholders={businessApplication?.shareholders}
                     />
                   )}
 
@@ -170,6 +181,7 @@ const BusinessRegistration = () => {
                         business_active_step?.name === 'beneficial_owners'
                       }
                       beneficial_owners={businessApplication?.beneficial_owners}
+                      entry_id={entry_id}
                     />
                   )}
 
@@ -178,6 +190,7 @@ const BusinessRegistration = () => {
                     <CompanyAttachments
                       isOpen={business_active_step?.name === 'attachments'}
                       company_attachments={businessApplication?.company_attachments}
+                      entry_id={entry_id}
                     />
                   )}
 

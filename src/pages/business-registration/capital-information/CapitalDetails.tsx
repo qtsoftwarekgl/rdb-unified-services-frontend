@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,14 +10,15 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setCapitalDetails,
   setCapitalDetailsModal,
-  setShareHolders,
 } from '../../../states/features/businessRegistrationSlice';
 import CapitalDetailsModal from './CapitalDetailsModal';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 import { useForm } from 'react-hook-form';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { business_share_details } from './ShareDetails';
+import { business_shareholders } from './ShareHolders';
 
 export interface business_capital_details {
   no: number;
@@ -34,10 +35,18 @@ export interface business_capital_details {
 interface CapitalDetailsProps {
   isOpen: boolean;
   capital_details: business_capital_details[];
+  entry_id: string | null;
+  share_details: business_share_details;
+  shareholders: business_shareholders;
 }
 
-const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) => {
-
+const CapitalDetails: FC<CapitalDetailsProps> = ({
+  isOpen,
+  capital_details = [],
+  entry_id,
+  share_details,
+  shareholders = [],
+}) => {
   // REACT HOOK FORM
   const {
     setError,
@@ -49,9 +58,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) =>
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
-  const { share_details, shareholders } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [assignedShares, setAssignedShares] = useState<object>({
     number: 0,
     value: 0,
@@ -78,7 +84,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) =>
         ),
     });
   }, [capital_details]);
-
 
   // TABLE COLUMNS
   const columns = [
@@ -119,18 +124,20 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) =>
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setCapitalDetails(
-                    capital_details?.filter(
+                  setUserApplications({
+                    entry_id,
+                    capital_details: capital_details?.filter(
                       (capital) => capital?.no !== row?.original?.no
-                    )
-                  )
+                    ),
+                  })
                 );
                 dispatch(
-                  setShareHolders(
-                    shareholders?.filter(
+                  setUserApplications({
+                    entry_id,
+                    shareholders: shareholders?.filter(
                       (_, index: number) => index !== row?.original?.no
-                    )
-                  )
+                    ),
+                  })
                 );
               }}
             />
@@ -147,17 +154,18 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) =>
       shareholders?.length > capital_details?.length
     ) {
       dispatch(
-        setCapitalDetails(
-          shareholders?.map((shareholder, index) => {
+        setUserApplications({
+          entry_id,
+          capital_details: shareholders?.map((shareholder, index) => {
             return {
               ...shareholder,
               no: index,
               shares: {
                 total_shares: 0,
-              }
+              },
             };
-          })
-        )
+          }),
+        })
       );
     }
   }, [dispatch, shareholders]);
@@ -197,7 +205,12 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) =>
           </p>
         )}
       </menu>
-      <CapitalDetailsModal shareholder={shareholderShareDetails} />
+      <CapitalDetailsModal
+        capital_details={capital_details}
+        share_details={share_details}
+        entry_id={entry_id}
+        shareholder={shareholderShareDetails}
+      />
       <section className="flex flex-col gap-4">
         <h1 className="font-semibold text-lg uppercase text-[16px]">
           Overall capital details
@@ -221,12 +234,22 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen, capital_details }) =>
         </menu>
         <menu className="flex flex-col gap-2 w-full">
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+            <h2>Total value of assignable shares</h2>
+            <p>RWF {share_details?.total_value}</p>
+          </ul>
+          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Value of assigned shares</h2>
             <p>RWF {assignedShares?.value}</p>
           </ul>
           <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Value of assignable shares</h2>
-            <p>RWF {share_details?.total_value}</p>
+            <h2 className="font-medium uppercase underline">
+              Remaning value of assignable shares
+            </h2>
+            <p className="underline">
+              RWF{' '}
+              {Number(share_details?.total_value) -
+                Number(assignedShares?.value)}
+            </p>
           </ul>
         </menu>
       </section>
