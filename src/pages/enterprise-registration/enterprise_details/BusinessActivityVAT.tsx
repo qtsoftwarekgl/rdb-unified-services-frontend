@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
@@ -16,16 +16,17 @@ import {
   setEnterpriseBusinessLines,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
-import { updateUserApplication } from "../../../states/features/userApplicationSlice";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BusinessActivityProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
+const BusinessActivity = ({ isOpen, entry_id }: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -43,10 +44,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
     enterprise_registration_active_step,
   } = useSelector((state: RootState) => state.enterpriseRegistration);
 
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
-
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
     setIsLoading(true);
@@ -60,10 +57,12 @@ const BusinessActivity: FC<BusinessActivityProps> = ({ isOpen }) => {
       );
 
       dispatch(
-        updateUserApplication({
-          business_lines: enterprise_business_lines,
+        setUserApplications({
+          business_lines: {
+            enterprise_business_lines,
+            step: { ...enterprise_registration_active_step },
+          },
           entry_id,
-          step: { ...enterprise_registration_active_step },
         })
       );
 

@@ -8,15 +8,16 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
 
 type Props = {
   isOpen: boolean;
+  entry_id: string | null;
 };
 
-const Preview = ({ isOpen }: Props) => {
+const Preview = ({ isOpen, entry_id }: Props) => {
   const {
     enterprise_attachments,
     enterprise_business_lines,
@@ -26,9 +27,6 @@ const Preview = ({ isOpen }: Props) => {
   } = useSelector((state: RootState) => state.enterpriseRegistration);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
 
   if (!isOpen) {
     return null;
@@ -43,17 +41,10 @@ const Preview = ({ isOpen }: Props) => {
     // reset all data
     dispatch(
       setUserApplications({
-        enterprise_attachments: { ...enterprise_attachments },
-        enterprise_business_lines: [...enterprise_business_lines],
-        enterprise_details: {
-          ...enterprise_details,
-          status: "pending",
-        },
-        type: "enterprise",
         path: `/enterprise-registration?entry_id=${entry_id}`,
-        enterprise_office_address: { ...enterprise_office_address },
         entry_id,
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        status: "submitted",
       })
     );
     dispatch(resetToInitialState());

@@ -56,7 +56,7 @@ const UserApplications = () => {
           Math.floor(Math.random() * 9000) + 1000,
         reg_number: `REG-${business?.entry_id?.split("-")[0]?.toUpperCase()}`,
         service_name: capitalizeString(business?.type),
-        submission_date: business.created_at,
+        submission_date: business?.created_at,
         path: business?.path,
       };
     })

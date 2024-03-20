@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import UserLayout from "../../containers/UserLayout";
 import ProgressNavigation from "../business-registration/ProgressNavigation";
@@ -18,6 +18,8 @@ import EmploymentInfo from "./management/EmploymentInfo";
 import BeneficialOwners from "./beneficial-owners/BeneficialOwners";
 import CompanyAttachments from "./attachments/CompanyAttachments";
 import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
+import { useEffect } from "react";
 
 const ForeignBranchRegistration = () => {
   // STATE VARIABLES
@@ -31,6 +33,17 @@ const ForeignBranchRegistration = () => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const entry_id = queryParams.get("entry_id");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setUserApplications({
+        entry_id,
+        status: "in_progress",
+        type: "foreign_branch",
+      })
+    );
+  }, [entry_id, dispatch]);
 
   return (
     <UserLayout>
@@ -55,12 +68,14 @@ const ForeignBranchRegistration = () => {
                     isOpen={
                       foreign_business_active_step?.name === "company_details"
                     }
+                    entry_id={entry_id}
                   />
                   {/* COMPANY ADDRESS */}
                   <CompanyAddress
                     isOpen={
                       foreign_business_active_step?.name === "company_address"
                     }
+                    entry_id={entry_id}
                   />
                   {/* BUSINESS ACTIVITY */}
                   <BusinessActivity
@@ -68,6 +83,7 @@ const ForeignBranchRegistration = () => {
                       foreign_business_active_step?.name ===
                       "business_activity_vat"
                     }
+                    entry_id={entry_id}
                   />
 
                   {/* BOARD OF DIRECTORS */}
@@ -76,6 +92,7 @@ const ForeignBranchRegistration = () => {
                       foreign_business_active_step?.name ===
                       "board_of_directors"
                     }
+                    entry_id={entry_id}
                   />
 
                   {/* SENIOR MANAGEMENT */}
@@ -83,6 +100,7 @@ const ForeignBranchRegistration = () => {
                     isOpen={
                       foreign_business_active_step?.name === "senior_management"
                     }
+                    entry_id={entry_id}
                   />
 
                   {/* EMPLOYMENT INFO */}
@@ -90,6 +108,7 @@ const ForeignBranchRegistration = () => {
                     isOpen={
                       foreign_business_active_step?.name === "employment_info"
                     }
+                    entry_id={entry_id}
                   />
 
                   {/* BENEFICIAL OWNERS */}
@@ -97,6 +116,7 @@ const ForeignBranchRegistration = () => {
                     isOpen={
                       foreign_business_active_step?.name === "beneficial_owners"
                     }
+                    entry_id={entry_id}
                   />
 
                   {/* ATTACHMENTS */}
@@ -104,6 +124,7 @@ const ForeignBranchRegistration = () => {
                     isOpen={
                       foreign_business_active_step?.name === "attachments"
                     }
+                    entry_id={entry_id}
                   />
 
                   {/* PREVIEW AND SUBMISSINO */}
@@ -112,6 +133,7 @@ const ForeignBranchRegistration = () => {
                       foreign_business_active_step?.name ===
                       "preview_submission"
                     }
+                    entry_id={entry_id}
                   />
                 </Tab>
               );

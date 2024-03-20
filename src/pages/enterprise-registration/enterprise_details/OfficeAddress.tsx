@@ -21,6 +21,7 @@ import {
   setEnterpriseCompletedTab,
   setEnterpriseOfficeAddress,
 } from "../../../states/features/enterpriseRegistrationSlice";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface AdministrativeUnits {
   provinces: string[];
@@ -31,9 +32,10 @@ interface AdministrativeUnits {
 }
 interface OfficeAddressProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const OfficeAddress = ({ isOpen }: OfficeAddressProps) => {
+const OfficeAddress = ({ isOpen, entry_id }: OfficeAddressProps) => {
   const {
     control,
     handleSubmit,
@@ -143,6 +145,16 @@ const OfficeAddress = ({ isOpen }: OfficeAddressProps) => {
         setEnterpriseOfficeAddress({
           ...data,
           step: { ...enterprise_registration_active_step },
+        })
+      );
+
+      dispatch(
+        setUserApplications({
+          entry_id,
+          office_address: {
+            ...data,
+            step: { ...enterprise_registration_active_step },
+          },
         })
       );
 

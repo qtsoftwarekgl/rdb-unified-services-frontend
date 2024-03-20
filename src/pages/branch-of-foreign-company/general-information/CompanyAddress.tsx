@@ -14,12 +14,14 @@ import {
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Select from "../../../components/inputs/Select";
 import { countriesList } from "../../../constants/countries";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface CompanyAddressProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
+const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, entry_id }) => {
   // REACT HOOK FORM
   const {
     control,
@@ -55,7 +57,16 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setForeignCompanyAddress(data));
+      dispatch(setForeignCompanyAddress({ data, step: "company_address" }));
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_company_address: {
+            ...data,
+            step: "company_address",
+          },
+        })
+      );
       dispatch(setForeignBusinessActiveStep("business_activity_vat"));
       dispatch(setForeignBusinessCompletedStep("company_address"));
     }, 1000);

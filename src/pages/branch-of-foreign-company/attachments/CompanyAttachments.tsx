@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import { Controller, FieldValues, useForm } from "react-hook-form";
@@ -13,12 +13,14 @@ import {
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface CompanyAttachmentsProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
+const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
   // REACT HOOK FORM
   const {
     control,
@@ -53,6 +55,21 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({ isOpen }) => {
             };
           })
         )
+      );
+      dispatch(
+        setUserApplications({
+          entry_id,
+          foreign_company_attachments: {
+            attachments: Array.from(attachmentFiles)?.map((file: File) => {
+              return {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+              };
+            }),
+            step: "attachments",
+          },
+        })
       );
       dispatch(setForeignBusinessCompletedStep("attachments"));
       dispatch(setForeignBusinessActiveStep("preview_submission"));
