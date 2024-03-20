@@ -19,12 +19,14 @@ import {
   setCompanyDetails,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 interface CompanyDetailsProps {
   isOpen: boolean;
+  entry_id: string | null;
 }
 
-const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
+const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -36,9 +38,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { company_details } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
+  const { user_applications } = useSelector((state: RootState) => state.userApplication);
+  const company_details = user_applications?.find((app) => app?.entry_id === entry_id);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchCompany, setSearchCompany] = useState({
     error: false,
@@ -72,6 +73,19 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen }) => {
           step: 'company_details',
         })
       );
+
+      dispatch(setUserApplications({
+        entry_id,
+        company_details: {
+          ...company_details,
+          name: data?.name,
+          category: data?.category,
+          type: data?.type,
+          position: data?.position,
+          articles_of_association: data?.articles_of_association,
+          step: 'company_details',
+        }
+      }))
 
       // SET CURRENT STEP AS COMPLETED
       dispatch(setBusinessCompletedStep('company_details'));

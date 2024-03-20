@@ -11,6 +11,7 @@ import {
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setCapitalDetails,
+  setCapitalDetailsModal,
   setShareHolders,
 } from '../../../states/features/businessRegistrationSlice';
 import CapitalDetailsModal from './CapitalDetailsModal';
@@ -25,12 +26,15 @@ interface CapitalDetailsProps {
 const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
 
   // REACT HOOK FORM
-  const { setError, clearErrors } = useForm();
+  const {
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [openShareDetails, setOpenShareDetails] = useState<boolean>(false);
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
   const { share_details, shareholders, capital_details } = useSelector(
     (state: RootState) => state.businessRegistration
@@ -93,7 +97,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
               onClick={(e) => {
                 e.preventDefault();
                 setShareholderShareDetails(row?.original);
-                setOpenShareDetails(true);
+                dispatch(setCapitalDetailsModal(true));
               }}
             />
             <FontAwesomeIcon
@@ -135,6 +139,9 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
             return {
               ...shareholder,
               no: index,
+              shares: {
+                total_shares: 0,
+              }
             };
           })
         )
@@ -146,7 +153,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
 
   return (
     <section className="w-full flex flex-col gap-6">
-      <Table
+     <menu className='flex flex-col gap-2 w-full'>
+     <Table
         tableTitle="Shareholders"
         data={capital_details?.map((shareholder: unknown, index: number) => {
           return {
@@ -166,9 +174,13 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
         showFilter={false}
         showPagination={false}
       />
+      {errors?.total_shares && (
+        <p className="text-red-500 text-[13px] text-center">
+          {String(errors?.total_shares?.message)}
+        </p>
+      )}
+     </menu>
       <CapitalDetailsModal
-        isOpen={openShareDetails}
-        onClose={() => setOpenShareDetails(false)}
         shareholder={shareholderShareDetails}
       />
       <section className="flex flex-col gap-4">
@@ -230,7 +242,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ isOpen }) => {
               ) {
                 setError('total_shares', {
                   type: 'manual',
-                  message: 'Some shareholders have 0 shares',
+                  message: 'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
                 });
                 return;
               } else {

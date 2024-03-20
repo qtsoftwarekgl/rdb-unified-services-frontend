@@ -40,7 +40,7 @@ const JSX_MODAL: FC<ModalProps> = ({
       } min-h-screen flex items-center justify-center flex-col gap-6 fixed top-0 bottom-0 left-0 right-0 z-[1000] bg-black bg-opacity-30 transition-opacity ease-in-out duration-300 ${mainClassName}`}
       onClick={(e) => {
         e.preventDefault();
-        onClose();
+        e.stopPropagation();
       }}
     >
       <section
