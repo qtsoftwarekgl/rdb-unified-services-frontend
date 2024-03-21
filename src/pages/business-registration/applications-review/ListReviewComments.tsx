@@ -2,43 +2,55 @@ import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../../components/Modal';
 import {
-  setAddReviewCommentsModal,
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setListCommentsModal,
-  setReviewComments,
 } from '../../../states/features/businessRegistrationSlice';
 import { formatDate } from '../../../helpers/Strings';
 import { ReviewComment } from './AddReviewComments';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  setAddReviewCommentsModal,
+  setApplicationReviewComments,
+  setListReviewCommentsModal,
+} from '../../../states/features/userApplicationSlice';
+import { FC } from 'react';
 
-const ListReviewComments = () => {
+interface ListReviewCommentsProps {
+  entry_id: string | null;
+}
+
+const ListReviewComments: FC<ListReviewCommentsProps> = ({ entry_id }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { listCommentsModal, business_review_comments } = useSelector(
-    (state: RootState) => state.businessRegistration
+  const { listReviewCommentsModal, application_review_comments } = useSelector(
+    (state: RootState) => state.userApplication
   );
 
   return (
     <Modal
-      isOpen={listCommentsModal}
+      isOpen={listReviewCommentsModal}
       onClose={() => {
-        dispatch(setListCommentsModal(false));
+        dispatch(setListReviewCommentsModal(false));
       }}
     >
       <section className="flex w-full flex-col gap-6 mt-6 max-h-[70vh] overflow-y-scroll pr-4">
-        <h1 className='uppercase text-lg text-primary text-center font-semibold'>Business Registration Review Comments</h1>
-        {business_review_comments?.map(
-          (comment: ReviewComment, index: number) => {
+        <h1 className="uppercase text-lg text-primary text-center font-semibold">
+          Business Registration Review Comments
+        </h1>
+        {application_review_comments
+          ?.filter((review: ReviewComment) => review?.entry_id === entry_id)
+          ?.map((comment: ReviewComment, index: number) => {
             return (
               <menu
                 key={index}
                 className="flex items-center gap-3 w-full justify-between p-2 px-4 rounded-md hover:bg-slate-50"
               >
                 <ul className="flex flex-col gap-1">
-                  <h3 className='font-semibold uppercase text-primary'>{comment?.step?.label}</h3>
+                  <h3 className="font-semibold uppercase text-primary">
+                    {comment?.step?.label}
+                  </h3>
                   <p className="text-[14px] font-normal">{comment.comment}</p>
                   <p className="text-sm">{formatDate(comment.created_at)}</p>
                 </ul>
@@ -51,7 +63,7 @@ const ListReviewComments = () => {
                       dispatch(setBusinessActiveTab(comment?.tab?.name));
                       dispatch(setBusinessActiveStep(comment?.step?.name));
                       dispatch(setAddReviewCommentsModal(true));
-                      dispatch(setListCommentsModal(false));
+                      dispatch(setListReviewCommentsModal(false));
                     }}
                   />
                   <FontAwesomeIcon
@@ -60,8 +72,8 @@ const ListReviewComments = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       dispatch(
-                        setReviewComments(
-                          business_review_comments.filter(
+                        setApplicationReviewComments(
+                          application_review_comments.filter(
                             (business_comment: ReviewComment) =>
                               business_comment !== comment
                           )
@@ -72,8 +84,7 @@ const ListReviewComments = () => {
                 </ul>
               </menu>
             );
-          }
-        )}
+          })}
       </section>
     </Modal>
   );

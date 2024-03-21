@@ -12,21 +12,30 @@ import {
   privateCompanyTypes,
 } from '../../../constants/businessRegistration';
 import Button from '../../../components/inputs/Button';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import {
   setBusinessActiveStep,
-  setCompanyDetails,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
+export interface business_company_details {
+  name: string;
+  category: string;
+  type: string;
+  position: string;
+  articles_of_association: string;
+  step: string;
+}
+
 interface CompanyDetailsProps {
   isOpen: boolean;
   entry_id: string | null;
+  company_details: business_company_details | null;
 }
 
-const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
+const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id, company_details }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -38,8 +47,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { user_applications } = useSelector((state: RootState) => state.userApplication);
-  const company_details = user_applications?.find((app) => app?.entry_id === entry_id);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchCompany, setSearchCompany] = useState({
     error: false,
@@ -63,17 +70,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(
-        setCompanyDetails({
-          name: data?.name,
-          category: data?.category,
-          type: data?.type,
-          position: data?.position,
-          articles_of_association: data?.articles_of_association,
-          step: 'company_details',
-        })
-      );
-
       dispatch(setUserApplications({
         entry_id,
         company_details: {
@@ -227,7 +223,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
               companyCategories?.find(
                 (category) => category?.value === company_details?.category
               ) ||
-              companyCategories?.[0] ||
+              companyCategories?.[0]?.value ||
               watch('category') ||
               company_details?.category
             }

@@ -24,7 +24,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
               e.preventDefault();
               dispatch(setActiveTab(tab?.name));
             }}
-            className={`step rounded-none w-full h-full py-[6px] flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white ${
+            className={`step rounded-none w-full h-full py-[6px] px-2 flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white ${
               index < arr.length - 1 && 'border-r border-gray-500'
             } ${tab?.active && 'bg-primary text-white !rounded-md'}`}
           >

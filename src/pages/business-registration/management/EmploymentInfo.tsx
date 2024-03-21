@@ -2,21 +2,35 @@ import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../../../states/store';
+import { useDispatch } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setEmploymentInfo,
 } from '../../../states/features/businessRegistrationSlice';
 import Loader from '../../../components/Loader';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+
+export interface business_employment_info {
+  has_employees: string;
+  hiring_date?: string;
+  employees_no?: number;
+  reference_date?: string;
+  number_of_employees?: number;
+}
 
 interface EmploymentInfoProps {
   isOpen: boolean;
+  employment_info: business_employment_info;
+  entry_id: string | null;
 }
 
-const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
+const EmploymentInfo: FC<EmploymentInfoProps> = ({
+  isOpen,
+  employment_info,
+  entry_id,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -28,9 +42,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { employment_info } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // SET DEFAULT VALUES
@@ -49,9 +60,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ isOpen }) => {
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setEmploymentInfo({
-          ...data,
-          step: 'employment_info',
+        setUserApplications({
+          entry_id,
+          employment_info: {
+            ...data,
+            step: 'employment_info',
+          },
         })
       );
       dispatch(setBusinessCompletedStep('employment_info'));
