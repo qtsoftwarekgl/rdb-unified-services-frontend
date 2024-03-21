@@ -37,6 +37,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
   const { enterprise_registration_active_step } = useSelector(
     (state: RootState) => state.enterpriseRegistration
   );
+  const { user } = useSelector((state: RootState) => state.user);
 
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -72,216 +73,226 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
 
   return (
     <section className="flex flex-col w-full gap-5">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col w-full gap-6"
-      >
-        <label className="flex flex-col gap-1 w-[50%] items-start">
-          <Select
-            label="Select sector"
-            required
-            defaultValue={{
-              label: businessActivities[0]?.name,
-              value: businessActivities[0]?.id,
-            }}
-            options={businessActivities?.map((activity) => {
-              return {
-                label: activity.name,
-                value: activity.id,
-              };
-            })}
-            onChange={(e) => {
-              setRandomNumber(Math.floor(Math.random() * 10) + 1);
-              console.log(e);
-            }}
-          />
-          {errors.activity && (
-            <p className="text-[13px] text-red-500">
-              {String(errors.activity.message)}
-            </p>
-          )}
-        </label>
-        <menu className="flex items-start w-full gap-6">
-          <section className="flex flex-col w-full gap-4">
-            <h1 className="text-md">Select business line</h1>
-            <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-              {businessSubActivities
-                ?.slice(0, randomNumber)
-                .map((subActivity) => {
-                  const subActivityExists = enterprise_business_lines?.find(
-                    (activity: object) => activity?.id === subActivity?.id
-                  );
-                  return (
-                    <li
-                      key={subActivity.id}
-                      className="flex items-center justify-between w-full gap-3 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white hover:shadow-md"
-                    >
-                      <p className="text-start">{subActivity?.name}</p>
-                      {!subActivityExists ? (
-                        <FontAwesomeIcon
-                          className="bg-transparent hover:bg-white hover:text-primary rounded-full p-[4px] px-[5px] cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
-                          icon={faPlus}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (enterprise_business_lines?.length > 0) {
-                              dispatch(
-                                setUserApplications({
-                                  business_lines: {
-                                    enterprise_business_lines: [
-                                      ...enterprise_business_lines,
-                                      subActivity,
-                                    ],
-                                  },
-                                  entry_id,
-                                })
-                              );
-                            } else {
-                              dispatch(
-                                setUserApplications({
-                                  business_lines: {
-                                    enterprise_business_lines: [subActivity],
-                                  },
-                                  entry_id,
-                                })
-                              );
-                            }
-                          }}
-                        />
-                      ) : (
-                        <FontAwesomeIcon
-                          icon={faCircleCheck}
-                          onClick={(e) => {
-                            e.preventDefault();
-                          }}
-                        />
-                      )}
-                    </li>
-                  );
-                })}
-            </ul>
-          </section>
-          <section className="flex flex-col w-full gap-4">
-            <h1 className="text-md">Selected business lines</h1>
-            <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-              {enterprise_business_lines?.map(
-                (business_line: unknown, index: number) => {
-                  const mainExists = enterprise_business_lines?.find(
-                    (activity: object) => activity?.main === true
-                  );
-                  const mainBusinessLine = mainExists?.id === business_line?.id;
-                  return (
-                    <li
-                      key={index}
-                      className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-md"
-                    >
-                      <menu className="flex items-center gap-2">
-                        <p className="text-start">{business_line?.name}</p>
-                        {mainExists && mainBusinessLine && (
-                          <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
-                            Main{" "}
-                            <FontAwesomeIcon
-                              icon={faMinus}
-                              className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <fieldset
+          className="flex flex-col w-full gap-6"
+          disabled={user?.email?.includes("info@rdb")}
+        >
+          <label className="flex flex-col gap-1 w-[50%] items-start">
+            <Select
+              label="Select sector"
+              required
+              defaultValue={{
+                label: businessActivities[0]?.name,
+                value: businessActivities[0]?.id,
+              }}
+              options={businessActivities?.map((activity) => {
+                return {
+                  label: activity.name,
+                  value: activity.id,
+                };
+              })}
+              onChange={(e) => {
+                setRandomNumber(Math.floor(Math.random() * 10) + 1);
+                console.log(e);
+              }}
+            />
+            {errors.activity && (
+              <p className="text-[13px] text-red-500">
+                {String(errors.activity.message)}
+              </p>
+            )}
+          </label>
+          <menu className="flex items-start w-full gap-6">
+            <section className="flex flex-col w-full gap-4">
+              <h1 className="text-md">Select business line</h1>
+              <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
+                {businessSubActivities
+                  ?.slice(0, randomNumber)
+                  .map((subActivity) => {
+                    const subActivityExists = enterprise_business_lines?.find(
+                      (activity: object) => activity?.id === subActivity?.id
+                    );
+                    return (
+                      <li
+                        key={subActivity.id}
+                        className="flex items-center justify-between w-full gap-3 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white hover:shadow-md"
+                      >
+                        <p className="text-start">{subActivity?.name}</p>
+                        {!subActivityExists ? (
+                          <FontAwesomeIcon
+                            className="bg-transparent hover:bg-white hover:text-primary rounded-full p-[4px] px-[5px] cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
+                            icon={faPlus}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (enterprise_business_lines?.length > 0) {
+                                dispatch(
+                                  setUserApplications({
+                                    business_lines: {
+                                      enterprise_business_lines: [
+                                        ...enterprise_business_lines,
+                                        subActivity,
+                                      ],
+                                    },
+                                    entry_id,
+                                  })
+                                );
+                              } else {
+                                dispatch(
+                                  setUserApplications({
+                                    business_lines: {
+                                      enterprise_business_lines: [subActivity],
+                                    },
+                                    entry_id,
+                                  })
+                                );
+                              }
+                            }}
+                          />
+                        ) : (
+                          <FontAwesomeIcon
+                            icon={faCircleCheck}
+                            onClick={(e) => {
+                              e.preventDefault();
+                            }}
+                          />
+                        )}
+                      </li>
+                    );
+                  })}
+              </ul>
+            </section>
+            <section className="flex flex-col w-full gap-4">
+              <h1 className="text-md">Selected business lines</h1>
+              <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
+                {enterprise_business_lines?.map(
+                  (business_line: unknown, index: number) => {
+                    const mainExists = enterprise_business_lines?.find(
+                      (activity: object) => activity?.main === true
+                    );
+                    const mainBusinessLine =
+                      mainExists?.id === business_line?.id;
+                    return (
+                      <li
+                        key={index}
+                        className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-md"
+                      >
+                        <menu className="flex items-center gap-2">
+                          <p className="text-start">{business_line?.name}</p>
+                          {mainExists && mainBusinessLine && (
+                            <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
+                              Main{" "}
+                              <FontAwesomeIcon
+                                icon={faMinus}
+                                className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  const updatedActivities =
+                                    enterprise_business_lines?.map(
+                                      (activity: object) => {
+                                        if (
+                                          activity?.id === business_line?.id
+                                        ) {
+                                          return {
+                                            ...activity,
+                                            main: false,
+                                          };
+                                        }
+                                        return activity;
+                                      }
+                                    );
+                                  dispatch(
+                                    setUserApplications({
+                                      business_lines: {
+                                        enterprise_business_lines:
+                                          updatedActivities,
+                                      },
+                                      entry_id,
+                                    })
+                                  );
+                                }}
+                              />
+                            </p>
+                          )}
+                          {!mainExists && (
+                            <Link
+                              to="#"
+                              className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
                               onClick={(e) => {
                                 e.preventDefault();
-                                const updatedActivities =
-                                  enterprise_business_lines?.map(
-                                    (activity: object) => {
-                                      if (activity?.id === business_line?.id) {
-                                        return {
-                                          ...activity,
-                                          main: false,
-                                        };
-                                      }
-                                      return activity;
-                                    }
-                                  );
                                 dispatch(
                                   setUserApplications({
                                     business_lines: {
                                       enterprise_business_lines:
-                                        updatedActivities,
+                                        enterprise_business_lines?.map(
+                                          (activity: object) => {
+                                            if (
+                                              activity?.id === business_line?.id
+                                            ) {
+                                              return {
+                                                ...activity,
+                                                main: true,
+                                              };
+                                            }
+                                            return activity;
+                                          }
+                                        ),
                                     },
                                     entry_id,
                                   })
                                 );
                               }}
-                            />
-                          </p>
-                        )}
-                        {!mainExists && (
-                          <Link
-                            to="#"
-                            className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              dispatch(
-                                setUserApplications({
-                                  business_lines: {
-                                    enterprise_business_lines:
-                                      enterprise_business_lines?.map(
-                                        (activity: object) => {
-                                          if (
-                                            activity?.id === business_line?.id
-                                          ) {
-                                            return {
-                                              ...activity,
-                                              main: true,
-                                            };
-                                          }
-                                          return activity;
-                                        }
-                                      ),
-                                  },
-                                  entry_id,
-                                })
+                            >
+                              Set main
+                            </Link>
+                          )}
+                        </menu>
+                        <FontAwesomeIcon
+                          className="bg-transparent hover:bg-primary hover:text-white rounded-full p-[7px] px-2 cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
+                          icon={faMinus}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const updatedSubActivities =
+                              enterprise_business_lines?.filter(
+                                (subActivity: unknown) => {
+                                  return subActivity?.id !== business_line?.id;
+                                }
                               );
-                            }}
-                          >
-                            Set main
-                          </Link>
-                        )}
-                      </menu>
-                      <FontAwesomeIcon
-                        className="bg-transparent hover:bg-primary hover:text-white rounded-full p-[7px] px-2 cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
-                        icon={faMinus}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const updatedSubActivities =
-                            enterprise_business_lines?.filter(
-                              (subActivity: unknown) => {
-                                return subActivity?.id !== business_line?.id;
-                              }
+                            dispatch(
+                              setUserApplications({
+                                business_lines: {
+                                  enterprise_business_lines:
+                                    updatedSubActivities,
+                                },
+                                entry_id,
+                              })
                             );
-                          dispatch(
-                            setUserApplications({
-                              business_lines: {
-                                enterprise_business_lines: updatedSubActivities,
-                              },
-                              entry_id,
-                            })
-                          );
-                        }}
-                      />
-                    </li>
-                  );
-                }
-              )}
-            </ul>
-          </section>
-        </menu>
-        <menu
-          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-        >
-          <Button
-            value="Back"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setEnterpriseActiveStep("enterprise_details"));
-            }}
-          />
-          <Button value={isLoading ? <Loader /> : "Continue"} primary submit />
-        </menu>
+                          }}
+                        />
+                      </li>
+                    );
+                  }
+                )}
+              </ul>
+            </section>
+          </menu>
+          <menu
+            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+          >
+            <Button
+              value="Back"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setEnterpriseActiveStep("enterprise_details"));
+              }}
+            />
+            <Button
+              value={isLoading ? <Loader /> : "Continue"}
+              primary
+              submit
+            />
+          </menu>
+        </fieldset>
       </form>
     </section>
   );

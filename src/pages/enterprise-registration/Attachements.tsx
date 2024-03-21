@@ -44,6 +44,8 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
     (state: RootState) => state.enterpriseRegistration
   );
 
+  const { user } = useSelector((state: RootState) => state.user);
+
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
@@ -104,70 +106,76 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmitAttachments)}>
-        {attachmentFiles.map((file, index) => (
-          <menu
-            key={index}
-            className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center"
-          >
-            <menu className="flex items-start w-full gap-12">
-              <h3 className="capitalize text-[14px] font-normal w-1/2">
-                {file.label} <span className="text-red-600">*</span>
-              </h3>
-              <Controller
-                name={`attachment${index + 1}`}
-                rules={{
-                  required: `Document attachment ${index + 1} is required`,
-                }}
-                control={control}
-                render={({ field }) => (
-                  <label className="flex flex-col w-1/2 items-start gap-2 max-sm:!w-full">
-                    <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                      <Input
-                        type="file"
-                        accept="application/pdf,image/*"
-                        className="!w-fit max-sm:!w-full"
-                        onChange={(e) => {
-                          field.onChange(e?.target?.files?.[0]);
-                          handleFileChange(index, e?.target?.files?.[0]);
-                        }}
-                      />
-                      {(file?.file || attachmentFilesNames?.length > 0) && (
-                        <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                          {file.file?.name || attachmentFilesNames[index]}
-                          <FontAwesomeIcon
-                            icon={faTimes}
-                            className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                            onClick={() => {
-                              removeAttachment(index);
-                              setValue(`attachment${index + 1}`, null);
-                            }}
-                          />
+        <fieldset disabled={user.email.includes("info@rdb")}>
+          {attachmentFiles.map((file, index) => (
+            <menu
+              key={index}
+              className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center"
+            >
+              <menu className="flex items-start w-full gap-12">
+                <h3 className="capitalize text-[14px] font-normal w-1/2">
+                  {file.label} <span className="text-red-600">*</span>
+                </h3>
+                <Controller
+                  name={`attachment${index + 1}`}
+                  rules={{
+                    required: `Document attachment ${index + 1} is required`,
+                  }}
+                  control={control}
+                  render={({ field }) => (
+                    <label className="flex flex-col w-1/2 items-start gap-2 max-sm:!w-full">
+                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                        <Input
+                          type="file"
+                          accept="application/pdf,image/*"
+                          className="!w-fit max-sm:!w-full"
+                          onChange={(e) => {
+                            field.onChange(e?.target?.files?.[0]);
+                            handleFileChange(index, e?.target?.files?.[0]);
+                          }}
+                        />
+                        {(file?.file || attachmentFilesNames?.length > 0) && (
+                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                            {file.file?.name || attachmentFilesNames[index]}
+                            <FontAwesomeIcon
+                              icon={faTimes}
+                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                              onClick={() => {
+                                removeAttachment(index);
+                                setValue(`attachment${index + 1}`, null);
+                              }}
+                            />
+                          </p>
+                        )}
+                      </ul>
+                      {errors[`attachment${index + 1}`] && (
+                        <p className="text-sm text-red-500">
+                          {errors[`attachment${index + 1}`].message}
                         </p>
                       )}
-                    </ul>
-                    {errors[`attachment${index + 1}`] && (
-                      <p className="text-sm text-red-500">
-                        {errors[`attachment${index + 1}`].message}
-                      </p>
-                    )}
-                  </label>
-                )}
-              />
+                    </label>
+                  )}
+                />
+              </menu>
             </menu>
+          ))}
+          <menu
+            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+          >
+            <Button
+              value="Back"
+              onClick={() => {
+                dispatch(setEnterpriseActiveTab("enterprise_details"));
+                dispatch(setEnterpriseActiveStep("office_address"));
+              }}
+            />
+            <Button
+              value={isLoading ? <Loader /> : "Continue"}
+              primary
+              submit
+            />
           </menu>
-        ))}
-        <menu
-          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-        >
-          <Button
-            value="Back"
-            onClick={() => {
-              dispatch(setEnterpriseActiveTab("enterprise_details"));
-              dispatch(setEnterpriseActiveStep("office_address"));
-            }}
-          />
-          <Button value={isLoading ? <Loader /> : "Continue"} primary submit />
-        </menu>
+        </fieldset>
       </form>
     </section>
   );

@@ -3,19 +3,19 @@ import {
   faChevronCircleLeft,
   faChevronCircleRight,
   faX,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../../components/inputs/Button';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../states/store';
-import { Step, TabType } from '../../states/features/types';
-import { Link } from 'react-router-dom';
-import { FC, useState } from 'react';
-import { UnknownAction } from '@reduxjs/toolkit';
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "../../components/inputs/Button";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../states/store";
+import { Step, TabType } from "../../states/features/types";
+import { Link } from "react-router-dom";
+import { FC, useState } from "react";
+import { UnknownAction } from "@reduxjs/toolkit";
 import {
   setAddReviewCommentsModal,
   setListReviewCommentsModal,
-} from '../../states/features/userApplicationSlice';
+} from "../../states/features/userApplicationSlice";
 
 interface ReviewNavigationProps {
   tabs: Array<TabType>;
@@ -36,19 +36,17 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
 
   // HANDLE STEPS NAVIGATION
   const handleNavigation = (direction: string) => {
-    const steps = tabs?.flatMap(
-      (tab: TabType) => tab?.steps
-    );
+    const steps = tabs?.flatMap((tab: TabType) => tab?.steps);
     const activeStepIndex = steps?.findIndex(
       (step: Step) => step?.name === activeStep?.name
     );
     const nextStep = steps?.[activeStepIndex + 1];
     const prevStep = steps?.[activeStepIndex - 1];
 
-    if (direction === 'next') {
+    if (direction === "next") {
       dispatch(setActiveStep(nextStep?.name));
       dispatch(setActiveTab(nextStep?.tab_name));
-    } else if (direction === 'prev') {
+    } else if (direction === "prev") {
       dispatch(setActiveStep(prevStep?.name));
       dispatch(setActiveTab(prevStep?.tab_name));
     }
@@ -56,30 +54,34 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
 
   return (
     <section className="left-[17vw] right-0 w-fit mx-auto fixed bottom-4">
-      <menu className="flex gap-3 items-center justify-center bg-white w-fit p-5 rounded-md shadow-md mx-auto relative">
+      <menu className="relative flex items-center justify-center gap-3 p-5 mx-auto bg-white rounded-md shadow-md w-fit">
         <FontAwesomeIcon
           icon={faChevronCircleLeft}
           onClick={(e) => {
-            if (activeStep?.name === 'company_details') {
+            if (
+              activeStep?.name.includes("company_details") ||
+              activeStep?.name === "enterprise_details"
+            ) {
               return;
             }
             e.preventDefault();
-            handleNavigation('prev');
+            handleNavigation("prev");
           }}
           className={`${
-            activeStep?.name === 'company_details'
-              ? 'text-secondary !cursor-default hover:scale-[1]'
-              : 'flex'
+            activeStep?.name.includes("company_details") ||
+            activeStep?.name === "enterprise_details"
+              ? "text-secondary !cursor-default hover:scale-[1]"
+              : "flex"
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
         <ul className="flex items-center gap-3">
           <Button
             value="Recommend for approval"
-            primary={activeStep?.name === 'preview_submission'}
-            disabled={activeStep?.name !== 'preview_submission'}
+            primary={activeStep?.name.includes("preview_submission")}
+            disabled={!activeStep?.name.includes("preview_submission")}
           />
           <Button value="Decline" danger />
-          {activeStep?.name !== 'preview_submission' ? (
+          {!activeStep?.name.includes("preview_submission") ? (
             <Button
               value="Add comment"
               className="!bg-orange-600 !border-none hover:!bg-orange-700 !text-white !hover:!text-white !hover:!border-none"
@@ -101,17 +103,17 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           )}
           <section
             className={`${
-              activeStep?.name === 'preview_submission' && 'hidden'
+              activeStep?.name.includes("preview_submission") && "hidden"
             } flex flex-col gap-2`}
           >
             <menu
               className={`${
-                showMenu ? 'flex' : 'hidden'
+                showMenu ? "flex" : "hidden"
               } flex-col gap-1 absolute bottom-[80px] right-2 bg-background shadow-md rounded-sm`}
             >
               <Link
                 className={`hover:bg-primary bg-white hover:text-white p-2`}
-                to={'#'}
+                to={"#"}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setListReviewCommentsModal(true));
@@ -124,7 +126,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
             <FontAwesomeIcon
               icon={showMenu ? faX : faBars}
               className={`${
-                showMenu ? 'text-[13px] px-[9px]' : 'text-[14px]'
+                showMenu ? "text-[13px] px-[9px]" : "text-[14px]"
               } p-2 cursor-pointer ease-in-out duration-200 hover:scale-[1.02] bg-primary text-white rounded-full`}
               onClick={(e) => {
                 e.preventDefault();
@@ -136,16 +138,16 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
         <FontAwesomeIcon
           icon={faChevronCircleRight}
           onClick={(e) => {
-            if (activeStep?.name === 'preview_submission') {
+            if (activeStep?.name.includes("preview_submission")) {
               return;
             }
             e.preventDefault();
-            handleNavigation('next');
+            handleNavigation("next");
           }}
           className={`${
-            activeStep?.name === 'preview_submission'
-              ? 'text-secondary !cursor-default hover:scale-[1]'
-              : 'flex'
+            activeStep?.name.includes("preview_submission")
+              ? "text-secondary !cursor-default hover:scale-[1]"
+              : "flex"
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
       </menu>

@@ -3,6 +3,7 @@ import {
   faBars,
   faBook,
   faHouse,
+  faMagnifyingGlassDollar,
   faPen,
   faRightFromBracket,
   faUser,
@@ -57,9 +58,14 @@ const AdminSidebar = () => {
       icon: faBagShopping,
     },
     user?.email?.includes("info@rdb") && {
-      title: "Foreign Applicants",
+      title: "Foreign Accounts",
       path: "/admin/foreign-applicants",
       icon: faUser,
+    },
+    user?.email?.includes("info@rdb") && {
+      title: "Review Registrations",
+      path: "/admin/review-registrations",
+      icon: faMagnifyingGlassDollar,
     },
     {
       title: "My Profile",
@@ -193,7 +199,7 @@ const AdminSidebar = () => {
           onClick={(e) => {
             e.preventDefault();
             localStorage.clear();
-            navigate('/auth/login')
+            navigate("/auth/login");
           }}
         />
       </motion.div>

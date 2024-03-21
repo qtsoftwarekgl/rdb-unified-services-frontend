@@ -28,6 +28,8 @@ const EnterpriseRegistration = () => {
     enterprise_registration_active_tab,
   } = useSelector((state: RootState) => state.enterpriseRegistration);
 
+  const { user } = useSelector((state: RootState) => state.user);
+
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -38,7 +40,7 @@ const EnterpriseRegistration = () => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: "in_progress",
+        status: user?.email?.includes("info@rdb") ? "in_review" : "in_progress",
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
         path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
@@ -89,21 +91,27 @@ const EnterpriseRegistration = () => {
             );
           })}
           {/* REVIEW APPLICATION SECTION */}
-          <ReviewNavigation
-            setActiveStep={setEnterpriseActiveStep}
-            setActiveTab={setEnterpriseActiveTab}
-            tabs={enterprise_registration_tabs}
-            activeStep={enterprise_registration_active_step}
-          />
-          <AddReviewComments
-            entry_id={entry_id}
-            activeStep={enterprise_registration_active_step}
-            activeTab={enterprise_registration_active_tab}
-          />
-          <ListReviewComments
-            entry_id={entry_id}
-            title="Enterprise Registration Review Comments"
-          />
+          {user?.email?.includes("info@rdb") && (
+            <>
+              <ReviewNavigation
+                setActiveStep={setEnterpriseActiveStep}
+                setActiveTab={setEnterpriseActiveTab}
+                tabs={enterprise_registration_tabs}
+                activeStep={enterprise_registration_active_step}
+              />
+              <AddReviewComments
+                entry_id={entry_id}
+                activeStep={enterprise_registration_active_step}
+                activeTab={enterprise_registration_active_tab}
+              />
+              <ListReviewComments
+                entry_id={entry_id}
+                setActiveStep={setEnterpriseActiveStep}
+                setActiveTab={setEnterpriseActiveTab}
+                title="Enterprise Registration Review Comments"
+              />
+            </>
+          )}
         </menu>
       </main>
     </UserLayout>

@@ -43,6 +43,7 @@ const BusinessRegistration = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
+  const { user } = useSelector((state: RootState) => state.user);
   const businessApplication = user_applications?.find(
     (app) => app.entry_id === entry_id
   );
@@ -55,7 +56,9 @@ const BusinessRegistration = () => {
       dispatch(
         setUserApplications({
           entry_id,
-          status: "in_progress",
+          status: user?.email?.includes("info@rdb")
+            ? "in_review"
+            : "in_progress",
           path: `/business-registration/?entry_id=${entry_id}`,
           type: "business_registration",
         })
@@ -211,21 +214,27 @@ const BusinessRegistration = () => {
             }
           )}
         </menu>
-        <ReviewNavigation
-          setActiveStep={setBusinessActiveStep}
-          setActiveTab={setBusinessActiveTab}
-          tabs={business_registration_tabs}
-          activeStep={business_active_step}
-        />
-        <AddReviewComments
-          entry_id={entry_id}
-          activeStep={business_active_step}
-          activeTab={business_active_tab}
-        />
-        <ListReviewComments
-          entry_id={entry_id}
-          title="Business Registration Review Comments"
-        />
+        {user?.email?.includes("info@rdb") && (
+          <>
+            <ReviewNavigation
+              setActiveStep={setBusinessActiveStep}
+              setActiveTab={setBusinessActiveTab}
+              tabs={business_registration_tabs}
+              activeStep={business_active_step}
+            />
+            <AddReviewComments
+              entry_id={entry_id}
+              activeStep={business_active_step}
+              activeTab={business_active_tab}
+            />
+            <ListReviewComments
+              entry_id={entry_id}
+              setActiveStep={setBusinessActiveStep}
+              setActiveTab={setBusinessActiveTab}
+              title="Business Registration Review Comments"
+            />
+          </>
+        )}
       </main>
     </UserLayout>
   );
