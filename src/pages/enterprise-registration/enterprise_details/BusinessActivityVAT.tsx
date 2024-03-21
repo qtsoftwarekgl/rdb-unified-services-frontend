@@ -125,6 +125,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                             icon={faPlus}
                             onClick={(e) => {
                               e.preventDefault();
+                              if (user?.email?.includes("info@rdb")) return;
                               if (enterprise_business_lines?.length > 0) {
                                 dispatch(
                                   setUserApplications({
@@ -187,6 +188,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                                 className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
                                 onClick={(e) => {
                                   e.preventDefault();
+                                  if (user?.email?.includes("info@rdb")) return;
                                   const updatedActivities =
                                     enterprise_business_lines?.map(
                                       (activity: object) => {
@@ -252,6 +254,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                           icon={faMinus}
                           onClick={(e) => {
                             e.preventDefault();
+                            if (user?.email?.includes("info@rdb")) return;
                             const updatedSubActivities =
                               enterprise_business_lines?.filter(
                                 (subActivity: unknown) => {
