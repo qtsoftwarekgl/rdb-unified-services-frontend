@@ -34,7 +34,7 @@ const BusinessNewBranch = () => {
 
   // STATE VARIABLES
   const { user_applications } = useSelector(
-    (state: RootState) => state.businessRegistration
+    (state: RootState) => state.userApplication
   );
   const [administrativeValues, setAdministrativeValues] =
     useState<AdministrativeUnits>({
@@ -52,6 +52,7 @@ const BusinessNewBranch = () => {
   // NAVIGATE
   const navigate = useNavigate();
 
+  // DISTRICTS
   useEffect(() => {
     if (watch('province')) {
       setAdministrativeValues({
@@ -65,6 +66,7 @@ const BusinessNewBranch = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch('province')]);
 
+  // SECTORS
   useEffect(() => {
     if (watch('district') && watch('province')) {
       setAdministrativeValues({
@@ -78,6 +80,7 @@ const BusinessNewBranch = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setValue, watch('district')]);
 
+  // CELLS
   useEffect(() => {
     if (watch('sector') && watch('district') && watch('province')) {
       setAdministrativeValues({
@@ -94,6 +97,7 @@ const BusinessNewBranch = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch('sector')]);
 
+  // VILLAGES
   useEffect(() => {
     if (
       watch('cell') &&
@@ -124,6 +128,18 @@ const BusinessNewBranch = () => {
     }, 1000);
     return data;
   };
+
+  // SET BUSINESS ACTIVITIES
+  useEffect(() => {
+    if (watch('company')) {
+      setValue(
+        'company_activities',
+        user_applications?.find(
+          (business) => business?.entry_id === watch('company')
+        )?.company_activities
+      );
+    }
+  }, [watch('company')]);
 
   // TABLE COLUMNS
   const columns = [
@@ -178,7 +194,7 @@ const BusinessNewBranch = () => {
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full flex flex-wrap gap-5 p-3"
+          className="p-3 flex flex-col gap-4"
         >
           <Controller
             control={control}
@@ -194,7 +210,11 @@ const BusinessNewBranch = () => {
                       return {
                         ...business,
                         value: business?.entry_id,
-                        label: business?.company_details?.name,
+                        label: `${business?.entry_id
+                          ?.split('-')[0]
+                          ?.toUpperCase()} - ${
+                          business?.company_details?.name
+                        }`,
                       };
                     })}
                     onChange={(e) => {
@@ -210,318 +230,334 @@ const BusinessNewBranch = () => {
               );
             }}
           />
-          <Controller
-            name="branch_name"
-            control={control}
-            rules={{ required: 'Branch name is required' }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Input
-                    placeholder="Branch name"
-                    label="Branch name"
-                    required
-                    {...field}
-                  />
-                  {errors?.branch_name && (
-                    <p className="text-red-500 text-[13px]">
-                      {String(errors?.branch_name?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="province"
-            control={control}
-            rules={{ required: 'Select province of residence' }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Select
-                    required
-                    label="Province"
-                    options={getRwandaProvinces()?.map((province: string) => {
-                      return {
-                        label: province,
-                        value: province,
-                      };
-                    })}
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                    }}
-                  />
-                  {errors?.province && (
-                    <p className="text-red-500 text-[13px]">
-                      {String(errors?.province.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="district"
-            control={control}
-            rules={{ required: 'Select district of residence' }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Select
-                    required
-                    label="District"
-                    options={
-                      watch('province')
-                        ? administrativeValues?.districts?.map(
-                            (district: string) => {
-                              return {
-                                label: district,
-                                value: district,
-                              };
-                            }
-                          )
-                        : []
-                    }
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                    }}
-                  />
-                  {errors?.district && (
-                    <p className="text-red-500 text-[13px]">
-                      {String(errors?.district.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="sector"
-            control={control}
-            rules={{ required: 'Select sector of residence' }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Select
-                    required
-                    label="Sector"
-                    options={
-                      watch('province') && watch('district')
-                        ? administrativeValues?.sectors?.map(
-                            (sector: string) => {
-                              return {
-                                label: sector,
-                                value: sector,
-                              };
-                            }
-                          )
-                        : []
-                    }
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                    }}
-                  />
-                  {errors?.sector && (
-                    <p className="text-red-500 text-[13px]">
-                      {String(errors?.sector.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="cell"
-            control={control}
-            rules={{ required: 'Select cell of residence' }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Select
-                    required
-                    label="Cell"
-                    options={
-                      watch('province') && watch('district') && watch('sector')
-                        ? administrativeValues?.cells?.map((cell: string) => {
-                            return {
-                              label: cell,
-                              value: cell,
-                            };
-                          })
-                        : []
-                    }
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                    }}
-                  />
-                  {errors?.cell && (
-                    <p className="text-red-500 text-[13px]">
-                      {String(errors?.cell.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="village"
-            control={control}
-            rules={{ required: 'Select village of residence' }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Select
-                    required
-                    label="Village"
-                    options={
-                      watch('province') &&
-                      watch('district') &&
-                      watch('sector') &&
-                      watch('cell')
-                        ? administrativeValues?.villages?.map(
-                            (village: string) => {
-                              return {
-                                label: village,
-                                value: village,
-                              };
-                            }
-                          )
-                        : []
-                    }
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                    }}
-                  />
-                  {errors?.village && (
-                    <p className="text-red-500 text-[13px]">
-                      {String(errors?.village.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            control={control}
-            name="street_name"
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Input
-                    label="Street Name"
-                    placeholder="Street name"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="phone"
-            control={control}
-            rules={{
-              required: 'Phone number is required',
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col w-[49%] gap-1">
-                  <Input label="Phone number" required type="tel" {...field} />
-                  {errors?.phone && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.phone?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="email"
-            control={control}
-            rules={{
-              required: 'Email address is required',
-              validate: (value) => {
-                return (
-                  validateInputs(String(value), 'email') ||
-                  'Invalid email address'
-                );
-              },
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start w-[49%] gap-1">
-                  <Input
-                    required
-                    label="Email"
-                    placeholder="name@domain.com"
-                    {...field}
-                  />
-                  {errors?.email && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.email?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="fax"
-            control={control}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col w-[49%] gap-1">
-                  <Input label="Fax" {...field} />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="beneficial_owner"
-            control={control}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col w-[49%] gap-1">
-                  <Input label="BO NID/Passport/TIN (Optional)" {...field} />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="working_from"
-            control={control}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col w-[49%] gap-1">
-                  <Input type="time" label="Working hour from" {...field} />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="working_to"
-            control={control}
-            rules={{
-              validate: (value) =>
-                value > watch('working_from') || 'Invalid working hours',
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col w-[49%] gap-1">
-                  <Input type="time" label="Working hour to" {...field} />
-                  {errors?.working_to && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.working_to?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <section
+          <menu
             className={`${
               watch('company') ? 'flex' : 'hidden'
+            } w-full flex flex-wrap gap-5`}
+          >
+            <Controller
+              name="branch_name"
+              control={control}
+              rules={{ required: 'Branch name is required' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Input
+                      placeholder="Branch name"
+                      label="Branch name"
+                      required
+                      {...field}
+                    />
+                    {errors?.branch_name && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.branch_name?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="province"
+              control={control}
+              rules={{ required: 'Select province of residence' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Select
+                      required
+                      label="Province"
+                      options={getRwandaProvinces()?.map((province: string) => {
+                        return {
+                          label: province,
+                          value: province,
+                        };
+                      })}
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.province && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.province.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="district"
+              control={control}
+              rules={{ required: 'Select district of residence' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Select
+                      required
+                      label="District"
+                      options={
+                        watch('province')
+                          ? administrativeValues?.districts?.map(
+                              (district: string) => {
+                                return {
+                                  label: district,
+                                  value: district,
+                                };
+                              }
+                            )
+                          : []
+                      }
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.district && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.district.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="sector"
+              control={control}
+              rules={{ required: 'Select sector of residence' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Select
+                      required
+                      label="Sector"
+                      options={
+                        watch('province') && watch('district')
+                          ? administrativeValues?.sectors?.map(
+                              (sector: string) => {
+                                return {
+                                  label: sector,
+                                  value: sector,
+                                };
+                              }
+                            )
+                          : []
+                      }
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.sector && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.sector.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="cell"
+              control={control}
+              rules={{ required: 'Select cell of residence' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Select
+                      required
+                      label="Cell"
+                      options={
+                        watch('province') &&
+                        watch('district') &&
+                        watch('sector')
+                          ? administrativeValues?.cells?.map((cell: string) => {
+                              return {
+                                label: cell,
+                                value: cell,
+                              };
+                            })
+                          : []
+                      }
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.cell && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.cell.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="village"
+              control={control}
+              rules={{ required: 'Select village of residence' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Select
+                      required
+                      label="Village"
+                      options={
+                        watch('province') &&
+                        watch('district') &&
+                        watch('sector') &&
+                        watch('cell')
+                          ? administrativeValues?.villages?.map(
+                              (village: string) => {
+                                return {
+                                  label: village,
+                                  value: village,
+                                };
+                              }
+                            )
+                          : []
+                      }
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.village && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.village.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              control={control}
+              name="street_name"
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Input
+                      label="Street Name"
+                      placeholder="Street name"
+                      {...field}
+                    />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="phone"
+              control={control}
+              rules={{
+                required: 'Phone number is required',
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    <Input
+                      label="Phone number"
+                      required
+                      type="tel"
+                      {...field}
+                    />
+                    {errors?.phone && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.phone?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="email"
+              control={control}
+              rules={{
+                required: 'Email address is required',
+                validate: (value) => {
+                  return (
+                    validateInputs(String(value), 'email') ||
+                    'Invalid email address'
+                  );
+                },
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col items-start w-[49%] gap-1">
+                    <Input
+                      required
+                      label="Email"
+                      placeholder="name@domain.com"
+                      {...field}
+                    />
+                    {errors?.email && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.email?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="fax"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    <Input label="Fax" {...field} />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="beneficial_owner"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    <Input label="BO NID/Passport/TIN (Optional)" {...field} />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="working_from"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    <Input type="time" label="Working hour from" {...field} />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="working_to"
+              control={control}
+              rules={{
+                validate: (value) =>
+                  value > watch('working_from') || 'Invalid working hours',
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    <Input type="time" label="Working hour to" {...field} />
+                    {errors?.working_to && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.working_to?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+          </menu>
+          <section
+            className={`${
+              watch('company_activities')?.business_lines?.length > 0 &&
+              watch('company')
+                ? 'flex'
+                : 'hidden'
             } flex flex-col gap-4 w-full`}
           >
             <ul className="w-full flex items-center gap-3 justify-between">
@@ -534,9 +570,8 @@ const BusinessNewBranch = () => {
               />
             </ul>
             <menu className="flex flex-col gap-2 bg-background p-2 rounded-md">
-              {user_applications
-                ?.find((business) => business?.entry_id === watch('company'))
-                ?.company_activities?.business_lines?.map((activity, index) => {
+              {watch('company_activities')?.business_lines?.map(
+                (activity, index) => {
                   return (
                     <li
                       key={index}
@@ -545,10 +580,15 @@ const BusinessNewBranch = () => {
                       {activity?.name}
                     </li>
                   );
-                })}
+                }
+              )}
             </menu>
           </section>
-          <section className="w-full flex flex-col gap-3">
+          <section
+            className={`${
+              watch('company') ? 'flex' : 'hidden'
+            } w-full flex flex-col gap-3`}
+          >
             <h1 className="text-md uppercase font-semibold flex items-center gap-1">
               Attachment <span className="text-red-600">*</span>
             </h1>

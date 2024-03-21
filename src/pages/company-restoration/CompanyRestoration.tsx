@@ -20,6 +20,7 @@ const CompanyRestoration = () => {
     handleSubmit,
     control,
     formState: { errors },
+    watch
   } = useForm();
 
   // NAVIGATION
@@ -27,7 +28,7 @@ const CompanyRestoration = () => {
 
   // STATE VARIABLES
   const { user_applications } = useSelector(
-    (state: RootState) => state.businessRegistration
+    (state: RootState) => state.userApplication
   );
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File> | unknown | null
@@ -98,7 +99,7 @@ const CompanyRestoration = () => {
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-5 w-full"
+          className="flex flex-col gap-6 w-full"
         >
           <Controller
             name="company"
@@ -112,7 +113,9 @@ const CompanyRestoration = () => {
                     label="Select Company"
                     options={user_applications?.map((app) => {
                       return {
-                        label: app?.company_details?.name,
+                        label: `${app?.entry_id
+                          ?.split('-')[0]
+                          ?.toUpperCase()} - ${app?.company_details?.name}`,
                         value: app?.entry_id,
                       };
                     })}
@@ -129,7 +132,11 @@ const CompanyRestoration = () => {
               );
             }}
           />
-          <section className="w-full flex flex-col gap-3">
+          <section
+            className={`${
+              watch('company') ? 'flex' : 'hidden'
+            } w-full flex-col gap-3`}
+          >
             <h1 className="text-md uppercase font-medium flex items-center gap-1">
               Attachments <span className="text-red-600">*</span>
             </h1>

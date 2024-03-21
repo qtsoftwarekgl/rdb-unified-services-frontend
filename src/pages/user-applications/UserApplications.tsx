@@ -24,8 +24,8 @@ import {
   setSeniorManagement,
   setShareDetails,
   setShareHolders,
-} from "../../states/features/businessRegistrationSlice";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
+} from '../../states/features/businessRegistrationSlice';
+import { setViewedCompany } from '../../states/features/userCompaniesSlice';
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -44,24 +44,24 @@ const UserApplications = () => {
 
   const colors = (status: string) => {
     const colorMap = {
-      verified: "bg-[#82ffa3] text-[#0d7b3e]",
-      rejected: "bg-[#eac3c3] text-red-500",
-      approved: "bg-[#cfeaff] text-secondary",
-      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
-      submitted: "bg-[#e8ffef] text-black",
+      verified: 'bg-[#82ffa3] text-[#0d7b3e]',
+      rejected: 'bg-[#eac3c3] text-red-500',
+      approved: 'bg-[#cfeaff] text-secondary',
+      'request for action': 'bg-[#e4e4e4] text-[#6b6b6b]',
+      submitted: 'bg-[#e8ffef] text-black',
     };
-    return colorMap[status] || "";
+    return colorMap[status] || '';
   };
 
   const columns = [
-    { header: "Registration Number", accessorKey: "reg_number" },
-    { header: "Company Name", accessorKey: "company_name" },
-    { header: "Service Name", accessorKey: "service_name" },
-    { header: "Status", accessorKey: "status", cell: renderStatusCell },
-    { header: "Submission Date", accessorKey: "submission_date" },
+    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Company Name', accessorKey: 'company_name' },
+    { header: 'Service Name', accessorKey: 'service_name' },
+    { header: 'Status', accessorKey: 'status', cell: renderStatusCell },
+    { header: 'Submission Date', accessorKey: 'submission_date' },
     {
-      header: "Action",
-      accessorKey: "actions",
+      header: 'Action',
+      accessorKey: 'actions',
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -124,8 +124,8 @@ const UserApplications = () => {
                   business_registration_tabs_initial_state
                 )
               );
-              dispatch(setBusinessActiveTab("general_information"));
-              dispatch(setBusinessActiveStep("company_details"));
+              dispatch(setBusinessActiveTab('general_information'));
+              dispatch(setBusinessActiveStep('company_details'));
             }}
             value={
               <menu className="flex items-center gap-2">

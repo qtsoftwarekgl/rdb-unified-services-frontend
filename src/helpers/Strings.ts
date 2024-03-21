@@ -36,7 +36,7 @@ export const formatCompanyData = (business) => {
   return {
     ...company,
     company_name: company?.name,
-    status: (business?.status || "submitted").toLowerCase(),
+    status: capitalizeString(business?.status),
     id:
       business?.id ||
       business?.entry_id ||

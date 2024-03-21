@@ -198,8 +198,8 @@ const AdminSidebar = () => {
           }
           onClick={(e) => {
             e.preventDefault();
-            localStorage.clear();
-            navigate("/auth/login");
+            sessionStorage.clear();
+            navigate('/auth/login')
           }}
         />
       </motion.div>

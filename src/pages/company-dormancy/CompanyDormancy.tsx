@@ -22,11 +22,12 @@ const CompanyDormancy = () => {
     handleSubmit,
     formState: { errors },
     control,
+    watch
   } = useForm();
 
   // STATE VARIABLES
   const { user_applications } = useSelector(
-    (state: RootState) => state.businessRegistration
+    (state: RootState) => state.userApplication
   );
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File> | unknown | null
@@ -102,37 +103,45 @@ const CompanyDormancy = () => {
           className="w-[90%] mx-auto flex flex-col gap-5"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <menu className="w-full flex items-start gap-5 flex-wrap">
-            <Controller
-              name="company"
-              control={control}
-              rules={{ required: 'Select a company to close' }}
-              render={({ field }) => {
-                return (
-                  <label className="w-[49%] flex flex-col gap-2">
-                    <Select
-                      label="Select company"
-                      required
-                      options={user_applications?.map((application) => {
-                        return {
-                          ...application,
-                          value: application?.entry_id,
-                          label: application?.company_details?.name,
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e?.value);
-                      }}
-                    />
-                    {errors?.company && (
-                      <p className="text-[13px] text-red-500">
-                        {String(errors?.company?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
+          <Controller
+            name="company"
+            control={control}
+            rules={{ required: 'Select a company to close' }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-2">
+                  <Select
+                    label="Select company"
+                    required
+                    options={user_applications?.map((application) => {
+                      return {
+                        ...application,
+                        value: application?.entry_id,
+                        label: `${application?.entry_id
+                          ?.split('-')[0]
+                          ?.toUpperCase()} - ${
+                          application?.company_details?.name
+                        }`,
+                      };
+                    })}
+                    onChange={(e) => {
+                      field.onChange(e?.value);
+                    }}
+                  />
+                  {errors?.company && (
+                    <p className="text-[13px] text-red-500">
+                      {String(errors?.company?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <menu
+            className={`${
+              watch('company') ? 'flex' : 'hidden'
+            } w-full items-start gap-5 flex-wrap`}
+          >
             <Controller
               name="dormancy_date"
               rules={{ required: 'Date of dormant resolution is required' }}
@@ -211,7 +220,11 @@ const CompanyDormancy = () => {
               }}
             />
           </menu>
-          <section className="w-full flex flex-col gap-3">
+          <section
+            className={`${
+              watch('company') ? 'flex' : 'hidden'
+            } w-full flex flex-col gap-3`}
+          >
             <h1 className="text-md uppercase font-semibold flex items-center gap-1">
               Attachment <span className="text-red-600">*</span>
             </h1>
