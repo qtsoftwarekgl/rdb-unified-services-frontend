@@ -979,8 +979,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessCompletedStep("shareholders"));
-                dispatch(setBusinessActiveStep("capital_details"));
+                dispatch(setBusinessCompletedStep('shareholders'));
+                dispatch(setBusinessActiveStep('capital_details'));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_tab: 'capital_information',
+                    active_step: 'capital_details',
+                  })
+                );
               }}
             />
           </menu>

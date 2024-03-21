@@ -43,33 +43,38 @@ const AdminSidebar = () => {
   // SIDEBAR NAV
   const sidebarNav = [
     {
-      title: "Dashboard",
-      path: "/admin/dashboard",
+      title: 'Dashboard',
+      path: '/admin/dashboard',
       icon: faHouse,
     },
     {
-      title: "Users",
-      path: "/admin/users",
+      title: 'Users',
+      path: '/admin/users',
+      icon: faPen,
+    },
+    user?.email?.includes('info@rdb') && {
+      title: 'Staff',
+      path: '/admin/staff',
       icon: faPen,
     },
     {
-      title: "Roles",
-      path: "/admin/roles",
+      title: 'Roles',
+      path: '/admin/roles',
       icon: faBagShopping,
     },
-    user?.email?.includes("info@rdb") && {
-      title: "Foreign Accounts",
-      path: "/admin/foreign-applicants",
+    user?.email?.includes('info@rdb') && {
+      title: 'Foreign Accounts',
+      path: '/admin/foreign-applicants',
       icon: faUser,
     },
-    user?.email?.includes("info@rdb") && {
-      title: "Review Registrations",
-      path: "/admin/review-registrations",
+    user?.email?.includes('info@rdb') && {
+      title: 'Review Registrations',
+      path: '/admin/review-registrations',
       icon: faMagnifyingGlassDollar,
     },
     {
-      title: "My Profile",
-      path: "/admin/profile",
+      title: 'My Profile',
+      path: '/admin/profile',
       icon: faBook,
     },
   ].filter(Boolean);

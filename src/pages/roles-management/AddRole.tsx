@@ -10,6 +10,8 @@ import SelectPermissions from './SelectPermissions';
 import { setAddPermissionModal } from '../../states/features/permissionSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
+import Loader from '../../components/Loader';
 
 const AddRole = () => {
   // REACT HOOK FORM
@@ -25,9 +27,15 @@ const AddRole = () => {
   const { selectedPermissions } = useSelector(
     (state: RootState) => state.permission
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: object) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      dispatch(setAddRoleModal(false));
+    }, 1000);
     return({
       ...data,
       permissions: selectedPermissions,
@@ -131,11 +139,14 @@ const AddRole = () => {
           </article>
         )}
         <menu className="flex items-center gap-3 justify-between">
-          <Button value="Cancel" onClick={(e) => {
-            e.preventDefault();
-            dispatch(setAddRoleModal(false));
-          }} />
-          <Button value="Submit" submit primary />
+          <Button
+            value="Cancel"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setAddRoleModal(false));
+            }}
+          />
+          <Button value={isLoading ? <Loader /> : 'Submit'} submit primary />
         </menu>
       </form>
       <SelectPermissions />

@@ -305,6 +305,13 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 dispatch(setBusinessCompletedStep('capital_details'));
                 dispatch(setBusinessActiveStep('beneficial_owners'));
                 dispatch(setBusinessActiveTab('beneficial_owners'));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_step: 'beneficial_owners',
+                    active_tab: 'beneficial_owners',
+                  })
+                );
               }
             }, 1000);
           }}

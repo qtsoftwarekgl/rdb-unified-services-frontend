@@ -41,11 +41,6 @@ const Navbar = ({ className }: Props) => {
       icon: faUser,
     },
     {
-      title: 'Theme',
-      link: '#',
-      icon: faMoon,
-    },
-    {
       title: 'Notifications',
       link: '/notifications',
       icon: faBell,

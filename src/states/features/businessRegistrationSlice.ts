@@ -176,30 +176,8 @@ export const businessRegistrationSlice = createSlice({
       label: 'General Information',
       name: 'general_information',
     },
-    company_details:
-      JSON.parse(String(localStorage.getItem('company_details'))) || null,
-    company_address:
-      JSON.parse(String(localStorage.getItem('company_address'))) || null,
-    company_activities:
-      JSON.parse(String(localStorage.getItem('company_activities'))) || null,
     company_business_lines:
       JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
-    board_of_directors:
-      JSON.parse(String(localStorage.getItem('board_of_directors'))) || [],
-    senior_management:
-      JSON.parse(String(localStorage.getItem('senior_management'))) || [],
-    employment_info:
-      JSON.parse(String(localStorage.getItem('employment_info'))) || null,
-    share_details:
-      JSON.parse(String(localStorage.getItem('share_details'))) || null,
-    shareholders:
-      JSON.parse(String(localStorage.getItem('shareholders'))) || [],
-    capital_details:
-      JSON.parse(String(localStorage.getItem('capital_details'))) || [],
-    beneficial_owners:
-      JSON.parse(String(localStorage.getItem('beneficial_owners'))) || [],
-    company_attachments:
-      JSON.parse(String(localStorage.getItem('company_attachments'))) || [],
     capitalDetailsModal: false,
   },
   reducers: {
@@ -389,86 +367,11 @@ export const businessRegistrationSlice = createSlice({
       );
     },
 
-    // SET COMPANY DETAILS
-    setCompanyDetails: (state, action) => {
-      state.company_details = action.payload;
-      localStorage.setItem('company_details', JSON.stringify(action.payload));
-    },
-
-    // SET COMPANY ADDRESS
-    setCompanyAddress: (state, action) => {
-      state.company_address = action.payload;
-      localStorage.setItem('company_address', JSON.stringify(action.payload));
-    },
-
-    // SET COMPANY ACTIVITY
-    setCompanyActivities: (state, action) => {
-      state.company_activities = action.payload;
-      localStorage.setItem(
-        'company_activities',
-        JSON.stringify(action.payload)
-      );
-    },
-
     // SET COMPANY SUB ACTIVITIES
     setCompanySubActivities: (state, action) => {
       state.company_business_lines = action.payload;
       localStorage.setItem(
         'company_business_lines',
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET BOARD OF DIRECTORS
-    setBoardDirectors: (state, action) => {
-      state.board_of_directors = action.payload;
-      localStorage.setItem(
-        'board_of_directors',
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET SENIOR MANAGEMENT
-    setSeniorManagement: (state, action) => {
-      state.senior_management = action.payload;
-      localStorage.setItem('senior_management', JSON.stringify(action.payload));
-    },
-
-    // SET EMPLOYMENT INFO
-    setEmploymentInfo: (state, action) => {
-      state.employment_info = action.payload;
-      localStorage.setItem('employment_info', JSON.stringify(action.payload));
-    },
-
-    // SHARE DETAILS
-    setShareDetails: (state, action) => {
-      state.share_details = action.payload;
-      localStorage.setItem('share_details', JSON.stringify(action.payload));
-    },
-
-    // SET SHAREHOLDERS
-    setShareHolders: (state, action) => {
-      state.shareholders = action.payload;
-      localStorage.setItem('shareholders', JSON.stringify(action.payload));
-    },
-
-    // SET CAPITAL DETAILS
-    setCapitalDetails: (state, action) => {
-      state.capital_details = action.payload;
-      localStorage.setItem('capital_details', JSON.stringify(action.payload));
-    },
-
-    // SET BENEFICIAL OWNERS
-    setBeneficialOwners: (state, action) => {
-      state.beneficial_owners = action.payload;
-      localStorage.setItem('beneficial_owners', JSON.stringify(action.payload));
-    },
-
-    // SET COMPANY ATTACHMENTS
-    setCompanyAttachments: (state, action) => {
-      state.company_attachments = action.payload;
-      localStorage.setItem(
-        'company_attachments',
         JSON.stringify(action.payload)
       );
     },
@@ -486,19 +389,8 @@ export const {
   setBusinessActiveTab,
   setBusinessActiveStep,
   setBusinessCompletedStep,
-  setCompanyDetails,
-  setCompanyAddress,
-  setCompanyActivities,
   setCompanySubActivities,
   removeBusinessCompletedStep,
-  setBoardDirectors,
-  setSeniorManagement,
-  setEmploymentInfo,
-  setShareDetails,
-  setShareHolders,
-  setCapitalDetails,
-  setBeneficialOwners,
-  setCompanyAttachments,
   setBusinessRegistrationTabs,
   setBusinessCompletedTab,
   setCapitalDetailsModal,

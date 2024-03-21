@@ -159,6 +159,8 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
+          active_tab: 'capital_information',
+          active_step: 'shareholders',
           share_details: {
             company_capital: data?.company_capital,
             remaining_capital: data?.company_capital,

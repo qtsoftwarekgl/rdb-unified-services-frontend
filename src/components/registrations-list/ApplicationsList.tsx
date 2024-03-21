@@ -1,25 +1,14 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
-import Table from "../../components/table/Table";
-import { RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { formatCompanyData } from "../../helpers/Strings";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IconDefinition } from '@fortawesome/free-regular-svg-icons';
+import Table from '../../components/table/Table';
+import { RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { formatCompanyData } from '../../helpers/Strings';
 import {
-  setBeneficialOwners,
-  setBoardDirectors,
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setCapitalDetails,
-  setCompanyActivities,
-  setCompanyAddress,
-  setCompanyAttachments,
-  setCompanyDetails,
-  setEmploymentInfo,
-  setSeniorManagement,
-  setShareDetails,
-  setShareHolders,
-} from "../../states/features/businessRegistrationSlice";
+} from '../../states/features/businessRegistrationSlice';
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
@@ -27,7 +16,7 @@ import {
   setEnterpriseBusinessLines,
   setEnterpriseDetails,
   setEnterpriseOfficeAddress,
-} from "../../states/features/enterpriseRegistrationSlice";
+} from '../../states/features/enterpriseRegistrationSlice';
 import {
   setForeignBeneficialOwners,
   setForeignBoardDirectors,
@@ -39,7 +28,7 @@ import {
   setForeignCompanyDetails,
   setForeignEmploymentInfo,
   setForeignSeniorManagement,
-} from "../../states/features/foreignBranchRegistrationSlice";
+} from '../../states/features/foreignBranchRegistrationSlice';
 
 type Props = {
   title: string;
@@ -77,13 +66,13 @@ const ApplicatinsList = ({
   // Render status cell
   const renderStatusCell = ({ row }) => {
     const statusColors = {
-      verified: "bg-[#82ffa3] text-[#0d7b3e]",
-      rejected: "bg-[#eac3c3] text-red-500",
-      approved: "bg-[#e8ffef] text-[#409261]",
-      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
-      submitted: "bg-[#e8ffef] text-black",
+      Verified: 'bg-[#82ffa3] text-[#0d7b3e]',
+      Rejected: 'bg-[#eac3c3] text-red-500',
+      approved: 'bg-[#e8ffef] text-[#409261]',
+      'Action Required': 'bg-[#e4e4e4] text-[#6b6b6b]',
+      Submitted: 'bg-[#e8ffef] text-black',
     };
-    const statusColor = statusColors[row?.original?.status] || "";
+    const statusColor = statusColors[row?.original?.status] || '';
     return (
       <span
         className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
@@ -107,18 +96,18 @@ const ApplicatinsList = ({
   };
 
   const columns = [
-    { header: "Company Code", accessorKey: "reg_number" },
-    { header: "Company/Enterprise Name", accessorKey: "company_name" },
-    { header: "Company/Enterprise Type", accessorKey: "service_name" },
+    { header: 'Company Code', accessorKey: 'reg_number' },
+    { header: 'Company/Enterprise Name', accessorKey: 'company_name' },
+    { header: 'Company/Enterprise Type', accessorKey: 'service_name' },
     {
-      header: "Application Status",
-      accessorKey: "status",
+      header: 'Application Status',
+      accessorKey: 'status',
       cell: renderStatusCell,
     },
-    { header: "Registration Date", accessorKey: "registration_date" },
+    { header: 'Registration Date', accessorKey: 'registration_date' },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -131,23 +120,12 @@ const ApplicatinsList = ({
     );
     if (!company) return;
 
-    if (company.type === "business_registration") {
-      dispatch(setBusinessActiveTab("general_information"));
-      dispatch(setBusinessActiveStep("company_details"));
-      dispatch(setCompanyDetails(company?.company_details || {}));
-      dispatch(setCompanyAddress(company?.company_address || {}));
-      dispatch(setCompanyActivities(company?.company_activities || {}));
-      dispatch(setBeneficialOwners(company?.beneficial_owners || []));
-      dispatch(setBoardDirectors(company?.board_of_directors || []));
-      dispatch(setCapitalDetails(company?.capital_details || []));
-      dispatch(setCompanyAttachments(company?.company_attachments || []));
-      dispatch(setEmploymentInfo(company?.employment_info || {}));
-      dispatch(setSeniorManagement(company?.senior_management || []));
-      dispatch(setShareDetails(company?.share_details || {}));
-      dispatch(setShareHolders(company?.shareholders || []));
-    } else if (company.type === "enterprise") {
-      dispatch(setEnterpriseActiveTab("enterprise_details"));
-      dispatch(setEnterpriseActiveStep("enterprise_details"));
+    if (company.type === 'business_registration') {
+      dispatch(setBusinessActiveTab('general_information'));
+      dispatch(setBusinessActiveStep('company_details'));
+    } else if (company.type === 'enterprise') {
+      dispatch(setEnterpriseActiveTab('enterprise_details'));
+      dispatch(setEnterpriseActiveStep('enterprise_details'));
       dispatch(setEnterpriseDetails(company?.enterprise_details || {}));
       dispatch(
         setEnterpriseBusinessLines(
@@ -160,9 +138,9 @@ const ApplicatinsList = ({
           company?.enterprise_attachments?.fileNames || []
         )
       );
-    } else if (company.type === "foreign_branch") {
-      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
-      dispatch(setForeignBusinessActiveStep("foreign_company_details"));
+    } else if (company.type === 'foreign_branch') {
+      dispatch(setForeignBusinessActiveTab('foreign_general_information'));
+      dispatch(setForeignBusinessActiveStep('foreign_company_details'));
       dispatch(
         setForeignCompanyDetails(company?.foreign_company_details || {})
       );

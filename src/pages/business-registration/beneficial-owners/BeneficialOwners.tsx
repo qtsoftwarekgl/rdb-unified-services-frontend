@@ -1210,9 +1210,16 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           primary
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setBusinessCompletedStep("beneficial_owners"));
-            dispatch(setBusinessActiveStep("attachments"));
-            dispatch(setBusinessActiveTab("attachments"));
+            dispatch(setBusinessCompletedStep('beneficial_owners'));
+            dispatch(setBusinessActiveStep('attachments'));
+            dispatch(setBusinessActiveTab('attachments'));
+            dispatch(
+              setUserApplications({
+                entry_id,
+                active_tab: 'capital_information',
+                active_step: 'capital_details',
+              })
+            );
           }}
         />
       </menu>

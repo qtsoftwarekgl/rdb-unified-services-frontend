@@ -164,6 +164,7 @@ const ForeignBranchRegistration = () => {
         {user?.email?.includes("info@rdb") && (
           <>
             <ReviewNavigation
+            entry_id={entry_id}
               setActiveStep={setForeignBusinessActiveStep}
               setActiveTab={setForeignBusinessActiveTab}
               tabs={foreign_business_registration_tabs}

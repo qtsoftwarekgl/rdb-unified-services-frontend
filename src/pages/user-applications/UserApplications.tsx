@@ -8,21 +8,10 @@ import { RootState } from "../../states/store";
 import { formatCompanyData } from "../../helpers/Strings";
 import {
   business_registration_tabs_initial_state,
-  setBeneficialOwners,
-  setBoardDirectors,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessRegistrationTabs,
-  setCapitalDetails,
-  setCompanyActivities,
-  setCompanyAddress,
-  setCompanyAttachments,
-  setCompanyDetails,
   setCompanySubActivities,
-  setEmploymentInfo,
-  setSeniorManagement,
-  setShareDetails,
-  setShareHolders,
 } from '../../states/features/businessRegistrationSlice';
 import { setViewedCompany } from '../../states/features/userCompaniesSlice';
 import { useNavigate } from "react-router-dom";
@@ -107,17 +96,6 @@ const UserApplications = () => {
             primary
             route="/business-registration/new"
             onClick={() => {
-              dispatch(setCompanyDetails(null));
-              dispatch(setCompanyAddress(null));
-              dispatch(setCompanyActivities(null));
-              dispatch(setBoardDirectors([]));
-              dispatch(setSeniorManagement([]));
-              dispatch(setEmploymentInfo(null));
-              dispatch(setShareDetails(null));
-              dispatch(setShareHolders([]));
-              dispatch(setCapitalDetails([]));
-              dispatch(setBeneficialOwners([]));
-              dispatch(setCompanyAttachments([]));
               dispatch(setCompanySubActivities([]));
               dispatch(
                 setBusinessRegistrationTabs(

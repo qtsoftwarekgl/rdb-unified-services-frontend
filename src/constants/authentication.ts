@@ -84,7 +84,7 @@ export const userData = [
     last_name: "Noorwood",
     country: "China",
     sector: "Kabuga",
-    gender: "Agender",
+    gender: "Male",
     date_of_birth: "8/23/2023",
     nationality: "China",
     phone: "9774978465",

@@ -50,7 +50,13 @@ const Button: FC<ButtonProps> = ({
   return (
     <Link
       to={route}
-      onClick={onClick}
+      onClick={(e) => {
+        if (disabled) {
+          e.preventDefault();
+          return;
+        }
+        onClick && onClick(e);
+      }}
       className={`py-2 text-center border-[1px] border-primary px-6 rounded-md text-[14px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] max-[800px]:!text-lg max-md:!py-2 ${
         !styled &&
         'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary'

@@ -75,20 +75,20 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(
-        setUserApplications({
-          entry_id,
-          company_details: {
-            ...company_details,
-            name: data?.name,
-            category: data?.category,
-            type: data?.type,
-            position: data?.position,
-            articles_of_association: data?.articles_of_association,
-            step: "company_details",
-          },
-        })
-      );
+      dispatch(setUserApplications({
+        entry_id,
+        active_tab: 'general_information',
+        active_step: 'company_address',
+        company_details: {
+          ...company_details,
+          name: data?.name,
+          category: data?.category,
+          type: data?.type,
+          position: data?.position,
+          articles_of_association: data?.articles_of_association,
+          step: 'company_details',
+        }
+      }))
 
       // SET CURRENT STEP AS COMPLETED
       dispatch(setBusinessCompletedStep("company_details"));

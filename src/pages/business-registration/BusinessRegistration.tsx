@@ -47,8 +47,7 @@ const BusinessRegistration = () => {
   const businessApplication = user_applications?.find(
     (app) => app.entry_id === entry_id
   );
-  const { user } = useSelector((state: RootState) => state.user);
-
+  
   // NAVIGATION
   const navigate = useNavigate();
 
@@ -199,6 +198,7 @@ const BusinessRegistration = () => {
                         businessApplication?.company_attachments
                       }
                       entry_id={entry_id}
+                      company_details={businessApplication?.company_details}
                     />
                   )}
 
@@ -219,6 +219,7 @@ const BusinessRegistration = () => {
         {user?.email?.includes("info@rdb") && (
           <>
             <ReviewNavigation
+            entry_id={entry_id}
               setActiveStep={setBusinessActiveStep}
               setActiveTab={setBusinessActiveTab}
               tabs={business_registration_tabs}

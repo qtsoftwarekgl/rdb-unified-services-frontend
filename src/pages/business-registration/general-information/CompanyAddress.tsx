@@ -165,9 +165,12 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          status: "in_progress",
+          status: 'in_progress',
+          active_tab: 'general_information',
+          active_step: 'business_activity_vat',
           company_address: {
             ...data,
+            step: 'company_address',
           },
         })
       );
