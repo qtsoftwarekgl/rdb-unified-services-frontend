@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 import {
   setEnterpriseActiveStep,
   setEnterpriseCompletedStep,
-  setEnterpriseDetails,
   setUsedIds,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import Button from "../../../components/inputs/Button";
@@ -33,16 +32,21 @@ import moment from "moment";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 type EnterpriseDetailsProps = {
-  isOpen: boolean;
   entry_id: string | null;
 };
 
-export const EnterpriseDetails = ({
-  isOpen,
-  entry_id,
-}: EnterpriseDetailsProps) => {
-  const { enterprise_details, enterprise_registration_active_step, usedIds } =
-    useSelector((state: RootState) => state.enterpriseRegistration);
+export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
+  const { enterprise_registration_active_step, usedIds } = useSelector(
+    (state: RootState) => state.enterpriseRegistration
+  );
+
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+  const enterprise_details = user_applications?.find(
+    (app) => app.entry_id === entry_id
+  )?.enterprise_details;
+
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isNationalIdLoading, setIsNationalIdLoading] =
@@ -72,14 +76,6 @@ export const EnterpriseDetails = ({
     setIsLoading(true);
     setTimeout(() => {
       dispatch(
-        setEnterpriseDetails({
-          ...data,
-          step: {
-            ...enterprise_registration_active_step,
-          },
-        })
-      );
-      dispatch(
         setUserApplications({
           entry_id,
           enterprise_details: {
@@ -107,8 +103,6 @@ export const EnterpriseDetails = ({
       setUserDetails(enterprise_details);
     }
   }, []);
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-4">

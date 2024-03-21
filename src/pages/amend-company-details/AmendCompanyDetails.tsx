@@ -1,4 +1,3 @@
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import Table from "../../components/table/Table";
@@ -6,7 +5,7 @@ import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { capitalizeString } from "../../helpers/Strings";
+import { formatCompanyData } from "../../helpers/Strings";
 import {
   setBeneficialOwners,
   setBoardDirectors,
@@ -51,27 +50,6 @@ const AmendCompanyDetails = () => {
   const navigate = useNavigate();
 
   // Format company data
-  const formatCompanyData = (business) => {
-    const company =
-      business?.company_details ||
-      business?.foreign_company_details ||
-      business?.enterprise_details;
-    return {
-      ...company,
-      company_name: company?.name,
-      status: (business?.status || "submitted").toLowerCase(),
-      id:
-        business?.id ||
-        business?.entry_id ||
-        Math.floor(Math.random() * 9000) + 1000,
-      reg_number: `REG-${(
-        business?.entry_id?.split("-")[0] || ""
-      ).toUpperCase()}`,
-      service_name: capitalizeString(business?.type),
-      submission_date: business.created_at,
-      path: business?.path,
-    };
-  };
 
   // Sort by submission date
   const sortBySubmissionDate = (a, b) => {
@@ -160,9 +138,17 @@ const AmendCompanyDetails = () => {
       dispatch(setEnterpriseActiveTab("enterprise_details"));
       dispatch(setEnterpriseActiveStep("enterprise_details"));
       dispatch(setEnterpriseDetails(company?.enterprise_details || {}));
-      dispatch(setEnterpriseBusinessLines(company?.business_lines || []));
+      dispatch(
+        setEnterpriseBusinessLines(
+          company?.business_lines?.enterprise_business_lines || []
+        )
+      );
       dispatch(setEnterpriseOfficeAddress(company?.office_address || {}));
-      dispatch(setEnterpriseAttachments(company?.enterprise_attachments));
+      dispatch(
+        setEnterpriseAttachments(
+          company?.enterprise_attachments?.fileNames || []
+        )
+      );
     } else if (company.type === "foreign_branch") {
       dispatch(setForeignBusinessActiveTab("general_information"));
       dispatch(setForeignBusinessActiveStep("company_details"));
@@ -206,13 +192,21 @@ const AmendCompanyDetails = () => {
           <h1 className="font-semibold text-center">
             Choose Company To Amend Details
           </h1>
-          <Table
-            columns={columns}
-            data={companies}
-            className="bg-white rounded-xl"
-            showFilter={false}
-            showPagination={false}
-          />
+          {companies.length > 0 ? (
+            <Table
+              columns={columns}
+              data={companies}
+              className="bg-white rounded-xl"
+              showFilter={false}
+              showPagination={false}
+            />
+          ) : (
+            <span className="flex items-center justify-start w-full">
+              <h1 className="uppercase text-primary">
+                You have no applications yet
+              </h1>
+            </span>
+          )}
         </section>
       </section>
     </UserLayout>

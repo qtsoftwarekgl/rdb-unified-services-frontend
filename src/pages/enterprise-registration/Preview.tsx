@@ -10,27 +10,28 @@ import {
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
-import moment from "moment";
 
 type Props = {
-  isOpen: boolean;
   entry_id: string | null;
 };
 
-const Preview = ({ isOpen, entry_id }: Props) => {
-  const {
-    enterprise_attachments,
-    enterprise_business_lines,
-    enterprise_business_activity_vat,
-    enterprise_details,
-    enterprise_office_address,
-  } = useSelector((state: RootState) => state.enterpriseRegistration);
+const Preview = ({ entry_id }: Props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  if (!isOpen) {
-    return null;
-  }
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+
+  const user_app =
+    user_applications?.find((app) => app.entry_id === entry_id) || null;
+
+  const enterprise_attachments =
+    user_app?.enterprise_attachments?.fileNames || null;
+  const enterprise_business_lines =
+    user_app?.business_lines?.enterprise_business_lines || null;
+  const enterprise_details = user_app?.enterprise_details || null;
+  const enterprise_office_address = user_app?.office_address || null;
 
   const handleEditButton = (step: Step) => {
     dispatch(setEnterpriseActiveTab(step.tab_name));
@@ -41,9 +42,7 @@ const Preview = ({ isOpen, entry_id }: Props) => {
     // reset all data
     dispatch(
       setUserApplications({
-        path: `/enterprise-registration?entry_id=${entry_id}`,
         entry_id,
-        created_at: moment(Date.now()).format("DD/MM/YYYY"),
         status: "submitted",
       })
     );
@@ -78,14 +77,12 @@ const Preview = ({ isOpen, entry_id }: Props) => {
             </p>
           </section>
         )}
-        {enterprise_business_activity_vat && (
+        {enterprise_business_lines && (
           <section className="flex flex-col gap-6 px-4 py-2 border rounded-md border-tertiary">
             <menu className="flex items-center justify-between gap-3">
               <h1 className="text-2xl font-bold">Business Activity</h1>
               <FontAwesomeIcon
-                onClick={() =>
-                  handleEditButton(enterprise_business_activity_vat?.step)
-                }
+                onClick={() => handleEditButton(user_app?.business_lines?.step)}
                 icon={faEdit}
                 className="cursor-pointer"
               />
@@ -193,13 +190,15 @@ const Preview = ({ isOpen, entry_id }: Props) => {
           <menu className="flex items-center justify-between gap-3">
             <h1 className="text-2xl font-bold">Attachments</h1>
             <FontAwesomeIcon
-              onClick={() => handleEditButton(enterprise_attachments?.step)}
+              onClick={() =>
+                handleEditButton(user_app?.enterprise_attachments?.step)
+              }
               icon={faEdit}
               className="cursor-pointer"
             />
           </menu>
           <section className="flex flex-col gap-6">
-            {enterprise_attachments?.fileNames?.map((attachment, index) => (
+            {enterprise_attachments?.map((attachment, index) => (
               <p key={index}>{attachment}</p>
             ))}
           </section>
@@ -211,7 +210,7 @@ const Preview = ({ isOpen, entry_id }: Props) => {
           disabled={
             !enterprise_attachments &&
             !enterprise_office_address &&
-            !enterprise_business_activity_vat &&
+            !enterprise_business_lines &&
             !enterprise_details
           }
           className="px-6 py-2 text-white rounded-md bg-primary"

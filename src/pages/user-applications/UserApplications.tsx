@@ -5,7 +5,7 @@ import UserLayout from "../../containers/UserLayout";
 import Button from "../../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
-import { capitalizeString } from "../../helpers/Strings";
+import { formatCompanyData } from "../../helpers/Strings";
 import { useNavigate } from "react-router-dom";
 import {
   business_registration_tabs_initial_state,
@@ -35,26 +35,7 @@ const UserApplications = () => {
   const navigate = useNavigate();
 
   const registeredBusinesses = user_applications
-    .map((business) => ({
-      ...business?.company_details,
-      ...business?.foreign_company_details,
-      ...business?.enterprise_details,
-      company_name:
-        business?.company_details?.name ||
-        business?.enterprise_details?.name ||
-        business?.foreign_company_details?.name,
-      status: (business?.status || "submitted").toLowerCase(),
-      id:
-        business?.id ||
-        business?.entry_id ||
-        Math.floor(Math.random() * 9000) + 1000,
-      reg_number: `REG-${(
-        business?.entry_id?.split("-")[0] || ""
-      ).toUpperCase()}`,
-      service_name: capitalizeString(business?.type),
-      submission_date: business?.created_at,
-      path: business?.path,
-    }))
+    .map(formatCompanyData)
     .sort(
       (a, b) =>
         new Date(b?.submissionDate).getTime() -

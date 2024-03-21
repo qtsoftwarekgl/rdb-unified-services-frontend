@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
@@ -16,38 +16,38 @@ import Button from "../../../components/inputs/Button";
 import Table from "../../../components/table/Table";
 import { capitalizeString } from "../../../helpers/Strings";
 import {
-  setForeignBeneficialOwners,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../states/store";
+import { useDispatch } from "react-redux";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BeneficialOwnersProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_beneficial_owners: any;
 }
 
-const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
+const BeneficialOwners = ({
+  entry_id,
+  foreign_beneficial_owners,
+}: BeneficialOwnersProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
     setValue,
     setError,
+    reset,
     clearErrors,
     watch,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_beneficial_owners } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
@@ -58,21 +58,31 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
     data: null,
   });
 
+  // CLEAR FORM
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+      setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
+
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setForeignBeneficialOwners([data, ...foreign_beneficial_owners])
-      );
-      dispatch(
         setUserApplications({
           entry_id,
           foreign_beneficial_owners: [
             {
               ...data,
-              step: "beneficial_owners",
+              step: "foreign_beneficial_owners",
             },
             ...foreign_beneficial_owners,
           ],
@@ -122,7 +132,12 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
                     return index !== row?.original?.no;
                   }
                 );
-                dispatch(setForeignBeneficialOwners(newBeneficialOwners));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    foreign_beneficial_owners: newBeneficialOwners,
+                  })
+                );
               }}
             />
           </menu>
@@ -130,8 +145,6 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
       },
     },
   ];
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-5">
@@ -890,7 +903,7 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
                   <Select
                     required
                     label="Country of Incorporation"
-                    options={countriesList.map((country) => {
+                    options={countriesList?.map((country) => {
                       return {
                         ...country,
                         label: country.name,
@@ -1147,7 +1160,7 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
       </form>
       <section className={`flex members-table flex-col w-full`}>
         <Table
-          data={foreign_beneficial_owners.map(
+          data={foreign_beneficial_owners?.map(
             (beneficial_owner: unknown, index: number) => {
               return {
                 ...beneficial_owner,
@@ -1178,8 +1191,8 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setForeignBusinessActiveStep("employment_info"));
-            dispatch(setForeignBusinessActiveTab("management"));
+            dispatch(setForeignBusinessActiveStep("foreign_employment_info"));
+            dispatch(setForeignBusinessActiveTab("foreign_management"));
           }}
         />
         <Button
@@ -1187,9 +1200,11 @@ const BeneficialOwners = ({ isOpen, entry_id }: BeneficialOwnersProps) => {
           primary
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setForeignBusinessCompletedStep("beneficial_owners"));
-            dispatch(setForeignBusinessActiveStep("attachments"));
-            dispatch(setForeignBusinessActiveTab("attachments"));
+            dispatch(
+              setForeignBusinessCompletedStep("foreign_beneficial_owners")
+            );
+            dispatch(setForeignBusinessActiveStep("foreign_attachments"));
+            dispatch(setForeignBusinessActiveTab("foreign_attachments"));
           }}
         />
       </menu>

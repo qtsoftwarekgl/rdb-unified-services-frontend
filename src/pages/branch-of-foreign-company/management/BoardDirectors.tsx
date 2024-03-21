@@ -9,13 +9,12 @@ import { countriesList } from "../../../constants/countries";
 import validateInputs from "../../../helpers/Validations";
 import Button from "../../../components/inputs/Button";
 import {
-  setForeignBoardDirectors,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../states/store";
+import { useDispatch } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
@@ -23,11 +22,14 @@ import { capitalizeString } from "../../../helpers/Strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface BoardDirectorsProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_board_of_directors: any;
 }
 
-const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
+const BoardDirectors = ({
+  entry_id,
+  foreign_board_of_directors,
+}: BoardDirectorsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -37,14 +39,11 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
     setValue,
     clearErrors,
     reset,
-    formState: { errors },
+    formState: { isSubmitSuccessful, errors },
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_board_of_directors } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
@@ -54,6 +53,19 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
     error: false,
     data: null,
   });
+
+  // CLEAR FORM
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+      setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -73,23 +85,13 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setForeignBoardDirectors([
-          {
-            ...data,
-            attachment: attachmentFile?.name,
-            step: "board_of_directors",
-          },
-          ...foreign_board_of_directors,
-        ])
-      );
-      dispatch(
         setUserApplications({
           entry_id,
           foreign_board_of_directors: [
             {
               ...data,
               attachment: attachmentFile?.name,
-              step: "board_of_directors",
+              step: "foreign_board_of_directors",
             },
             ...foreign_board_of_directors,
           ],
@@ -130,12 +132,15 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBoardDirectors(
-                    foreign_board_of_directors?.filter(
-                      (member: unknown) =>
-                        member?.first_name !== row?.original?.first_name
-                    )
-                  )
+                  setUserApplications({
+                    entry_id,
+                    foreign_board_of_directors:
+                      foreign_board_of_directors?.filter(
+                        (_: unknown, index: number) => {
+                          return index !== row?.original?.no;
+                        }
+                      ),
+                  })
                 );
               }}
             />
@@ -144,8 +149,6 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
       },
     },
   ];
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col gap-6">
@@ -630,8 +633,12 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("business_activity_vat"));
-              dispatch(setForeignBusinessActiveTab("general_information"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_business_activity_vat")
+              );
+              dispatch(
+                setForeignBusinessActiveTab("foreign_general_information")
+              );
             }}
           />
           <Button
@@ -639,8 +646,12 @@ const BoardDirectors = ({ isOpen, entry_id }: BoardDirectorsProps) => {
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessCompletedStep("board_of_directors"));
-              dispatch(setForeignBusinessActiveStep("senior_management"));
+              dispatch(
+                setForeignBusinessCompletedStep("foreign_board_of_directors")
+              );
+              dispatch(
+                setForeignBusinessActiveStep("foreign_senior_management")
+              );
             }}
           />
         </menu>

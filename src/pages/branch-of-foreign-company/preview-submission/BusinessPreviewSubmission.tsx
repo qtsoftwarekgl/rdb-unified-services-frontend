@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../states/store";
 import PreviewCard from "../../../components/business-registration/PreviewCard";
 import {
   setForeignBeneficialOwners,
@@ -25,27 +25,33 @@ import Button from "../../../components/inputs/Button";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import moment from "moment";
 
 interface PreviewSubmissionProps {
-  isOpen: boolean;
   entry_id: string | null;
+  current_application: any;
 }
 
-const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
+const PreviewSubmission = ({
+  entry_id,
+  current_application,
+}: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const {
-    foreign_company_details,
-    foreign_company_address,
-    foreign_company_activities,
-    foreign_board_of_directors,
-    foreign_senior_management,
-    foreign_employment_info,
-    foreign_beneficial_owners,
-    foreign_company_attachments,
-  } = useSelector((state: RootState) => state.foreignBranchRegistration);
+
+  const foreign_company_details = current_application?.foreign_company_details;
+  const foreign_company_address = current_application?.foreign_company_address;
+  const foreign_company_activities =
+    current_application?.foreign_company_activities;
+  const foreign_board_of_directors =
+    current_application?.foreign_board_of_directors;
+  const foreign_senior_management =
+    current_application?.foreign_senior_management;
+  const foreign_employment_info = current_application?.foreign_employment_info;
+  const foreign_beneficial_owners =
+    current_application?.foreign_beneficial_owners;
+  const foreign_company_attachments =
+    current_application?.foreign_company_attachments?.attachments;
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -89,16 +95,14 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
     },
   ];
 
-  if (!isOpen) return null;
-
   return (
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
       {foreign_company_details && (
         <PreviewCard
           header="Company Details"
-          tabName="general_information"
-          stepName="company_details"
+          tabName="foreign_general_information"
+          stepName="foreign_company_details"
           setActiveStep={setForeignBusinessActiveStep}
           setActiveTab={setForeignBusinessActiveTab}
         >
@@ -121,8 +125,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {foreign_company_address && (
         <PreviewCard
           header="Company Address"
-          tabName="company_address"
-          stepName="company_address"
+          tabName="foreign_company_address"
+          stepName="foreign_company_address"
           setActiveStep={setForeignBusinessActiveStep}
           setActiveTab={setForeignBusinessActiveTab}
         >
@@ -144,8 +148,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {/* COMPANY ACTIVITIES */}
       <PreviewCard
         header="Business Activities & VAT"
-        tabName="general_information"
-        stepName="business_activity_vat"
+        tabName="foreign_general_information"
+        stepName="foreign_business_activity_vat"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
       >
@@ -181,8 +185,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
         header="Board of Directors"
-        tabName="management"
-        stepName="board_of_directors"
+        tabName="foreign_management"
+        stepName="foreign_board_of_directors"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
       >
@@ -209,8 +213,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {/* SENIOR MANAGEMENT */}
       <PreviewCard
         header="Senior Management"
-        tabName="management"
-        stepName="senior_management"
+        tabName="foreign_management"
+        stepName="foreign_senior_management"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
       >
@@ -237,8 +241,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {/* EMPLOYMENT INFO */}
       <PreviewCard
         header="Employment Information"
-        tabName="management"
-        stepName="employment_info"
+        tabName="foreign_management"
+        stepName="foreign_employment_info"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
       >
@@ -270,8 +274,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {/* BENEFICIAL OWNERS */}
       <PreviewCard
         header="Beneficial Owners"
-        tabName="beneficial_owners"
-        stepName="beneficial_owners"
+        tabName="foreign_beneficial_owners"
+        stepName="foreign_beneficial_owners"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
       >
@@ -297,20 +301,85 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
       {/* ATTACHMENTS */}
       <PreviewCard
         header="Attachments"
-        tabName="attachments"
-        stepName="attachments"
+        tabName="foreign_attachments"
+        stepName="foreign_attachments"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
       >
-        <section className="flex flex-col gap-3">
-          {foreign_company_attachments?.map((attachment, index) => {
-            return (
-              <p key={index} className="flex items-center gap-1">
-                <span className="font-semibold">{attachment?.name}:</span>{" "}
-                {attachment?.file?.name}
-              </p>
-            );
-          })}
+        <section className="flex flex-col gap-5">
+          <menu className="flex flex-col gap-3">
+            <h3 className="font-semibold uppercase text-md">
+              Board of directors
+            </h3>
+            {foreign_board_of_directors?.map((director, index) => {
+              if (director?.attachment) {
+                return (
+                  <p
+                    key={index}
+                    className="flex items-center justify-between w-full gap-6 font-normal"
+                  >
+                    {director?.first_name || ""} {director?.last_name || ""}:{" "}
+                    <span className="font-semibold">
+                      {director?.attachment}
+                    </span>
+                  </p>
+                );
+              }
+            })}
+          </menu>
+          <menu className="flex flex-col gap-3">
+            <h3 className="font-semibold uppercase text-md">
+              Senior management
+            </h3>
+            {foreign_senior_management?.map((senior, index) => {
+              if (senior?.attachment) {
+                return (
+                  <p
+                    key={index}
+                    className="flex items-center justify-between w-full gap-6 font-normal"
+                  >
+                    {senior?.first_name || ""} {senior?.last_name || ""}:{" "}
+                    <span className="font-semibold">{senior?.attachment}</span>
+                  </p>
+                );
+              }
+            })}
+          </menu>
+          <menu className="flex flex-col gap-3">
+            <h3 className="font-semibold uppercase text-md">
+              Beneficial owners
+            </h3>
+            {foreign_beneficial_owners?.map((beneficial_owner, index) => {
+              if (beneficial_owner?.attachment) {
+                if (beneficial_owner?.beneficial_type === "person") {
+                  return (
+                    <p
+                      key={index}
+                      className="flex items-center justify-between w-full gap-6 font-normal"
+                    >
+                      {beneficial_owner?.first_name || ""}{" "}
+                      {beneficial_owner?.last_name || ""}:{" "}
+                      <span className="font-semibold">
+                        {beneficial_owner?.attachment}
+                      </span>
+                    </p>
+                  );
+                } else {
+                  return (
+                    <p
+                      key={index}
+                      className="flex items-center justify-between w-full gap-6 font-normal"
+                    >
+                      {beneficial_owner?.company_name || ""}:{" "}
+                      <span className="font-semibold">
+                        {beneficial_owner?.attachment}
+                      </span>
+                    </p>
+                  );
+                }
+              }
+            })}
+          </menu>
         </section>
       </PreviewCard>
       <menu
@@ -320,8 +389,8 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setForeignBusinessActiveStep("attachments"));
-            dispatch(setForeignBusinessActiveTab("attachments"));
+            dispatch(setForeignBusinessActiveStep("foreign_attachments"));
+            dispatch(setForeignBusinessActiveTab("foreign_attachments"));
           }}
         />
         <Button
@@ -336,8 +405,6 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
                 setUserApplications({
                   entry_id,
                   status: "submitted",
-                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
-                  path: `/foreign-branch-registration?entry_id=${entry_id}`,
                 })
               );
               dispatch(setForeignCompanyDetails(null));
@@ -348,9 +415,13 @@ const PreviewSubmission = ({ isOpen, entry_id }: PreviewSubmissionProps) => {
               dispatch(setForeignEmploymentInfo(null));
               dispatch(setForeignBeneficialOwners([]));
               dispatch(setForeignCompanyAttachments([]));
-              dispatch(setForeignBusinessCompletedStep("preview_submission"));
-              dispatch(setForeignBusinessActiveTab("general_information"));
-              dispatch(setForeignBusinessActiveStep("company_details"));
+              dispatch(
+                setForeignBusinessCompletedStep("foreign_preview_submission")
+              );
+              dispatch(
+                setForeignBusinessActiveTab("foreign_general_information")
+              );
+              dispatch(setForeignBusinessActiveStep("foreign_company_details"));
               dispatch(setForeignCompanySubActivities([]));
               dispatch(
                 setForeignBusinessRegistrationTabs(

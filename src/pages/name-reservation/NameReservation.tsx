@@ -1,16 +1,16 @@
-import { useSelector } from 'react-redux';
-import UserLayout from '../../containers/UserLayout';
-import ProgressNavigation from '../business-registration/ProgressNavigation';
-import { RootState } from '../../states/store';
+import { useSelector } from "react-redux";
+import UserLayout from "../../containers/UserLayout";
+import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
+import { RootState } from "../../states/store";
 import {
   setNameReservationActiveTab,
   setNameReservationActiveStep,
-} from '../../states/features/nameReservationSlice';
-import Tab from '../../components/business-registration/Tab';
-import { TabType } from '../../states/features/types';
-import { useLocation } from 'react-router-dom';
-import OwnerDetails from './OwnerDetails';
-import NameReservationSearch from './NameReservationSearch';
+} from "../../states/features/nameReservationSlice";
+import Tab from "../../components/business-registration/Tab";
+import { TabType } from "../../states/features/types";
+import { useLocation } from "react-router-dom";
+import OwnerDetails from "./OwnerDetails";
+import NameReservationSearch from "./NameReservationSearch";
 
 const NameReservation = () => {
   const {
@@ -20,7 +20,7 @@ const NameReservation = () => {
   } = useSelector((state: RootState) => state.nameReservation);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get('entry_id');
+  const entry_id = queryParams.get("entry_id");
 
   return (
     <UserLayout>
@@ -42,13 +42,13 @@ const NameReservation = () => {
             >
               {/* OWNER DETAILS */}
               <OwnerDetails
-                isOpen={name_reservation_active_step?.name === 'owner_details'}
+                isOpen={name_reservation_active_step?.name === "owner_details"}
               />
 
               {/* NAME RESERVATION */}
               <NameReservationSearch
                 isOpen={
-                  name_reservation_active_step?.name === 'name_reservation'
+                  name_reservation_active_step?.name === "name_reservation"
                 }
               />
             </Tab>

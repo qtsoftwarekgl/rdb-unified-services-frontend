@@ -9,12 +9,11 @@ import { countriesList } from "../../../constants/countries";
 import validateInputs from "../../../helpers/Validations";
 import Button from "../../../components/inputs/Button";
 import {
-  setForeignSeniorManagement,
   setForeignBusinessActiveStep,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../states/store";
+import { useDispatch } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
@@ -22,11 +21,14 @@ import { capitalizeString } from "../../../helpers/Strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface SeniorManagementProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_senior_management: any;
 }
 
-const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
+const SeniorManagement = ({
+  entry_id,
+  foreign_senior_management,
+}: SeniorManagementProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -36,14 +38,11 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
     setValue,
     clearErrors,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_senior_management } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
@@ -53,6 +52,13 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
     error: false,
     data: null,
   });
+
+  // CLEAR FORM
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -73,18 +79,15 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
       setIsLoading(false);
       clearErrors("submit");
       dispatch(
-        setForeignSeniorManagement([data, ...foreign_senior_management])
-      );
-      dispatch(
         setUserApplications({
           entry_id,
           foreign_senior_management: [
-            { ...data, step: "senior_management" },
+            { ...data, step: "foreign_senior_management" },
             ...foreign_senior_management,
           ],
         })
       );
-      reset(undefined, { keepDirtyValues: true });
+      reset();
       setValue("attachment", null);
     }, 1000);
     return data;
@@ -119,12 +122,15 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignSeniorManagement(
-                    foreign_senior_management?.filter(
-                      (member: unknown) =>
-                        member?.first_name !== row?.original?.first_name
-                    )
-                  )
+                  setUserApplications({
+                    entry_id,
+                    foreign_senior_management:
+                      foreign_senior_management?.filter(
+                        (_: unknown, index: number) => {
+                          return index !== row?.original?.no;
+                        }
+                      ),
+                  })
                 );
               }}
             />
@@ -133,8 +139,6 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
       },
     },
   ];
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col gap-6">
@@ -629,7 +633,9 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("board_of_directors"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_board_of_directors")
+              );
             }}
           />
           <Button
@@ -647,8 +653,10 @@ const SeniorManagement = ({ isOpen, entry_id }: SeniorManagementProps) => {
                 }, 5000);
                 return;
               }
-              dispatch(setForeignBusinessCompletedStep("senior_management"));
-              dispatch(setForeignBusinessActiveStep("employment_info"));
+              dispatch(
+                setForeignBusinessCompletedStep("foreign_senior_management")
+              );
+              dispatch(setForeignBusinessActiveStep("foreign_employment_info"));
             }}
           />
         </menu>

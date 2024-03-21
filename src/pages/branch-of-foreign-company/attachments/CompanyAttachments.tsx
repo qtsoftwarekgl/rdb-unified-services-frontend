@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../states/store";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,18 +9,22 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-  setForeignCompanyAttachments,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface CompanyAttachmentsProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_company_attachments: any;
+  foreign_company_details: any;
 }
 
-const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
+const CompanyAttachments = ({
+  entry_id,
+  foreign_company_attachments,
+  foreign_company_details,
+}: CompanyAttachmentsProps) => {
   // REACT HOOK FORM
   const {
     control,
@@ -32,9 +36,6 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_company_details, foreign_company_attachments } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File>
@@ -46,17 +47,6 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
-        setForeignCompanyAttachments(
-          Array.from(attachmentFiles)?.map((file: File) => {
-            return {
-              name: file.name,
-              size: file.size,
-              type: file.type,
-            };
-          })
-        )
-      );
-      dispatch(
         setUserApplications({
           entry_id,
           foreign_company_attachments: {
@@ -67,18 +57,16 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
                 type: file.type,
               };
             }),
-            step: "attachments",
+            step: "foreign_attachments",
           },
         })
       );
-      dispatch(setForeignBusinessCompletedStep("attachments"));
-      dispatch(setForeignBusinessActiveStep("preview_submission"));
-      dispatch(setForeignBusinessActiveTab("preview_submission"));
+      dispatch(setForeignBusinessCompletedStep("foreign_attachments"));
+      dispatch(setForeignBusinessActiveStep("foreign_preview_submission"));
+      dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
     }, 1000);
     return data;
   };
-
-  if (!isOpen) return null;
 
   return (
     <main className="flex flex-col w-full gap-8">
@@ -100,7 +88,7 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
               required:
                 foreign_company_details?.articles_of_association === "yes" &&
                 !watch("articles_of_association") &&
-                !foreign_company_attachments?.length
+                !foreign_company_attachments?.attachments?.length
                   ? "Upload company articles of association"
                   : false,
             }}
@@ -198,10 +186,11 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
         </section>
         <menu className="flex items-center w-full gap-6">
           {(attachmentFiles?.length > 0 ||
-            foreign_company_attachments?.length > 0) && (
+            foreign_company_attachments?.attachments.length > 0) && (
             <menu className="flex items-center w-full gap-5">
               <p>
-                {attachmentFiles?.length || foreign_company_attachments?.length}{" "}
+                {attachmentFiles?.length ||
+                  foreign_company_attachments?.attachments?.length}{" "}
                 files attached
               </p>
               <FontAwesomeIcon
@@ -210,7 +199,15 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   setAttachmentFiles([]);
-                  dispatch(setForeignCompanyAttachments([]));
+                  dispatch(
+                    setUserApplications({
+                      entry_id,
+                      foreign_company_attachments: {
+                        attachments: [],
+                        ...foreign_company_attachments,
+                      },
+                    })
+                  );
                 }}
               />
             </menu>
@@ -223,8 +220,12 @@ const CompanyAttachments = ({ isOpen, entry_id }: CompanyAttachmentsProps) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("beneficial_owners"));
-              dispatch(setForeignBusinessActiveTab("beneficial_owners"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_beneficial_owners")
+              );
+              dispatch(
+                setForeignBusinessActiveTab("foreign_beneficial_owners")
+              );
             }}
           />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />

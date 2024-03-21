@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
@@ -5,7 +6,7 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
-import ProgressNavigation from "../business-registration/ProgressNavigation";
+import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
 import { TabType } from "../../states/features/types";
 import Tab from "../../components/business-registration/Tab";
 import { useLocation } from "react-router-dom";
@@ -14,8 +15,11 @@ import BusinessActivity from "./enterprise_details/BusinessActivityVAT";
 import OfficeAddress from "./enterprise_details/OfficeAddress";
 import Attachments from "./Attachements";
 import Preview from "./Preview";
-import { useEffect } from "react";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
+import moment from "moment";
+import ReviewNavigation from "../business-registration/ReviewNavigation";
+import AddReviewComments from "../../components/applications-review/AddReviewComments";
+import ListReviewComments from "../../components/applications-review/ListReviewComments";
 
 const EnterpriseRegistration = () => {
   const {
@@ -23,6 +27,7 @@ const EnterpriseRegistration = () => {
     enterprise_registration_active_step,
     enterprise_registration_active_tab,
   } = useSelector((state: RootState) => state.enterpriseRegistration);
+
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -34,6 +39,8 @@ const EnterpriseRegistration = () => {
       setUserApplications({
         entry_id,
         status: "in_progress",
+        created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
       })
     );
@@ -48,51 +55,55 @@ const EnterpriseRegistration = () => {
         />
         <menu className="flex items-center w-full gap-5 p-8 rounded ">
           {enterprise_registration_tabs?.map((tab: TabType, index: number) => {
+            const isActiveTab = tab.active;
+            const activeStepName = enterprise_registration_active_step?.name;
+
             return (
               <Tab
-                isOpen={tab?.active}
-                steps={tab?.steps}
+                isOpen={isActiveTab}
+                steps={tab.steps}
                 key={`${String(index)}-${entry_id}`}
                 setActiveStep={setEnterpriseActiveStep}
                 active_tab={enterprise_registration_active_tab}
               >
-                <EnterpriseDetails
-                  entry_id={entry_id}
-                  isOpen={
-                    enterprise_registration_active_step?.name ===
-                    "enterprise_details"
-                  }
-                />
-                <BusinessActivity
-                  entry_id={entry_id}
-                  isOpen={
-                    enterprise_registration_active_step?.name ===
-                    "business_activity_vat"
-                  }
-                />
-                <OfficeAddress
-                  entry_id={entry_id}
-                  isOpen={
-                    enterprise_registration_active_step?.name ===
-                    "office_address"
-                  }
-                />
-                <Attachments
-                  entry_id={entry_id}
-                  isOpen={
-                    enterprise_registration_active_step?.name === "attachments"
-                  }
-                />
-                <Preview
-                  entry_id={entry_id}
-                  isOpen={
-                    enterprise_registration_active_step?.name ===
-                    "enterprise_preview_submission"
-                  }
-                />
+                {isActiveTab && (
+                  <>
+                    {activeStepName === "enterprise_details" && (
+                      <EnterpriseDetails entry_id={entry_id} />
+                    )}
+                    {activeStepName === "business_activity_vat" && (
+                      <BusinessActivity entry_id={entry_id} />
+                    )}
+                    {activeStepName === "office_address" && (
+                      <OfficeAddress entry_id={entry_id} />
+                    )}
+                    {activeStepName === "attachments" && (
+                      <Attachments entry_id={entry_id} />
+                    )}
+                    {activeStepName === "enterprise_preview_submission" && (
+                      <Preview entry_id={entry_id} />
+                    )}
+                  </>
+                )}
               </Tab>
             );
           })}
+          {/* REVIEW APPLICATION SECTION */}
+          <ReviewNavigation
+            setActiveStep={setEnterpriseActiveStep}
+            setActiveTab={setEnterpriseActiveTab}
+            tabs={enterprise_registration_tabs}
+            activeStep={enterprise_registration_active_step}
+          />
+          <AddReviewComments
+            entry_id={entry_id}
+            activeStep={enterprise_registration_active_step}
+            activeTab={enterprise_registration_active_tab}
+          />
+          <ListReviewComments
+            entry_id={entry_id}
+            title="Enterprise Registration Review Comments"
+          />
         </menu>
       </main>
     </UserLayout>

@@ -4,24 +4,26 @@ import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import validateInputs from "../../../helpers/Validations";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../states/store";
+import { useDispatch } from "react-redux";
 import {
   removeForeignBusinessCompletedStep,
   setForeignBusinessActiveStep,
   setForeignBusinessCompletedStep,
-  setForeignCompanyAddress,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Select from "../../../components/inputs/Select";
 import { countriesList } from "../../../constants/countries";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface CompanyAddressProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_company_address: any;
 }
 
-const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, entry_id }) => {
+const CompanyAddress: FC<CompanyAddressProps> = ({
+  entry_id,
+  foreign_company_address,
+}) => {
   // REACT HOOK FORM
   const {
     control,
@@ -31,11 +33,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, entry_id }) => {
     setValue,
   } = useForm();
 
-  // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_company_address } = useSelector(
-    (state: RootState) => state?.foreignBranchRegistration
-  );
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // SET DEFAULT VALUES
@@ -57,22 +56,19 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, entry_id }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setForeignCompanyAddress({ data, step: "company_address" }));
       dispatch(
         setUserApplications({
           entry_id,
           foreign_company_address: {
             ...data,
-            step: "company_address",
+            step: "foreign_company_address",
           },
         })
       );
-      dispatch(setForeignBusinessActiveStep("business_activity_vat"));
-      dispatch(setForeignBusinessCompletedStep("company_address"));
+      dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
+      dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
     }, 1000);
   };
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-6">
@@ -274,7 +270,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({ isOpen, entry_id }) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("company_details"));
+              dispatch(setForeignBusinessActiveStep("foreign_company_details"));
             }}
           />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />

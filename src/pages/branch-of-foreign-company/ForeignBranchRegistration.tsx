@@ -1,7 +1,7 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../states/store";
 import UserLayout from "../../containers/UserLayout";
-import ProgressNavigation from "../business-registration/ProgressNavigation";
+import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
 import { useLocation } from "react-router-dom";
 import Tab from "../../components/business-registration/Tab";
 import {
@@ -19,21 +19,29 @@ import BeneficialOwners from "./beneficial-owners/BeneficialOwners";
 import CompanyAttachments from "./attachments/CompanyAttachments";
 import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
-import { useEffect } from "react";
+import moment from "moment";
+import { RootState } from "../../states/store";
+import ReviewNavigation from "../business-registration/ReviewNavigation";
+import AddReviewComments from "../../components/applications-review/AddReviewComments";
+import ListReviewComments from "../../components/applications-review/ListReviewComments";
 
 const ForeignBranchRegistration = () => {
-  // STATE VARIABLES
   const {
     foreign_business_registration_tabs,
     foreign_business_active_step,
     foreign_business_active_tab,
   } = useSelector((state: RootState) => state.foreignBranchRegistration);
 
-  // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const entry_id = queryParams.get("entry_id");
   const dispatch = useDispatch();
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+  const current_application = user_applications?.find(
+    (app) => app.entry_id === entry_id
+  );
 
   useEffect(() => {
     dispatch(
@@ -41,6 +49,8 @@ const ForeignBranchRegistration = () => {
         entry_id,
         status: "in_progress",
         type: "foreign_branch",
+        path: `/foreign-branch-registration?entry_id=${entry_id}`,
+        created_at: moment(Date.now()).format("DD/MM/YYYY"),
       })
     );
   }, [entry_id, dispatch]);
@@ -55,91 +65,115 @@ const ForeignBranchRegistration = () => {
         <menu className="flex items-center w-full gap-5">
           {foreign_business_registration_tabs?.map(
             (tab: RegistrationTab, index: number) => {
+              const isActiveTab = tab?.active;
+              const activeStepName = foreign_business_active_step?.name;
+
               return (
                 <Tab
-                  isOpen={tab?.active}
+                  isOpen={isActiveTab}
                   steps={tab?.steps}
                   key={`${String(index)}-${entry_id}`}
                   setActiveStep={setForeignBusinessActiveStep}
                   active_tab={foreign_business_active_tab}
                 >
-                  {/* COMPANY DETAILS */}
-                  <CompanyDetails
-                    isOpen={
-                      foreign_business_active_step?.name === "company_details"
-                    }
-                    entry_id={entry_id}
-                  />
-                  {/* COMPANY ADDRESS */}
-                  <CompanyAddress
-                    isOpen={
-                      foreign_business_active_step?.name === "company_address"
-                    }
-                    entry_id={entry_id}
-                  />
-                  {/* BUSINESS ACTIVITY */}
-                  <BusinessActivity
-                    isOpen={
-                      foreign_business_active_step?.name ===
-                      "business_activity_vat"
-                    }
-                    entry_id={entry_id}
-                  />
-
-                  {/* BOARD OF DIRECTORS */}
-                  <BoardDirectors
-                    isOpen={
-                      foreign_business_active_step?.name ===
-                      "board_of_directors"
-                    }
-                    entry_id={entry_id}
-                  />
-
-                  {/* SENIOR MANAGEMENT */}
-                  <SeniorManagement
-                    isOpen={
-                      foreign_business_active_step?.name === "senior_management"
-                    }
-                    entry_id={entry_id}
-                  />
-
-                  {/* EMPLOYMENT INFO */}
-                  <EmploymentInfo
-                    isOpen={
-                      foreign_business_active_step?.name === "employment_info"
-                    }
-                    entry_id={entry_id}
-                  />
-
-                  {/* BENEFICIAL OWNERS */}
-                  <BeneficialOwners
-                    isOpen={
-                      foreign_business_active_step?.name === "beneficial_owners"
-                    }
-                    entry_id={entry_id}
-                  />
-
-                  {/* ATTACHMENTS */}
-                  <CompanyAttachments
-                    isOpen={
-                      foreign_business_active_step?.name === "attachments"
-                    }
-                    entry_id={entry_id}
-                  />
-
-                  {/* PREVIEW AND SUBMISSINO */}
-                  <PreviewSubmission
-                    isOpen={
-                      foreign_business_active_step?.name ===
-                      "preview_submission"
-                    }
-                    entry_id={entry_id}
-                  />
+                  {isActiveTab && (
+                    <>
+                      {activeStepName === "foreign_company_details" && (
+                        <CompanyDetails
+                          entry_id={entry_id}
+                          foreign_company_details={
+                            current_application?.foreign_company_details
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_company_address" && (
+                        <CompanyAddress
+                          entry_id={entry_id}
+                          foreign_company_address={
+                            current_application?.foreign_company_address
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_business_activity_vat" && (
+                        <BusinessActivity
+                          entry_id={entry_id}
+                          foreign_company_activities={
+                            current_application?.foreign_company_activities
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_board_of_directors" && (
+                        <BoardDirectors
+                          entry_id={entry_id}
+                          foreign_board_of_directors={
+                            current_application?.foreign_board_of_directors
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_senior_management" && (
+                        <SeniorManagement
+                          entry_id={entry_id}
+                          foreign_senior_management={
+                            current_application?.foreign_senior_management
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_employment_info" && (
+                        <EmploymentInfo
+                          entry_id={entry_id}
+                          foreign_employment_info={
+                            current_application?.foreign_employment_info
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_beneficial_owners" && (
+                        <BeneficialOwners
+                          entry_id={entry_id}
+                          foreign_beneficial_owners={
+                            current_application?.foreign_beneficial_owners
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_attachments" && (
+                        <CompanyAttachments
+                          entry_id={entry_id}
+                          foreign_company_attachments={
+                            current_application?.foreign_company_attachments
+                          }
+                          foreign_company_details={
+                            current_application?.foreign_company_details
+                          }
+                        />
+                      )}
+                      {activeStepName === "foreign_preview_submission" && (
+                        <PreviewSubmission
+                          entry_id={entry_id}
+                          current_application={current_application}
+                        />
+                      )}
+                    </>
+                  )}
                 </Tab>
               );
             }
           )}
         </menu>
+        {/* REVIEW APPLICATION SECTION */}
+        <ReviewNavigation
+          setActiveStep={setForeignBusinessActiveStep}
+          setActiveTab={setForeignBusinessActiveTab}
+          tabs={foreign_business_registration_tabs}
+          activeStep={foreign_business_active_step}
+        />
+        <AddReviewComments
+          entry_id={entry_id}
+          activeStep={foreign_business_active_step}
+          activeTab={foreign_business_active_tab}
+        />
+        <ListReviewComments
+          entry_id={entry_id}
+          title="Branch of Foreign Company Registration Review Comments"
+        />
       </main>
     </UserLayout>
   );

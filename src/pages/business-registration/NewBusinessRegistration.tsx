@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../../components/inputs/Button";
 import UserLayout from "../../containers/UserLayout";
-import { generateUUID } from "../../helpers/Strings";
+import { formatCompanyData, generateUUID } from "../../helpers/Strings";
 import { RootState } from "../../states/store";
 import Table from "../../components/table/Table";
 import moment from "moment";
@@ -33,9 +33,10 @@ export const NewRegistration = ({
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const applicationsInProgress = user_applications.filter(
-    (app) => app.status === "in_progress"
-  );
+
+  const applicationsInProgress = user_applications
+    .filter((app) => app.status === "in_progress")
+    .map(formatCompanyData);
 
   const [useReservedNames, setUseReservedNames] = useState(false);
   const [reservedName, setReservedName] = useState("");
@@ -158,7 +159,7 @@ export const NewRegistration = ({
               ) : (
                 <span className="flex items-center justify-start w-full">
                   <h1 className="uppercase text-primary ">
-                    You have no reserved names yet
+                    You have no reserved names
                   </h1>
                 </span>
               )}
@@ -190,12 +191,12 @@ export const NewRegistration = ({
             <menu className="flex flex-col gap-4 p-8 bg-white rounded-md flex-s">
               {requiredAttachments.map((attachment, index) => {
                 return (
-                  <menu className="border flex flex-col gap-4 p-2 rounded-md border-[#f1f1f1]">
+                  <menu
+                    key={index}
+                    className="border flex flex-col gap-4 p-2 rounded-md border-[#f1f1f1]"
+                  >
                     <menu className="flex items-center gap-4">
-                      <menu
-                        key={index}
-                        className="px-4 py-2 bg-[#ebf9f5] rounded-lg "
-                      >
+                      <menu className="px-4 py-2 bg-[#ebf9f5] rounded-lg ">
                         <FontAwesomeIcon
                           icon={faFile}
                           className="text-[#4bbe69]"

@@ -11,21 +11,23 @@ import {
   companyTypes,
 } from "../../../constants/businessRegistration";
 import Button from "../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../states/store";
+import { useDispatch } from "react-redux";
 import {
   setForeignBusinessActiveStep,
-  setForeignCompanyDetails,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 
 interface CompanyDetailsProps {
-  isOpen: boolean;
   entry_id: string | null;
+  foreign_company_details: any;
 }
 
-const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
+const CompanyDetails: FC<CompanyDetailsProps> = ({
+  entry_id,
+  foreign_company_details,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -37,9 +39,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { foreign_company_details } = useSelector(
-    (state: RootState) => state.foreignBranchRegistration
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchCompany, setSearchCompany] = useState({
     error: false,
@@ -53,16 +52,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(
-        setForeignCompanyDetails({
-          name: data?.name,
-          category: data?.category,
-          type: data?.type,
-          position: data?.position,
-          articles_of_association: data?.articles_of_association,
-          step: "company_details",
-        })
-      );
 
       dispatch(
         setUserApplications({
@@ -73,16 +62,16 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
             type: data?.type,
             position: data?.position,
             articles_of_association: data?.articles_of_association,
-            step: "company_details",
+            step: "foreign_company_details",
           },
         })
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setForeignBusinessCompletedStep("company_details"));
+      dispatch(setForeignBusinessCompletedStep("foreign_company_details"));
 
       // SET ACTIVE STEP
-      dispatch(setForeignBusinessActiveStep("company_address"));
+      dispatch(setForeignBusinessActiveStep("foreign_company_address"));
     }, 1000);
   };
 
@@ -99,8 +88,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ isOpen, entry_id }) => {
       );
     }
   }, [foreign_company_details, setValue]);
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-4">
