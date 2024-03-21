@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
@@ -38,9 +38,10 @@ const BeneficialOwners = ({
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
     setValue,
     setError,
+    reset,
     clearErrors,
     watch,
   } = useForm();
@@ -57,7 +58,18 @@ const BeneficialOwners = ({
     data: null,
   });
 
-  console.log("****************************", foreign_beneficial_owners);
+  // CLEAR FORM
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+      setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -70,7 +82,7 @@ const BeneficialOwners = ({
           foreign_beneficial_owners: [
             {
               ...data,
-              step: "beneficial_owners",
+              step: "foreign_beneficial_owners",
             },
             ...foreign_beneficial_owners,
           ],
@@ -1179,8 +1191,8 @@ const BeneficialOwners = ({
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setForeignBusinessActiveStep("employment_info"));
-            dispatch(setForeignBusinessActiveTab("management"));
+            dispatch(setForeignBusinessActiveStep("foreign_employment_info"));
+            dispatch(setForeignBusinessActiveTab("foreign_management"));
           }}
         />
         <Button
@@ -1188,9 +1200,11 @@ const BeneficialOwners = ({
           primary
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setForeignBusinessCompletedStep("beneficial_owners"));
-            dispatch(setForeignBusinessActiveStep("attachments"));
-            dispatch(setForeignBusinessActiveTab("attachments"));
+            dispatch(
+              setForeignBusinessCompletedStep("foreign_beneficial_owners")
+            );
+            dispatch(setForeignBusinessActiveStep("foreign_attachments"));
+            dispatch(setForeignBusinessActiveTab("foreign_attachments"));
           }}
         />
       </menu>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
@@ -6,7 +6,7 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
-import ProgressNavigation from "../business-registration/ProgressNavigation";
+import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
 import { TabType } from "../../states/features/types";
 import Tab from "../../components/business-registration/Tab";
 import { useLocation } from "react-router-dom";
@@ -17,6 +17,9 @@ import Attachments from "./Attachements";
 import Preview from "./Preview";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
+import ReviewNavigation from "../business-registration/ReviewNavigation";
+import AddReviewComments from "../../components/applications-review/AddReviewComments";
+import ListReviewComments from "../../components/applications-review/ListReviewComments";
 
 const EnterpriseRegistration = () => {
   const {
@@ -85,6 +88,22 @@ const EnterpriseRegistration = () => {
               </Tab>
             );
           })}
+          {/* REVIEW APPLICATION SECTION */}
+          <ReviewNavigation
+            setActiveStep={setEnterpriseActiveStep}
+            setActiveTab={setEnterpriseActiveTab}
+            tabs={enterprise_registration_tabs}
+            activeStep={enterprise_registration_active_step}
+          />
+          <AddReviewComments
+            entry_id={entry_id}
+            activeStep={enterprise_registration_active_step}
+            activeTab={enterprise_registration_active_tab}
+          />
+          <ListReviewComments
+            entry_id={entry_id}
+            title="Enterprise Registration Review Comments"
+          />
         </menu>
       </main>
     </UserLayout>

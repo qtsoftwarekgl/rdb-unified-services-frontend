@@ -57,13 +57,13 @@ const CompanyAttachments = ({
                 type: file.type,
               };
             }),
-            step: "attachments",
+            step: "foreign_attachments",
           },
         })
       );
-      dispatch(setForeignBusinessCompletedStep("attachments"));
-      dispatch(setForeignBusinessActiveStep("preview_submission"));
-      dispatch(setForeignBusinessActiveTab("preview_submission"));
+      dispatch(setForeignBusinessCompletedStep("foreign_attachments"));
+      dispatch(setForeignBusinessActiveStep("foreign_preview_submission"));
+      dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
     }, 1000);
     return data;
   };
@@ -220,8 +220,12 @@ const CompanyAttachments = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("beneficial_owners"));
-              dispatch(setForeignBusinessActiveTab("beneficial_owners"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_beneficial_owners")
+              );
+              dispatch(
+                setForeignBusinessActiveTab("foreign_beneficial_owners")
+              );
             }}
           />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />

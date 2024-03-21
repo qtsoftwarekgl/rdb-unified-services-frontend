@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserLayout from "../../containers/UserLayout";
-import ProgressNavigation from "../business-registration/ProgressNavigation";
+import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
 import { useLocation } from "react-router-dom";
 import Tab from "../../components/business-registration/Tab";
 import {
@@ -21,6 +21,9 @@ import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
 import { RootState } from "../../states/store";
+import ReviewNavigation from "../business-registration/ReviewNavigation";
+import AddReviewComments from "../../components/applications-review/AddReviewComments";
+import ListReviewComments from "../../components/applications-review/ListReviewComments";
 
 const ForeignBranchRegistration = () => {
   const {
@@ -75,7 +78,7 @@ const ForeignBranchRegistration = () => {
                 >
                   {isActiveTab && (
                     <>
-                      {activeStepName === "company_details" && (
+                      {activeStepName === "foreign_company_details" && (
                         <CompanyDetails
                           entry_id={entry_id}
                           foreign_company_details={
@@ -83,7 +86,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "company_address" && (
+                      {activeStepName === "foreign_company_address" && (
                         <CompanyAddress
                           entry_id={entry_id}
                           foreign_company_address={
@@ -91,7 +94,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "business_activity_vat" && (
+                      {activeStepName === "foreign_business_activity_vat" && (
                         <BusinessActivity
                           entry_id={entry_id}
                           foreign_company_activities={
@@ -99,7 +102,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "board_of_directors" && (
+                      {activeStepName === "foreign_board_of_directors" && (
                         <BoardDirectors
                           entry_id={entry_id}
                           foreign_board_of_directors={
@@ -107,7 +110,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "senior_management" && (
+                      {activeStepName === "foreign_senior_management" && (
                         <SeniorManagement
                           entry_id={entry_id}
                           foreign_senior_management={
@@ -115,7 +118,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "employment_info" && (
+                      {activeStepName === "foreign_employment_info" && (
                         <EmploymentInfo
                           entry_id={entry_id}
                           foreign_employment_info={
@@ -123,7 +126,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "beneficial_owners" && (
+                      {activeStepName === "foreign_beneficial_owners" && (
                         <BeneficialOwners
                           entry_id={entry_id}
                           foreign_beneficial_owners={
@@ -131,7 +134,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "attachments" && (
+                      {activeStepName === "foreign_attachments" && (
                         <CompanyAttachments
                           entry_id={entry_id}
                           foreign_company_attachments={
@@ -142,7 +145,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "preview_submission" && (
+                      {activeStepName === "foreign_preview_submission" && (
                         <PreviewSubmission
                           entry_id={entry_id}
                           current_application={current_application}
@@ -155,6 +158,22 @@ const ForeignBranchRegistration = () => {
             }
           )}
         </menu>
+        {/* REVIEW APPLICATION SECTION */}
+        <ReviewNavigation
+          setActiveStep={setForeignBusinessActiveStep}
+          setActiveTab={setForeignBusinessActiveTab}
+          tabs={foreign_business_registration_tabs}
+          activeStep={foreign_business_active_step}
+        />
+        <AddReviewComments
+          entry_id={entry_id}
+          activeStep={foreign_business_active_step}
+          activeTab={foreign_business_active_tab}
+        />
+        <ListReviewComments
+          entry_id={entry_id}
+          title="Branch of Foreign Company Registration Review Comments"
+        />
       </main>
     </UserLayout>
   );

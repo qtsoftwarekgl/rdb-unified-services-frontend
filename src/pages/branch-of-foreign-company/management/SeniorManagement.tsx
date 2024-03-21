@@ -38,7 +38,7 @@ const SeniorManagement = ({
     setValue,
     clearErrors,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful },
   } = useForm();
 
   // STATE VARIABLES
@@ -52,6 +52,13 @@ const SeniorManagement = ({
     error: false,
     data: null,
   });
+
+  // CLEAR FORM
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -75,7 +82,7 @@ const SeniorManagement = ({
         setUserApplications({
           entry_id,
           foreign_senior_management: [
-            { ...data, step: "senior_management" },
+            { ...data, step: "foreign_senior_management" },
             ...foreign_senior_management,
           ],
         })
@@ -119,8 +126,9 @@ const SeniorManagement = ({
                     entry_id,
                     foreign_senior_management:
                       foreign_senior_management?.filter(
-                        (member: unknown) =>
-                          member?.first_name !== row?.original?.first_name
+                        (_: unknown, index: number) => {
+                          return index !== row?.original?.no;
+                        }
                       ),
                   })
                 );
@@ -625,7 +633,9 @@ const SeniorManagement = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("board_of_directors"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_board_of_directors")
+              );
             }}
           />
           <Button
@@ -643,8 +653,10 @@ const SeniorManagement = ({
                 }, 5000);
                 return;
               }
-              dispatch(setForeignBusinessCompletedStep("senior_management"));
-              dispatch(setForeignBusinessActiveStep("employment_info"));
+              dispatch(
+                setForeignBusinessCompletedStep("foreign_senior_management")
+              );
+              dispatch(setForeignBusinessActiveStep("foreign_employment_info"));
             }}
           />
         </menu>

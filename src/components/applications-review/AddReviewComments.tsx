@@ -1,18 +1,18 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../../components/Modal';
-import { AppDispatch, RootState } from '../../../states/store';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import TextArea from '../../../components/inputs/TextArea';
-import Button from '../../../components/inputs/Button';
-import { FC, useEffect, useRef, useState } from 'react';
-import Loader from '../../../components/Loader';
-import { Step, TabType } from '../../../states/features/types';
-import moment from 'moment';
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../Modal";
+import { AppDispatch, RootState } from "../../states/store";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import TextArea from "../inputs/TextArea";
+import Button from "../inputs/Button";
+import { FC, useEffect, useRef, useState } from "react";
+import Loader from "../Loader";
+import { Step, TabType } from "../../states/features/types";
+import moment from "moment";
 import {
   setAddReviewCommentsModal,
   setApplicationReviewComments,
   updateReviewComment,
-} from '../../../states/features/userApplicationSlice';
+} from "../../states/features/userApplicationSlice";
 
 export type ReviewComment = {
   comment: string;
@@ -24,9 +24,15 @@ export type ReviewComment = {
 
 interface AddReviewCommentsProps {
   entry_id?: string | null;
+  activeStep: Step;
+  activeTab: TabType;
 }
 
-const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
+const AddReviewComments: FC<AddReviewCommentsProps> = ({
+  entry_id,
+  activeStep,
+  activeTab,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -38,9 +44,6 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { business_active_step, business_active_tab } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const { addReviewCommentsModal, application_review_comments } = useSelector(
     (state: RootState) => state.userApplication
   );
@@ -56,14 +59,14 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
       reset();
       commentRef.current?.blur();
       if (commentRef?.current?.value) {
-        commentRef.current.value = '';
+        commentRef.current.value = "";
       }
       setComment(null);
     } else if (addReviewCommentsModal) {
       commentRef.current?.focus();
       const commentExists = application_review_comments?.find(
         (business_comment: ReviewComment) =>
-          business_comment?.step?.name === business_active_step?.name &&
+          business_comment?.step?.name === activeStep?.name &&
           business_comment?.entry_id === entry_id
       );
       if (commentExists) {
@@ -71,7 +74,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
       }
     }
   }, [
-    business_active_step?.name,
+    activeStep?.name,
     application_review_comments,
     reset,
     addReviewCommentsModal,
@@ -83,10 +86,10 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
     if (application_review_comments?.length > 0) {
       const commentExists = application_review_comments?.find(
         (business_comment: ReviewComment) =>
-          business_comment?.step?.name === business_active_step?.name
+          business_comment?.step?.name === activeStep?.name
       );
       if (commentExists) {
-        setValue('comment', commentExists?.comment);
+        setValue("comment", commentExists?.comment);
         setComment(commentExists);
         commentRef.current?.focus();
         if (commentRef.current) {
@@ -95,7 +98,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
       }
     }
   }, [
-    business_active_step?.name,
+    activeStep?.name,
     application_review_comments,
     setValue,
     addReviewCommentsModal,
@@ -108,11 +111,11 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
       setIsLoading(false);
       const newComment = {
         comment: data?.comment,
-        step: business_active_step,
+        step: activeStep,
         entry_id,
         tab: {
-          name: business_active_tab?.name,
-          label: business_active_tab?.label,
+          name: activeTab?.name,
+          label: activeTab?.label,
         },
         created_at: moment().format(),
       };
@@ -127,7 +130,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
         );
       }
       if (commentRef?.current?.value) {
-        commentRef.current.value = '';
+        commentRef.current.value = "";
       }
       dispatch(setAddReviewCommentsModal(false));
     }, 1000);
@@ -140,25 +143,25 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
         dispatch(setAddReviewCommentsModal(false));
       }}
     >
-      <h3 className="text-center text-lg">
-        Add comment for {business_active_step?.label}
+      <h3 className="text-lg text-center">
+        Add comment for {activeStep?.label}
       </h3>
       <form
-        className="flex flex-col gap-5 w-full"
+        className="flex flex-col w-full gap-5"
         onSubmit={handleSubmit(onSubmit)}
       >
         <Controller
           name="comment"
           control={control}
           defaultValue={comment && comment?.comment}
-          rules={{ required: 'Comment is required' }}
+          rules={{ required: "Comment is required" }}
           render={({ field }) => {
             return (
-              <label className="flex flex-col gap-2 w-full">
+              <label className="flex flex-col w-full gap-2">
                 <TextArea
                   ref={commentRef}
                   required
-                  defaultValue={comment ? comment?.comment : ''}
+                  defaultValue={comment ? comment?.comment : ""}
                   placeholder="Add comment to provide the applicant with more context"
                   label="Comment box"
                   onChange={(e) => {
@@ -174,7 +177,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
             );
           }}
         />
-        <menu className="flex items-center gap-3 justify-between w-full">
+        <menu className="flex items-center justify-between w-full gap-3">
           <Button
             value="Cancel"
             onClick={(e) => {
@@ -182,7 +185,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({ entry_id }) => {
               dispatch(setAddReviewCommentsModal(false));
             }}
           />
-          <Button value={isLoading ? <Loader /> : 'Save'} primary submit />
+          <Button value={isLoading ? <Loader /> : "Save"} primary submit />
         </menu>
       </form>
     </Modal>

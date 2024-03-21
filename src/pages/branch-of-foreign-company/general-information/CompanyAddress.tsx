@@ -61,12 +61,12 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           entry_id,
           foreign_company_address: {
             ...data,
-            step: "company_address",
+            step: "foreign_company_address",
           },
         })
       );
-      dispatch(setForeignBusinessActiveStep("business_activity_vat"));
-      dispatch(setForeignBusinessCompletedStep("company_address"));
+      dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
+      dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
     }, 1000);
   };
 
@@ -270,7 +270,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("company_details"));
+              dispatch(setForeignBusinessActiveStep("foreign_company_details"));
             }}
           />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />

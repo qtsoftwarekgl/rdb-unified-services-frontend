@@ -62,16 +62,16 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             type: data?.type,
             position: data?.position,
             articles_of_association: data?.articles_of_association,
-            step: "company_details",
+            step: "foreign_company_details",
           },
         })
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setForeignBusinessCompletedStep("company_details"));
+      dispatch(setForeignBusinessCompletedStep("foreign_company_details"));
 
       // SET ACTIVE STEP
-      dispatch(setForeignBusinessActiveStep("company_address"));
+      dispatch(setForeignBusinessActiveStep("foreign_company_address"));
     }, 1000);
   };
 

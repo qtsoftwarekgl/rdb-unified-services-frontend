@@ -21,28 +21,28 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     {
       no: 1,
       label: "General Information",
-      name: "general_information",
+      name: "foreign_general_information",
       completed: false,
       active: true,
       steps: [
         {
           label: "Company Details",
-          name: "company_details",
-          tab_name: "general_information",
+          name: "foreign_company_details",
+          tab_name: "foreign_general_information",
           active: true,
           completed: false,
         },
         {
           label: "Company Address",
-          name: "company_address",
-          tab_name: "general_information",
+          name: "foreign_company_address",
+          tab_name: "foreign_general_information",
           active: false,
           completed: false,
         },
         {
           label: "Business Activity & VAT",
-          name: "business_activity_vat",
-          tab_name: "general_information",
+          name: "foreign_business_activity_vat",
+          tab_name: "foreign_general_information",
           active: false,
           completed: false,
         },
@@ -51,28 +51,28 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     {
       no: 2,
       label: "Management",
-      name: "management",
+      name: "foreign_management",
       active: false,
       completed: false,
       steps: [
         {
           label: "Board of Directors",
-          name: "board_of_directors",
-          tab_name: "management",
+          name: "foreign_board_of_directors",
+          tab_name: "foreign_management",
           active: false,
           completed: false,
         },
         {
           label: "Senior Management",
-          name: "senior_management",
-          tab_name: "management",
+          name: "foreign_senior_management",
+          tab_name: "foreign_management",
           active: false,
           completed: false,
         },
         {
           label: "Employment Info",
-          name: "employment_info",
-          tab_name: "management",
+          name: "foreign_employment_info",
+          tab_name: "foreign_management",
           active: false,
           completed: false,
         },
@@ -83,12 +83,12 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
       label: "Beneficial Owners",
       active: false,
       completed: false,
-      name: "beneficial_owners",
+      name: "foreign_beneficial_owners",
       steps: [
         {
           label: "Beneficial Owners",
-          name: "beneficial_owners",
-          tab_name: "beneficial_owners",
+          name: "foreign_beneficial_owners",
+          tab_name: "foreign_beneficial_owners",
           active: false,
           completed: false,
         },
@@ -97,14 +97,14 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     {
       no: 5,
       label: "Attachments",
-      name: "attachments",
+      name: "foreign_attachments",
       completed: false,
       active: false,
       steps: [
         {
           label: "Attachments",
-          name: "attachments",
-          tab_name: "attachments",
+          name: "foreign_attachments",
+          tab_name: "foreign_attachments",
           active: false,
           completed: false,
         },
@@ -113,14 +113,14 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     {
       no: 6,
       label: "Preview & Submission",
-      name: "preview_submission",
+      name: "foreign_preview_submission",
       completed: false,
       active: false,
       steps: [
         {
           label: "Preview & Submission",
           name: "preview_submission",
-          tab_name: "preview_submission",
+          tab_name: "foreign_preview_submission",
           active: false,
           completed: false,
         },
@@ -139,13 +139,13 @@ export const foreignBranchRegistrationSlice = createSlice({
       String(localStorage.getItem("business_active_step"))
     ) || {
       label: "Company Details",
-      name: "company_details",
+      name: "foreign_company_details",
     },
     foreign_business_active_tab: JSON.parse(
       String(localStorage.getItem("business_active_tab"))
     ) || {
       label: "General Information",
-      name: "general_information",
+      name: "foreign_general_information",
     },
     foreign_company_details:
       JSON.parse(String(localStorage.getItem("foreign_company_details"))) ||

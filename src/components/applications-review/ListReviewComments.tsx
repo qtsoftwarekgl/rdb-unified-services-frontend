@@ -1,27 +1,31 @@
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../../components/Modal';
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../Modal";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../../states/features/businessRegistrationSlice';
-import { formatDate } from '../../../helpers/Strings';
-import { ReviewComment } from './AddReviewComments';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "../../states/features/businessRegistrationSlice";
+import { formatDate } from "../../helpers/Strings";
+import { ReviewComment } from "./AddReviewComments";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   setAddReviewCommentsModal,
   setApplicationReviewComments,
   setListReviewCommentsModal,
-} from '../../../states/features/userApplicationSlice';
-import { FC } from 'react';
+} from "../../states/features/userApplicationSlice";
+import { FC } from "react";
 
 interface ListReviewCommentsProps {
   entry_id: string | null;
+  title: string;
 }
 
-const ListReviewComments: FC<ListReviewCommentsProps> = ({ entry_id }) => {
+const ListReviewComments: FC<ListReviewCommentsProps> = ({
+  entry_id,
+  title,
+}) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { listReviewCommentsModal, application_review_comments } = useSelector(
@@ -36,8 +40,8 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({ entry_id }) => {
       }}
     >
       <section className="flex w-full flex-col gap-6 mt-6 max-h-[70vh] overflow-y-scroll pr-4">
-        <h1 className="uppercase text-lg text-primary text-center font-semibold">
-          Business Registration Review Comments
+        <h1 className="text-lg font-semibold text-center uppercase text-primary">
+          {title}
         </h1>
         {application_review_comments
           ?.filter((review: ReviewComment) => review?.entry_id === entry_id)
@@ -45,7 +49,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({ entry_id }) => {
             return (
               <menu
                 key={index}
-                className="flex items-center gap-3 w-full justify-between p-2 px-4 rounded-md hover:bg-slate-50"
+                className="flex items-center justify-between w-full gap-3 p-2 px-4 rounded-md hover:bg-slate-50"
               >
                 <ul className="flex flex-col gap-1">
                   <h3 className="font-semibold uppercase text-primary">

@@ -56,19 +56,21 @@ const BusinessActivity = ({
             vat: data?.vat,
             turnover: data?.turnover,
             business_lines: foreign_company_activities?.business_lines,
-            step: "business_activity_vat",
+            step: "foreign_business_activity_vat",
           },
         })
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setForeignBusinessCompletedStep("business_activity_vat"));
+      dispatch(
+        setForeignBusinessCompletedStep("foreign_business_activity_vat")
+      );
 
       // SET CURRENT TAB AS COMPLETED
-      dispatch(setForeignBusinessActiveTab("general_information"));
+      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
 
       // SET THE NEXT TAB AS ACTIVE
-      dispatch(setForeignBusinessActiveTab("management"));
+      dispatch(setForeignBusinessActiveTab("foreign_management"));
 
       setIsLoading(false);
     }, 1000);
@@ -368,7 +370,7 @@ const BusinessActivity = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("company_address"));
+              dispatch(setForeignBusinessActiveStep("foreign_company_address"));
             }}
           />
           <Button value={isLoading ? <Loader /> : "Continue"} primary submit />

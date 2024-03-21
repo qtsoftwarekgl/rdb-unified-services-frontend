@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../states/store";
+import { useDispatch } from "react-redux";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-  setForeignEmploymentInfo,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
@@ -55,13 +54,13 @@ const EmploymentInfo = ({
           entry_id,
           foreign_employment_info: {
             ...data,
-            step: "employment_info",
+            step: "foreign_employment_info",
           },
         })
       );
-      dispatch(setForeignBusinessCompletedStep("employment_info"));
-      dispatch(setForeignBusinessActiveStep("beneficial_owners"));
-      dispatch(setForeignBusinessActiveTab("beneficial_owners"));
+      dispatch(setForeignBusinessCompletedStep("foreign_employment_info"));
+      dispatch(setForeignBusinessActiveStep("foreign_beneficial_owners"));
+      dispatch(setForeignBusinessActiveTab("foreign_beneficial_owners"));
     }, 1000);
   };
 
@@ -189,7 +188,9 @@ const EmploymentInfo = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("senior_management"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_senior_management")
+              );
             }}
           />
           <Button value={isLoading ? <Loader /> : "Continue"} submit primary />

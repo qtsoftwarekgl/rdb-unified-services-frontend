@@ -39,7 +39,7 @@ const BoardDirectors = ({
     setValue,
     clearErrors,
     reset,
-    formState: { errors },
+    formState: { isSubmitSuccessful, errors },
   } = useForm();
 
   // STATE VARIABLES
@@ -53,6 +53,19 @@ const BoardDirectors = ({
     error: false,
     data: null,
   });
+
+  // CLEAR FORM
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+      setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -78,7 +91,7 @@ const BoardDirectors = ({
             {
               ...data,
               attachment: attachmentFile?.name,
-              step: "board_of_directors",
+              step: "foreign_board_of_directors",
             },
             ...foreign_board_of_directors,
           ],
@@ -123,8 +136,9 @@ const BoardDirectors = ({
                     entry_id,
                     foreign_board_of_directors:
                       foreign_board_of_directors?.filter(
-                        (member: unknown) =>
-                          member?.first_name !== row?.original?.first_name
+                        (_: unknown, index: number) => {
+                          return index !== row?.original?.no;
+                        }
                       ),
                   })
                 );
@@ -619,8 +633,12 @@ const BoardDirectors = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessActiveStep("business_activity_vat"));
-              dispatch(setForeignBusinessActiveTab("general_information"));
+              dispatch(
+                setForeignBusinessActiveStep("foreign_business_activity_vat")
+              );
+              dispatch(
+                setForeignBusinessActiveTab("foreign_general_information")
+              );
             }}
           />
           <Button
@@ -628,8 +646,12 @@ const BoardDirectors = ({
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setForeignBusinessCompletedStep("board_of_directors"));
-              dispatch(setForeignBusinessActiveStep("senior_management"));
+              dispatch(
+                setForeignBusinessCompletedStep("foreign_board_of_directors")
+              );
+              dispatch(
+                setForeignBusinessActiveStep("foreign_senior_management")
+              );
             }}
           />
         </menu>
