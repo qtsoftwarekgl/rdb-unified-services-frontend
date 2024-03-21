@@ -5,7 +5,7 @@ import UserLayout from "../../containers/UserLayout";
 import { RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { capitalizeString } from "../../helpers/Strings";
+import { formatCompanyData } from "../../helpers/Strings";
 import {
   setBeneficialOwners,
   setBoardDirectors,
@@ -50,27 +50,6 @@ const AmendCompanyDetails = () => {
   const navigate = useNavigate();
 
   // Format company data
-  const formatCompanyData = (business) => {
-    const company =
-      business?.company_details ||
-      business?.foreign_company_details ||
-      business?.enterprise_details;
-    return {
-      ...company,
-      company_name: company?.name,
-      status: (business?.status || "submitted").toLowerCase(),
-      id:
-        business?.id ||
-        business?.entry_id ||
-        Math.floor(Math.random() * 9000) + 1000,
-      reg_number: `REG-${(
-        business?.entry_id?.split("-")[0] || ""
-      ).toUpperCase()}`,
-      service_name: capitalizeString(business?.type),
-      submission_date: business.created_at,
-      path: business?.path,
-    };
-  };
 
   // Sort by submission date
   const sortBySubmissionDate = (a, b) => {
