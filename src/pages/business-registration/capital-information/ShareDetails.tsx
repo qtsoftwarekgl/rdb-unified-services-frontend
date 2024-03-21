@@ -12,6 +12,10 @@ import {
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { business_capital_details } from './CapitalDetails';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 export interface business_share_details {
   company_capital: number;
@@ -29,12 +33,14 @@ interface ShareDetailsProps {
   isOpen: boolean;
   share_details: business_share_details;
   entry_id: string | null;
+  capital_details: business_capital_details[];
 }
 
 const ShareDetails: FC<ShareDetailsProps> = ({
   isOpen,
   share_details,
   entry_id,
+  capital_details = [],
 }) => {
   // REACT HOOK FORM
   const {
@@ -88,6 +94,12 @@ const ShareDetails: FC<ShareDetailsProps> = ({
 
   // HANDLE CAPITAL TOTAL OVERFLOW
   useEffect(() => {
+    const existing_share_values =
+      capital_details?.length > 0
+        ? capital_details
+            ?.map((capital) => capital?.shares?.total_value)
+            ?.reduce((acc, curr) => acc + curr, 0)
+        : null;
     setValue(
       'total_value',
       tableRows
@@ -103,6 +115,18 @@ const ShareDetails: FC<ShareDetailsProps> = ({
     } else {
       clearErrors('total_value');
     }
+    if (
+      existing_share_values &&
+      Number(watch('total_value') < Number(existing_share_values))
+    ) {
+      setError('existing_share_values', {
+        type: 'manual',
+        message:
+          "Total share values cannot be less than assigned shares' value",
+      });
+    } else {
+      clearErrors('existing_share_values');
+    }
   }, [
     watch('ordinary_share_total_value'),
     watch('preference_share_total_value'),
@@ -110,6 +134,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
     watch('redeemable_share_total_value'),
     watch('irredeemable_share_total_value'),
     watch('company_capital'),
+    capital_details,
   ]);
 
   // SET DEFAULT VALUES
@@ -217,7 +242,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                           if (Number(e.target.value) < 0) {
                             return;
                           }
-                          setValue(`${row.name}_no_shares`, Number(e.target.value));
+                          setValue(
+                            `${row.name}_no_shares`,
+                            Number(e.target.value)
+                          );
                           setValue(
                             `${row.name}_total_value`,
                             Number(watch(`${row.name}_share_value`)) *
@@ -241,7 +269,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                           if (Number(e.target.value) < 0) {
                             return;
                           }
-                          setValue(`${row.name}_share_value`, Number(e.target.value));
+                          setValue(
+                            `${row.name}_share_value`,
+                            Number(e.target.value)
+                          );
                           setValue(
                             `${row.name}_total_value`,
                             Number(watch(`${row.name}_no_shares`)) *
@@ -277,6 +308,26 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                     defaultValue={share_details?.total_value}
                     value={watch('total_value')}
                   />
+                  {errors?.existing_share_values && (
+                    <p className="text-[13px] text-red-600 flex flex-col gap-1">
+                      {String(errors?.existing_share_values?.message)}
+                      <Link
+                        className={`text-[13px] text-black flex items-center gap-2 ease-in-out duration-150 hover:gap-3`}
+                        to="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          dispatch(setBusinessActiveTab('capital_information'));
+                          dispatch(setBusinessActiveStep('capital_details'));
+                        }}
+                      >
+                        Lean more{' '}
+                        <FontAwesomeIcon
+                          icon={faArrowRight}
+                          className="text-[13px]"
+                        />
+                      </Link>
+                    </p>
+                  )}
                 </td>
               </tr>
             </tfoot>

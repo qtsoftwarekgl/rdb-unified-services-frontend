@@ -47,6 +47,7 @@ const BusinessRegistration = () => {
   const businessApplication = user_applications?.find(
     (app) => app.entry_id === entry_id
   );
+  const { user } = useSelector((state: RootState) => state.user);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -88,26 +89,26 @@ const BusinessRegistration = () => {
                   active_tab={business_active_tab}
                 >
                   {/* COMPANY DETAILS */}
-                  {business_active_step?.name === "company_details" && (
+                  {business_active_step?.name === 'company_details' && (
                     <CompanyDetails
                       entry_id={entry_id}
-                      isOpen={business_active_step?.name === "company_details"}
+                      isOpen={business_active_step?.name === 'company_details'}
                       company_details={businessApplication?.company_details}
                     />
                   )}
                   {/* COMPANY ADDRESS */}
-                  {business_active_step?.name === "company_address" && (
+                  {business_active_step?.name === 'company_address' && (
                     <CompanyAddress
-                      isOpen={business_active_step?.name === "company_address"}
+                      isOpen={business_active_step?.name === 'company_address'}
                       company_address={businessApplication?.company_address}
                       entry_id={entry_id}
                     />
                   )}
                   {/* BUSINESS ACTIVITY */}
-                  {business_active_step?.name === "business_activity_vat" && (
+                  {business_active_step?.name === 'business_activity_vat' && (
                     <BusinessActivity
                       isOpen={
-                        business_active_step?.name === "business_activity_vat"
+                        business_active_step?.name === 'business_activity_vat'
                       }
                       company_activities={
                         businessApplication?.company_activities
@@ -117,10 +118,10 @@ const BusinessRegistration = () => {
                   )}
 
                   {/* BOARD OF DIRECTORS */}
-                  {business_active_step?.name === "board_of_directors" && (
+                  {business_active_step?.name === 'board_of_directors' && (
                     <BoardDirectors
                       isOpen={
-                        business_active_step?.name === "board_of_directors"
+                        business_active_step?.name === 'board_of_directors'
                       }
                       board_of_directors={
                         businessApplication?.board_of_directors
@@ -130,10 +131,10 @@ const BusinessRegistration = () => {
                   )}
 
                   {/* SENIOR MANAGEMENT */}
-                  {business_active_step?.name === "senior_management" && (
+                  {business_active_step?.name === 'senior_management' && (
                     <SeniorManagement
                       isOpen={
-                        business_active_step?.name === "senior_management"
+                        business_active_step?.name === 'senior_management'
                       }
                       senior_management={businessApplication?.senior_management}
                       entry_id={entry_id}
@@ -141,36 +142,37 @@ const BusinessRegistration = () => {
                   )}
 
                   {/* EMPLOYMENT INFO */}
-                  {business_active_step?.name === "employment_info" && (
+                  {business_active_step?.name === 'employment_info' && (
                     <EmploymentInfo
-                      isOpen={business_active_step?.name === "employment_info"}
+                      isOpen={business_active_step?.name === 'employment_info'}
                       employment_info={businessApplication?.employment_info}
                       entry_id={entry_id}
                     />
                   )}
 
                   {/* SHARE DETAILS */}
-                  {business_active_step?.name === "share_details" && (
+                  {business_active_step?.name === 'share_details' && (
                     <ShareDetails
-                      isOpen={business_active_step?.name === "share_details"}
+                      isOpen={business_active_step?.name === 'share_details'}
                       share_details={businessApplication?.share_details}
                       entry_id={entry_id}
+                      capital_details={businessApplication?.capital_details}
                     />
                   )}
 
                   {/* SHAREHOLDERS */}
-                  {business_active_step?.name === "shareholders" && (
+                  {business_active_step?.name === 'shareholders' && (
                     <ShareHolders
-                      isOpen={business_active_step?.name === "shareholders"}
+                      isOpen={business_active_step?.name === 'shareholders'}
                       shareholders={businessApplication?.shareholders}
                       entry_id={entry_id}
                     />
                   )}
 
                   {/* CAPITAL DETAILS */}
-                  {business_active_step?.name === "capital_details" && (
+                  {business_active_step?.name === 'capital_details' && (
                     <CapitalDetails
-                      isOpen={business_active_step?.name === "capital_details"}
+                      isOpen={business_active_step?.name === 'capital_details'}
                       capital_details={businessApplication?.capital_details}
                       entry_id={entry_id}
                       share_details={businessApplication?.share_details}
@@ -179,10 +181,10 @@ const BusinessRegistration = () => {
                   )}
 
                   {/* BENEFICIAL OWNERS */}
-                  {business_active_step?.name === "beneficial_owners" && (
+                  {business_active_step?.name === 'beneficial_owners' && (
                     <BeneficialOwners
                       isOpen={
-                        business_active_step?.name === "beneficial_owners"
+                        business_active_step?.name === 'beneficial_owners'
                       }
                       beneficial_owners={businessApplication?.beneficial_owners}
                       entry_id={entry_id}
@@ -190,9 +192,9 @@ const BusinessRegistration = () => {
                   )}
 
                   {/* ATTACHMENTS */}
-                  {business_active_step?.name === "attachments" && (
+                  {business_active_step?.name === 'attachments' && (
                     <CompanyAttachments
-                      isOpen={business_active_step?.name === "attachments"}
+                      isOpen={business_active_step?.name === 'attachments'}
                       company_attachments={
                         businessApplication?.company_attachments
                       }
@@ -201,10 +203,10 @@ const BusinessRegistration = () => {
                   )}
 
                   {/* PREVIEW AND SUBMISSINO */}
-                  {business_active_step?.name === "preview_submission" && (
+                  {business_active_step?.name === 'preview_submission' && (
                     <PreviewSubmission
                       isOpen={
-                        business_active_step?.name === "preview_submission"
+                        business_active_step?.name === 'preview_submission'
                       }
                       business_application={businessApplication}
                     />
