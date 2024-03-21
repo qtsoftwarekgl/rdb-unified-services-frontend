@@ -6,7 +6,6 @@ import Button from "../../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { formatCompanyData } from "../../helpers/Strings";
-import { useNavigate } from "react-router-dom";
 import {
   business_registration_tabs_initial_state,
   setBeneficialOwners,
@@ -26,6 +25,7 @@ import {
   setShareHolders,
 } from '../../states/features/businessRegistrationSlice';
 import { setViewedCompany } from '../../states/features/userCompaniesSlice';
+import { useNavigate } from "react-router-dom";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
