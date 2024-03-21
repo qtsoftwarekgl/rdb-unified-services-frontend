@@ -34,6 +34,29 @@ export const NewRegistration = ({
     (state: RootState) => state.userApplication
   );
 
+  // Format company data
+  const formatCompanyData = (business) => {
+    const company =
+      business?.company_details ||
+      business?.foreign_company_details ||
+      business?.enterprise_details;
+    return {
+      ...company,
+      company_name: company?.name || "Not Completed",
+      status: (business?.status || "submitted").toLowerCase(),
+      id:
+        business?.id ||
+        business?.entry_id ||
+        Math.floor(Math.random() * 9000) + 1000,
+      reg_number: `REG-${(
+        business?.entry_id?.split("-")[0] || "None"
+      ).toUpperCase()}`,
+      service_name: capitalizeString(business?.type),
+      submission_date: business.created_at || "Not Completed",
+      path: business?.path,
+    };
+  };
+
   const applicationsInProgress = user_applications
     .filter((app) => app.status === "in_progress")
     .map(formatCompanyData);
