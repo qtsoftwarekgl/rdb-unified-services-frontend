@@ -119,7 +119,7 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
       steps: [
         {
           label: "Preview & Submission",
-          name: "preview_submission",
+          name: "foreign_preview_submission",
           tab_name: "foreign_preview_submission",
           active: false,
           completed: false,
@@ -332,7 +332,7 @@ export const foreignBranchRegistrationSlice = createSlice({
           (tab: RegistrationTab) => {
             return {
               ...tab,
-              steps: tab.steps?.map((step: RegistrationStep) => {
+              steps: tab?.steps?.map((step: RegistrationStep) => {
                 return {
                   ...step,
                 };

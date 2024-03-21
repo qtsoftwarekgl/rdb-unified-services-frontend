@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../states/store";
 import PreviewCard from "../../../components/business-registration/PreviewCard";
 import {
   setForeignBeneficialOwners,
@@ -38,6 +38,7 @@ const PreviewSubmission = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { user } = useSelector((state: RootState) => state.user);
 
   const foreign_company_details = current_application?.foreign_company_details;
   const foreign_company_address = current_application?.foreign_company_address;
@@ -50,8 +51,6 @@ const PreviewSubmission = ({
   const foreign_employment_info = current_application?.foreign_employment_info;
   const foreign_beneficial_owners =
     current_application?.foreign_beneficial_owners;
-  const foreign_company_attachments =
-    current_application?.foreign_company_attachments?.attachments;
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -395,6 +394,7 @@ const PreviewSubmission = ({
         />
         <Button
           value={isLoading ? <Loader /> : "Submit"}
+          disabled={user.email.includes("info@rdb")}
           primary
           onClick={(e) => {
             e.preventDefault();

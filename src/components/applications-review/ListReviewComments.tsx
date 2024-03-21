@@ -1,10 +1,6 @@
 import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import Modal from "../Modal";
-import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../states/features/businessRegistrationSlice";
 import { formatDate } from "../../helpers/Strings";
 import { ReviewComment } from "./AddReviewComments";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
@@ -16,15 +12,20 @@ import {
   setListReviewCommentsModal,
 } from "../../states/features/userApplicationSlice";
 import { FC } from "react";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 interface ListReviewCommentsProps {
   entry_id: string | null;
   title: string;
+  setActiveTab: (tab: string) => UnknownAction;
+  setActiveStep: (string: string) => UnknownAction;
 }
 
 const ListReviewComments: FC<ListReviewCommentsProps> = ({
   entry_id,
   title,
+  setActiveTab,
+  setActiveStep,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -64,8 +65,8 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
                     className="text-[15px] text-white bg-primary p-2 rounded-full cursor-pointer ease-in-out duration-150 hover:scale-[1.02]"
                     onClick={(e) => {
                       e.preventDefault();
-                      dispatch(setBusinessActiveTab(comment?.tab?.name));
-                      dispatch(setBusinessActiveStep(comment?.step?.name));
+                      dispatch(setActiveTab(comment?.tab?.name));
+                      dispatch(setActiveStep(comment?.step?.name));
                       dispatch(setAddReviewCommentsModal(true));
                       dispatch(setListReviewCommentsModal(false));
                     }}

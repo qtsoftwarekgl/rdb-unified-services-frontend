@@ -50,6 +50,7 @@ import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDeta
 import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
 import CloseCompany from "./pages/company-closure/CloseCompany";
 import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
+import ReviewRegistration from "./pages/review-registration/ReviewRegistration";
 
 const Routes = () => {
   return (
@@ -181,6 +182,10 @@ const Routes = () => {
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
           <Route path="/admin/foreign-applicants" element={<ForeignUsers />} />
+          <Route
+            path="/admin/review-registrations"
+            element={<ReviewRegistration />}
+          />
         </Route>
 
         {/**
