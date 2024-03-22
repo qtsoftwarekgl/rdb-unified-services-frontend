@@ -56,27 +56,19 @@ const Login = () => {
   // HANDLE SUBMIT
   const onSubmit: SubmitHandler<FieldValues | LoginPayload> = (data) => {
     toast.success("Login successful. Redirecting...");
-    dispatch(setUser(data));
-    dispatch(setUserAuthenticated(true));
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      if (data?.email?.includes("admin")) {
-        return navigate("/super-admin/dashboard");
-      } else if (data?.email?.includes("info")) {
-        return navigate("/admin/dashboard");
+      dispatch(setUser(data));
+      dispatch(setUserAuthenticated(true));
+      if (data?.email?.includes('admin')) {
+        return navigate('/super-admin/dashboard');
+      } else if (data?.email?.includes('info')) {
+        return navigate('/admin/dashboard');
       }
-
-      return navigate("/services");
+      return navigate('/services');
     }, 1000);
   };
-
-  // JUST A HACK
-  useEffect(() => {
-    dispatch(setUser({}));
-    dispatch(setUserAuthenticated(false));
-    dispatch(setToken(""));
-  }, []);
 
   return (
     <main className="h-[100vh] flex items-center justify-between w-full !bg-white">

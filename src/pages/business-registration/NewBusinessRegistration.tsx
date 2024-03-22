@@ -36,11 +36,11 @@ export const NewRegistration = ({
   );
 
   const applicationsInProgress = user_applications
-    .filter((app) => app.status === "in_progress")
+    .filter((app) => app.status === 'in_progress')
     .map(formatCompanyData);
 
   const [useReservedNames, setUseReservedNames] = useState(false);
-  const [reservedName, setReservedName] = useState("");
+  const [reservedName, setReservedName] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -121,24 +121,24 @@ export const NewRegistration = ({
 
   const requiredAttachments = [
     {
-      name: "Attachment 1",
-      description: "Attach a document that shows your business plan",
-      max_size: "200kb",
+      name: 'Attachment 1',
+      description: 'Attach a document that shows your business plan',
+      max_size: '200kb',
     },
     {
-      name: "Attachment 2",
-      description: "Attach a document that shows ownership structure",
-      max_size: "500kb",
+      name: 'Attachment 2',
+      description: 'Attach a document that shows ownership structure',
+      max_size: '500kb',
     },
     {
-      name: "Attachment 3",
-      description: "Attach a document that shows your business plan",
-      max_size: "200kb",
+      name: 'Attachment 3',
+      description: 'Attach a document that shows your business plan',
+      max_size: '200kb',
     },
     {
-      name: "Attachment 4",
-      description: "Other documents",
-      max_size: "800kb",
+      name: 'Attachment 4',
+      description: 'Other documents',
+      max_size: '800kb',
     },
   ];
 
@@ -154,9 +154,9 @@ export const NewRegistration = ({
         </menu>
         <section className="flex w-full gap-12 max-md:flex-col">
           <section className="flex flex-col w-1/2 gap-8 max-md:w-full">
-            <menu className="flex flex-col gap-2 max-md:w-full">
-              <h1 className="text-base font-bold">Your Reserved Names</h1>
-              {reservedNames?.length > 0 ? (
+            {reservedNames?.length > 0 && (
+              <menu className="flex flex-col gap-2 max-md:w-full">
+                <h1 className="text-base font-bold">Your Reserved Names</h1>
                 <Table
                   data={reservedNames}
                   columns={reservedNamesCols}
@@ -165,17 +165,13 @@ export const NewRegistration = ({
                   headerClassName="bg-primary text-white"
                   className="bg-white rounded-2xl "
                 />
-              ) : (
-                <span className="flex items-center justify-start w-full">
-                  <h1 className="uppercase text-primary ">
-                    You have no reserved names
-                  </h1>
-                </span>
-              )}
-            </menu>
-            <menu className="flex flex-col gap-2 max-md:w-full">
-              <h1 className="text-base font-bold">Uncompleted Applications</h1>
-              {applicationsInProgress.length > 0 ? (
+              </menu>
+            )}
+            {applicationsInProgress.length > 0 && (
+              <menu className="flex flex-col gap-2 max-md:w-full">
+                <h1 className="text-base font-bold pl-2">
+                  Applications in progress
+                </h1>
                 <Table
                   data={applicationsInProgress}
                   columns={applicationsInprogressColumns}
@@ -184,14 +180,8 @@ export const NewRegistration = ({
                   headerClassName="bg-primary text-white"
                   className="bg-white rounded-2xl "
                 />
-              ) : (
-                <span className="flex items-center justify-start w-full">
-                  <h1 className="uppercase text-primary ">
-                    You have no incomplete applications
-                  </h1>
-                </span>
-              )}
-            </menu>
+              </menu>
+            )}
           </section>
           <section className="flex flex-col w-1/2 gap-4 max-md:w-full">
             <h1 className="text-base font-bold">
