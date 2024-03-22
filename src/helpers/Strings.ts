@@ -45,7 +45,7 @@ export const formatCompanyData = (business) => {
       business?.entry_id?.split("-")[0] || ""
     ).toUpperCase()}`,
     service_name: capitalizeString(business?.type),
-    submission_date: business.created_at,
+    submission_date: business?.created_at,
     path: business?.path,
     active_tab: business?.active_tab,
     active_step: business?.active_step,

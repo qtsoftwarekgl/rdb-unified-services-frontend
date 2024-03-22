@@ -1,40 +1,29 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/free-regular-svg-icons';
-import Table from '../../components/table/Table';
-import { RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { formatCompanyData } from '../../helpers/Strings';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
+import Table from "../../components/table/Table";
+import { RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { formatCompanyData } from "../../helpers/Strings";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../states/features/businessRegistrationSlice';
+} from "../../states/features/businessRegistrationSlice";
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-  setEnterpriseAttachments,
-  setEnterpriseBusinessLines,
-  setEnterpriseDetails,
-  setEnterpriseOfficeAddress,
-} from '../../states/features/enterpriseRegistrationSlice';
+} from "../../states/features/enterpriseRegistrationSlice";
 import {
-  setForeignBeneficialOwners,
-  setForeignBoardDirectors,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-  setForeignCompanyActivities,
-  setForeignCompanyAddress,
-  setForeignCompanyAttachments,
-  setForeignCompanyDetails,
-  setForeignEmploymentInfo,
-  setForeignSeniorManagement,
-} from '../../states/features/foreignBranchRegistrationSlice';
+} from "../../states/features/foreignBranchRegistrationSlice";
 
 type Props = {
   title: string;
   description: string;
   notDataMessage: string;
   actionIcon: IconDefinition;
+  handleClickAction: () => void;
 };
 
 const ApplicatinsList = ({
@@ -42,6 +31,7 @@ const ApplicatinsList = ({
   description,
   actionIcon,
   notDataMessage,
+  handleClickAction,
 }: Props) => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -66,13 +56,13 @@ const ApplicatinsList = ({
   // Render status cell
   const renderStatusCell = ({ row }) => {
     const statusColors = {
-      Verified: 'bg-[#82ffa3] text-[#0d7b3e]',
-      Rejected: 'bg-[#eac3c3] text-red-500',
-      approved: 'bg-[#e8ffef] text-[#409261]',
-      'Action Required': 'bg-[#e4e4e4] text-[#6b6b6b]',
-      Submitted: 'bg-[#e8ffef] text-black',
+      Verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      Rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#e8ffef] text-[#409261]",
+      "Action Required": "bg-[#e4e4e4] text-[#6b6b6b]",
+      Submitted: "bg-[#e8ffef] text-black",
     };
-    const statusColor = statusColors[row?.original?.status] || '';
+    const statusColor = statusColors[row?.original?.status] || "";
     return (
       <span
         className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
@@ -87,7 +77,10 @@ const ApplicatinsList = ({
     return (
       <menu className="flex items-center gap-2">
         <FontAwesomeIcon
-          onClick={(e) => handleEditClick(e, row)}
+          onClick={(e) => {
+            handleEditClick(e, row);
+            handleClickAction();
+          }}
           icon={actionIcon}
           className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
         />
@@ -96,18 +89,18 @@ const ApplicatinsList = ({
   };
 
   const columns = [
-    { header: 'Company Code', accessorKey: 'reg_number' },
-    { header: 'Company/Enterprise Name', accessorKey: 'company_name' },
-    { header: 'Company/Enterprise Type', accessorKey: 'service_name' },
+    { header: "Company Code", accessorKey: "reg_number" },
+    { header: "Company/Enterprise Name", accessorKey: "company_name" },
+    { header: "Company/Enterprise Type", accessorKey: "service_name" },
     {
-      header: 'Application Status',
-      accessorKey: 'status',
+      header: "Application Status",
+      accessorKey: "status",
       cell: renderStatusCell,
     },
-    { header: 'Registration Date', accessorKey: 'registration_date' },
+    { header: "Registration Date", accessorKey: "submission_date" },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -120,53 +113,15 @@ const ApplicatinsList = ({
     );
     if (!company) return;
 
-    if (company.type === 'business_registration') {
-      dispatch(setBusinessActiveTab('general_information'));
-      dispatch(setBusinessActiveStep('company_details'));
-    } else if (company.type === 'enterprise') {
-      dispatch(setEnterpriseActiveTab('enterprise_details'));
-      dispatch(setEnterpriseActiveStep('enterprise_details'));
-      dispatch(setEnterpriseDetails(company?.enterprise_details || {}));
-      dispatch(
-        setEnterpriseBusinessLines(
-          company?.business_lines?.enterprise_business_lines || []
-        )
-      );
-      dispatch(setEnterpriseOfficeAddress(company?.office_address || {}));
-      dispatch(
-        setEnterpriseAttachments(
-          company?.enterprise_attachments?.fileNames || []
-        )
-      );
-    } else if (company.type === 'foreign_branch') {
-      dispatch(setForeignBusinessActiveTab('foreign_general_information'));
-      dispatch(setForeignBusinessActiveStep('foreign_company_details'));
-      dispatch(
-        setForeignCompanyDetails(company?.foreign_company_details || {})
-      );
-      dispatch(
-        setForeignCompanyAddress(company?.foreign_company_address || {})
-      );
-      dispatch(
-        setForeignCompanyActivities(company?.foreign_company_activities || {})
-      );
-      dispatch(
-        setForeignBoardDirectors(company?.foreign_board_of_directors || [])
-      );
-      dispatch(
-        setForeignSeniorManagement(company?.foreign_senior_management || [])
-      );
-      dispatch(
-        setForeignEmploymentInfo(company?.foreign_employment_info || {})
-      );
-      dispatch(
-        setForeignCompanyAttachments(
-          company?.foreign_company_attachments?.attachments || []
-        )
-      );
-      dispatch(
-        setForeignBeneficialOwners(company?.foreign_beneficial_owners || [])
-      );
+    if (company.type === "business_registration") {
+      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setBusinessActiveStep("company_details"));
+    } else if (company.type === "enterprise") {
+      dispatch(setEnterpriseActiveTab("enterprise_details"));
+      dispatch(setEnterpriseActiveStep("enterprise_details"));
+    } else if (company.type === "foreign_branch") {
+      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
+      dispatch(setForeignBusinessActiveStep("foreign_company_details"));
     }
 
     navigate(row.original?.path);

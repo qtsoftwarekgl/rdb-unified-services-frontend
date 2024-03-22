@@ -10,6 +10,7 @@ const ReviewRegistration = () => {
         description=""
         actionIcon={faEye}
         notDataMessage="No registrations to review"
+        handleClickAction={() => {}}
       />
     </AdminLayout>
   );

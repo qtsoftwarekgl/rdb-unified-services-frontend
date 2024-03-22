@@ -1,19 +1,17 @@
-import { useLocation } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faMoon, faUser } from '@fortawesome/free-regular-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
+import { Link, useNavigate } from "react-router-dom";
 import {
   faChevronDown,
   faChevronUp,
   faRightFromBracket,
-} from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../states/store';
-import { FC } from 'react';
-import { toggleNavbar } from '../states/features/navbarSlice';
-import { setViewedCompany } from '../states/features/userCompaniesSlice';
-import { languages } from '../constants/authentication';
-import { setLocale } from '../states/features/localeSlice';
+} from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../states/store";
+import { FC, useState } from "react";
+import { languages } from "../constants/authentication";
+import { setLocale } from "../states/features/localeSlice";
 
 interface Props {
   className?: string;
@@ -23,31 +21,31 @@ const Navbar = ({ className }: Props) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const { isOpen } = useSelector((state: RootState) => state.navbar);
   const { locale } = useSelector((state: RootState) => state.locale);
+  const [isOpen, setIsOpen] = useState(false);
 
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  if (['auth/login', 'auth/register'].includes(pathname)) {
+  if (["auth/login", "auth/register"].includes(pathname)) {
     return null;
   }
 
   // NAV DROPDOWN
   const navDropdown = [
     {
-      title: 'Profile',
-      link: '/user-profile',
+      title: "Profile",
+      link: "/user-profile",
       icon: faUser,
     },
     {
-      title: 'Notifications',
-      link: '/notifications',
+      title: "Notifications",
+      link: "/notifications",
       icon: faBell,
     },
     {
-      title: 'Logout',
-      link: '/auth/login',
+      title: "Logout",
+      link: "/auth/login",
       icon: faRightFromBracket,
     },
   ];
@@ -62,13 +60,12 @@ const Navbar = ({ className }: Props) => {
             <span className="text-primary">All Services</span>
           </Link>
         )}
-        <Link to={'#'} className="px-4 max-[600px]:px-2">
+        <Link to={"#"} className="px-4 max-[600px]:px-2">
           <menu
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(toggleNavbar(!isOpen));
-              dispatch(setViewedCompany(null));
+              setIsOpen(!isOpen);
             }}
           >
             <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
@@ -83,7 +80,7 @@ const Navbar = ({ className }: Props) => {
                 Christella
               </h1>
               <p className="text-[12px] text-gray-500">
-                {user?.email?.toLowerCase() || 'christella@qtglobal.rw'}
+                {user?.email?.toLowerCase() || "christella@qtglobal.rw"}
               </p>
             </article>
 
@@ -103,7 +100,7 @@ const Navbar = ({ className }: Props) => {
             onChange={(e) => {
               dispatch(setLocale(e.target.value));
             }}
-            defaultValue={locale || 'en'}
+            defaultValue={locale || "en"}
           >
             {languages.map((language, index) => {
               return (
@@ -128,14 +125,14 @@ const Navbar = ({ className }: Props) => {
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (nav?.title === 'Logout') sessionStorage.clear();
+                  if (nav?.title === "Logout") sessionStorage.clear();
                   navigate(`${nav?.link}`);
-                  dispatch(toggleNavbar(false));
+                  setIsOpen(false);
                 }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
-                  ['Theme', 'Notifications'].includes(nav?.title)
-                    ? 'min-[450px]:hidden'
-                    : 'flex'
+                  ["Theme", "Notifications"].includes(nav?.title)
+                    ? "min-[450px]:hidden"
+                    : "flex"
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
@@ -158,7 +155,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
   return (
     <menu
       className={`${
-        isOpen ? 'translate-y-0' : 'translate-y-[-400px]'
+        isOpen ? "translate-y-0" : "translate-y-[-400px]"
       } ease-in-out duration-500 z-[10000] absolute top-[10vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}

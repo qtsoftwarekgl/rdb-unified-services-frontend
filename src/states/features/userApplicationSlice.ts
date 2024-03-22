@@ -1,18 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const userApplicationsSlice = createSlice({
-  name: 'userApplications',
+  name: "userApplications",
   initialState: {
     user_applications:
-      JSON.parse(String(localStorage.getItem('user_applications'))) || [],
-    user_uncompleted_applications:
-      JSON.parse(
-        String(localStorage.getItem('user_uncompleted_applications'))
-      ) || [],
+      JSON.parse(String(localStorage.getItem("user_applications"))) || [],
     addReviewCommentsModal: false,
     listReviewCommentsModal: false,
     application_review_comments:
-      JSON.parse(String(localStorage.getItem('application_review_comments'))) ||
+      JSON.parse(String(localStorage.getItem("application_review_comments"))) ||
       [],
   },
   reducers: {
@@ -32,7 +28,7 @@ export const userApplicationsSlice = createSlice({
         };
 
       localStorage.setItem(
-        'user_applications',
+        "user_applications",
         JSON.stringify(state.user_applications)
       );
     },
@@ -41,7 +37,7 @@ export const userApplicationsSlice = createSlice({
     setApplicationReviewComments: (state, action) => {
       state.application_review_comments = action.payload;
       localStorage.setItem(
-        'application_review_comments',
+        "application_review_comments",
         JSON.stringify(state.application_review_comments)
       );
     },
@@ -68,7 +64,7 @@ export const userApplicationsSlice = createSlice({
         updatedComments[commentIndex] = action.payload;
         state.application_review_comments = updatedComments;
         localStorage.setItem(
-          'application_review_comments',
+          "application_review_comments",
           JSON.stringify(state.application_review_comments)
         );
       }
@@ -83,5 +79,5 @@ export const {
   setAddReviewCommentsModal,
   setListReviewCommentsModal,
   setApplicationReviewComments,
-  updateReviewComment
+  updateReviewComment,
 } = userApplicationsSlice.actions;

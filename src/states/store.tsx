@@ -15,6 +15,7 @@ import enterpriseRegistrationSlice from "./features/enterpriseRegistrationSlice"
 import foreignBranchRegistrationSlice from "./features/foreignBranchRegistrationSlice";
 import nameReservationSlice from "./features/nameReservationSlice";
 import userApplicationSlice from "./features/userApplicationSlice";
+import amendmentSlice from "./features/amendmentSlice";
 
 export const store = configureStore({
   reducer: {
@@ -34,6 +35,7 @@ export const store = configureStore({
     foreignBranchRegistration: foreignBranchRegistrationSlice,
     nameReservation: nameReservationSlice,
     userApplication: userApplicationSlice,
+    amendment: amendmentSlice,
   },
 });
 

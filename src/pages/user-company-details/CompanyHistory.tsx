@@ -3,9 +3,34 @@ import UserLayout from "../../containers/UserLayout";
 import { companyHistories } from "../../constants/Users";
 import Table from "../../components/table/Table";
 import CreateAmendment from "./CreateAmendment";
+import { useLocation, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setViewedCompany } from "../../states/features/userCompaniesSlice";
+import { RootState } from "../../states/store";
 
 const CompanyHistory = () => {
   const { t } = useTranslation();
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+
+  useEffect(() => {
+    if (id) {
+      dispatch(
+        setViewedCompany(
+          user_applications?.find((business) => business.entry_id === id)
+        )
+      );
+    }
+
+    return () => {
+      dispatch(setViewedCompany(null));
+    };
+  }, [id, dispatch, user_applications, location]);
 
   const columns = [
     {
