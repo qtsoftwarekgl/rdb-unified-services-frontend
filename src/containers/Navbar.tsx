@@ -50,14 +50,36 @@ const Navbar = ({ className }: Props) => {
     },
   ];
 
+  const languageIcons = [
+    {
+      value: 'en',
+      icon: '🇺🇸',
+    },
+    {
+      value: 'fr',
+      icon: '🇫🇷',
+    },
+    {
+      value: 'rw',
+      icon: '🇷🇼',
+    },
+  ]
+
   return (
     <header
-      className={`w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-end z-[1000] bg-background ${className}`}
+      className={`w-[80%] left-[18.5%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-between z-[1000] bg-background ${className}`}
     >
+      <figure
+        className={`${
+          !['/services'].includes(pathname) && 'invisible'
+        } relative rounded-full w-full max-w-[10%]`}
+      >
+        <img src={rdb_logo} className="w-fit" />
+      </figure>
       <nav className="flex items-center gap-4 self-end max-[600px]:gap-3">
         {!/info|admin/.test(user.email) && (
-          <Link to="/services">
-            <span className="text-primary">All Services</span>
+          <Link to="/services" className="w-full text-primary font-normal p-1 px-4 rounded-full text-[16px] hover:underline">
+            Services
           </Link>
         )}
         <Link to={"#"} className="px-4 max-[600px]:px-2">
@@ -90,26 +112,18 @@ const Navbar = ({ className }: Props) => {
             />
           </menu>
         </Link>
-        <menu className="flex items-center">
-          <img
-            src={`/public/languageIcons/${locale}.png`}
-            className="bg-red-200 rounded-full w-7 h-7"
-          />
+        <menu className="flex items-center w-full">
           <select
-            className="text-black bg-transparent accent-primary"
+            className="p-1 bg-transparent text-[13px] rounded-md shadow-sm cursor-pointer ease-in-out duration-200 hover:scale-[1.01]"
             onChange={(e) => {
-              dispatch(setLocale(e.target.value));
+              dispatch(setLocale(e?.value));
             }}
             defaultValue={locale || "en"}
           >
-            {languages.map((language, index) => {
+            {languageIcons.map((language, index) => {
               return (
-                <option
-                  className="w-full text-primary"
-                  key={index}
-                  value={language.value}
-                >
-                  {language.label}
+                <option key={index} value={language?.value}>
+                  {`${language?.value?.toUpperCase()} ${language?.icon}`}
                 </option>
               );
             })}

@@ -1,7 +1,6 @@
 import {
   ChangeEvent,
   FC,
-  ForwardedRef,
   LegacyRef,
   MouseEventHandler,
   ReactNode,
