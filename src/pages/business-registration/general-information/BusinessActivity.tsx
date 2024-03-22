@@ -79,11 +79,14 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
+          active_tab: 'management',
+          active_step: 'board_of_directors',
           company_activities: {
             ...company_activities,
             vat: data?.vat,
             turnover: data?.turnover,
             business_lines: company_business_lines,
+            step: 'business_activity_vat',
           },
         })
       );

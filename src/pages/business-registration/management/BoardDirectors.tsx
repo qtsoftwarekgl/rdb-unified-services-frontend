@@ -83,6 +83,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
+          active_step: "senior_management",
+          active_tab: "management",
           board_of_directors: [
             {
               ...data,

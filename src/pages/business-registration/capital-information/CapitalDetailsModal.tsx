@@ -146,6 +146,21 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
       if (total_value_ref?.current) {
         total_value_ref.current.value = '';
       }
+    } else if (capitalDetailsModal && shareholder?.shares) {
+      inputRefs?.forEach((input) => {
+        if (input?.no_shares_ref?.current && input?.value_ref?.current) {
+          input.no_shares_ref.current.value =
+            shareholder?.shares && shareholder?.shares?.[input.name];
+          input.value_ref.current.value =
+            shareholder?.shares &&
+            Number(shareholder?.shares?.[input.name]) *
+              Number(
+                share_details?.shares?.find(
+                  (share) => share?.name === input.name
+                )?.share_value
+              );
+        }
+      });
     }
   }, [capitalDetailsModal, reset]);
 
@@ -206,7 +221,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
       );
       setValue(
         `${row?.name}_no`,
-        shareholder?.shares && shareholder?.shares[`no_shares`]
+        shareholder?.shares && shareholder?.shares[`${row?.name}`]
       );
     });
   }, [setValue, shareholder]);
@@ -279,15 +294,12 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                       readOnly={total_shares && share_value ? false : true}
                       defaultValue={
                         (shareholder?.shares &&
-                          shareholder?.shares[`${row?.name}_no`]) ||
-                        watch(`${row?.name}_no`)
-                      }
+                          Number(shareholder?.shares?.[row?.name]))}
                       onChange={(e) => {
                         const remainingShares =
-                          share_details?.shares &&
-                          share_details?.shares?.find(
+                          (share_details?.shares?.find(
                             (share) => share?.name === row?.name
-                          )?.remaining_shares - Number(e.target.value);
+                          )?.remaining_shares ?? 0) - Number(e.target.value);
                         if (remainingShares < 0) {
                           setError(`share_no_${index}`, {
                             type: 'manual',
@@ -338,7 +350,9 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                       defaultValue={watch(`${row?.name}_value`)}
                       readOnly
                       value={
-                        (shareholder?.shares && shareholder?.shares['value']) ||
+                        (shareholder?.shares &&
+                          Number(shareholder?.shares[row?.name]) *
+                            Number(share_value)) ||
                         watch(`${row.name}_value`)
                       }
                       type="number"

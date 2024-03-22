@@ -6,26 +6,15 @@ import Button from "../../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { formatCompanyData } from "../../helpers/Strings";
-import { useNavigate } from "react-router-dom";
 import {
   business_registration_tabs_initial_state,
-  setBeneficialOwners,
-  setBoardDirectors,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessRegistrationTabs,
-  setCapitalDetails,
-  setCompanyActivities,
-  setCompanyAddress,
-  setCompanyAttachments,
-  setCompanyDetails,
   setCompanySubActivities,
-  setEmploymentInfo,
-  setSeniorManagement,
-  setShareDetails,
-  setShareHolders,
-} from "../../states/features/businessRegistrationSlice";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
+} from '../../states/features/businessRegistrationSlice';
+import { setViewedCompany } from '../../states/features/userCompaniesSlice';
+import { useNavigate } from "react-router-dom";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -44,24 +33,24 @@ const UserApplications = () => {
 
   const colors = (status: string) => {
     const colorMap = {
-      verified: "bg-[#82ffa3] text-[#0d7b3e]",
-      rejected: "bg-[#eac3c3] text-red-500",
-      approved: "bg-[#cfeaff] text-secondary",
-      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
-      submitted: "bg-[#e8ffef] text-black",
+      verified: 'bg-[#82ffa3] text-[#0d7b3e]',
+      rejected: 'bg-[#eac3c3] text-red-500',
+      approved: 'bg-[#cfeaff] text-secondary',
+      'request for action': 'bg-[#e4e4e4] text-[#6b6b6b]',
+      submitted: 'bg-[#e8ffef] text-black',
     };
-    return colorMap[status] || "";
+    return colorMap[status] || '';
   };
 
   const columns = [
-    { header: "Registration Number", accessorKey: "reg_number" },
-    { header: "Company Name", accessorKey: "company_name" },
-    { header: "Service Name", accessorKey: "service_name" },
-    { header: "Status", accessorKey: "status", cell: renderStatusCell },
-    { header: "Submission Date", accessorKey: "submission_date" },
+    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Company Name', accessorKey: 'company_name' },
+    { header: 'Service Name', accessorKey: 'service_name' },
+    { header: 'Status', accessorKey: 'status', cell: renderStatusCell },
+    { header: 'Submission Date', accessorKey: 'submission_date' },
     {
-      header: "Action",
-      accessorKey: "actions",
+      header: 'Action',
+      accessorKey: 'actions',
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -107,25 +96,14 @@ const UserApplications = () => {
             primary
             route="/business-registration/new"
             onClick={() => {
-              dispatch(setCompanyDetails(null));
-              dispatch(setCompanyAddress(null));
-              dispatch(setCompanyActivities(null));
-              dispatch(setBoardDirectors([]));
-              dispatch(setSeniorManagement([]));
-              dispatch(setEmploymentInfo(null));
-              dispatch(setShareDetails(null));
-              dispatch(setShareHolders([]));
-              dispatch(setCapitalDetails([]));
-              dispatch(setBeneficialOwners([]));
-              dispatch(setCompanyAttachments([]));
               dispatch(setCompanySubActivities([]));
               dispatch(
                 setBusinessRegistrationTabs(
                   business_registration_tabs_initial_state
                 )
               );
-              dispatch(setBusinessActiveTab("general_information"));
-              dispatch(setBusinessActiveStep("company_details"));
+              dispatch(setBusinessActiveTab('general_information'));
+              dispatch(setBusinessActiveStep('company_details'));
             }}
             value={
               <menu className="flex items-center gap-2">

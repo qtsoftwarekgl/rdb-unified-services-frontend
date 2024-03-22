@@ -1,19 +1,19 @@
-import { useLocation } from "react-router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faMoon, faUser } from "@fortawesome/free-regular-svg-icons";
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell, faMoon, faUser } from '@fortawesome/free-regular-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   faChevronDown,
   faChevronUp,
   faRightFromBracket,
-} from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../states/store";
-import { FC } from "react";
-import { toggleNavbar } from "../states/features/navbarSlice";
-import { setViewedCompany } from "../states/features/userCompaniesSlice";
-import { languages } from "../constants/authentication";
-import { setLocale } from "../states/features/localeSlice";
+} from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../states/store';
+import { FC } from 'react';
+import { toggleNavbar } from '../states/features/navbarSlice';
+import { setViewedCompany } from '../states/features/userCompaniesSlice';
+import { languages } from '../constants/authentication';
+import { setLocale } from '../states/features/localeSlice';
 
 interface Props {
   className?: string;
@@ -29,30 +29,25 @@ const Navbar = ({ className }: Props) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  if (["auth/login", "auth/register"].includes(pathname)) {
+  if (['auth/login', 'auth/register'].includes(pathname)) {
     return null;
   }
 
   // NAV DROPDOWN
   const navDropdown = [
     {
-      title: "Profile",
-      link: "/user-profile",
+      title: 'Profile',
+      link: '/user-profile',
       icon: faUser,
     },
     {
-      title: "Theme",
-      link: "#",
-      icon: faMoon,
-    },
-    {
-      title: "Notifications",
-      link: "/notifications",
+      title: 'Notifications',
+      link: '/notifications',
       icon: faBell,
     },
     {
-      title: "Logout",
-      link: "/auth/login",
+      title: 'Logout',
+      link: '/auth/login',
       icon: faRightFromBracket,
     },
   ];
@@ -62,20 +57,12 @@ const Navbar = ({ className }: Props) => {
       className={`w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-end z-[1000] bg-background ${className}`}
     >
       <nav className="flex items-center gap-4 self-end max-[600px]:gap-3">
-        {/* <FontAwesomeIcon
-          className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-          icon={faMoon}
-        />
-        <FontAwesomeIcon
-          className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-          icon={faBell}
-        /> */}
         {!/info|admin/.test(user.email) && (
           <Link to="/services">
             <span className="text-primary">All Services</span>
           </Link>
         )}
-        <Link to={"#"} className="px-4 max-[600px]:px-2">
+        <Link to={'#'} className="px-4 max-[600px]:px-2">
           <menu
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"
             onClick={(e) => {
@@ -96,7 +83,7 @@ const Navbar = ({ className }: Props) => {
                 Christella
               </h1>
               <p className="text-[12px] text-gray-500">
-                {user?.email?.toLowerCase() || "christella@qtglobal.rw"}
+                {user?.email?.toLowerCase() || 'christella@qtglobal.rw'}
               </p>
             </article>
 
@@ -116,7 +103,7 @@ const Navbar = ({ className }: Props) => {
             onChange={(e) => {
               dispatch(setLocale(e.target.value));
             }}
-            defaultValue={locale || "en"}
+            defaultValue={locale || 'en'}
           >
             {languages.map((language, index) => {
               return (
@@ -141,13 +128,14 @@ const Navbar = ({ className }: Props) => {
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
+                  if (nav?.title === 'Logout') sessionStorage.clear();
                   navigate(`${nav?.link}`);
                   dispatch(toggleNavbar(false));
                 }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
-                  ["Theme", "Notifications"].includes(nav?.title)
-                    ? "min-[450px]:hidden"
-                    : "flex"
+                  ['Theme', 'Notifications'].includes(nav?.title)
+                    ? 'min-[450px]:hidden'
+                    : 'flex'
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
@@ -170,7 +158,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
   return (
     <menu
       className={`${
-        isOpen ? "translate-y-0" : "translate-y-[-400px]"
+        isOpen ? 'translate-y-0' : 'translate-y-[-400px]'
       } ease-in-out duration-500 z-[10000] absolute top-[10vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}
