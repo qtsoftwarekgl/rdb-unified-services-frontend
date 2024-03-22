@@ -6,14 +6,15 @@ import { RootState } from "../../states/store";
 import Table from "../../components/table/Table";
 import moment from "moment";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faFile } from "@fortawesome/free-regular-svg-icons";
+import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { removeFromReservedNames } from "../../states/features/nameReservationSlice";
 import Modal from "../../components/Modal";
 import { useNavigate } from "react-router-dom";
-import { setCompanyDetails } from "../../states/features/businessRegistrationSlice";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { useState } from "react";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
+import { setBusinessActiveStep, setBusinessActiveTab } from "../../states/features/businessRegistrationSlice";
 
 interface NewRegistrationProps {
   description: string;
@@ -46,25 +47,25 @@ export const NewRegistration = ({
 
   const reservedNamesCols = [
     {
-      header: "Registration Number",
-      accessorKey: "registration_number",
+      header: 'Registration Number',
+      accessorKey: 'registration_number',
     },
     {
-      header: "Reserved Name",
-      accessorKey: "name",
+      header: 'Reserved Name',
+      accessorKey: 'name',
     },
     {
-      header: "Submission Date",
-      accessorKey: "created_at",
+      header: 'Submission Date',
+      accessorKey: 'created_at',
       cell: ({ row }: { row: any }) => {
         return (
-          <span>{moment(row.original.created_at).format("DD/MM/YY")}</span>
+          <span>{moment(row.original.created_at).format('DD/MM/YY')}</span>
         );
       },
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }: { row: any }) => {
         return (
           <menu className="flex items-center gap-2 cursor-pointer">
@@ -86,25 +87,33 @@ export const NewRegistration = ({
   function renderActionCell({ row }) {
     return (
       <menu className="flex items-center gap-2 cursor-pointer">
-        <FontAwesomeIcon
+        <Button
+          value="Complete"
+          styled={false}
+          className="!bg-transparent"
           onClick={(e) => {
             e.preventDefault();
+            if (row?.original?.active_step) {
+              dispatch(setBusinessActiveStep(row?.original?.active_step));
+            }
+            if (row?.original?.active_tab) {
+              dispatch(setBusinessActiveTab(row?.original?.active_tab));
+            }
+            navigate(row?.original?.path);
           }}
-          icon={faEye}
-          className="text-primary"
         />
       </menu>
     );
   }
 
   const applicationsInprogressColumns = [
-    { header: "Registration Number", accessorKey: "reg_number" },
-    { header: "Company Name", accessorKey: "company_name" },
-    { header: "Service Name", accessorKey: "service_name" },
-    { header: "Submission Date", accessorKey: "submission_date" },
+    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Company Name', accessorKey: 'company_name' },
+    { header: 'Service Name', accessorKey: 'service_name' },
+    { header: 'Submission Date', accessorKey: 'submission_date' },
     {
-      header: "Action",
-      accessorKey: "actions",
+      header: 'Action',
+      accessorKey: 'actions',
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -226,7 +235,7 @@ export const NewRegistration = ({
         >
           <section className="flex flex-col gap-4 p-8 bg-white rounded-md">
             <h1 className="text-2xl font-bold">
-              Use Reserved Name{" "}
+              Use Reserved Name{' '}
               <span className="text-primary"> ( {reservedName} )</span>
             </h1>
             <menu className="flex flex-col gap-4">
@@ -247,7 +256,10 @@ export const NewRegistration = ({
                     setDetails &&
                       dispatch(
                         setDetails({
-                          name: reservedName,
+                          entry_id: path?.split('=')[1],
+                          company_details: {
+                            name: reservedName,
+                          },
                         })
                       );
                     dispatch(removeFromReservedNames(reservedName));
@@ -272,7 +284,7 @@ const NewBusinessRegistration = () => {
       do not have at this moment. Feel free to pause the process and
       resume whenever is convenient for you. Your progress will be saved."
       path={`/business-registration?entry_id=${generateUUID()}`}
-      setDetails={setCompanyDetails}
+      setDetails={setUserApplications}
     />
   );
 };

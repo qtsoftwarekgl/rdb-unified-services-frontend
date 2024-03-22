@@ -62,6 +62,8 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
+          active_tab: 'capital_information',
+          active_step: 'share_details',
           employment_info: {
             ...data,
             step: 'employment_info',

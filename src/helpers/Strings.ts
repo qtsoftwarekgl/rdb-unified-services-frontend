@@ -36,7 +36,7 @@ export const formatCompanyData = (business) => {
   return {
     ...company,
     company_name: company?.name,
-    status: (business?.status || "submitted").toLowerCase(),
+    status: capitalizeString(business?.status),
     id:
       business?.id ||
       business?.entry_id ||
@@ -47,5 +47,7 @@ export const formatCompanyData = (business) => {
     service_name: capitalizeString(business?.type),
     submission_date: business?.created_at,
     path: business?.path,
+    active_tab: business?.active_tab,
+    active_step: business?.active_step,
   };
 };

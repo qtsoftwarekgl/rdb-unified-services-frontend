@@ -94,6 +94,7 @@ const EnterpriseRegistration = () => {
           {user?.email?.includes("info@rdb") && (
             <>
               <ReviewNavigation
+              entry_id={entry_id}
                 setActiveStep={setEnterpriseActiveStep}
                 setActiveTab={setEnterpriseActiveTab}
                 tabs={enterprise_registration_tabs}

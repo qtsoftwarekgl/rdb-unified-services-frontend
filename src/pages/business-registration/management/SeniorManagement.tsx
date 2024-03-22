@@ -82,6 +82,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
+          active_tab: "management",
+          active_step: "employment_info",
           senior_management: [
             {
               ...data,

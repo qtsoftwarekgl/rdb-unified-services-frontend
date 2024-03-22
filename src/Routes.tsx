@@ -179,6 +179,7 @@ const Routes = () => {
           {/* INSITUTION ADMIN DASHBOARD */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<ListUsers />} />
+          <Route path="/admin/staff" element={<ListUsers />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
           <Route path="/admin/foreign-applicants" element={<ForeignUsers />} />

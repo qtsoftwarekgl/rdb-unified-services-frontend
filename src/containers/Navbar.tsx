@@ -1,6 +1,6 @@
 import { useLocation } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faMoon, faUser } from "@fortawesome/free-regular-svg-icons";
+import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import {
   faChevronDown,
@@ -39,11 +39,6 @@ const Navbar = ({ className }: Props) => {
       icon: faUser,
     },
     {
-      title: "Theme",
-      link: "#",
-      icon: faMoon,
-    },
-    {
       title: "Notifications",
       link: "/notifications",
       icon: faBell,
@@ -60,14 +55,6 @@ const Navbar = ({ className }: Props) => {
       className={`w-[83%] left-[17%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-end z-[1000] bg-background ${className}`}
     >
       <nav className="flex items-center gap-4 self-end max-[600px]:gap-3">
-        {/* <FontAwesomeIcon
-          className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-          icon={faMoon}
-        />
-        <FontAwesomeIcon
-          className="text-[20px] max-[450px]:hidden cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-          icon={faBell}
-        /> */}
         {!/info|admin/.test(user.email) && (
           <Link to="/services">
             <span className="text-primary">All Services</span>
@@ -138,6 +125,7 @@ const Navbar = ({ className }: Props) => {
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
+                  if (nav?.title === "Logout") sessionStorage.clear();
                   navigate(`${nav?.link}`);
                   setIsOpen(false);
                 }}

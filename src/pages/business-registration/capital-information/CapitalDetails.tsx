@@ -5,7 +5,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Table from '../../../components/table/Table';
-import { capitalizeString } from '../../../helpers/Strings';
+import { capitalizeString, generateUUID } from '../../../helpers/Strings';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -23,6 +23,8 @@ import { business_shareholders } from './ShareHolders';
 export interface business_capital_details {
   no: number;
   first_name?: string;
+  id: string;
+  shareholder_id: string;
   last_name?: string;
   company_name?: string;
   shareholder_type?: string;
@@ -127,7 +129,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   setUserApplications({
                     entry_id,
                     capital_details: capital_details?.filter(
-                      (capital) => capital?.no !== row?.original?.no
+                      (capital) => capital?.id !== row?.original?.id
                     ),
                   })
                 );
@@ -135,7 +137,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   setUserApplications({
                     entry_id,
                     shareholders: shareholders?.filter(
-                      (_, index: number) => index !== row?.original?.no
+                      (shareholder) =>
+                        shareholder?.id !== row?.original?.shareholder_id
                     ),
                   })
                 );
@@ -153,22 +156,35 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       capital_details?.length <= 0 ||
       shareholders?.length > capital_details?.length
     ) {
-      dispatch(
-        setUserApplications({
-          entry_id,
-          capital_details: shareholders?.map((shareholder, index) => {
+      const filteredShareholders = shareholders
+        ?.map((shareholder) => {
+          if (
+            capital_details?.find(
+              (capital) => capital?.shareholder_id === shareholder?.id
+            ) === undefined
+          ) {
             return {
               ...shareholder,
-              no: index,
+              id: generateUUID(),
+              shareholder_id: shareholder?.id,
               shares: {
                 total_shares: 0,
               },
             };
-          }),
+          } else return null;
+        })
+        ?.filter((item) => item !== null);
+      dispatch(
+        setUserApplications({
+          entry_id,
+          capital_details: [
+            ...filteredShareholders,
+            ...capital_details,
+          ]?.filter((item) => item !== null),
         })
       );
     }
-  }, [dispatch, shareholders]);
+  }, [dispatch]);
 
   if (!isOpen) return null;
 
@@ -216,38 +232,38 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           Overall capital details
         </h1>
         <menu className="flex flex-col gap-1 w-full">
-          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Total number of assignable shares</h2>
             <p>{share_details?.total_shares}</p>
           </ul>
-          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Total number of assigned shares</h2>
             <p>{assignedShares?.number}</p>
           </ul>
-          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Remaining number of assignable shares</h2>
             <p>
-              {Number(share_details?.total_shares) -
+              {Number(share_details?.total_shares ?? 0) -
                 Number(assignedShares?.number)}
             </p>
           </ul>
         </menu>
         <menu className="flex flex-col gap-2 w-full">
-          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Total value of assignable shares</h2>
             <p>RWF {share_details?.total_value}</p>
           </ul>
-          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Value of assigned shares</h2>
             <p>RWF {assignedShares?.value}</p>
           </ul>
-          <ul className="w-full py-2 rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2 className="font-medium uppercase underline">
               Remaning value of assignable shares
             </h2>
             <p className="underline">
               RWF{' '}
-              {Number(share_details?.total_value) -
+              {Number(share_details?.total_value ?? 0) -
                 Number(assignedShares?.value)}
             </p>
           </ul>
@@ -289,6 +305,13 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 dispatch(setBusinessCompletedStep('capital_details'));
                 dispatch(setBusinessActiveStep('beneficial_owners'));
                 dispatch(setBusinessActiveTab('beneficial_owners'));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_step: 'beneficial_owners',
+                    active_tab: 'beneficial_owners',
+                  })
+                );
               }
             }, 1000);
           }}

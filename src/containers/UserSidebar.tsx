@@ -197,7 +197,7 @@ const UserSidebar = () => {
           }
           onClick={(e) => {
             e.preventDefault();
-            localStorage.clear();
+            sessionStorage.clear();
             navigate("/auth/login");
           }}
         />

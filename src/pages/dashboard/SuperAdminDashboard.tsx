@@ -6,18 +6,58 @@ import {
   recentActivities,
   monthsData,
   superAdminDashboardCards,
+  institutions,
 } from '../../constants/dashboard';
 import Select from '../../components/inputs/Select';
 import { useState } from 'react';
 import Button from '../../components/inputs/Button';
 import Table from '../../components/table/Table';
-import { columns, users } from '../../constants/Users';
 import RecentActivities from '../../components/cards/RecentActivities';
 import DashboardChart from '../../components/DashboardChart';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 
 const SuperAdminDashboard = () => {
   // STATE VARIABLES
   const [monthsDataArray, setMonthsDataArray] = useState(monthsData());
+
+  const columns = [
+    {
+      header: 'No',
+      id: 'no',
+      accessorKey: 'no',
+    },
+    {
+      header: 'Name',
+      accessorKey: 'name',
+    },
+    {
+      header: 'Email',
+      accessorKey: 'email',
+    },
+    {
+      header: 'Type',
+      accessorKey: 'type',
+      filter: true,
+    },
+    {
+      header: 'Date Added',
+      accessorKey: 'created_at',
+    },
+    {
+      header: '',
+      accessorKey: 'actions',
+      cell: ({ row }) => {
+        return (
+          <menu className="flex items-center gap-4">
+            <FontAwesomeIcon
+              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
+              icon={faPenToSquare}
+            />
+          </menu>
+        );
+      },
+    },
+  ];
 
   return (
     <SuperAdminLayout>
@@ -63,10 +103,10 @@ const SuperAdminDashboard = () => {
         <section className="w-full flex flex-col gap-6 rounded-md shadow-md bg-white p-6">
           <menu className="flex w-full items-center gap-3 justify-between max-[400px]:flex-col">
             <h1 className="text-primary text-lg font-semibold max-[400px]:text-center">
-              Recent Users
+              Recent Institutions
             </h1>
             <Button
-              route="/super-admin/users"
+              route="/super-admin/institutions"
               className="!text-[13px]"
               styled={false}
               value={
@@ -81,7 +121,7 @@ const SuperAdminDashboard = () => {
             />
           </menu>
           <Table
-            data={users?.map((user, index) => {
+            data={institutions?.map((user, index) => {
               return {
                 ...user,
                 no: index + 1,

@@ -4,7 +4,6 @@ import { RootState } from '../../states/store';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../components/inputs/Select';
 import Input from '../../components/inputs/Input';
-import TextArea from '../../components/inputs/TextArea';
 import Table from '../../components/table/Table';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
@@ -21,11 +20,12 @@ const CloseCompany = () => {
     handleSubmit,
     formState: { errors },
     control,
+    watch,
   } = useForm();
 
   // STATE VARIABLES
   const { user_applications } = useSelector(
-    (state: RootState) => state.businessRegistration
+    (state: RootState) => state.userApplication
   );
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File> | unknown | null
@@ -101,31 +101,56 @@ const CloseCompany = () => {
           className="w-[90%] mx-auto flex flex-col gap-5"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <menu className="w-full flex items-start gap-5 flex-wrap">
+          <Controller
+            name="company"
+            control={control}
+            rules={{ required: 'Select a company to close' }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-2">
+                  <Select
+                    label="Select company"
+                    required
+                    options={user_applications?.map((application) => {
+                      return {
+                        ...application,
+                        value: application?.entry_id,
+                        label: `${application?.entry_id
+                          ?.split('-')[0]
+                          ?.toUpperCase()} - ${
+                          application?.company_details?.name
+                        }`,
+                      };
+                    })}
+                    onChange={(e) => {
+                      field.onChange(e?.value);
+                    }}
+                  />
+                  {errors?.company && (
+                    <p className="text-[13px] text-red-500">
+                      {String(errors?.company?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <menu
+            className={`${
+              watch('company') ? 'flex' : 'hidden'
+            } w-full items-start gap-5 flex-wrap`}
+          >
             <Controller
-              name="company"
+              name="dissolution_date"
+              rules={{ required: 'Dissolution date is required' }}
               control={control}
-              rules={{ required: 'Select a company to close' }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-2">
-                    <Select
-                      label="Select company"
-                      required
-                      options={user_applications?.map((application) => {
-                        return {
-                          ...application,
-                          value: application?.entry_id,
-                          label: application?.company_details?.name,
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e?.value);
-                      }}
-                    />
-                    {errors?.company && (
-                      <p className="text-[13px] text-red-500">
-                        {String(errors?.company?.message)}
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Input type="date" label="Date of dissolution" {...field} />
+                    {errors?.dissolution_date && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.dissolution_date.message)}
                       </p>
                     )}
                   </label>
@@ -133,33 +158,35 @@ const CloseCompany = () => {
               }}
             />
             <Controller
-              name="dissolution_date"
+              name="dissolution_reason"
+              rules={{ required: 'Dissolution reason is required' }}
               control={control}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
-                    <Input type="date" label="Date of dissolution" {...field} />
+                    <Select
+                      label="Dissolution reason"
+                      options={[]}
+                      onChange={(e) => {
+                        field.onChange(e?.value);
+                      }}
+                    />
+                    {errors?.dissolution_reason && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.dissolution_reason.message)}
+                      </p>
+                    )}
                   </label>
                 );
               }}
             />
           </menu>
-          <Controller
-            name="dissolution_reason"
-            control={control}
-            render={({ field }) => {
-              return (
-                <label className="w-full flex flex-col gap-1">
-                  <TextArea
-                    label="Dissolution reason"
-                    placeholder="Use this space to add more context to your request"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-          <section className="w-full flex flex-col gap-3">
+
+          <section
+            className={`${
+              watch('company') ? 'flex' : 'hidden'
+            } w-full flex flex-col gap-3`}
+          >
             <h1 className="text-md uppercase font-semibold flex items-center gap-1">
               Attachment <span className="text-red-600">*</span>
             </h1>

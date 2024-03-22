@@ -56,11 +56,11 @@ const ApplicatinsList = ({
   // Render status cell
   const renderStatusCell = ({ row }) => {
     const statusColors = {
-      verified: "bg-[#82ffa3] text-[#0d7b3e]",
-      rejected: "bg-[#eac3c3] text-red-500",
+      Verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      Rejected: "bg-[#eac3c3] text-red-500",
       approved: "bg-[#e8ffef] text-[#409261]",
-      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
-      submitted: "bg-[#e8ffef] text-black",
+      "Action Required": "bg-[#e4e4e4] text-[#6b6b6b]",
+      Submitted: "bg-[#e8ffef] text-black",
     };
     const statusColor = statusColors[row?.original?.status] || "";
     return (

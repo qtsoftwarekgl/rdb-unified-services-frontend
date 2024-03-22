@@ -10,9 +10,10 @@ import {
   setBusinessActiveTab,
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { business_company_details } from '../general-information/CompanyDetails';
 
 export interface business_company_attachments {
   name: string;
@@ -24,12 +25,14 @@ interface CompanyAttachmentsProps {
   isOpen: boolean;
   company_attachments: business_company_attachments[];
   entry_id: string | null;
+  company_details: business_company_details;
 }
 
 const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   isOpen,
   company_attachments = [],
   entry_id,
+  company_details,
 }) => {
   // REACT HOOK FORM
   const {
@@ -42,9 +45,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { company_details } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attachmentFiles, setAttachmentFiles] = useState<
@@ -59,6 +59,8 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
+          active_tab: 'preview_submission',
+          active_step: 'preview_submission',
           company_attachments: Array.from(attachmentFiles)?.map(
             (file: File) => {
               return {

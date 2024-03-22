@@ -21,12 +21,13 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { capitalizeString } from "../../../helpers/Strings";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
+} from '../../../states/features/businessRegistrationSlice';
+import { capitalizeString, generateUUID } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
 
 export interface business_shareholders {
   shareholder_type: string;
+  id: string;
   document_type: string;
   document_no: string;
   first_name: string;
@@ -84,6 +85,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               attachment: attachmentFile?.name,
               step: "shareholders",
               no: shareholders?.length - 1,
+              id: generateUUID(),
             },
             ...shareholders,
           ],
@@ -977,8 +979,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessCompletedStep("shareholders"));
-                dispatch(setBusinessActiveStep("capital_details"));
+                dispatch(setBusinessCompletedStep('shareholders'));
+                dispatch(setBusinessActiveStep('capital_details'));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_tab: 'capital_information',
+                    active_step: 'capital_details',
+                  })
+                );
               }}
             />
           </menu>
