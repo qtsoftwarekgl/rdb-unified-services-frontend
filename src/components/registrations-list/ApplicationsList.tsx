@@ -6,39 +6,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { formatCompanyData } from "../../helpers/Strings";
 import {
-  setBeneficialOwners,
-  setBoardDirectors,
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setCapitalDetails,
-  setCompanyActivities,
-  setCompanyAddress,
-  setCompanyAttachments,
-  setCompanyDetails,
-  setEmploymentInfo,
-  setSeniorManagement,
-  setShareDetails,
-  setShareHolders,
 } from "../../states/features/businessRegistrationSlice";
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-  setEnterpriseAttachments,
-  setEnterpriseBusinessLines,
-  setEnterpriseDetails,
-  setEnterpriseOfficeAddress,
 } from "../../states/features/enterpriseRegistrationSlice";
 import {
-  setForeignBeneficialOwners,
-  setForeignBoardDirectors,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-  setForeignCompanyActivities,
-  setForeignCompanyAddress,
-  setForeignCompanyAttachments,
-  setForeignCompanyDetails,
-  setForeignEmploymentInfo,
-  setForeignSeniorManagement,
 } from "../../states/features/foreignBranchRegistrationSlice";
 
 type Props = {
@@ -46,6 +23,7 @@ type Props = {
   description: string;
   notDataMessage: string;
   actionIcon: IconDefinition;
+  handleClickAction: () => void;
 };
 
 const ApplicatinsList = ({
@@ -53,6 +31,7 @@ const ApplicatinsList = ({
   description,
   actionIcon,
   notDataMessage,
+  handleClickAction,
 }: Props) => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -98,7 +77,10 @@ const ApplicatinsList = ({
     return (
       <menu className="flex items-center gap-2">
         <FontAwesomeIcon
-          onClick={(e) => handleEditClick(e, row)}
+          onClick={(e) => {
+            handleEditClick(e, row);
+            handleClickAction();
+          }}
           icon={actionIcon}
           className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
         />
@@ -115,7 +97,7 @@ const ApplicatinsList = ({
       accessorKey: "status",
       cell: renderStatusCell,
     },
-    { header: "Registration Date", accessorKey: "registration_date" },
+    { header: "Registration Date", accessorKey: "submission_date" },
     {
       header: "Action",
       accessorKey: "action",
@@ -134,61 +116,12 @@ const ApplicatinsList = ({
     if (company.type === "business_registration") {
       dispatch(setBusinessActiveTab("general_information"));
       dispatch(setBusinessActiveStep("company_details"));
-      dispatch(setCompanyDetails(company?.company_details || {}));
-      dispatch(setCompanyAddress(company?.company_address || {}));
-      dispatch(setCompanyActivities(company?.company_activities || {}));
-      dispatch(setBeneficialOwners(company?.beneficial_owners || []));
-      dispatch(setBoardDirectors(company?.board_of_directors || []));
-      dispatch(setCapitalDetails(company?.capital_details || []));
-      dispatch(setCompanyAttachments(company?.company_attachments || []));
-      dispatch(setEmploymentInfo(company?.employment_info || {}));
-      dispatch(setSeniorManagement(company?.senior_management || []));
-      dispatch(setShareDetails(company?.share_details || {}));
-      dispatch(setShareHolders(company?.shareholders || []));
     } else if (company.type === "enterprise") {
       dispatch(setEnterpriseActiveTab("enterprise_details"));
       dispatch(setEnterpriseActiveStep("enterprise_details"));
-      dispatch(setEnterpriseDetails(company?.enterprise_details || {}));
-      dispatch(
-        setEnterpriseBusinessLines(
-          company?.business_lines?.enterprise_business_lines || []
-        )
-      );
-      dispatch(setEnterpriseOfficeAddress(company?.office_address || {}));
-      dispatch(
-        setEnterpriseAttachments(
-          company?.enterprise_attachments?.fileNames || []
-        )
-      );
     } else if (company.type === "foreign_branch") {
       dispatch(setForeignBusinessActiveTab("foreign_general_information"));
       dispatch(setForeignBusinessActiveStep("foreign_company_details"));
-      dispatch(
-        setForeignCompanyDetails(company?.foreign_company_details || {})
-      );
-      dispatch(
-        setForeignCompanyAddress(company?.foreign_company_address || {})
-      );
-      dispatch(
-        setForeignCompanyActivities(company?.foreign_company_activities || {})
-      );
-      dispatch(
-        setForeignBoardDirectors(company?.foreign_board_of_directors || [])
-      );
-      dispatch(
-        setForeignSeniorManagement(company?.foreign_senior_management || [])
-      );
-      dispatch(
-        setForeignEmploymentInfo(company?.foreign_employment_info || {})
-      );
-      dispatch(
-        setForeignCompanyAttachments(
-          company?.foreign_company_attachments?.attachments || []
-        )
-      );
-      dispatch(
-        setForeignBeneficialOwners(company?.foreign_beneficial_owners || [])
-      );
     }
 
     navigate(row.original?.path);

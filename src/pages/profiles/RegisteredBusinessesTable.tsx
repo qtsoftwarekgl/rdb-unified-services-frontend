@@ -1,16 +1,22 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
-import { formatDate } from "../../helpers/Strings";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../states/store";
+import { formatCompanyData, formatDate } from "../../helpers/Strings";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { useNavigate } from "react-router";
-import { registeredBusinesses } from "../../constants/dashboard";
 
 const RegisteredBusinessesTable = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+
+  const registeredBusinesses = user_applications
+    .filter((app) => app.status === "approved")
+    .map(formatCompanyData);
 
   const colors = (status: string) => {
     if (status === "active") {
@@ -32,7 +38,7 @@ const RegisteredBusinessesTable = () => {
   const colums = [
     {
       header: "Company Code",
-      accessorKey: "company_code",
+      accessorKey: "reg_number",
     },
     {
       header: "Company Name",
@@ -56,7 +62,7 @@ const RegisteredBusinessesTable = () => {
     },
     {
       header: "Registered Date",
-      accessorKey: "created_at",
+      accessorKey: "submission_date",
     },
     {
       header: "Action",

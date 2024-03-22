@@ -86,7 +86,6 @@ const UserApplications = () => {
         <FontAwesomeIcon
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setViewedCompany(row?.original));
             navigate(`/company-details/${row?.original?.id}`);
           }}
           icon={faEye}

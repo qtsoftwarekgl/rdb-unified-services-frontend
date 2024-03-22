@@ -63,12 +63,12 @@ const UserSidebar = () => {
     },
     {
       title: "Company Documents",
-      path: "/company-documents",
+      path: `/company-documents/${viewedCompany?.entry_id}`,
       icon: faBook,
     },
     {
       title: "Company History",
-      path: "/company-history",
+      path: `/company-history/${viewedCompany?.entry_id}`,
       icon: faClockRotateLeft,
     },
   ];

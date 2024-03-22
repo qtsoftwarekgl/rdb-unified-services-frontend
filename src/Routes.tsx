@@ -72,8 +72,8 @@ const Routes = () => {
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/company-details/:id" element={<UserCompanyDetails />} />
           <Route path="/user-applications" element={<UserApplications />} />
-          <Route path="/company-documents" element={<CompanyDocuments />} />
-          <Route path="/company-history" element={<CompanyHistory />} />
+          <Route path="/company-documents/:id" element={<CompanyDocuments />} />
+          <Route path="/company-history/:id" element={<CompanyHistory />} />
 
           {/**
            * BUSINESS REGISTRATION

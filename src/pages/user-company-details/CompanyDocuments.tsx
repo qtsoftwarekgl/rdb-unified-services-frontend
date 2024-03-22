@@ -4,14 +4,23 @@ import Table from "../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { companyDocuments } from "../../constants/dashboard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ViewDocument from "./ViewDocument";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import CreateAmendment from "./CreateAmendment";
+import { setViewedCompany } from "../../states/features/userCompaniesSlice";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../states/store";
 
 const CompanyDocuments = () => {
   const { t } = useTranslation();
   const [documentToView, setDocumentToView] = useState("");
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
 
   const columns = [
     {
@@ -55,6 +64,20 @@ const CompanyDocuments = () => {
       },
     },
   ];
+
+  useEffect(() => {
+    if (id) {
+      dispatch(
+        setViewedCompany(
+          user_applications?.find((business) => business.entry_id === id)
+        )
+      );
+    }
+
+    return () => {
+      dispatch(setViewedCompany(null));
+    };
+  }, [id, dispatch, user_applications]);
 
   return (
     <UserLayout>

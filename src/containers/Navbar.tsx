@@ -9,9 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../states/store";
-import { FC } from "react";
-import { toggleNavbar } from "../states/features/navbarSlice";
-import { setViewedCompany } from "../states/features/userCompaniesSlice";
+import { FC, useState } from "react";
 import { languages } from "../constants/authentication";
 import { setLocale } from "../states/features/localeSlice";
 
@@ -23,8 +21,8 @@ const Navbar = ({ className }: Props) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const { isOpen } = useSelector((state: RootState) => state.navbar);
   const { locale } = useSelector((state: RootState) => state.locale);
+  const [isOpen, setIsOpen] = useState(false);
 
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -80,8 +78,7 @@ const Navbar = ({ className }: Props) => {
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(toggleNavbar(!isOpen));
-              dispatch(setViewedCompany(null));
+              setIsOpen(!isOpen);
             }}
           >
             <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
@@ -142,7 +139,7 @@ const Navbar = ({ className }: Props) => {
                 onClick={(e) => {
                   e.preventDefault();
                   navigate(`${nav?.link}`);
-                  dispatch(toggleNavbar(false));
+                  setIsOpen(false);
                 }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
                   ["Theme", "Notifications"].includes(nav?.title)
