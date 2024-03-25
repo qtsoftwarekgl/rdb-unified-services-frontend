@@ -44,7 +44,6 @@ const CompanyDetails = () => {
 
   const companyInfo =
     viewedCompany?.company_details ||
-    viewedCompany?.enterprise_details ||
     viewedCompany?.foreign_company_details ||
     null;
   const companyAddress =

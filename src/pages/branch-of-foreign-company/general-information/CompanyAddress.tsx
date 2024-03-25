@@ -70,6 +70,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     }, 1000);
   };
 
+  console.log("&&&&&&&&&&&&&&&&&&&&&&&&", foreign_company_address);
+
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -82,21 +84,29 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="country"
               control={control}
               defaultValue={
-                countriesList
-                  ?.filter(
-                    (country) =>
-                      country.code === foreign_company_address?.country
-                  )
-                  ?.map((country) => {
-                    return { label: country.name, value: country.code };
-                  })[0]
+                watch("country") || foreign_company_address?.country
               }
               rules={{ required: "Country is required" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
+                      isSearchable
                       required
+                      defaultValue={
+                        countriesList
+                          ?.filter(
+                            (country) =>
+                              country.code === foreign_company_address?.country
+                          )
+                          ?.map((country) => {
+                            return {
+                              ...country,
+                              label: country.name,
+                              value: country.code,
+                            };
+                          })[0]
+                      }
                       label="Country of Incorporation"
                       options={countriesList.map((country) => {
                         return {
@@ -259,6 +269,9 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       </span>
                       <input
                         onChange={field.onChange}
+                        defaultValue={
+                          watch("phone") || foreign_company_address?.phone
+                        }
                         className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
                         type="text"
                       />

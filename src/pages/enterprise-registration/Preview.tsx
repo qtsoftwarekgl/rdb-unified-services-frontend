@@ -10,6 +10,7 @@ import {
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
+import { setIsAmending } from "../../states/features/amendmentSlice";
 
 type Props = {
   entry_id: string | null;
@@ -30,7 +31,7 @@ const Preview = ({ entry_id }: Props) => {
     user_app?.enterprise_attachments?.fileNames || null;
   const enterprise_business_lines =
     user_app?.business_lines?.enterprise_business_lines || null;
-  const enterprise_details = user_app?.enterprise_details || null;
+  const enterprise_details = user_app?.company_details || null;
   const enterprise_office_address = user_app?.office_address || null;
 
   const handleEditButton = (step: Step) => {
@@ -46,6 +47,7 @@ const Preview = ({ entry_id }: Props) => {
         status: "submitted",
       })
     );
+    dispatch(setIsAmending(false));
     dispatch(resetToInitialState());
     navigate("/success", { state: { redirectUrl: "/user-applications" } });
   };

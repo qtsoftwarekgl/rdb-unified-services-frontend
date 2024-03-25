@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import {
   setEnterpriseActiveStep,
+  setEnterpriseActiveTab,
   setEnterpriseCompletedStep,
   setUsedIds,
 } from "../../../states/features/enterpriseRegistrationSlice";
@@ -30,6 +31,7 @@ import {
 import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { useNavigate } from "react-router-dom";
 
 type EnterpriseDetailsProps = {
   entry_id: string | null;
@@ -43,9 +45,9 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const enterprise_details = user_applications?.find(
+  const company_details = user_applications?.find(
     (app) => app.entry_id === entry_id
-  )?.enterprise_details;
+  )?.company_details;
 
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -57,7 +59,10 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     null
   );
 
+  const navigate = useNavigate();
+
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [searchEnterprise, setSearchEnterprise] = useState({
     error: false,
     success: false,
@@ -79,7 +84,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
       dispatch(
         setUserApplications({
           entry_id,
-          enterprise_details: {
+          company_details: {
             ...data,
             step: {
               ...enterprise_registration_active_step,
@@ -100,8 +105,8 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
 
   useEffect(() => {
     // SET USER DETAILS FROM ENterprise Details
-    if (enterprise_details) {
-      setUserDetails(enterprise_details);
+    if (company_details) {
+      setUserDetails(company_details);
     }
   }, []);
 
@@ -116,7 +121,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
             <Controller
               name="name"
               control={control}
-              defaultValue={watch("name") || enterprise_details?.name}
+              defaultValue={watch("name") || company_details?.name}
               rules={{ required: "Enterprise name is required" }}
               render={() => {
                 return (
@@ -124,7 +129,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     <Input
                       label="Search company name"
                       required
-                      defaultValue={watch("name") || enterprise_details?.name}
+                      defaultValue={watch("name") || company_details?.name}
                       suffixIcon={faSearch}
                       suffixIconPrimary
                       onChange={(e) => {
@@ -226,7 +231,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               name="document_type"
               control={control}
               defaultValue={
-                watch("document_type") || enterprise_details?.document_type
+                watch("document_type") || company_details?.document_type
               }
               rules={{ required: "Document type is required" }}
               render={({ field }) => {
@@ -250,8 +255,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                         }
                       }}
                       defaultValue={documentTypes.find(
-                        (type) =>
-                          type.value === enterprise_details?.document_type
+                        (type) => type.value === company_details?.document_type
                       )}
                     />
                     {errors?.document_type && (
@@ -268,9 +272,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                 control={control}
                 name="id_no"
                 defaultValue={
-                  watch("id_no") ||
-                  enterprise_details?.id_no ||
-                  userDetails?.id_no
+                  watch("id_no") || company_details?.id_no || userDetails?.id_no
                 }
                 rules={{
                   required: "Document number is required",
@@ -289,7 +291,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                       placeholder="1 XXXX X XXXXXXX X XX"
                       defaultValue={
                         watch("id_no") ||
-                        enterprise_details?.id_no ||
+                        company_details?.id_no ||
                         userDetails?.id_no
                       }
                       suffixIconPrimary
@@ -379,7 +381,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     defaultValue={
                       watch("firstName") ||
                       userDetails?.first_name ||
-                      enterprise_details?.first_name
+                      company_details?.first_name
                     }
                     rules={{ required: "First name is required" }}
                     render={({ field }) => {
@@ -392,7 +394,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             defaultValue={
                               watch("first_name") ||
                               userDetails?.first_name ||
-                              enterprise_details?.first_name
+                              company_details?.first_name
                             }
                             onChange={(e) => {
                               field.onChange(e.target.value);
@@ -413,7 +415,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     defaultValue={
                       watch("middle_name") ||
                       userDetails?.middle_name ||
-                      enterprise_details?.middle_name
+                      company_details?.middle_name
                     }
                     render={({ field }) => {
                       return (
@@ -424,7 +426,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             defaultValue={
                               watch("middle_name") ||
                               userDetails?.middle_name ||
-                              enterprise_details?.middle_name
+                              company_details?.middle_name
                             }
                             onChange={(e) => {
                               field.onChange(e.target.value);
@@ -442,7 +444,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     defaultValue={
                       watch("last_name") ||
                       userDetails?.last_name ||
-                      enterprise_details?.last_name
+                      company_details?.last_name
                     }
                     render={({ field }) => {
                       return (
@@ -453,7 +455,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             defaultValue={
                               watch("last_name") ||
                               userDetails?.last_name ||
-                              enterprise_details?.last_name
+                              company_details?.last_name
                             }
                             onChange={(e) => {
                               field.onChange(e.target.value);
@@ -474,7 +476,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     defaultValue={
                       watch("date_of_birth") ||
                       userDetails?.date_of_birth ||
-                      enterprise_details?.date_of_birth
+                      company_details?.date_of_birth
                     }
                     rules={{ required: "Date of birth is required" }}
                     render={({ field }) => {
@@ -487,7 +489,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             defaultValue={
                               watch("date_of_birth") ||
                               userDetails?.date_of_birth ||
-                              enterprise_details?.date_of_birth
+                              company_details?.date_of_birth
                             }
                             onChange={(e) => {
                               field.onChange(e.target.value);
@@ -509,7 +511,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("gender") ||
                     userDetails?.gender ||
-                    enterprise_details?.gender
+                    company_details?.gender
                   }
                   rules={{ required: "Gender is required" }}
                   render={({ field }) => {
@@ -553,7 +555,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     defaultValue={
                       watch("nationality") ||
                       userDetails?.nationality ||
-                      enterprise_details?.national
+                      company_details?.national
                     }
                     render={({ field }) => {
                       return (
@@ -562,7 +564,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             defaultValue={
                               watch("nationality") ||
                               userDetails?.nationality ||
-                              enterprise_details?.national
+                              company_details?.national
                             }
                             readOnly
                             label="Nationality"
@@ -582,7 +584,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     control={control}
                     defaultValue={
                       watch("phone") ||
-                      enterprise_details?.phone ||
+                      company_details?.phone ||
                       userDetails?.phone
                     }
                     rules={{ required: "Phone is required" }}
@@ -598,7 +600,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             }}
                             defaultValue={dummyPhones.find(
                               (type) =>
-                                type.value === enterprise_details?.phone ||
+                                type.value === company_details?.phone ||
                                 userDetails?.phone
                             )}
                           />
@@ -618,7 +620,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="country"
                     defaultValue={
                       watch("country") ||
-                      enterprise_details?.country ||
+                      company_details?.country ||
                       userDetails?.country
                     }
                     rules={{ required: "Country is required" }}
@@ -631,7 +633,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("country") ||
-                              enterprise_details?.country ||
+                              company_details?.country ||
                               userDetails?.country
                             }
                             onChange={(e) => {
@@ -652,7 +654,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="province"
                     defaultValue={
                       watch("province") ||
-                      enterprise_details?.province ||
+                      company_details?.province ||
                       userDetails?.province
                     }
                     rules={{ required: "Province is required" }}
@@ -665,7 +667,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("province") ||
-                              enterprise_details?.province ||
+                              company_details?.province ||
                               userDetails?.province
                             }
                             onChange={(e) => {
@@ -688,7 +690,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="district"
                     defaultValue={
                       watch("district") ||
-                      enterprise_details?.district ||
+                      company_details?.district ||
                       userDetails?.district
                     }
                     rules={{ required: "District is required" }}
@@ -701,7 +703,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("district") ||
-                              enterprise_details?.district ||
+                              company_details?.district ||
                               userDetails?.district
                             }
                             onChange={(e) => {
@@ -722,7 +724,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="sector"
                     defaultValue={
                       watch("sector") ||
-                      enterprise_details?.sector ||
+                      company_details?.sector ||
                       userDetails?.sector
                     }
                     rules={{ required: "Sector is required" }}
@@ -735,7 +737,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("sector") ||
-                              enterprise_details?.sector ||
+                              company_details?.sector ||
                               userDetails?.sector
                             }
                             onChange={(e) => {
@@ -758,7 +760,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="cell"
                     defaultValue={
                       watch("cell") ||
-                      enterprise_details?.cell ||
+                      company_details?.cell ||
                       userDetails?.cell
                     }
                     rules={{ required: "Cell is required" }}
@@ -771,7 +773,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("cell") ||
-                              enterprise_details?.cell ||
+                              company_details?.cell ||
                               userDetails?.cell
                             }
                             onChange={(e) => {
@@ -792,7 +794,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="village"
                     defaultValue={
                       watch("village") ||
-                      enterprise_details?.village ||
+                      company_details?.village ||
                       userDetails?.village
                     }
                     rules={{ required: "Village is required" }}
@@ -805,7 +807,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("village") ||
-                              enterprise_details?.village ||
+                              company_details?.village ||
                               userDetails?.village
                             }
                             onChange={(e) => {
@@ -828,7 +830,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     name="email"
                     defaultValue={
                       watch("email") ||
-                      enterprise_details?.email ||
+                      company_details?.email ||
                       userDetails?.email
                     }
                     rules={{ required: "Email is required" }}
@@ -840,7 +842,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             defaultValue={
                               watch("email") ||
-                              enterprise_details?.email ||
+                              company_details?.email ||
                               userDetails?.email
                             }
                             onChange={(e) => {
@@ -860,9 +862,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     control={control}
                     name="pob"
                     defaultValue={
-                      watch("pob") ||
-                      enterprise_details?.pob ||
-                      userDetails?.pob
+                      watch("pob") || company_details?.pob || userDetails?.pob
                     }
                     render={({ field }) => {
                       return (
@@ -871,7 +871,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             label="P O Box"
                             defaultValue={
                               watch("pob") ||
-                              enterprise_details?.pob ||
+                              company_details?.pob ||
                               userDetails?.pob
                             }
                             onChange={(e) => {
@@ -903,7 +903,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           defaultValue={
                             watch("passport_no") ||
                             userDetails?.passport_no ||
-                            enterprise_details?.passport_no
+                            company_details?.passport_no
                           }
                         />
                         {errors?.passport_no && (
@@ -939,7 +939,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           {...field}
                           defaultValue={
                             userDetails?.passport_expiry_date ||
-                            enterprise_details?.passport_expiry_date
+                            company_details?.passport_expiry_date
                           }
                         />
                         {errors?.passport_expiry_date && (
@@ -959,7 +959,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("firstName") ||
                     userDetails?.first_name ||
-                    enterprise_details?.first_name
+                    company_details?.first_name
                   }
                   rules={{ required: "First name is required" }}
                   render={({ field }) => {
@@ -971,7 +971,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           defaultValue={
                             watch("first_name") ||
                             userDetails?.first_name ||
-                            enterprise_details?.first_name
+                            company_details?.first_name
                           }
                           onChange={(e) => {
                             field.onChange(e.target.value);
@@ -992,7 +992,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("middle_name") ||
                     userDetails?.middle_name ||
-                    enterprise_details?.middle_name
+                    company_details?.middle_name
                   }
                   render={({ field }) => {
                     return (
@@ -1002,7 +1002,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           defaultValue={
                             watch("middle_name") ||
                             userDetails?.middle_name ||
-                            enterprise_details?.middle_name
+                            company_details?.middle_name
                           }
                           onChange={(e) => {
                             field.onChange(e.target.value);
@@ -1020,7 +1020,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("last_name") ||
                     userDetails?.last_name ||
-                    enterprise_details?.last_name
+                    company_details?.last_name
                   }
                   render={({ field }) => {
                     return (
@@ -1030,7 +1030,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           defaultValue={
                             watch("last_name") ||
                             userDetails?.last_name ||
-                            enterprise_details?.last_name
+                            company_details?.last_name
                           }
                           onChange={(e) => {
                             field.onChange(e.target.value);
@@ -1051,7 +1051,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("date_of_birth") ||
                     userDetails?.date_of_birth ||
-                    enterprise_details?.date_of_birth
+                    company_details?.date_of_birth
                   }
                   rules={{
                     required: "Date of birth is required",
@@ -1074,7 +1074,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           defaultValue={
                             watch("date_of_birth") ||
                             userDetails?.date_of_birth ||
-                            enterprise_details?.date_of_birth
+                            company_details?.date_of_birth
                           }
                           onChange={(e) => {
                             field.onChange(e.target.value);
@@ -1097,7 +1097,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("nationality") ||
                     userDetails?.nationality ||
-                    enterprise_details?.national
+                    company_details?.national
                   }
                   render={({ field }) => {
                     return (
@@ -1106,7 +1106,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           defaultValue={
                             watch("nationality") ||
                             userDetails?.nationality ||
-                            enterprise_details?.national
+                            company_details?.national
                           }
                           label="Nationality"
                           {...field}
@@ -1125,7 +1125,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   name="country"
                   defaultValue={
                     watch("country") ||
-                    enterprise_details?.country ||
+                    company_details?.country ||
                     userDetails?.country
                   }
                   rules={{ required: "Country is required" }}
@@ -1137,7 +1137,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           required
                           defaultValue={
                             watch("country") ||
-                            enterprise_details?.country ||
+                            company_details?.country ||
                             userDetails?.country
                           }
                           onChange={(e) => {
@@ -1161,7 +1161,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   defaultValue={
                     watch("gender") ||
                     userDetails?.gender ||
-                    enterprise_details?.gender
+                    company_details?.gender
                   }
                   rules={{ required: "Gender is required" }}
                   render={({ field }) => {
@@ -1211,7 +1211,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   name="email"
                   defaultValue={
                     watch("email") ||
-                    enterprise_details?.email ||
+                    company_details?.email ||
                     userDetails?.email
                   }
                   rules={{ required: "Email is required" }}
@@ -1223,7 +1223,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           required
                           defaultValue={
                             watch("email") ||
-                            enterprise_details?.email ||
+                            company_details?.email ||
                             userDetails?.email
                           }
                           onChange={(e) => {
@@ -1256,7 +1256,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             <select
                               className="w-full !text-[12px]"
                               defaultValue={
-                                userDetails?.phone || enterprise_details?.phone
+                                userDetails?.phone || company_details?.phone
                               }
                               onChange={(e) => {
                                 field.onChange(e.target.value);
@@ -1340,12 +1340,29 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
           )}
 
           <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-end max-sm:flex-col-reverse`}
+            className={`flex items-center mt-8 gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button
+              value="Back"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/enterprise-registration/new");
+              }}
+            />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setEnterpriseActiveTab("enterprise_preview_submission")
+                  );
+                }}
+              />
+            )}
+            <Button
               value={isLoading ? <Loader /> : "Continue"}
-              primary={!enterprise_details?.error}
-              // disabled={userDetails ? Object.keys(userDetails).length < 4 : false}
+              primary={!company_details?.error}
               submit
             />
           </menu>

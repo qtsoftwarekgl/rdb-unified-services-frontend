@@ -21,12 +21,12 @@ import { setUserApplications } from "../../../states/features/userApplicationSli
 
 interface CompanyDetailsProps {
   entry_id: string | null;
-  foreign_company_details: any;
+  company_details: any;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
   entry_id,
-  foreign_company_details,
+  company_details,
 }) => {
   // REACT HOOK FORM
   const {
@@ -58,7 +58,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          foreign_company_details: {
+          company_details: {
             name: data?.name,
             category: data?.category,
             type: data?.type,
@@ -79,17 +79,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
   // HANDLE DEFAULT VALUES
   useEffect(() => {
-    if (foreign_company_details) {
-      setValue("name", foreign_company_details?.name);
-      setValue("category", foreign_company_details?.category);
-      setValue("type", foreign_company_details?.type);
-      setValue("position", foreign_company_details?.position);
+    if (company_details) {
+      setValue("name", company_details?.name);
+      setValue("category", company_details?.category);
+      setValue("type", company_details?.type);
+      setValue("position", company_details?.position);
       setValue(
         "articles_of_association",
-        foreign_company_details?.articles_of_association
+        company_details?.articles_of_association
       );
     }
-  }, [foreign_company_details, setValue]);
+  }, [company_details, setValue]);
 
   return (
     <section className="flex flex-col w-full gap-4">
@@ -102,7 +102,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               name="name"
               control={control}
-              defaultValue={watch("name") || foreign_company_details?.name}
+              defaultValue={watch("name") || company_details?.name}
               rules={{ required: "Company name is required" }}
               render={() => {
                 return (
@@ -110,9 +110,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Input
                       label="Search company name"
                       required
-                      defaultValue={
-                        watch("name") || foreign_company_details?.name
-                      }
+                      defaultValue={watch("name") || company_details?.name}
                       suffixIcon={faSearch}
                       suffixIconPrimary
                       onChange={(e) => {
@@ -205,9 +203,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="category"
-              defaultValue={
-                watch("category") || foreign_company_details?.category
-              }
+              defaultValue={watch("category") || company_details?.category}
               rules={{ required: "Select company category" }}
               render={({ field }) => {
                 return (
@@ -215,7 +211,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Select
                       defaultValue={companyCategories?.find(
                         (category) =>
-                          category?.value === foreign_company_details?.category
+                          category?.value === company_details?.category
                       )}
                       label="Company category"
                       required
@@ -244,14 +240,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="type"
-              defaultValue={watch("type") || foreign_company_details?.type}
+              defaultValue={watch("type") || company_details?.type}
               rules={{ required: "Select company type" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       defaultValue={companyTypes?.find(
-                        (type) => type?.value === foreign_company_details?.type
+                        (type) => type?.value === company_details?.type
                       )}
                       label="Company type"
                       required
@@ -278,9 +274,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="position"
-              defaultValue={
-                watch("position") || foreign_company_details?.position
-              }
+              defaultValue={watch("position") || company_details?.position}
               rules={{ required: "Select your position" }}
               render={({ field }) => {
                 return (
@@ -288,7 +282,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Select
                       defaultValue={companyPositions?.find(
                         (position) =>
-                          position?.value === foreign_company_details?.position
+                          position?.value === company_details?.position
                       )}
                       label="Your position"
                       required
@@ -327,8 +321,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="Yes"
                       checked={
                         watch("articles_of_association") === "yes" ||
-                        foreign_company_details?.articles_of_association ===
-                          "yes"
+                        company_details?.articles_of_association === "yes"
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -343,8 +336,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="No"
                       checked={
                         watch("articles_of_association") === "no" ||
-                        foreign_company_details?.articles_of_association ===
-                          "no"
+                        company_details?.articles_of_association === "no"
                       }
                       name={field?.name}
                       onChange={(e) => {

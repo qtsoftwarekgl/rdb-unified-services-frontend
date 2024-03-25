@@ -29,10 +29,7 @@ export const generateUUID = () => {
 };
 
 export const formatCompanyData = (business) => {
-  const company =
-    business?.company_details ||
-    business?.foreign_company_details ||
-    business?.enterprise_details;
+  const company = business?.company_details;
   return {
     ...company,
     company_name: company?.name,

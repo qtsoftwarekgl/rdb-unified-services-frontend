@@ -86,6 +86,8 @@ const RegisteredBusinessesTable = () => {
     },
   ];
 
+  if (registeredBusinesses.length === 0) return null;
+
   return (
     <section className="mb-8">
       <h1 className=" text-tertiary w-fit">My Registered Companies</h1>
