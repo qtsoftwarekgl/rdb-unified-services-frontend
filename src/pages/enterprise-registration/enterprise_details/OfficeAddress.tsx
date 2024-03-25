@@ -61,6 +61,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
     (state: RootState) => state?.userApplication
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const enterprise_office_address =
     user_applications?.find((app) => app?.entry_id === entry_id)
       ?.office_address || null;
@@ -588,6 +589,17 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                 dispatch(setEnterpriseActiveStep("business_activity_vat"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setEnterpriseActiveTab("enterprise_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

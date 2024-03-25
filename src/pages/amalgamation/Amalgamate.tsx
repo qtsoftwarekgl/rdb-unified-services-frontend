@@ -43,7 +43,6 @@ const Amalgamation = () => {
   };
 
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
     navigate("/success");
   };
 

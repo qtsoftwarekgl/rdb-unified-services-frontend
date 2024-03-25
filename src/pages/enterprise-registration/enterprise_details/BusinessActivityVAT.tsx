@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import {
   setEnterpriseActiveStep,
+  setEnterpriseActiveTab,
   setEnterpriseCompletedStep,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
@@ -38,6 +39,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
     (state: RootState) => state.enterpriseRegistration
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -94,7 +96,6 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
               })}
               onChange={(e) => {
                 setRandomNumber(Math.floor(Math.random() * 10) + 1);
-                console.log(e);
               }}
             />
             {errors.activity && (
@@ -289,6 +290,17 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                 dispatch(setEnterpriseActiveStep("enterprise_details"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setEnterpriseActiveTab("enterprise_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

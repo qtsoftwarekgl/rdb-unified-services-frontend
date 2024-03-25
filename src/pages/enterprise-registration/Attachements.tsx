@@ -45,6 +45,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
   );
 
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -58,7 +59,6 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const onSubmitAttachments = (data: FieldValues) => {
     const fileNames = attachmentFiles.map((file) => file.file?.name);
-    console.log(data);
     setIsLoading(true);
     setTimeout(() => {
       dispatch(
@@ -169,6 +169,17 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
                 dispatch(setEnterpriseActiveStep("office_address"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setEnterpriseActiveTab("enterprise_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

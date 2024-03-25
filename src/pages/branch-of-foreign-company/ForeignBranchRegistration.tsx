@@ -82,9 +82,7 @@ const ForeignBranchRegistration = () => {
                       {activeStepName === "foreign_company_details" && (
                         <CompanyDetails
                           entry_id={entry_id}
-                          foreign_company_details={
-                            current_application?.foreign_company_details
-                          }
+                          company_details={current_application?.company_details}
                         />
                       )}
                       {activeStepName === "foreign_company_address" && (
@@ -164,7 +162,7 @@ const ForeignBranchRegistration = () => {
         {user?.email?.includes("info@rdb") && (
           <>
             <ReviewNavigation
-            entry_id={entry_id}
+              entry_id={entry_id}
               setActiveStep={setForeignBusinessActiveStep}
               setActiveTab={setForeignBusinessActiveTab}
               tabs={foreign_business_registration_tabs}

@@ -82,21 +82,6 @@ export const enterpriseRegistrationSlice = createSlice({
       label: "Enterprise Details",
       name: "enterprise_details",
     },
-    enterprise_details:
-      JSON.parse(String(localStorage.getItem("enterprise_details"))) || null,
-    enterprise_office_address:
-      JSON.parse(String(localStorage.getItem("enterprise_office_address"))) ||
-      null,
-    enterprise_business_activity_vat:
-      JSON.parse(
-        String(localStorage.getItem("enterprise_business_activity_vat"))
-      ) || null,
-    enterprise_business_lines:
-      JSON.parse(String(localStorage.getItem("enterprise_business_lines"))) ||
-      [],
-    enterprise_attachments:
-      JSON.parse(String(localStorage.getItem("enterprise_attachments"))) ||
-      null,
     usedIds: JSON.parse(String(localStorage.getItem("usedIds"))) || [],
   },
   reducers: {
@@ -229,41 +214,6 @@ export const enterpriseRegistrationSlice = createSlice({
         JSON.stringify(updatedRegistrationTabs)
       );
     },
-    setEnterpriseDetails: (state, action) => {
-      state.enterprise_details = action.payload;
-      localStorage.setItem(
-        "enterprise_details",
-        JSON.stringify(action.payload)
-      );
-    },
-    setEnterpriseOfficeAddress: (state, action) => {
-      state.enterprise_office_address = action.payload;
-      localStorage.setItem(
-        "enterprise_office_address",
-        JSON.stringify(action.payload)
-      );
-    },
-    setEnterpriseBusinessActivityVat: (state, action) => {
-      state.enterprise_business_activity_vat = action.payload;
-      localStorage.setItem(
-        "enterprise_business_activity_vat",
-        JSON.stringify(action.payload)
-      );
-    },
-    setEnterpriseBusinessLines: (state, action) => {
-      state.enterprise_business_lines = action.payload;
-      localStorage.setItem(
-        "enterprise_business_lines",
-        JSON.stringify(action.payload)
-      );
-    },
-    setEnterpriseAttachments: (state, action) => {
-      state.enterprise_attachments = action.payload;
-      localStorage.setItem(
-        "enterprise_attachments",
-        JSON.stringify(action.payload)
-      );
-    },
     setUsedIds: (state, action) => {
       state.usedIds.push(action.payload);
       localStorage.setItem("usedIds", JSON.stringify(state.usedIds));
@@ -341,19 +291,6 @@ export const enterpriseRegistrationSlice = createSlice({
         label: "Enterprise Details",
         name: "enterprise_details",
       };
-      state.enterprise_details = null;
-      state.enterprise_office_address = null;
-      state.enterprise_business_activity_vat = null;
-      state.enterprise_business_lines = [];
-      state.enterprise_attachments = null;
-      localStorage.removeItem("enterprise_registration_tabs");
-      localStorage.removeItem("enterprise_registration_active_tab");
-      localStorage.removeItem("enterprise_registration_active_step");
-      localStorage.removeItem("enterprise_details");
-      localStorage.removeItem("enterprise_office_address");
-      localStorage.removeItem("enterprise_business_activity_vat");
-      localStorage.removeItem("enterprise_business_lines");
-      localStorage.removeItem("enterprise_attachments");
     },
   },
 });
@@ -365,11 +302,6 @@ export const {
   setEnterpriseActiveTab,
   setEnterpriseCompletedStep,
   setEnterpriseCompletedTab,
-  setEnterpriseDetails,
-  setEnterpriseOfficeAddress,
-  setEnterpriseBusinessActivityVat,
-  setEnterpriseBusinessLines,
-  setEnterpriseAttachments,
   resetToInitialState,
   setUsedIds,
 } = enterpriseRegistrationSlice.actions;

@@ -4,7 +4,6 @@ import Table from "../../components/table/Table";
 import { RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { formatCompanyData } from "../../helpers/Strings";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -24,6 +23,7 @@ type Props = {
   notDataMessage: string;
   actionIcon: IconDefinition;
   handleClickAction: () => void;
+  data: Array<object>;
 };
 
 const ApplicatinsList = ({
@@ -31,6 +31,7 @@ const ApplicatinsList = ({
   description,
   actionIcon,
   notDataMessage,
+  data,
   handleClickAction,
 }: Props) => {
   const { user_applications } = useSelector(
@@ -38,20 +39,6 @@ const ApplicatinsList = ({
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // Format company data
-
-  // Sort by submission date
-  const sortBySubmissionDate = (a, b) => {
-    return (
-      new Date(b?.submissionDate).getTime() -
-      new Date(a?.submissionDate).getTime()
-    );
-  };
-
-  const companies = user_applications
-    .map(formatCompanyData)
-    .sort(sortBySubmissionDate);
 
   // Render status cell
   const renderStatusCell = ({ row }) => {
@@ -134,10 +121,10 @@ const ApplicatinsList = ({
       </menu>
       <section className="flex flex-col h-full gap-16 p-12 bg-white rounded-md shadow-sm">
         <h1 className="font-semibold text-center">{description}</h1>
-        {companies.length > 0 ? (
+        {data.length > 0 ? (
           <Table
             columns={columns}
-            data={companies}
+            data={data}
             className="bg-white rounded-xl"
             showFilter={false}
             showPagination={false}
