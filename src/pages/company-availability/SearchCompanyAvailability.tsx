@@ -4,11 +4,13 @@ import Button from "../../components/inputs/Button";
 import Input from "../../components/inputs/Input";
 import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { institutions } from "../../constants/dashboard";
 import Loader from "../../components/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { setNameReservation } from "../../states/features/nameReservationSlice";
+import {
+  setNameReservation,
+  setNameReservationActiveTab,
+} from "../../states/features/nameReservationSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../states/store";
 
@@ -31,6 +33,7 @@ const SearchCompanyAvailability = () => {
 
   const onSubmit = (data: FieldValues) => {
     dispatch(setNameReservation(data.name));
+    dispatch(setNameReservationActiveTab("owner_details"));
     navigate("/name-reservation");
   };
 
@@ -74,12 +77,7 @@ const SearchCompanyAvailability = () => {
                               success: false,
                             });
                             setTimeout(() => {
-                              const randomNumber = Math.floor(
-                                Math.random() * 80
-                              );
-                              const companyName = institutions[randomNumber];
-
-                              if (!companyName) {
+                              if (field?.value.trim().toLowerCase() !== "xyz") {
                                 setError("name", {
                                   type: "manual",
                                   message: `${watch(

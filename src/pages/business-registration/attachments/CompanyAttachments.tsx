@@ -46,6 +46,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File>
@@ -232,6 +233,17 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                 dispatch(setBusinessActiveTab("beneficial_owners"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

@@ -42,6 +42,7 @@ const CompanyAttachments = ({
   >([]);
 
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -234,6 +235,17 @@ const CompanyAttachments = ({
                 );
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

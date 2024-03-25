@@ -16,6 +16,7 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setBusinessActiveStep,
+  setBusinessActiveTab,
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
@@ -60,6 +61,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   });
   const [companyTypesOptions, setCompanyTypesOptions] = useState(companyTypes);
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   useEffect(() => {
     if (watch("category") === "public") {
@@ -412,6 +414,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button value="Back" route="/business-registration/new" />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary={!searchCompany?.error}

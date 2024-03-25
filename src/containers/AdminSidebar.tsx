@@ -42,39 +42,55 @@ const AdminSidebar = () => {
 
   // SIDEBAR NAV
   const sidebarNav = [
-    {
-      title: 'Dashboard',
-      path: '/admin/dashboard',
+    !(
+      user?.email?.includes("infoverifier@rdb") ||
+      user?.email?.includes("infoapprover@rdb")
+    ) && {
+      title: "Dashboard",
+      path: "/admin/dashboard",
       icon: faHouse,
     },
-    {
-      title: 'Users',
-      path: '/admin/users',
+    !(
+      user?.email?.includes("infoverifier@rdb") ||
+      user?.email?.includes("infoapprover@rdb")
+    ) && {
+      title: "Users",
+      path: "/admin/users",
       icon: faPen,
     },
-    user?.email?.includes('info@rdb') && {
-      title: 'Staff',
-      path: '/admin/staff',
+    !(
+      user?.email?.includes("infoverifier@rdb") ||
+      user?.email?.includes("infoapprover@rdb")
+    ) && {
+      title: "Staff",
+      path: "/admin/staff",
       icon: faPen,
     },
-    {
-      title: 'Roles',
-      path: '/admin/roles',
+    !(
+      user?.email?.includes("infoverifier@rdb") ||
+      user?.email?.includes("infoapprover@rdb")
+    ) && {
+      title: "Roles",
+      path: "/admin/roles",
       icon: faBagShopping,
     },
-    user?.email?.includes('info@rdb') && {
-      title: 'Foreign Accounts',
-      path: '/admin/foreign-applicants',
+    (user?.email?.includes("info@rdb") ||
+      user?.email?.includes("infoverifier@rdb") ||
+      user?.email?.includes("infoapprover@rdb")) && {
+      title: "Foreign Accounts",
+      path: "/admin/foreign-applicants",
       icon: faUser,
     },
-    user?.email?.includes('info@rdb') && {
-      title: 'Review Registrations',
-      path: '/admin/review-registrations',
+    (user?.email?.includes("info@rdb") ||
+      user?.email?.includes("infoverifier@rdb") ||
+      user?.email?.includes("infoapprover@rdb")) && {
+      title: "Applications",
+      path: "/admin/review-applications",
       icon: faMagnifyingGlassDollar,
     },
     {
-      title: 'My Profile',
-      path: '/admin/profile',
+      title: "My Profile",
+      path: "/admin/profile",
       icon: faBook,
     },
   ].filter(Boolean);
@@ -204,7 +220,7 @@ const AdminSidebar = () => {
           onClick={(e) => {
             e.preventDefault();
             sessionStorage.clear();
-            navigate('/auth/login')
+            navigate("/auth/login");
           }}
         />
       </motion.div>

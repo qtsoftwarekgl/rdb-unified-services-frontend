@@ -23,11 +23,7 @@ import {
   documentTypes,
   dummyPhones,
 } from "../../../constants/businessRegistration";
-import {
-  availableNames,
-  userData,
-  workingIds,
-} from "../../../constants/authentication";
+import { userData } from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
@@ -110,6 +106,8 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     }
   }, []);
 
+  console.log(isAmending);
+
   return (
     <section className="flex flex-col w-full gap-4">
       <form onSubmit={handleSubmit(onSubmitEnterpriseDetails)}>
@@ -123,14 +121,17 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               control={control}
               defaultValue={watch("name") || company_details?.name}
               rules={{ required: "Enterprise name is required" }}
-              render={() => {
+              render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-1/2 gap-1">
                     <Input
-                      label="Search company name"
+                      label={`${
+                        company_details?.name ? "" : "Search"
+                      }  company name"`}
                       required
                       defaultValue={watch("name") || company_details?.name}
-                      suffixIcon={faSearch}
+                      readOnly={company_details?.name ? true : false}
+                      suffixIcon={!company_details?.name ? faSearch : undefined}
                       suffixIconPrimary
                       onChange={(e) => {
                         setSearchEnterprise({
@@ -153,12 +154,9 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           success: false,
                         });
                         setTimeout(() => {
-                          const index = availableNames.findIndex(
-                            (name) =>
-                              name.toLocaleLowerCase() ===
-                              searchEnterprise.name.toLocaleLowerCase()
-                          );
-                          if (index !== -1) {
+                          if (
+                            searchEnterprise.name.trim().toLowerCase() === "xyz"
+                          ) {
                             setValue("name", searchEnterprise.name);
                             setSearchEnterprise({
                               ...searchEnterprise,
@@ -325,9 +323,11 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           setIsNationalIdLoading(true);
                           setTimeout(() => {
                             setUserDetails(null);
-                            const index = workingIds.findIndex(
-                              (id) => id === watch("id_no")
-                            );
+                            const index =
+                              field?.value.trim() === "1120001111111111"
+                                ? Math.floor(Math.random() * 10)
+                                : Math.floor(Math.random() * 11) + 11;
+                            console.log(index);
                             const userDetails = userData[index];
                             if (!userDetails) {
                               setNationalIdError(true);
@@ -1292,11 +1292,11 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               </menu>
               <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
                 <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                  Attachment <span className="text-red-600">*</span>
+                  Passport <span className="text-red-600">*</span>
                 </h3>
                 <Controller
                   name="attachment"
-                  rules={{ required: "Document attachment is required" }}
+                  rules={{ required: "Passport is required" }}
                   control={control}
                   render={({ field }) => {
                     return (

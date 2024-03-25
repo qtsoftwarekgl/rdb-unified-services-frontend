@@ -91,10 +91,12 @@ const EnterpriseRegistration = () => {
             );
           })}
           {/* REVIEW APPLICATION SECTION */}
-          {user?.email?.includes("info@rdb") && (
+          {(user?.email?.includes("info@rdb") ||
+            user?.email?.includes("verifier@rdb") ||
+            user?.email?.includes("approver@rdb")) && (
             <>
               <ReviewNavigation
-              entry_id={entry_id}
+                entry_id={entry_id}
                 setActiveStep={setEnterpriseActiveStep}
                 setActiveTab={setEnterpriseActiveTab}
                 tabs={enterprise_registration_tabs}

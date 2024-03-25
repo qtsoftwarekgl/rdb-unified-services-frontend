@@ -3,7 +3,6 @@ import Input from "../../components/inputs/Input";
 import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import Loader from "../../components/Loader";
-import { institutions } from "../../constants/dashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../components/inputs/Button";
 import { useNavigate } from "react-router-dom";
@@ -94,9 +93,12 @@ const NameReservationSearch = ({ isOpen }: Props) => {
             return (
               <label className="flex flex-col w-full gap-3">
                 <Input
-                  label="Enter the company name to reserve"
-                  suffixIcon={faSearch}
+                  label={`${
+                    name_reservation ? "" : "Enter"
+                  } the company name to reserve`}
+                  suffixIcon={!name_reservation ? faSearch : undefined}
                   defaultValue={watch("name") || name_reservation}
+                  readOnly={name_reservation ? true : false}
                   suffixIconPrimary
                   suffixIconHandler={(e) => {
                     e.preventDefault();
@@ -114,10 +116,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                         success: false,
                       });
                       setTimeout(() => {
-                        const randomNumber = Math.floor(Math.random() * 80);
-                        const companyName = institutions[randomNumber];
-
-                        if (!companyName) {
+                        if (field?.value.trim().toLowerCase() !== "xyz") {
                           setError("name", {
                             type: "manual",
                             message: `${watch(

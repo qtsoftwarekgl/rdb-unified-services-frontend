@@ -59,6 +59,7 @@ const BeneficialOwners = ({
   });
 
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // CLEAR FORM
   useEffect(() => {
@@ -1217,6 +1218,17 @@ const BeneficialOwners = ({
             dispatch(setForeignBusinessActiveTab("foreign_management"));
           }}
         />
+        {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
         <Button
           value="Continue"
           primary

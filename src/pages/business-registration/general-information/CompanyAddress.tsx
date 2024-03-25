@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   removeBusinessCompletedStep,
   setBusinessActiveStep,
+  setBusinessActiveTab,
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
@@ -75,6 +76,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     });
 
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -614,6 +616,17 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 dispatch(setBusinessActiveStep("company_details"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

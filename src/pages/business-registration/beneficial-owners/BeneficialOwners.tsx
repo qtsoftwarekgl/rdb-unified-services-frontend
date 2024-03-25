@@ -70,6 +70,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
   });
 
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -1205,6 +1206,17 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             dispatch(setBusinessActiveTab("capital_information"));
           }}
         />
+        {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
         <Button
           value="Continue"
           primary

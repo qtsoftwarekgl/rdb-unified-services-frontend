@@ -34,6 +34,9 @@ const ApplicatinsList = ({
   data,
   handleClickAction,
 }: Props) => {
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -62,8 +65,7 @@ const ApplicatinsList = ({
       <menu className="flex items-center gap-2">
         <FontAwesomeIcon
           onClick={(e) => {
-            e.preventDefault();
-            handleEditClick(row);
+            handleEditClick(e, row);
             handleClickAction();
           }}
           icon={actionIcon}
@@ -75,11 +77,15 @@ const ApplicatinsList = ({
 
   const columns = [
     { header: "Company Code", accessorKey: "reg_number" },
-    { header: "Company/Enterprise Name", accessorKey: "company_name" },
-    { header: "Company/Enterprise Type", accessorKey: "service_name" },
+    {
+      header: "Company/Enterprise Name",
+      accessorKey: "company_name",
+    },
+    { header: "Application Type", accessorKey: "service_name", filter: true, },
     {
       header: "Application Status",
       accessorKey: "status",
+      filter: true,
       cell: renderStatusCell,
     },
     { header: "Registration Date", accessorKey: "submission_date" },
@@ -91,14 +97,20 @@ const ApplicatinsList = ({
     },
   ];
 
-  const handleEditClick = (row) => {
-    if (row?.original?.service_name.toLowerCase() === "business_registration") {
+  const handleEditClick = (e, row) => {
+    e.preventDefault();
+    const company = user_applications?.find(
+      (application) => application.entry_id === row?.original?.id
+    );
+    if (!company) return;
+
+    if (company.type === "business_registration") {
       dispatch(setBusinessActiveTab("general_information"));
       dispatch(setBusinessActiveStep("company_details"));
-    } else if (row?.original?.service_name.toLowerCase() === "enterprise") {
+    } else if (company.type === "enterprise") {
       dispatch(setEnterpriseActiveTab("enterprise_details"));
       dispatch(setEnterpriseActiveStep("enterprise_details"));
-    } else if (row?.original?.service_name.toLowerCase() === "foreign_branch") {
+    } else if (company.type === "foreign_branch") {
       dispatch(setForeignBusinessActiveTab("foreign_general_information"));
       dispatch(setForeignBusinessActiveStep("foreign_company_details"));
     }
@@ -118,8 +130,8 @@ const ApplicatinsList = ({
             columns={columns}
             data={data}
             className="bg-white rounded-xl"
-            showFilter={false}
-            showPagination={false}
+            showFilter={true}
+            showPagination={true}
           />
         ) : (
           <span className="flex items-center justify-start w-full">
