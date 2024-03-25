@@ -58,6 +58,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
     (state: RootState) => state.businessRegistration
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -391,6 +392,17 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                 dispatch(setBusinessActiveStep("company_address"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               submit

@@ -159,7 +159,9 @@ const ForeignBranchRegistration = () => {
           )}
         </menu>
         {/* REVIEW APPLICATION SECTION */}
-        {user?.email?.includes("info@rdb") && (
+        {(user?.email?.includes("info@rdb") ||
+          user?.email?.includes("verifier@rdb") ||
+          user?.email?.includes("approver@rdb")) && (
           <>
             <ReviewNavigation
               entry_id={entry_id}

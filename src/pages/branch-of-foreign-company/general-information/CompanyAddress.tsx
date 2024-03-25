@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   removeForeignBusinessCompletedStep,
   setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Select from "../../../components/inputs/Select";
@@ -36,6 +37,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -298,6 +300,17 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 );
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary

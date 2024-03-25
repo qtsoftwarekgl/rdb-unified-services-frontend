@@ -55,6 +55,7 @@ const BoardDirectors = ({
   });
 
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // CLEAR FORM
   useEffect(() => {
@@ -69,7 +70,6 @@ const BoardDirectors = ({
     }
   }, [isSubmitSuccessful, reset]);
 
-  console.log(">>>>>>>>>>>>>>>>>>>>>", foreign_board_of_directors);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -650,6 +650,17 @@ const BoardDirectors = ({
                 );
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value="Continue"
               primary

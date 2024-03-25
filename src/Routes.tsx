@@ -186,7 +186,7 @@ const Routes = () => {
           <Route path="/admin/roles" element={<ListRoles />} />
           <Route path="/admin/foreign-applicants" element={<ForeignUsers />} />
           <Route
-            path="/admin/review-registrations"
+            path="/admin/review-applications"
             element={<ReviewRegistration />}
           />
         </Route>

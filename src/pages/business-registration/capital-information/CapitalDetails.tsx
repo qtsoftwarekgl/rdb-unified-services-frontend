@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
-import { AppDispatch } from '../../../states/store';
-import { useDispatch } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -64,6 +64,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
     number: 0,
     value: 0,
   });
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   useEffect(() => {
     setAssignedShares({
@@ -189,8 +190,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   if (!isOpen) return null;
 
   return (
-    <section className="w-full flex flex-col gap-6">
-      <menu className="flex flex-col gap-2 w-full">
+    <section className="flex flex-col w-full gap-6">
+      <menu className="flex flex-col w-full gap-2">
         <Table
           tableTitle="Shareholders"
           data={
@@ -231,7 +232,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         <h1 className="font-semibold text-lg uppercase text-[16px]">
           Overall capital details
         </h1>
-        <menu className="flex flex-col gap-1 w-full">
+        <menu className="flex flex-col w-full gap-1">
           <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Total number of assignable shares</h2>
             <p>{share_details?.total_shares}</p>
@@ -248,7 +249,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             </p>
           </ul>
         </menu>
-        <menu className="flex flex-col gap-2 w-full">
+        <menu className="flex flex-col w-full gap-2">
           <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
             <h2>Total value of assignable shares</h2>
             <p>RWF {share_details?.total_value}</p>
@@ -258,7 +259,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             <p>RWF {assignedShares?.value}</p>
           </ul>
           <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2 className="font-medium uppercase underline">
+            <h2 className="font-medium underline uppercase">
               Remaning value of assignable shares
             </h2>
             <p className="underline">
@@ -280,6 +281,17 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             dispatch(setBusinessActiveTab('capital_information'));
           }}
         />
+        {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
         <Button
           value={isLoading ? <Loader /> : 'Continue'}
           primary

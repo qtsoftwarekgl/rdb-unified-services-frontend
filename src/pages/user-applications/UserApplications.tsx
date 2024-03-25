@@ -12,14 +12,27 @@ import {
   setBusinessActiveTab,
   setBusinessRegistrationTabs,
   setCompanySubActivities,
-} from '../../states/features/businessRegistrationSlice';
-import { setViewedCompany } from '../../states/features/userCompaniesSlice';
+} from "../../states/features/businessRegistrationSlice";
 import { useNavigate } from "react-router-dom";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
+import { ReviewComment } from "../../components/applications-review/AddReviewComments";
+import {
+  setEnterpriseActiveStep,
+  setEnterpriseActiveTab,
+} from "../../states/features/enterpriseRegistrationSlice";
+import {
+  setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
+} from "../../states/features/foreignBranchRegistrationSlice";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
+  const { application_review_comments } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -33,24 +46,24 @@ const UserApplications = () => {
 
   const colors = (status: string) => {
     const colorMap = {
-      verified: 'bg-[#82ffa3] text-[#0d7b3e]',
-      rejected: 'bg-[#eac3c3] text-red-500',
-      approved: 'bg-[#cfeaff] text-secondary',
-      'request for action': 'bg-[#e4e4e4] text-[#6b6b6b]',
-      submitted: 'bg-[#e8ffef] text-black',
+      verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#cfeaff] text-secondary",
+      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
+      submitted: "bg-[#e8ffef] text-black",
     };
-    return colorMap[status] || '';
+    return colorMap[status] || "";
   };
 
   const columns = [
-    { header: 'Registration Number', accessorKey: 'reg_number' },
-    { header: 'Company Name', accessorKey: 'company_name' },
-    { header: 'Service Name', accessorKey: 'service_name' },
-    { header: 'Status', accessorKey: 'status', cell: renderStatusCell },
-    { header: 'Submission Date', accessorKey: 'submission_date' },
+    { header: "Registration Number", accessorKey: "reg_number" },
+    { header: "Company Name", accessorKey: "company_name" },
+    { header: "Service Name", accessorKey: "service_name" },
+    { header: "Status", accessorKey: "status", cell: renderStatusCell },
+    { header: "Submission Date", accessorKey: "submission_date" },
     {
-      header: 'Action',
-      accessorKey: 'actions',
+      header: "Action",
+      accessorKey: "actions",
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -69,6 +82,27 @@ const UserApplications = () => {
     );
   }
 
+  const hasComments = (applicationId: string) => {
+    return application_review_comments.some(
+      (comment: ReviewComment) => comment?.entry_id === applicationId
+    );
+  };
+
+  const handleEditClick = (row) => {
+    if (row?.original?.service_name.toLowerCase() === "business_registration") {
+      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setBusinessActiveStep("company_details"));
+    } else if (row?.original?.service_name.toLowerCase() === "enterprise") {
+      dispatch(setEnterpriseActiveTab("enterprise_details"));
+      dispatch(setEnterpriseActiveStep("enterprise_details"));
+    } else if (row?.original?.service_name.toLowerCase() === "foreign_branch") {
+      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
+      dispatch(setForeignBusinessActiveStep("foreign_company_details"));
+    }
+
+    navigate(row.original?.path);
+  };
+
   function renderActionCell({ row }) {
     return (
       <menu className="flex items-center gap-2 cursor-pointer">
@@ -80,6 +114,16 @@ const UserApplications = () => {
           icon={faEye}
           className="text-primary"
         />
+        {hasComments(row?.original?.id) && (
+          <FontAwesomeIcon
+            onClick={(e) => {
+              e.preventDefault();
+              handleEditClick(row);
+            }}
+            icon={faEdit}
+            className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+          />
+        )}
       </menu>
     );
   }
@@ -101,8 +145,8 @@ const UserApplications = () => {
                   business_registration_tabs_initial_state
                 )
               );
-              dispatch(setBusinessActiveTab('general_information'));
-              dispatch(setBusinessActiveStep('company_details'));
+              dispatch(setBusinessActiveTab("general_information"));
+              dispatch(setBusinessActiveStep("company_details"));
             }}
             value={
               <menu className="flex items-center gap-2">

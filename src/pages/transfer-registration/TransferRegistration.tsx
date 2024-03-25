@@ -60,7 +60,6 @@ const TransferRegistration = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setAttachedFiles((prev) => {
-                  console.log(prev, row);
                   return prev.filter(
                     (file) => file.file_name !== row?.original?.file_name
                   );
@@ -76,7 +75,6 @@ const TransferRegistration = () => {
   ];
 
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
     navigate("/success");
   };
   return (

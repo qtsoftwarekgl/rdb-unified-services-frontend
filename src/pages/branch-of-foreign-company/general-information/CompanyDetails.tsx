@@ -15,9 +15,11 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+
 
 interface CompanyDetailsProps {
   entry_id: string | null;
@@ -46,6 +48,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     loading: false,
     name: "",
   });
+
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   const { user } = useSelector((state: RootState) => state.user);
 
@@ -355,6 +359,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button value="Back" route="/business-registration/new" />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary={!searchCompany?.error}

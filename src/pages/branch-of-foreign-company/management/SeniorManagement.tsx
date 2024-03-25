@@ -10,6 +10,7 @@ import validateInputs from "../../../helpers/Validations";
 import Button from "../../../components/inputs/Button";
 import {
   setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import { AppDispatch, RootState } from "../../../states/store";
@@ -47,6 +48,7 @@ const SeniorManagement = ({
     null
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -644,6 +646,17 @@ const SeniorManagement = ({
                 );
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value="Continue"
               primary

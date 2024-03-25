@@ -4,13 +4,14 @@ import ApplicatinsList from "../../components/registrations-list/ApplicationsLis
 import UserLayout from "../../containers/UserLayout";
 import { setIsAmending } from "../../states/features/amendmentSlice";
 import { formatCompanyData } from "../../helpers/Strings";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 
 const AmendCompanyDetails = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
+  const dispatch = useDispatch();
 
   const sortBySubmissionDate = (a, b) => {
     return (
@@ -28,7 +29,7 @@ const AmendCompanyDetails = () => {
     .sort(sortBySubmissionDate);
 
   const handleClickAction = () => {
-    setIsAmending(true);
+    dispatch(setIsAmending(true));
   };
   return (
     <UserLayout>

@@ -62,6 +62,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
     data: null,
   });
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -644,6 +645,17 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 dispatch(setBusinessActiveTab("general_information"));
               }}
             />
+            {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
               value="Continue"
               primary

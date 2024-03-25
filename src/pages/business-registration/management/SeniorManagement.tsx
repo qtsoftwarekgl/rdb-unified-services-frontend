@@ -9,10 +9,11 @@ import { countriesList } from "../../../constants/countries";
 import Button from "../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
+  setBusinessActiveTab,
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
-import { AppDispatch } from "../../../states/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
@@ -61,6 +62,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     data: null,
   });
 
+  const {isAmending} = useSelector((state: RootState) => state.amendment);
+  
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
     if (watch("document_type") === "passport") {
@@ -643,6 +646,17 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               dispatch(setBusinessActiveStep("board_of_directors"));
             }}
           />
+          {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
           <Button
             value="Continue"
             primary

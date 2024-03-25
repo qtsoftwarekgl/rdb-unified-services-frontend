@@ -4,8 +4,8 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
-import { AppDispatch } from "../../../states/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -50,6 +50,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // TABLE HEADERS
   const tableHeaders = [
@@ -304,6 +305,17 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               dispatch(setBusinessActiveTab("management"));
             }}
           />
+          {isAmending && (
+              <Button
+                value={"Complete Amendment"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setBusinessActiveTab("preview_submission")
+                  );
+                }}
+              />
+            )}
           <Button
             value={isLoading ? <Loader /> : "Continue"}
             primary
