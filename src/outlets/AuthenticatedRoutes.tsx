@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
-import { RootState } from "../states/store";
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet } from 'react-router-dom';
+import { RootState } from '../states/store';
 
 const AuthenticatedRoutes = () => {
   // STATE VARIABLES
@@ -9,6 +9,7 @@ const AuthenticatedRoutes = () => {
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" />;
   }
+
   return <Outlet />;
 };
 

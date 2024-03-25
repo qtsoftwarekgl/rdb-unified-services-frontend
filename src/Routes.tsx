@@ -51,6 +51,7 @@ import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
 import CloseCompany from "./pages/company-closure/CloseCompany";
 import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
 import ReviewRegistration from "./pages/review-registration/ReviewRegistration";
+import LandingPage from "./pages/home/LandingPage";
 
 const Routes = () => {
   return (
@@ -67,6 +68,7 @@ const Routes = () => {
          * PUBLIC ROUTES
          */}
         <Route path="/services" element={<Home />} />
+        <Route path="/" element={<LandingPage />} />
         <Route element={<AuthenticatedRoutes />}>
           {/* USER PROFILE */}
           <Route path="/user-profile" element={<UserProfile />} />

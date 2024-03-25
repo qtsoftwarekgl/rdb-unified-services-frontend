@@ -1,7 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
 import Modal from '../../components/Modal';
-import { setDeleteRoleModal, setRolesList } from '../../states/features/roleSlice';
+import {
+  setDeleteRoleModal,
+  setRolesList,
+} from '../../states/features/roleSlice';
 import Button from '../../components/inputs/Button';
 import { useState } from 'react';
 import Loader from '../../components/Loader';
@@ -14,7 +17,7 @@ const DeleteRole = () => {
   );
   const [isLoading, setIsLoading] = useState({
     status: false,
-    activity: 'delete'
+    activity: 'delete',
   });
 
   return (
@@ -39,22 +42,37 @@ const DeleteRole = () => {
           </p>
           <Button
             value={
-              isLoading?.status && isLoading?.activity === 'deactivate' ? <Loader color="red-600" /> : `Disabled ${role?.name}`
+              isLoading?.status && isLoading?.activity === 'deactivate' ? (
+                <Loader />
+              ) : (
+                `Disable ${role?.name}`
+              )
             }
-            className="mx-auto !px-2 !py-2 !bg-red-600 !text-white !text-[13px] !cursor-pointer"
+            primary
+            className="!w-fit mx-auto"
             onClick={(e) => {
               e.preventDefault();
               setIsLoading({
                 status: true,
-                activity: 'deactivate'
+                activity: 'deactivate',
               });
               setTimeout(() => {
                 dispatch(
-                  setRolesList(rolesList?.filter((r) => r?.id !== role?.id))
+                  setRolesList(
+                    rolesList?.map((r) => {
+                      if (r?.id === role?.id) {
+                        return {
+                          ...r,
+                          status: 'inactive',
+                        };
+                      }
+                      return r;
+                    })
+                  )
                 );
                 setIsLoading({
-                    status: false,
-                    activity: 'delete'
+                  status: false,
+                  activity: 'delete',
                 });
                 dispatch(setDeleteRoleModal(false));
               }, 1000);
@@ -75,22 +93,28 @@ const DeleteRole = () => {
             }}
           />
           <Button
-            value={isLoading?.status && isLoading?.activity === 'delete' ? <Loader color="red-600" /> : 'Delete'}
+            value={
+              isLoading?.status && isLoading?.activity === 'delete' ? (
+                <Loader color="red-600" />
+              ) : (
+                'Delete'
+              )
+            }
             primary
             danger
             onClick={(e) => {
               e.preventDefault();
               setIsLoading({
                 status: true,
-                activity: 'delete'
+                activity: 'delete',
               });
               setTimeout(() => {
                 dispatch(
                   setRolesList(rolesList?.filter((r) => r?.id !== role?.id))
                 );
                 setIsLoading({
-                    status: false,
-                    activity: ''
+                  status: false,
+                  activity: '',
                 });
                 dispatch(setDeleteRoleModal(false));
               }, 1000);

@@ -4,7 +4,7 @@ import AdminLayout from '../../containers/AdminLayout';
 import { faCirclePlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Table from '../../components/table/Table';
 import { roles } from '../../constants/dashboard';
-import { formatDate } from '../../helpers/Strings';
+import { capitalizeString, formatDate } from '../../helpers/Strings';
 import AddRole from './AddRole';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -62,6 +62,27 @@ const ListRoles = () => {
               dispatch(setRolePermissionsModal(true));
             }}
           />
+        );
+      },
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status',
+      filter: true,
+      cell: ({ row }) => {
+        const status = row?.original?.status;
+        return (
+          <p
+            className={`${
+              status === 'Active'
+                ? 'bg-green-600'
+                : status === 'Inactive'
+                ? 'bg-red-600'
+                : null
+            } text-white text-center rounded-md text-[14px]`}
+          >
+            {row?.original?.status}
+          </p>
         );
       },
     },
@@ -130,6 +151,7 @@ const ListRoles = () => {
                 ...role,
                 no: index + 1,
                 created_at: formatDate(role?.created_at),
+                status: capitalizeString(role?.status) || 'Active',
               };
             })}
             columns={columns}
