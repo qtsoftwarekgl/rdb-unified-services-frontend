@@ -42,8 +42,8 @@ const Home = () => {
 
   return (
     <main className="relative">
-      {isAuthenticated ? <Navbar className="!w-full !left-0 " /> : <HomeNav />}
-      <section className="w-full h-full ">
+      <Navbar className="!w-full !left-0 !px-12" />
+      <section className="absolute w-full h-full top-[2vh]">
         <section className="flex flex-col items-center justify-center w-full gap-8 py-32 bg-primary">
           <div>
             <h1 className="text-5xl font-bold leading-tight text-center text-white">
