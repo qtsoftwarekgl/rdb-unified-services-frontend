@@ -160,9 +160,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                         });
                         setTimeout(() => {
-                          const randomNumber = Math.floor(Math.random() * 10);
-                          if (randomNumber < 7) {
-                            setValue("name", searchCompany.name);
+                          if (field?.value?.toLowerCase() === 'xyz') {
+                            setValue('name', searchCompany.name);
                             setSearchCompany({
                               ...searchCompany,
                               loading: false,
@@ -206,7 +205,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       <p
                         className={`${
                           searchCompany.success ? "flex" : "hidden"
-                        } text-[12px] items-center gap-2 text-secondary`}
+                        } text-[12px] items-center gap-2 text-green-600`}
                       >
                         {searchCompany.name} is available{" "}
                         <span className="w-fit">

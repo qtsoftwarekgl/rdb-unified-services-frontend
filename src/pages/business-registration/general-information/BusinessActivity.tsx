@@ -62,20 +62,19 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
+    // CHECK IF BUSINESS LINES ARE SELECTED
+    if (company_business_lines?.length === 0) {
+      setIsLoading(false);
+      setError('business_lines', {
+        type: 'manual',
+        message: 'Select at least one business line',
+      });
+      return;
+    }
     setIsLoading(true);
+    clearErrors('business_lines');
+
     setTimeout(() => {
-      // CHECK IF BUSINESS LINES ARE SELECTED
-      if (company_business_lines?.length === 0) {
-        setIsLoading(false);
-        setError("business_lines", {
-          type: "manual",
-          message: "Select at least one business line",
-        });
-        return;
-      }
-
-      clearErrors("business_lines");
-
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setUserApplications({
@@ -93,13 +92,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep("business_activity_vat"));
+      dispatch(setBusinessCompletedStep('business_activity_vat'));
 
       // SET CURRENT TAB AS COMPLETED
-      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setBusinessActiveTab('general_information'));
 
       // SET THE NEXT TAB AS ACTIVE
-      dispatch(setBusinessActiveTab("management"));
+      dispatch(setBusinessActiveTab('management'));
 
       setIsLoading(false);
     }, 1000);

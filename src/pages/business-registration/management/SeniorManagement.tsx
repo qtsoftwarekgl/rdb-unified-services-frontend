@@ -1,24 +1,25 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
-import Loader from "../../../components/Loader";
-import Input from "../../../components/inputs/Input";
-import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData } from "../../../constants/authentication";
-import { countriesList } from "../../../constants/countries";
-import Button from "../../../components/inputs/Button";
+import { FC, useEffect, useRef, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
+import Loader from '../../../components/Loader';
+import Input from '../../../components/inputs/Input';
+import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
+import { userData } from '../../../constants/authentication';
+import { countriesList } from '../../../constants/countries';
+import Button from '../../../components/inputs/Button';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import Table from "../../../components/table/Table";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { capitalizeString } from "../../../helpers/Strings";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
+} from '../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import Table from '../../../components/table/Table';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { capitalizeString } from '../../../helpers/Strings';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { validNationalID } from '../../../constants/Users';
 
 export interface business_senior_management {
   first_name: string;
@@ -47,7 +48,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     setValue,
     clearErrors,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm();
 
   // STATE VARIABLES
@@ -61,32 +62,33 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     error: false,
     data: null,
   });
+  const positionRef = useRef<unknown>();
 
-  const {isAmending} = useSelector((state: RootState) => state.amendment);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
   
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch("document_type") === "passport") {
-      setValue("country", "");
-      setValue("phone", "");
-      setValue("street_name", "");
-      setValue("first_name", "");
-      setValue("middle_name", "");
-      setValue("last_name", "");
+    if (watch('document_type') === 'passport') {
+      setValue('country', '');
+      setValue('phone', '');
+      setValue('street_name', '');
+      setValue('first_name', '');
+      setValue('middle_name', '');
+      setValue('last_name', '');
     }
-  }, [setValue, watch("document_type")]);
+  }, [setValue, watch('document_type')]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      clearErrors("submit");
+      clearErrors('submit');
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: "management",
-          active_step: "employment_info",
+          active_tab: 'management',
+          active_step: 'employment_info',
           senior_management: [
             {
               ...data,
@@ -101,30 +103,30 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         loading: false,
         error: false,
       });
-      setValue("attachment", null);
+      setValue('attachment', null);
+      reset();
+      if (positionRef?.current) {
+        positionRef.current?.clearValue();
+        setValue('position', '');
+        setValue('document_type', '');
+      }
     }, 1000);
     return data;
   };
 
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
-
   // TABLE COLUMNS
   const columns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Position",
-      accessorKey: "position",
+      header: 'Position',
+      accessorKey: 'position',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -175,20 +177,20 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             render={({ field }) => {
               const options = [
                 {
-                  value: "md/gm",
-                  label: "MD / GM",
+                  value: 'md/gm',
+                  label: 'MD / GM',
                 },
                 {
-                  value: "secretary",
-                  label: "Secretary",
+                  value: 'secretary',
+                  label: 'Secretary',
                 },
                 {
-                  value: "accountant",
-                  label: "Accountant",
+                  value: 'accountant',
+                  label: 'Accountant',
                 },
                 {
-                  value: "auditor",
-                  label: "Auditor",
+                  value: 'auditor',
+                  label: 'Auditor',
                 },
               ];
               return (
@@ -196,6 +198,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   <Select
                     label="Select position"
                     required
+                    ref={positionRef}
                     options={options}
                     onChange={(e) => {
                       field.onChange(e?.value);
@@ -210,20 +213,24 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               );
             }}
           />
-          <ul className="flex items-start w-full gap-6">
+          <ul
+            className={`${
+              watch('position') ? 'flex' : 'hidden'
+            } items-start w-full gap-6`}
+          >
             <Controller
               name="document_type"
-              rules={{ required: "Select document type" }}
+              rules={{ required: 'Select document type' }}
               control={control}
               render={({ field }) => {
                 const options = [
-                  { value: "nid", label: "National ID" },
-                  { label: "Passport", value: "passport" },
+                  { value: 'nid', label: 'National ID' },
+                  { label: 'Passport', value: 'passport' },
                 ];
                 return (
                   <label
                     className={`flex flex-col gap-1 w-full items-start ${
-                      watch("document_type") !== "nid" && "!w-[49%]"
+                      watch('document_type') !== 'nid' && '!w-[49%]'
                     }`}
                   >
                     <Select
@@ -238,13 +245,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 );
               }}
             />
-            {watch("document_type") === "nid" && (
+            {watch('document_type') === 'nid' && (
               <Controller
                 control={control}
                 name="document_no"
                 rules={{
-                  required: watch("document_type")
-                    ? "Document number is required"
+                  required: watch('document_type')
+                    ? 'Document number is required'
                     : false,
                 }}
                 render={({ field }) => {
@@ -256,9 +263,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         suffixIconHandler={async (e) => {
                           e.preventDefault();
                           if (!field.value) {
-                            setError("document_no", {
-                              type: "manual",
-                              message: "Document number is required",
+                            setError('document_no', {
+                              type: 'manual',
+                              message: 'Document number is required',
                             });
                             return;
                           }
@@ -268,10 +275,12 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                             error: false,
                           });
                           setTimeout(() => {
-                            const randomNumber = Math.floor(Math.random() * 16);
+                            const randomNumber = Math.floor(Math.random() * 10);
                             const userDetails = userData[randomNumber];
 
-                            if (!userDetails) {
+                            if (
+                              String(field?.value) !== String(validNationalID)
+                            ) {
                               setSearchMember({
                                 ...searchMember,
                                 data: null,
@@ -287,11 +296,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                                 loading: false,
                                 error: false,
                               });
-                              setValue("first_name", userDetails?.first_name);
-                              setValue("middle_name", userDetails?.middle_name);
-                              setValue("last_name", userDetails?.last_name);
-                              setValue("gender", userDetails?.data?.gender);
-                              setValue("phone", userDetails?.data?.phone);
+                              setValue('first_name', userDetails?.first_name);
+                              setValue('middle_name', userDetails?.middle_name);
+                              setValue('last_name', userDetails?.last_name);
+                              setValue('gender', userDetails?.data?.gender);
+                              setValue('phone', userDetails?.data?.phone);
                             }
                           }, 700);
                         }}
@@ -300,7 +309,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         placeholder="1 XXXX X XXXXXXX X XX"
                         onChange={async (e) => {
                           field.onChange(e);
-                          await trigger("document_no");
+                          await trigger('document_no');
                         }}
                       />
                       {searchMember?.loading &&
@@ -329,23 +338,23 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         </menu>
         <section
           className={`${
-            (watch("document_type") === "nid" && searchMember?.data) ||
-            watch("document_type") === "passport"
-              ? "flex"
-              : "hidden"
+            (watch('document_type') === 'nid' && searchMember?.data) ||
+            watch('document_type') === 'passport'
+              ? 'flex'
+              : 'hidden'
           } flex-wrap gap-4 items-start justify-between w-full`}
         >
           <Controller
             name="first_name"
             control={control}
             defaultValue={searchMember?.data?.first_name}
-            rules={{ required: "First name is required" }}
+            rules={{ required: 'First name is required' }}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
                     required
-                    readOnly={watch("document_type") === "nid"}
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.first_name}
                     placeholder="First name"
                     label="First name"
@@ -368,7 +377,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
-                    readOnly={watch("document_type") === "nid"}
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.data?.middle_name}
                     placeholder="Middle name"
                     label="Middle name"
@@ -386,7 +395,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               return (
                 <label className="w-[49%] flex flex-col gap-1 items-start">
                   <Input
-                    readOnly={watch("document_type") === "nid"}
+                    readOnly={watch('document_type') === 'nid'}
                     defaultValue={searchMember?.last_name}
                     placeholder="Last name"
                     label="Last name"
@@ -402,7 +411,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             defaultValue={searchMember?.data?.gender}
             rules={{
               required:
-                watch("document_type") === "passport" ? "Select gender" : false,
+                watch('document_type') === 'passport' ? 'Select gender' : false,
             }}
             render={({ field }) => {
               return (
@@ -410,9 +419,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   <p className="flex items-center gap-1 text-[15px]">
                     Gender<span className="text-red-500">*</span>
                   </p>
-                  {watch("document_type") === "nid" ? (
+                  {watch('document_type') === 'nid' ? (
                     <p className="px-2 py-1 rounded-md bg-background">
-                      {searchMember?.data?.gender || watch("gender")}
+                      {searchMember?.data?.gender || watch('gender')}
                     </p>
                   ) : (
                     <menu className="flex items-center gap-4 mt-2">
@@ -423,7 +432,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         onChange={(e) => {
                           field.onChange(e.target.value);
                           if (e.target.checked) {
-                            setValue("gender", "Male");
+                            setValue('gender', 'Male');
                           }
                         }}
                       />
@@ -434,7 +443,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         onChange={(e) => {
                           field.onChange(e.target.value);
                           if (e.target.checked) {
-                            setValue("gender", "Female");
+                            setValue('gender', 'Female');
                           }
                         }}
                       />
@@ -455,12 +464,12 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             control={control}
             defaultValue={userData?.[0]?.phone}
             rules={{
-              required: "Phone number is required",
+              required: 'Phone number is required',
             }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col w-[49%] gap-1">
-                  {watch("document_type") === "passport" ? (
+                  {watch('document_type') === 'passport' ? (
                     <Input
                       label="Phone number"
                       required
@@ -496,11 +505,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               );
             }}
           />
-          {watch("document_type") !== "nid" ? (
+          {watch('document_type') !== 'nid' ? (
             <Controller
               name="country"
               control={control}
-              rules={{ required: "Nationality is required" }}
+              rules={{ required: 'Nationality is required' }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -546,18 +555,18 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           )}
           <menu
             className={`${
-              watch("document_type") === "passport" ? "flex" : "hidden"
+              watch('document_type') === 'passport' ? 'flex' : 'hidden'
             } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
           >
             <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-              Attachment <span className="text-red-600">*</span>
+              Passport <span className="text-red-600">*</span>
             </h3>
             <Controller
               name="attachment"
               rules={{
                 required:
-                  watch("document_type") === "passport"
-                    ? "Document attachment is required"
+                  watch('document_type') === 'passport'
+                    ? 'Passport is required'
                     : false,
               }}
               control={control}
@@ -572,7 +581,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
-                          setValue("attachment", e?.target?.files?.[0]?.name);
+                          setValue('attachment', e?.target?.files?.[0]?.name);
+                          clearErrors('attachment');
                         }}
                       />
                       {attachmentFile && (
@@ -584,7 +594,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                             onClick={(e) => {
                               e.preventDefault();
                               setAttachmentFile(null);
-                              setValue("attachment", null);
+                              setValue('attachment', null);
+                              setError('attachment', {
+                                type: 'manual',
+                                message: 'Passport is required',
+                              });
                             }}
                           />
                         </p>
@@ -603,7 +617,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         </section>
         <section className="flex items-center justify-end w-full">
           <Button
-            value={isLoading ? <Loader /> : "Add position"}
+            value={isLoading ? <Loader /> : 'Add position'}
             submit
             primary
           />
@@ -616,9 +630,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     return {
                       ...member,
                       no: index + 1,
-                      name: `${member?.first_name || ""} ${
-                        member?.middle_name || ""
-                      } ${member?.last_name || ""}`,
+                      name: `${member?.first_name || ''} ${
+                        member?.middle_name || ''
+                      } ${member?.last_name || ''}`,
                       position:
                         member?.position && capitalizeString(member?.position),
                     };
@@ -643,7 +657,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep("board_of_directors"));
+              dispatch(setBusinessActiveStep('board_of_directors'));
             }}
           />
           {isAmending && (
@@ -663,17 +677,17 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             onClick={(e) => {
               e.preventDefault();
               if (!senior_management?.length) {
-                setError("submit", {
-                  type: "manual",
-                  message: "Add at least one member",
+                setError('submit', {
+                  type: 'manual',
+                  message: 'Add at least one member',
                 });
                 setTimeout(() => {
-                  clearErrors("submit");
+                  clearErrors('submit');
                 }, 5000);
                 return;
               }
-              dispatch(setBusinessCompletedStep("senior_management"));
-              dispatch(setBusinessActiveStep("employment_info"));
+              dispatch(setBusinessCompletedStep('senior_management'));
+              dispatch(setBusinessActiveStep('employment_info'));
             }}
           />
         </menu>
