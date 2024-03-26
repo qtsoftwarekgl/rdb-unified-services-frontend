@@ -1237,3 +1237,5 @@ export const columns = [
 ];
 
 export const validNationalID = '1120001111111111';
+
+export const RDBAdminEmailPattern = /(info@rdb|infoapprover@rdb|infoverifier@rdb).*?/;

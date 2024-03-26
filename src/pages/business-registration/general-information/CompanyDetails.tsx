@@ -20,6 +20,7 @@ import {
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_company_details {
   name: string;
@@ -57,20 +58,21 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     error: false,
     success: false,
     loading: false,
-    name: "",
+    name: '',
   });
   const [companyTypesOptions, setCompanyTypesOptions] = useState(companyTypes);
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   useEffect(() => {
-    if (watch("category") === "public") {
+    if (watch('category') === 'public') {
       setCompanyTypesOptions(companyTypes);
-    } else if (watch("category") === "private") {
+    } else if (watch('category') === 'private') {
       setCompanyTypesOptions(privateCompanyTypes);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("category")]);
+  }, [watch('category')]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -114,6 +116,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     }
   }, [company_details, setValue]);
 
+
   if (!isOpen) return null;
 
   return (
@@ -121,14 +124,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={disableForm}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller
               name="name"
               control={control}
-              defaultValue={company_details?.name || watch("name")}
-              rules={{ required: "Company name is required" }}
+              defaultValue={company_details?.name || watch('name')}
+              rules={{ required: 'Company name is required' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
@@ -181,12 +184,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     />
                     <menu
                       className={`flex flex-col gap-1 w-full my-1 ${
-                        !Object.values(searchCompany).includes(true) && "hidden"
+                        !Object.values(searchCompany).includes(true) && 'hidden'
                       }`}
                     >
                       <article
                         className={`${
-                          searchCompany.loading ? "flex" : "hidden"
+                          searchCompany.loading ? 'flex' : 'hidden'
                         } text-[12px] items-center`}
                       >
                         <Loader size={4} /> Checking if "{searchCompany.name}"
@@ -195,8 +198,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       <p
                         className={`${
                           searchCompany.error && searchCompany?.name
-                            ? "flex"
-                            : "hidden"
+                            ? 'flex'
+                            : 'hidden'
                         } text-[12px] items-center text-red-500 gap-2`}
                       >
                         {searchCompany.name} is already taken. Please try
@@ -204,10 +207,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       </p>
                       <p
                         className={`${
-                          searchCompany.success ? "flex" : "hidden"
+                          searchCompany.success ? 'flex' : 'hidden'
                         } text-[12px] items-center gap-2 text-green-600`}
                       >
-                        {searchCompany.name} is available{" "}
+                        {searchCompany.name} is available{' '}
                         <span className="w-fit">
                           <FontAwesomeIcon
                             icon={faCheck}
@@ -233,10 +236,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   (category) => category?.value === company_details?.category
                 ) ||
                 companyCategories?.[0]?.value ||
-                watch("category") ||
+                watch('category') ||
                 company_details?.category
               }
-              rules={{ required: "Select company category" }}
+              rules={{ required: 'Select company category' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -279,10 +282,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   (type) => type?.value === company_details?.type
                 ) ||
                 companyTypesOptions?.[0] ||
-                watch("type") ||
+                watch('type') ||
                 company_details?.type
               }
-              rules={{ required: "Select company type" }}
+              rules={{ required: 'Select company type' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -322,9 +325,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   (position) => position?.value === company_details?.position
                 ) ||
                 company_details?.position ||
-                watch("position")
+                watch('position')
               }
-              rules={{ required: "Select your position" }}
+              rules={{ required: 'Select your position' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -361,7 +364,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="articles_of_association"
-              rules={{ required: "Select one of the choices provided" }}
+              rules={{ required: 'Select one of the choices provided' }}
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
@@ -369,15 +372,15 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       type="radio"
                       label="Yes"
                       checked={
-                        ((watch("articles_of_association") ||
+                        ((watch('articles_of_association') ||
                           company_details?.articles_of_association) &&
-                          watch("articles_of_association") === "yes") ||
-                        company_details?.articles_of_association === "yes"
+                          watch('articles_of_association') === 'yes') ||
+                        company_details?.articles_of_association === 'yes'
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
                           field.onChange(e?.target?.value);
-                          setValue("articles_of_association", "yes");
+                          setValue('articles_of_association', 'yes');
                         }
                       }}
                       name={field?.name}
@@ -386,16 +389,16 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       type="radio"
                       label="No"
                       checked={
-                        ((watch("articles_of_association") ||
+                        ((watch('articles_of_association') ||
                           company_details?.articles_of_association) &&
-                          watch("articles_of_association") === "no") ||
-                        company_details?.articles_of_association === "no"
+                          watch('articles_of_association') === 'no') ||
+                        company_details?.articles_of_association === 'no'
                       }
                       name={field?.name}
                       onChange={(e) => {
                         if (e.target.checked) {
                           field.onChange(e?.target?.value);
-                          setValue("articles_of_association", "no");
+                          setValue('articles_of_association', 'no');
                         }
                       }}
                     />
@@ -415,17 +418,15 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Button value="Back" route="/business-registration/new" />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
+                  dispatch(setBusinessActiveTab('preview_submission'));
                 }}
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading ? <Loader /> : 'Continue'}
               primary={!searchCompany?.error}
               disabled={searchCompany?.error}
               submit
