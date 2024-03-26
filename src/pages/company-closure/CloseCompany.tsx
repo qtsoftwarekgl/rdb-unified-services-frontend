@@ -159,7 +159,6 @@ const CloseCompany = () => {
             />
             <Controller
               name="dissolution_reason"
-              rules={{ required: 'Dissolution reason is required' }}
               control={control}
               render={({ field }) => {
                 return (
@@ -171,11 +170,6 @@ const CloseCompany = () => {
                         field.onChange(e?.value);
                       }}
                     />
-                    {errors?.dissolution_reason && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.dissolution_reason.message)}
-                      </p>
-                    )}
                   </label>
                 );
               }}
