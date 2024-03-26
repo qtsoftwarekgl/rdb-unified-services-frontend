@@ -6,9 +6,7 @@ import Input from '../../../components/inputs/Input';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../states/store';
 import Button from '../../../components/inputs/Button';
-import {
-  setCapitalDetailsModal,
-} from '../../../states/features/businessRegistrationSlice';
+import { setCapitalDetailsModal } from '../../../states/features/businessRegistrationSlice';
 import Loader from '../../../components/Loader';
 import { capitalizeString } from '../../../helpers/Strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
@@ -72,7 +70,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
         setUserApplications({
           entry_id,
           capital_details: capital_details?.map((capital) => {
-            if (capital?.no === shareholder?.no) {
+            if (capital?.shareholder_id === shareholder?.shareholder_id) {
               return {
                 ...capital,
                 shares: {
@@ -104,9 +102,10 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
               );
               return {
                 ...newShare,
-                remaining_shares: Number(
-                  data?.[`${row.name}_remaining_shares`]
-                ),
+                remaining_shares:
+                  Number(data?.[`${row.name}_remaining_shares`]) >= 0
+                    ? Number(data?.[`${row.name}_remaining_shares`])
+                    : newShare?.remaining_shares,
               };
             }),
           },
@@ -236,7 +235,8 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
       <h1 className="text-center uppercase font-semibold">
         Capital details for{' '}
         <span className="text-primary">
-          {shareholder?.first_name || ''} {shareholder?.last_name || ''}
+          {shareholder?.first_name || shareholder?.company_name || ''}{' '}
+          {shareholder?.last_name || ''}
         </span>
       </h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -248,7 +248,9 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                   key={index}
                   className="flex flex-row gap-3 w-full font-medium p-3 text-center uppercase"
                 >
-                  <th className="font-medium text-center">{header}</th>
+                  <th className="font-medium text-center text-primary">
+                    {header}
+                  </th>
                 </tr>
               );
             })}
@@ -293,13 +295,18 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                       type="number"
                       readOnly={total_shares && share_value ? false : true}
                       defaultValue={
-                        (shareholder?.shares &&
-                          Number(shareholder?.shares?.[row?.name]))}
+                        shareholder?.shares &&
+                        Number(shareholder?.shares?.[row?.name])
+                      }
                       onChange={(e) => {
                         const remainingShares =
                           (share_details?.shares?.find(
                             (share) => share?.name === row?.name
-                          )?.remaining_shares ?? 0) - Number(e.target.value);
+                          )?.remaining_shares ?? 0) -
+                          Number(e.target.value) +
+                          (shareholder?.shares[row?.name]
+                            ? Number(shareholder?.shares[row?.name])
+                            : 0);
                         if (remainingShares < 0) {
                           setError(`share_no_${index}`, {
                             type: 'manual',

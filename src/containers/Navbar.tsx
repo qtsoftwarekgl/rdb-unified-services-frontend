@@ -1,7 +1,7 @@
-import { useLocation } from "react-router";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
-import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell, faUser } from '@fortawesome/free-regular-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   faChevronDown,
   faChevronUp,
@@ -51,25 +51,25 @@ const Navbar = ({ className }: Props) => {
   };
   const userCommentsCount = countCommentsForUsers();
 
-  if (["auth/login", "auth/register"].includes(pathname)) {
+  if (['auth/login', 'auth/register'].includes(pathname)) {
     return null;
   }
 
   // NAV DROPDOWN
   const navDropdown = [
     {
-      title: "Profile",
-      link: "/user-profile",
+      title: 'Profile',
+      link: '/user-profile',
       icon: faUser,
     },
     {
-      title: "Notifications",
-      link: "/notifications",
+      title: 'Notifications',
+      link: '/notifications',
       icon: faBell,
     },
     {
-      title: "Logout",
-      link: "/auth/login",
+      title: 'Logout',
+      link: '/auth/login',
       icon: faRightFromBracket,
     },
   ];
@@ -140,7 +140,7 @@ const Navbar = ({ className }: Props) => {
                 Christella
               </h1>
               <p className="text-[12px] text-gray-500">
-                {user?.email?.toLowerCase() || "christella@qtglobal.rw"}
+                {user?.email?.toLowerCase() || 'christella@qtglobal.rw'}
               </p>
             </article>
 
@@ -156,7 +156,7 @@ const Navbar = ({ className }: Props) => {
             onChange={(e) => {
               dispatch(setLocale(e?.value));
             }}
-            defaultValue={locale || "en"}
+            defaultValue={locale || 'en'}
           >
             {languageIcons.map((language, index) => {
               return (
@@ -177,14 +177,14 @@ const Navbar = ({ className }: Props) => {
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (nav?.title === "Logout") sessionStorage.clear();
+                  if (nav?.title === 'Logout') sessionStorage.clear();
                   navigate(`${nav?.link}`);
                   setIsOpen(false);
                 }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
-                  ["Theme", "Notifications"].includes(nav?.title)
-                    ? "min-[450px]:hidden"
-                    : "flex"
+                  ['Theme', 'Notifications'].includes(nav?.title)
+                    ? 'min-[450px]:hidden'
+                    : 'flex'
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
@@ -207,7 +207,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
   return (
     <menu
       className={`${
-        isOpen ? "translate-y-0" : "translate-y-[-400px]"
+        isOpen ? 'translate-y-0' : 'translate-y-[-400px]'
       } ease-in-out duration-500 z-[10000] absolute top-[10vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}

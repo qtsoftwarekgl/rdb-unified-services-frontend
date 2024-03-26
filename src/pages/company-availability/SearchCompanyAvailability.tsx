@@ -40,7 +40,7 @@ const SearchCompanyAvailability = () => {
   return (
     <UserLayout>
       <section className="flex flex-col gap-4">
-        <menu className="px-8 py-3 text-white rounded-md max-sm:w-full w-72 bg-primary">
+        <menu className="px-8 py-3 text-white rounded-md max-sm:w-full w-fit bg-primary">
           Name Availability
         </menu>
         <section className="flex flex-col h-full gap-8 p-8 bg-white rounded-md shadow-sm">
@@ -81,7 +81,7 @@ const SearchCompanyAvailability = () => {
                                 setError("name", {
                                   type: "manual",
                                   message: `${watch(
-                                    "name"
+                                    'name'
                                   )} is not available. Try another name`,
                                 });
                                 setIsLoading({
@@ -90,7 +90,7 @@ const SearchCompanyAvailability = () => {
                                   success: false,
                                 });
                               } else {
-                                clearErrors("name");
+                                clearErrors('name');
 
                                 setIsLoading({
                                   submit: false,

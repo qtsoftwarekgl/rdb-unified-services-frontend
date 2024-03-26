@@ -21,6 +21,7 @@ import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_company_activities {
   vat: string;
@@ -59,23 +60,23 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   );
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
+    // CHECK IF BUSINESS LINES ARE SELECTED
+    if (company_business_lines?.length === 0) {
+      setIsLoading(false);
+      setError('business_lines', {
+        type: 'manual',
+        message: 'Select at least one business line',
+      });
+      return;
+    }
     setIsLoading(true);
+    clearErrors('business_lines');
+
     setTimeout(() => {
-      // CHECK IF BUSINESS LINES ARE SELECTED
-      if (company_business_lines?.length === 0) {
-        setIsLoading(false);
-        setError("business_lines", {
-          type: "manual",
-          message: "Select at least one business line",
-        });
-        return;
-      }
-
-      clearErrors("business_lines");
-
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setUserApplications({
@@ -93,13 +94,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep("business_activity_vat"));
+      dispatch(setBusinessCompletedStep('business_activity_vat'));
 
       // SET CURRENT TAB AS COMPLETED
-      dispatch(setBusinessActiveTab("general_information"));
+      dispatch(setBusinessActiveTab('general_information'));
 
       // SET THE NEXT TAB AS ACTIVE
-      dispatch(setBusinessActiveTab("management"));
+      dispatch(setBusinessActiveTab('management'));
 
       setIsLoading(false);
     }, 1000);
@@ -126,7 +127,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={disableForm}
         >
           <label className="flex flex-col gap-1 w-[50%] items-start">
             <Select
@@ -175,6 +176,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                             icon={faPlus}
                             onClick={(e) => {
                               e.preventDefault();
+                              if (disableForm) return;
                               if (company_business_lines?.length > 0) {
                                 dispatch(
                                   setCompanySubActivities([
@@ -228,6 +230,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                                 className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
                                 onClick={(e) => {
                                   e.preventDefault();
+                                  if (disableForm) return;
                                   dispatch(
                                     setCompanySubActivities(
                                       company_business_lines?.map(
@@ -255,6 +258,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                               className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
                               onClick={(e) => {
                                 e.preventDefault();
+                                if (disableForm) return;
                                 dispatch(
                                   setCompanySubActivities(
                                     company_business_lines?.map(
@@ -283,6 +287,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           icon={faMinus}
                           onClick={(e) => {
                             e.preventDefault();
+                            if (disableForm) return;
                             const updatedSubActivities =
                               company_business_lines?.filter(
                                 (subActivity: unknown) => {
