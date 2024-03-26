@@ -1,29 +1,30 @@
-import { FC, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
+import { FC, useRef, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
 import {
   ownerRelationships,
   personnelTypes,
-} from "../../../constants/businessRegistration";
-import Input from "../../../components/inputs/Input";
-import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData } from "../../../constants/authentication";
-import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/Validations";
-import { countriesList } from "../../../constants/countries";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../../components/inputs/Button";
-import Table from "../../../components/table/Table";
-import { capitalizeString } from "../../../helpers/Strings";
+} from '../../../constants/businessRegistration';
+import Input from '../../../components/inputs/Input';
+import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
+import { userData } from '../../../constants/authentication';
+import Loader from '../../../components/Loader';
+import validateInputs from '../../../helpers/Validations';
+import { countriesList } from '../../../constants/countries';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../../components/inputs/Button';
+import Table from '../../../components/table/Table';
+import { capitalizeString } from '../../../helpers/Strings';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
+} from '../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import moment from 'moment';
 
 export interface business_beneficial_owners {
   no: number;
@@ -68,6 +69,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
     error: false,
     data: null,
   });
+  const beneficialTypeRef = useRef();
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
@@ -83,31 +85,36 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           beneficial_owners: [{ ...data }, ...beneficial_owners],
         })
       );
+      reset();
+      if (beneficialTypeRef?.current) {
+        beneficialTypeRef.current.clearValue();
+        setValue('beneficial_type', null);
+        setValue('document_type', null);
+      }
     }, 1000);
-    reset();
   };
 
   // TABLE COLUMNS
   const columns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: 'Type',
+      accessorKey: 'type',
     },
     {
-      header: "Nature of ownership",
-      accessorKey: "ownership_type",
+      header: 'Nature of ownership',
+      accessorKey: 'ownership_type',
     },
     {
-      header: "Control type",
-      accessorKey: "control_type",
+      header: 'Control type',
+      accessorKey: 'control_type',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -149,7 +156,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={user?.email?.includes('info@rdb')}
         >
           <menu className="flex flex-col gap-3">
             <h3 className="text-lg font-medium uppercase">
@@ -157,12 +164,13 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             </h3>
             <Controller
               name="beneficial_type"
-              rules={{ required: "Select beneficial owner type" }}
+              rules={{ required: 'Select beneficial owner type' }}
               control={control}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
                     <Select
+                      ref={beneficialTypeRef}
                       label="Beneficial owner type"
                       required
                       options={personnelTypes}
@@ -181,20 +189,20 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             />
           </menu>
           <ul className={`w-full flex items-start gap-6`}>
-            {watch("beneficial_type") === "person" && (
+            {watch('beneficial_type') === 'person' && (
               <Controller
                 name="document_type"
-                rules={{ required: "Select document type" }}
+                rules={{ required: 'Select document type' }}
                 control={control}
                 render={({ field }) => {
                   const options = [
-                    { value: "nid", label: "National ID" },
-                    { label: "Passport", value: "passport" },
+                    { value: 'nid', label: 'National ID' },
+                    { label: 'Passport', value: 'passport' },
                   ];
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
-                        watch("document_type") !== "nid" && "!w-[49%]"
+                        watch('document_type') !== 'nid' && '!w-[49%]'
                       }`}
                     >
                       <Select
@@ -205,13 +213,18 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           field.onChange(e?.value);
                         }}
                       />
+                      {errors?.document_type && (
+                        <p className="text-red-600 text-[13px]">
+                          {String(errors?.document_type?.message)}
+                        </p>
+                      )}
                     </label>
                   );
                 }}
               />
             )}
-            {watch("beneficial_type") &&
-              watch("beneficial_type") !== "person" && (
+            {watch('beneficial_type') &&
+              watch('beneficial_type') !== 'person' && (
                 <Controller
                   name="company_code"
                   control={control}
@@ -226,9 +239,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError("company_code", {
-                                type: "manual",
-                                message: "Company code is required to search",
+                              setError('company_code', {
+                                type: 'manual',
+                                message: 'Company code is required to search',
                               });
                               return;
                             }
@@ -260,9 +273,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                                   loading: false,
                                   error: false,
                                 });
-                                setValue("email", userDetails?.email);
-                                setValue("gender", userDetails?.data?.gender);
-                                setValue("phone", userDetails?.data?.phone);
+                                setValue('email', userDetails?.email);
+                                setValue('gender', userDetails?.data?.gender);
+                                setValue('phone', userDetails?.data?.phone);
                               }
                             }, 700);
                           }}
@@ -288,14 +301,14 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   }}
                 />
               )}
-            {watch("document_type") === "nid" &&
-              watch("beneficial_type") === "person" && (
+            {watch('document_type') === 'nid' &&
+              watch('beneficial_type') === 'person' && (
                 <Controller
                   control={control}
                   name="document_no"
                   rules={{
-                    required: watch("document_type")
-                      ? "Document number is required"
+                    required: watch('document_type')
+                      ? 'Document number is required'
                       : false,
                   }}
                   render={({ field }) => {
@@ -307,9 +320,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "Document number is required",
+                              setError('document_no', {
+                                type: 'manual',
+                                message: 'Document number is required',
                               });
                               return;
                             }
@@ -341,14 +354,14 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                                   loading: false,
                                   error: false,
                                 });
-                                setValue("first_name", userDetails?.first_name);
+                                setValue('first_name', userDetails?.first_name);
                                 setValue(
-                                  "middle_name",
+                                  'middle_name',
                                   userDetails?.middle_name
                                 );
-                                setValue("last_name", userDetails?.last_name);
-                                setValue("gender", userDetails?.data?.gender);
-                                setValue("phone", userDetails?.data?.phone);
+                                setValue('last_name', userDetails?.last_name);
+                                setValue('gender', userDetails?.data?.gender);
+                                setValue('phone', userDetails?.data?.phone);
                               }
                             }, 700);
                           }}
@@ -357,7 +370,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           placeholder="1 XXXX X XXXXXXX X XX"
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger("document_no");
+                            await trigger('document_no');
                           }}
                         />
                         {searchMember?.loading &&
@@ -385,12 +398,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           </ul>
           <section
             className={`${
-              (watch("document_type") === "nid" && searchMember?.data) ||
-              watch("document_type") === "passport"
-                ? "flex"
-                : "hidden"
+              (watch('document_type') === 'nid' && searchMember?.data) ||
+              watch('document_type') === 'passport'
+                ? 'flex'
+                : 'hidden'
             } ${
-              watch("beneficial_type") !== "person" && "hidden"
+              watch('beneficial_type') !== 'person' && 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -399,8 +412,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.first_name}
               rules={{
                 required:
-                  watch("beneficial_type") === "person" &&
-                  "First name is required",
+                  watch('beneficial_type') === 'person' &&
+                  'First name is required',
               }}
               render={({ field }) => {
                 return (
@@ -461,7 +474,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch("beneficial_type") === "person" && "Select gender",
+                  watch('document_type') === 'passport'
+                    ? 'Select gender'
+                    : false,
               }}
               render={({ field }) => {
                 return (
@@ -469,10 +484,37 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    <menu className="flex items-center gap-4 mt-2">
-                      <Input type="radio" label="Male" {...field} />
-                      <Input type="radio" label="Female" {...field} />
-                    </menu>
+                    {watch('document_type') === 'nid' ? (
+                      <p className="px-2 py-1 rounded-md bg-background">
+                        {searchMember?.data?.gender || watch('gender')}
+                      </p>
+                    ) : (
+                      <menu className="flex items-center gap-4 mt-2">
+                        <Input
+                          type="radio"
+                          label="Male"
+                          name={field?.name}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            if (e.target.checked) {
+                              setValue('gender', 'Male');
+                            }
+                          }}
+                        />
+                        <Input
+                          type="radio"
+                          label="Female"
+                          name={field?.name}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            if (e.target.checked) {
+                              setValue('gender', 'Female');
+                            }
+                          }}
+                        />
+                      </menu>
+                    )}
+
                     {errors?.gender && (
                       <span className="text-red-500 text-[13px]">
                         {String(errors?.gender?.message)}
@@ -487,12 +529,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("beneficial_type") === "person" &&
-                  watch("document_type") === "passport" &&
-                  "Nationality is required",
+                  watch('beneficial_type') === 'person' &&
+                  watch('document_type') === 'passport' &&
+                  'Nationality is required',
               }}
               render={({ field }) => {
-                if (watch("document_type") === "nid") return undefined;
+                if (watch('document_type') === 'nid') return undefined;
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Select
@@ -537,37 +579,40 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             <Controller
               name="phone"
               control={control}
-              defaultValue={searchMember?.data?.phone}
+              defaultValue={userData?.[0]?.phone}
               rules={{
-                required:
-                  watch("beneficial_type") === "person" &&
-                  "Phone number is required",
-                validate: (value) => {
-                  if (
-                    watch("beneficial_type") === "person" &&
-                    watch("document_type") === "nid"
-                  ) {
-                    return (
-                      validateInputs(value, "tel") || "Invalid phone number"
-                    );
-                  } else {
-                    return true;
-                  }
-                },
+                required: 'Phone number is required',
               }}
               render={({ field }) => {
                 return (
-                  <label className="flex flex-col gap-1 w-[49%]">
-                    <Input
-                      label="Phone number"
-                      placeholder="07XX XXX XXX"
-                      required
-                      type={
-                        watch("document_type") === "passport" ? "tel" : "text"
-                      }
-                      defaultValue={searchMember?.data?.phone}
-                      {...field}
-                    />
+                  <label className="flex flex-col w-[49%] gap-1">
+                    {watch('document_type') === 'passport' ? (
+                      <Input
+                        label="Phone number"
+                        required
+                        type="tel"
+                        {...field}
+                      />
+                    ) : (
+                      <Select
+                        label="Phone number"
+                        required
+                        defaultValue={{
+                          label: `(+250) ${userData?.[0]?.phone}`,
+                          value: userData?.[0]?.phone,
+                        }}
+                        options={userData?.slice(0, 3)?.map((user) => {
+                          return {
+                            ...user,
+                            label: `(+250) ${user?.phone}`,
+                            value: user?.phone,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e?.value);
+                        }}
+                      />
+                    )}
                     {errors?.phone && (
                       <p className="text-sm text-red-500">
                         {String(errors?.phone?.message)}
@@ -579,19 +624,19 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             />
             <menu
               className={`${
-                watch("document_type") === "passport" ? "flex" : "hidden"
+                watch('document_type') === 'passport' ? 'flex' : 'hidden'
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
+                Passport <span className="text-red-600">*</span>
               </h3>
               <Controller
                 name="attachment"
                 rules={{
                   required:
-                    watch("document_type") === "passport" &&
-                    watch("beneficial_type") === "person"
-                      ? "Document attachment is required"
+                    watch('document_type') === 'passport' &&
+                    watch('beneficial_type') === 'person'
+                      ? 'Passport is required'
                       : false,
                 }}
                 control={control}
@@ -606,7 +651,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           onChange={(e) => {
                             field.onChange(e?.target?.files?.[0]);
                             setAttachmentFile(e?.target?.files?.[0]);
-                            setValue("attachment", e?.target?.files?.[0]?.name);
+                            setValue('attachment', e?.target?.files?.[0]?.name);
+                            clearErrors('attachment');
                           }}
                         />
                         {attachmentFile && (
@@ -618,7 +664,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               onClick={(e) => {
                                 e.preventDefault();
                                 setAttachmentFile(null);
-                                setValue("attachment", null);
+                                setValue('attachment', null);
+                                setError('attachment', {
+                                  type: 'manual',
+                                  message: 'Passport is required',
+                                });
                               }}
                             />
                           </p>
@@ -635,16 +685,18 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               />
             </menu>
           </section>
-          {watch("beneficial_type") === "person" &&
-            (watch("document_type") === "passport" ||
-              (watch("document_type") === "nid" && !!searchMember?.data)) && (
+          {watch('beneficial_type') === 'person' &&
+            (watch('document_type') === 'passport' ||
+              (watch('document_type') === 'nid' && !!searchMember?.data)) && (
               <article className="flex flex-col gap-3">
                 <h1>
-                  Is the professional address same as the residential address?
+                  Is the professional address same as the residential address?{' '}
+                  <span className="text-red-600">*</span>
                 </h1>
                 <Controller
                   name="address"
                   control={control}
+                  rules={{ required: 'Select an option' }}
                   render={({ field }) => {
                     return (
                       <ul className="flex items-center gap-6">
@@ -655,7 +707,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           onChange={(e) => {
                             if (e.target.checked) {
                               field.onChange(e.target.value);
-                              setValue("address", "yes");
+                              setValue('address', 'yes');
+                              clearErrors('address');
                             }
                           }}
                         />
@@ -666,10 +719,16 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           onChange={(e) => {
                             if (e.target.checked) {
                               field.onChange(e.target.value);
-                              setValue("address", "no");
+                              setValue('address', 'no');
+                              clearErrors('address');
                             }
                           }}
                         />
+                        {errors?.address && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.address?.message)}
+                          </p>
+                        )}
                       </ul>
                     );
                   }}
@@ -678,7 +737,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             )}
           <section
             className={`${
-              watch("address") === "no" ? "flex" : "hidden"
+              watch('address') === 'no' ? 'flex' : 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -686,13 +745,13 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("address") === "no" &&
-                  watch("beneficial_type") === "person" &&
-                  watch("document_type") === "passport" &&
-                  "Nationality is required",
+                  watch('address') === 'no' &&
+                  watch('beneficial_type') === 'person' &&
+                  watch('document_type') === 'passport' &&
+                  'Nationality is required',
               }}
               render={({ field }) => {
-                if (watch("document_type") === "nid") return undefined;
+                if (watch('document_type') === 'nid') return undefined;
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Select
@@ -740,17 +799,17 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch("address") === "no" &&
-                  watch("beneficial_type") === "person"
-                    ? "Phone number is required"
+                  watch('address') === 'no' &&
+                  watch('beneficial_type') === 'person'
+                    ? 'Phone number is required'
                     : false,
                 validate: (value) => {
                   if (
-                    watch("address") === "no" &&
-                    watch("document_type") === "nid"
+                    watch('address') === 'no' &&
+                    watch('document_type') === 'nid'
                   ) {
                     return (
-                      validateInputs(value, "tel") || "Invalid phone number"
+                      validateInputs(value, 'tel') || 'Invalid phone number'
                     );
                   } else {
                     return true;
@@ -765,7 +824,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       placeholder="07XX XXX XXX"
                       required
                       type={
-                        watch("document_type") === "passport" ? "tel" : "text"
+                        watch('document_type') === 'passport' ? 'tel' : 'text'
                       }
                       defaultValue={searchMember?.data?.phone}
                       {...field}
@@ -781,22 +840,14 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             />
             <menu
               className={`${
-                watch("document_type") === "passport" ? "flex" : "hidden"
+                watch('document_type') === 'passport' ? 'flex' : 'hidden'
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
+                Residential Passport
               </h3>
               <Controller
                 name="residential_attachment"
-                rules={{
-                  required:
-                    watch("address") === "no" &&
-                    watch("document_type") === "passport" &&
-                    watch("beneficial_type") === "person"
-                      ? "Document attachment is required"
-                      : false,
-                }}
                 control={control}
                 render={({ field }) => {
                   return (
@@ -809,7 +860,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           onChange={(e) => {
                             field.onChange(e?.target?.files?.[0]);
                             setAttachmentFile(e?.target?.files?.[0]);
-                            setValue("attachment", e?.target?.files?.[0]?.name);
+                            setValue(
+                              'residential_attachment',
+                              e?.target?.files?.[0]?.name
+                            );
+                            clearErrors('residential_attachment');
                           }}
                         />
                         {attachmentFile && (
@@ -821,17 +876,16 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               onClick={(e) => {
                                 e.preventDefault();
                                 setAttachmentFile(null);
-                                setValue("attachment", null);
+                                setValue('residential_attachment', null);
+                                setError('residential_attachment', {
+                                  type: 'manual',
+                                  message: 'Passport is required',
+                                });
                               }}
                             />
                           </p>
                         )}
                       </ul>
-                      {errors?.residential_attachment && (
-                        <p className="text-sm text-red-500">
-                          {String(errors?.residential_attachment?.message)}
-                        </p>
-                      )}
                     </label>
                   );
                 }}
@@ -840,7 +894,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           </section>
           <section
             className={`${
-              watch("beneficial_type") !== "person" ? "flex" : "hidden"
+              watch('beneficial_type') && watch('beneficial_type') !== 'person'
+                ? 'flex'
+                : 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -848,8 +904,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("beneficial_type") !== "person"
-                    ? "Company name is required"
+                  watch('beneficial_type') !== 'person'
+                    ? 'Company name is required'
                     : false,
               }}
               render={({ field }) => {
@@ -891,8 +947,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("beneficial_type") !== "person" &&
-                  "Select country of incorporation",
+                  watch('beneficial_type') !== 'person' &&
+                  'Select country of incorporation',
               }}
               render={({ field }) => {
                 return (
@@ -925,8 +981,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("beneficial_type") !== "person"
-                    ? "Registration date is required"
+                  watch('beneficial_type') !== 'person'
+                    ? 'Registration date is required'
                     : false,
               }}
               render={({ field }) => {
@@ -953,13 +1009,13 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.email}
               rules={{
                 required:
-                  watch("beneficial_type") !== "person" &&
-                  "Email address is required",
+                  watch('beneficial_type') !== 'person' &&
+                  'Email address is required',
                 validate: (value) => {
-                  if (watch("beneficial_type") !== "person") {
+                  if (watch('beneficial_type') !== 'person') {
                     return (
-                      validateInputs(String(value), "email") ||
-                      "Invalid email address"
+                      validateInputs(String(value), 'email') ||
+                      'Invalid email address'
                     );
                   } else return true;
                 },
@@ -988,8 +1044,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("beneficial_type") !== "person" &&
-                  "Company phone number is required",
+                  watch('beneficial_type') !== 'person' &&
+                  'Company phone number is required',
               }}
               render={({ field }) => {
                 return (
@@ -1042,7 +1098,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           </section>
           <menu
             className={`${
-              watch("beneficial_type") ? "flex" : "hidden"
+              watch('beneficial_type') ? 'flex' : 'hidden'
             } flex flex-col gap-4 w-full`}
           >
             <h1 className="text-lg font-medium uppercase">Ownership details</h1>
@@ -1053,7 +1109,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 name="beneficial_relationship"
                 control={control}
                 rules={{
-                  required: "Select a relationship with the beneficial owner",
+                  required: 'Select a relationship with the beneficial owner',
                 }}
                 render={({ field }) => {
                   return (
@@ -1082,7 +1138,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               />
               <Controller
                 control={control}
-                rules={{ required: "Select control type" }}
+                rules={{ required: 'Select control type' }}
                 name="control_type"
                 render={({ field }) => {
                   return (
@@ -1091,8 +1147,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         required
                         label="Control type"
                         options={[
-                          { value: "direct", label: "Direct" },
-                          { value: "indirect", label: "Indirect" },
+                          { value: 'direct', label: 'Direct' },
+                          { value: 'indirect', label: 'Indirect' },
                         ]}
                         onChange={(e) => {
                           field.onChange(e?.value);
@@ -1110,14 +1166,29 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               <Controller
                 name="date_bo"
                 control={control}
+                rules={{
+                  required: 'Specify the date of becoming B.O',
+                  validate: (value) => {
+                    return (
+                      moment(value).isBefore(moment()) ||
+                      'Date must not be in the future'
+                    );
+                  },
+                }}
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1">
                       <Input
+                        required
                         type="date"
                         label="Date of becoming B.O"
                         {...field}
                       />
+                      {errors?.date_bo && (
+                        <p className="text-red-600 text-[13px]">
+                          {String(errors?.date_bo?.message)}
+                        </p>
+                      )}
                     </label>
                   );
                 }}
@@ -1125,16 +1196,23 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               <Controller
                 control={control}
                 name="ownership_type"
+                rules={{ required: 'Select ownership type' }}
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1">
                       <Select
+                        required
                         label="Nature and extent of ownership"
-                        options={[{ value: "shares", label: "Shares" }]}
+                        options={[{ value: 'shares', label: 'Shares' }]}
                         onChange={(e) => {
                           field.onChange(e?.value);
                         }}
                       />
+                      {errors?.ownership_type && (
+                        <p className="text-red-600 text-[13px]">
+                          {String(errors?.ownership_type?.message)}
+                        </p>
+                      )}
                     </label>
                   );
                 }}
@@ -1158,7 +1236,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           </menu>
           <menu className="flex items-center justify-end w-full">
             <Button
-              value={isLoading ? <Loader /> : "Add beneficial owner"}
+              value={isLoading ? <Loader /> : 'Add beneficial owner'}
               primary
               submit
             />
@@ -1202,21 +1280,19 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setBusinessActiveStep("capital_details"));
-            dispatch(setBusinessActiveTab("capital_information"));
+            dispatch(setBusinessActiveStep('capital_details'));
+            dispatch(setBusinessActiveTab('capital_information'));
           }}
         />
         {isAmending && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
-                }}
-              />
-            )}
+          <Button
+            value={'Complete Amendment'}
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveTab('preview_submission'));
+            }}
+          />
+        )}
         <Button
           value="Continue"
           primary

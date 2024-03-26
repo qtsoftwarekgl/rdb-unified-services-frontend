@@ -88,7 +88,7 @@ export const NewRegistration = ({
     return (
       <menu className="flex items-center gap-2 cursor-pointer">
         <Button
-          value="Complete"
+          value="Resume"
           styled={false}
           className="!bg-transparent"
           onClick={(e) => {

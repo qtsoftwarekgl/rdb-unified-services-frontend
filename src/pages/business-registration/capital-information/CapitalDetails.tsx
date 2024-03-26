@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Table from '../../../components/table/Table';
 import { capitalizeString, generateUUID } from '../../../helpers/Strings';
@@ -39,7 +39,7 @@ interface CapitalDetailsProps {
   capital_details: business_capital_details[];
   entry_id: string | null;
   share_details: business_share_details;
-  shareholders: business_shareholders;
+  shareholders: business_shareholders[];
 }
 
 const CapitalDetails: FC<CapitalDetailsProps> = ({
@@ -114,7 +114,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           <menu className="flex items-center gap-6">
             <FontAwesomeIcon
               className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
+              icon={faPenToSquare}
               onClick={(e) => {
                 e.preventDefault();
                 setShareholderShareDetails(row?.original);
@@ -129,14 +129,27 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 dispatch(
                   setUserApplications({
                     entry_id,
-                    capital_details: capital_details?.filter(
-                      (capital) => capital?.id !== row?.original?.id
-                    ),
+                    share_details,
                   })
                 );
                 dispatch(
                   setUserApplications({
                     entry_id,
+                    capital_details: capital_details?.filter(
+                      (capital) => capital?.id !== row?.original?.id
+                    ),
+                    share_details: {
+                      ...share_details,
+                      shares: share_details?.shares?.map((share) => {
+                        return {
+                          ...share,
+                          remaining_shares:
+                            share?.remaining_shares +
+                              (Number(row?.original?.shares[share?.name]) ||
+                                0) || undefined,
+                        };
+                      }),
+                    },
                     shareholders: shareholders?.filter(
                       (shareholder) =>
                         shareholder?.id !== row?.original?.shareholder_id
@@ -282,49 +295,47 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           }}
         />
         {isAmending && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
-                }}
-              />
-            )}
+          <Button
+            value={'Complete Amendment'}
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveTab('preview_submission'));
+            }}
+          />
+        )}
         <Button
           value={isLoading ? <Loader /> : 'Continue'}
           primary
           onClick={(e) => {
             e.preventDefault();
+            // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+            if (
+              capital_details?.filter(
+                (shareholder) => shareholder?.shares?.total_shares === 0
+              )?.length > 0
+            ) {
+              setError('total_shares', {
+                type: 'manual',
+                message:
+                  'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+              });
+              return;
+            }
             setIsLoading(true);
+
             setTimeout(() => {
               setIsLoading(false);
-              // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-              if (
-                capital_details?.filter(
-                  (shareholder) => shareholder?.shares?.total_shares === 0
-                )?.length > 0
-              ) {
-                setError('total_shares', {
-                  type: 'manual',
-                  message:
-                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-                });
-                return;
-              } else {
-                clearErrors('total_shares');
-                dispatch(setBusinessCompletedStep('capital_details'));
-                dispatch(setBusinessActiveStep('beneficial_owners'));
-                dispatch(setBusinessActiveTab('beneficial_owners'));
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    active_step: 'beneficial_owners',
-                    active_tab: 'beneficial_owners',
-                  })
-                );
-              }
+              clearErrors('total_shares');
+              dispatch(setBusinessCompletedStep('capital_details'));
+              dispatch(setBusinessActiveStep('beneficial_owners'));
+              dispatch(setBusinessActiveTab('beneficial_owners'));
+              dispatch(
+                setUserApplications({
+                  entry_id,
+                  active_step: 'beneficial_owners',
+                  active_tab: 'beneficial_owners',
+                })
+              );
             }, 1000);
           }}
         />

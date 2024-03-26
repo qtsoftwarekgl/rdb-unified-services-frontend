@@ -21,6 +21,7 @@ import {
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_company_address {
   province: string;
@@ -77,6 +78,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -181,6 +183,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     }, 1000);
   };
 
+
   if (!isOpen) return null;
 
   return (
@@ -188,7 +191,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={disableForm}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller

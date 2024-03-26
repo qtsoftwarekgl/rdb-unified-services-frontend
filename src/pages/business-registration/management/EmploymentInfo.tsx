@@ -183,11 +183,18 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
           <Controller
             name="reference_date"
             control={control}
+            rules={{
+              required:
+                watch('has_employees') === 'yes'
+                  ? 'Account reference date is required'
+                  : false,
+            }}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1">
                   <Input
                     type="date"
+                    required
                     label="Account reference date"
                     {...field}
                   />
