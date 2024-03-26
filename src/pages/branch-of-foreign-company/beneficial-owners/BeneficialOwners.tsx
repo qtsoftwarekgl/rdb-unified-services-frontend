@@ -24,6 +24,7 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface BeneficialOwnersProps {
   entry_id: string | null;
@@ -154,7 +155,7 @@ const BeneficialOwners = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={RDBAdminEmailPattern.test(user?.email)}
         >
           <menu className="flex flex-col gap-3">
             <h3 className="text-lg font-medium uppercase">

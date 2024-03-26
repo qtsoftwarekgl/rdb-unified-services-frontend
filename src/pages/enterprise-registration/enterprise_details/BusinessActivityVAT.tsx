@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface BusinessActivityProps {
   entry_id: string | null;
@@ -39,6 +40,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
     (state: RootState) => state.enterpriseRegistration
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email)
   const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   const { user_applications } = useSelector(
@@ -78,7 +80,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={isFormDisabled}
         >
           <label className="flex flex-col gap-1 w-[50%] items-start">
             <Select
@@ -126,7 +128,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                             icon={faPlus}
                             onClick={(e) => {
                               e.preventDefault();
-                              if (user?.email?.includes("info@rdb")) return;
+                              if (isFormDisabled) return;
                               if (enterprise_business_lines?.length > 0) {
                                 dispatch(
                                   setUserApplications({
@@ -189,7 +191,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                                 className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  if (user?.email?.includes("info@rdb")) return;
+                                  if (isFormDisabled) return;
                                   const updatedActivities =
                                     enterprise_business_lines?.map(
                                       (activity: object) => {
@@ -255,7 +257,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                           icon={faMinus}
                           onClick={(e) => {
                             e.preventDefault();
-                            if (user?.email?.includes("info@rdb")) return;
+                            if (isFormDisabled) return;
                             const updatedSubActivities =
                               enterprise_business_lines?.filter(
                                 (subActivity: unknown) => {
@@ -303,6 +305,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
             )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
+              disabled={isFormDisabled}
               primary
               submit
             />

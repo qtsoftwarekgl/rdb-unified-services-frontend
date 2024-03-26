@@ -19,6 +19,7 @@ import {
   setForeignBusinessCompletedStep,
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 
 interface CompanyDetailsProps {
@@ -100,7 +101,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={RDBAdminEmailPattern.test(user?.email)}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller

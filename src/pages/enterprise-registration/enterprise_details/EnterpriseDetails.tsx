@@ -28,6 +28,7 @@ import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { useNavigate } from "react-router-dom";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 type EnterpriseDetailsProps = {
   entry_id: string | null;
@@ -58,6 +59,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email)
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [searchEnterprise, setSearchEnterprise] = useState({
     error: false,
@@ -113,7 +115,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
       <form onSubmit={handleSubmit(onSubmitEnterpriseDetails)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={isFormDisabled}
         >
           <menu className="p-8 border">
             <Controller
@@ -121,7 +123,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               control={control}
               defaultValue={watch("name") || company_details?.name}
               rules={{ required: "Enterprise name is required" }}
-              render={({ field }) => {
+              render={() => {
                 return (
                   <label className="flex flex-col items-start w-1/2 gap-1">
                     <Input
@@ -1363,6 +1365,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary={!company_details?.error}
+              disabled={isFormDisabled}
               submit
             />
           </menu>

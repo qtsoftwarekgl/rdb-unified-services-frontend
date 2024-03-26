@@ -20,6 +20,7 @@ import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface BusinessActivityProps {
   entry_id: string | null;
@@ -46,6 +47,7 @@ const BusinessActivity = ({
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -92,7 +94,7 @@ const BusinessActivity = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={RDBAdminEmailPattern.test(user?.email)}
         >
           <label className="flex flex-col gap-1 w-[50%] items-start">
             <Select
@@ -142,7 +144,7 @@ const BusinessActivity = ({
                             icon={faPlus}
                             onClick={(e) => {
                               e.preventDefault();
-                              if (user?.email?.includes("info@rdb")) return;
+                              if (isFormDisabled) return;
                               if (
                                 foreign_company_activities?.business_lines
                                   ?.length > 0
@@ -211,7 +213,7 @@ const BusinessActivity = ({
                                 className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  if (user?.email?.includes("info@rdb")) return;
+                                  if (isFormDisabled) return;
                                   dispatch(
                                     setUserApplications({
                                       foreign_company_activities: {
@@ -245,7 +247,7 @@ const BusinessActivity = ({
                               className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
                               onClick={(e) => {
                                 e.preventDefault();
-                                if (user?.email?.includes("info@rdb")) return;
+                                if (isFormDisabled) return;
                                 dispatch(
                                   setUserApplications({
                                     foreign_company_activities: {
@@ -278,7 +280,7 @@ const BusinessActivity = ({
                           icon={faMinus}
                           onClick={(e) => {
                             e.preventDefault();
-                            if (user?.email?.includes("info@rdb")) return;
+                            if (isFormDisabled) return;
                             const updatedSubActivities =
                               foreign_company_activities?.business_lines?.filter(
                                 (subActivity: unknown) => {

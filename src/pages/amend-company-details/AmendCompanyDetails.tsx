@@ -25,8 +25,8 @@ const AmendCompanyDetails = () => {
     .filter(
       (company) =>
         !(
-          capitalizeString(company.status) === "In Progress" ||
-          capitalizeString(company.status) === "In Review"
+          // capitalizeString(company.status) === "In Progress" ||
+          (capitalizeString(company.status) === "In Review")
         )
     )
     .sort(sortBySubmissionDate);

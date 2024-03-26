@@ -13,6 +13,7 @@ import {
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface CompanyAttachmentsProps {
   entry_id: string | null;
@@ -43,6 +44,7 @@ const CompanyAttachments = ({
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -76,7 +78,7 @@ const CompanyAttachments = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={isFormDisabled}
         >
           <section
             className={`${
@@ -250,6 +252,7 @@ const CompanyAttachments = ({
               value={isLoading ? <Loader /> : "Continue"}
               primary
               submit
+              disabled={isFormDisabled}
             />
           </menu>
         </fieldset>

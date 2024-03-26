@@ -21,6 +21,7 @@ import {
   setEnterpriseCompletedTab,
 } from "../../../states/features/enterpriseRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface AdministrativeUnits {
   provinces: string[];
@@ -61,6 +62,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
     (state: RootState) => state?.userApplication
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email)
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const enterprise_office_address =
     user_applications?.find((app) => app?.entry_id === entry_id)
@@ -173,7 +175,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col gap-4"
-          disabled={user.email.includes("info@rdb")}
+          disabled={isFormDisabled}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller
@@ -602,6 +604,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
             )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
+              disabled={isFormDisabled}
               primary
               submit
             />
