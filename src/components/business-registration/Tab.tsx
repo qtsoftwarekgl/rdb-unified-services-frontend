@@ -2,14 +2,11 @@ import { FC, ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { AppDispatch, RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../states/store";
+import { useDispatch } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../states/features/types";
 import { ReviewComment } from "../applications-review/AddReviewComments";
-import { faComment } from "@fortawesome/free-regular-svg-icons";
-import { setUserReviewCommentsModal } from "../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../constants/Users";
 
 interface TabProps {
   steps: Array<Step>;
@@ -26,11 +23,9 @@ const Tab: FC<TabProps> = ({
   children,
   active_tab,
   setActiveStep,
-  comments,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
 
   // HANDLE RENDER
   useEffect(() => {
@@ -49,9 +44,6 @@ const Tab: FC<TabProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, isOpen]);
   const active_step = steps?.find((step) => step?.active);
-  const comments_length = comments?.filter(
-    (comment: ReviewComment) => comment?.step?.name === active_step?.name
-  )?.length;
 
   if (!isOpen) return null;
 
@@ -115,25 +107,6 @@ const Tab: FC<TabProps> = ({
           <h1 className="w-full text-lg font-semibold text-center uppercase">
             {active_step?.label}
           </h1>
-          {/* <span
-            className={`${
-              (comments_length <= 0 ||
-                RDBAdminEmailPattern.test(user?.email)) &&
-              'hidden'
-            } self-end relative flex items-center gap-0 ease-in-out duration-200 hover:scale-[1.01] cursor-pointer`}
-          >
-            <FontAwesomeIcon
-              icon={faComment}
-              className="self-end p-2 text-white rounded-full bg-primary"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setUserReviewCommentsModal(true));
-              }}
-            />
-            <p className="bg-red-600 text-[12px] text-white w-fit px-[7px] rounded-full absolute top-[-6px] right-[-10px]">
-              {comments_length}
-            </p>
-          </span> */}
         </menu>
         <section className="w-full p-4">{children}</section>
       </menu>

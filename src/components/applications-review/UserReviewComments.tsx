@@ -3,6 +3,7 @@ import { AppDispatch, RootState } from "../../states/store";
 import Modal from "../Modal";
 import {
   setUserReviewCommentsModal,
+  updateReviewComment,
   updateUserReviewComment,
 } from "../../states/features/userApplicationSlice";
 import { TabType } from "../../states/features/types";
@@ -58,6 +59,9 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
                     e.preventDefault();
                     dispatch(
                       updateUserReviewComment({ ...comment, checked: true })
+                    );
+                    dispatch(
+                      updateReviewComment({ ...comment, checked: true })
                     );
                   }}
                 />
