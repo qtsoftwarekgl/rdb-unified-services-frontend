@@ -95,7 +95,7 @@ const Navbar = ({ className }: Props) => {
     >
       <figure
         className={`${
-          !["/services"].includes(pathname) && "invisible"
+          !['/services'].includes(pathname) && 'invisible'
         } relative rounded-full w-full max-w-[10%]`}
       >
         <img src={rdb_logo} className="w-fit" />

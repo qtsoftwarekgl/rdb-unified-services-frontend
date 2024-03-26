@@ -6,7 +6,7 @@ import {
   personnelTypes,
 } from '../../../constants/businessRegistration';
 import Input from '../../../components/inputs/Input';
-import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import Loader from '../../../components/Loader';
 import validateInputs from '../../../helpers/Validations';
@@ -22,9 +22,9 @@ import {
 } from '../../../states/features/businessRegistrationSlice';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import moment from 'moment';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
 
 export interface business_beneficial_owners {
   no: number;
@@ -73,6 +73,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const disableForm = RDBAdminEmailPattern.test(user?.email || '');
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -119,17 +120,21 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
         return (
           <menu className="flex items-center gap-6">
             <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
+              icon={faCircleInfo}
               onClick={(e) => {
                 e.preventDefault();
               }}
             />
             <FontAwesomeIcon
-              className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+              className={`${
+                disableForm
+                  ? 'text-secondary cursor-default'
+                  : 'text-red-600 cursor-pointer'
+              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
+                if (disableForm) return;
                 const newBeneficialOwners = beneficial_owners?.filter(
                   (_: unknown, index: number) => {
                     return index !== row?.original?.no;
@@ -156,7 +161,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes('info@rdb')}
+          disabled={disableForm}
         >
           <menu className="flex flex-col gap-3">
             <h3 className="text-lg font-medium uppercase">
@@ -1239,6 +1244,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               value={isLoading ? <Loader /> : 'Add beneficial owner'}
               primary
               submit
+              disabled={disableForm}
             />
           </menu>
         </fieldset>
@@ -1278,6 +1284,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
       >
         <Button
           value="Back"
+          disabled={disableForm}
           onClick={(e) => {
             e.preventDefault();
             dispatch(setBusinessActiveStep('capital_details'));
@@ -1295,6 +1302,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
         )}
         <Button
           value="Continue"
+          disabled={disableForm}
           primary
           onClick={(e) => {
             e.preventDefault();

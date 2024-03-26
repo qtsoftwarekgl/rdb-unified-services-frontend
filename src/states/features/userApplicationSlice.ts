@@ -10,6 +10,8 @@ export const userApplicationsSlice = createSlice({
     application_review_comments:
       JSON.parse(String(localStorage.getItem("application_review_comments"))) ||
       [],
+      userReviewCommentsModal: false,
+      user_review_comments: [],
   },
   reducers: {
     // SET USER APPLICATIONS
@@ -69,6 +71,30 @@ export const userApplicationsSlice = createSlice({
         );
       }
     },
+
+    // UPDATE USER REVIEW COMMENT
+    updateUserReviewComment: (state, action) => {
+      const updatedComments = [...state.user_review_comments];
+      const commentIndex = updatedComments?.findIndex(
+        (comment) =>
+          comment?.step?.name === action.payload?.step?.name &&
+          comment?.entry_id === action.payload?.entry_id
+      );
+      if (commentIndex !== -1) {
+        updatedComments[commentIndex] = action.payload;
+        state.user_review_comments = updatedComments;
+      }
+    },
+
+    // SET USER REVIEW COMMENTS MODAL
+    setUserReviewCommentsModal: (state, action) => {
+      state.userReviewCommentsModal = action.payload;
+    },
+
+    // SET USER REVIEW COMMENTS
+    setUserReviewComments: (state, action) => {
+      state.user_review_comments = action.payload;
+    },
   },
 });
 
@@ -80,4 +106,7 @@ export const {
   setListReviewCommentsModal,
   setApplicationReviewComments,
   updateReviewComment,
+  setUserReviewCommentsModal,
+  setUserReviewComments,
+  updateUserReviewComment
 } = userApplicationsSlice.actions;

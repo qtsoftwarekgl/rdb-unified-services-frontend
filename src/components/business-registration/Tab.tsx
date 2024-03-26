@@ -6,6 +6,10 @@ import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../states/features/types";
+import { ReviewComment } from '../applications-review/AddReviewComments';
+import { faComment } from '@fortawesome/free-regular-svg-icons';
+import { setUserReviewCommentsModal } from '../../states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '../../constants/Users';
 
 interface TabProps {
   steps: Array<Step>;
@@ -13,6 +17,7 @@ interface TabProps {
   children: ReactNode;
   setActiveStep: (step: string) => UnknownAction;
   active_tab?: TabType;
+  comments: ReviewComment[];
 }
 
 const Tab: FC<TabProps> = ({
@@ -21,10 +26,11 @@ const Tab: FC<TabProps> = ({
   children,
   active_tab,
   setActiveStep,
+  comments,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const {application_review_comments} = useSelector((state: RootState) => state.userApplication);
+  const { user } = useSelector((state: RootState) => state.user);
 
   // HANDLE RENDER
   useEffect(() => {
@@ -42,6 +48,10 @@ const Tab: FC<TabProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, isOpen]);
+  const active_step = steps?.find((step) => step?.active);
+  const comments_length = comments?.filter(
+    (comment: ReviewComment) => comment?.step?.name === active_step?.name
+  )?.length;
 
   if (!isOpen) return null;
 
@@ -49,7 +59,7 @@ const Tab: FC<TabProps> = ({
     <section className="flex items-start w-full p-6 bg-white rounded-md shadow-sm">
       <aside
         className={`${
-          steps && steps?.length > 1 ? "flex" : "hidden"
+          steps && steps?.length > 1 ? 'flex' : 'hidden'
         } flex-col gap-2 w-[20%] p-3 px-4 rounded-md`}
       >
         {steps?.map((step: Step, index: number, arr: Array<Step>) => {
@@ -85,8 +95,12 @@ const Tab: FC<TabProps> = ({
                 />
               </figure>
               <menu className="flex items-center justify-between gap-3">
-                <h4 className="font-medium text-[15px] mt-[5px]">{step?.label}</h4>
-                {step?.active && <hr className="border-[1px] border-primary font-bold text-primary h-full min-h-[25px]" />}
+                <h4 className="font-medium text-[15px] mt-[5px]">
+                  {step?.label}
+                </h4>
+                {step?.active && (
+                  <hr className="border-[1px] border-primary font-bold text-primary h-full min-h-[25px]" />
+                )}
               </menu>
             </Link>
           );
@@ -94,12 +108,33 @@ const Tab: FC<TabProps> = ({
       </aside>
       <menu
         className={`flex flex-col gap-3 h-full p-5 ${
-          steps?.length <= 1 ? "!w-[90%] mx-auto" : "w-[80%]"
+          steps?.length <= 1 ? '!w-[90%] mx-auto' : 'w-[80%]'
         }`}
       >
-        <h1 className="text-lg font-semibold text-center uppercase">
-          {steps?.find((step) => step?.active)?.label}
-        </h1>
+        <menu className="flex items-center gap-3 justify-center relative">
+          <h1 className="text-lg font-semibold text-center uppercase w-full">
+            {active_step?.label}
+          </h1>
+          {/* <span
+            className={`${
+              (comments_length <= 0 ||
+                RDBAdminEmailPattern.test(user?.email)) &&
+              'hidden'
+            } self-end relative flex items-center gap-0 ease-in-out duration-200 hover:scale-[1.01] cursor-pointer`}
+          >
+            <FontAwesomeIcon
+              icon={faComment}
+              className="text-white bg-primary p-2 rounded-full self-end"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setUserReviewCommentsModal(true));
+              }}
+            />
+            <p className="bg-red-600 text-[12px] text-white w-fit px-[7px] rounded-full absolute top-[-6px] right-[-10px]">
+              {comments_length}
+            </p>
+          </span> */}
+        </menu>
         <section className="w-full p-4">{children}</section>
       </menu>
     </section>

@@ -122,10 +122,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   return (
     <section className="flex flex-col w-full gap-4">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={disableForm}
-        >
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <menu className="flex items-start w-full gap-6">
             <Controller
               name="name"
@@ -415,7 +412,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
-            <Button value="Back" route="/business-registration/new" />
+            <Button
+              disabled={disableForm}
+              value="Back"
+              route="/business-registration/new"
+            />
             {isAmending && (
               <Button
                 value={'Complete Amendment'}
@@ -428,7 +429,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Button
               value={isLoading ? <Loader /> : 'Continue'}
               primary={!searchCompany?.error}
-              disabled={searchCompany?.error}
+              disabled={searchCompany?.error || disableForm}
               submit
             />
           </menu>

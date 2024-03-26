@@ -125,10 +125,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={disableForm}
-        >
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <label className="flex flex-col gap-1 w-[50%] items-start">
             <Select
               label="Select sector"
@@ -189,7 +186,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                                   setCompanySubActivities([subActivity])
                                 );
                               }
-                              clearErrors("business_lines");
+                              clearErrors('business_lines');
                             }}
                           />
                         ) : (
@@ -224,7 +221,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           <p className="text-start">{business_line?.name}</p>
                           {mainExists && mainBusinessLine && (
                             <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
-                              Main{" "}
+                              Main{' '}
                               <FontAwesomeIcon
                                 icon={faMinus}
                                 className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
@@ -298,9 +295,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                               setCompanySubActivities(updatedSubActivities)
                             );
                             if (company_business_lines?.length <= 1) {
-                              setError("business_lines", {
-                                type: "manual",
-                                message: "Select at least one business line",
+                              setError('business_lines', {
+                                type: 'manual',
+                                message: 'Select at least one business line',
                               });
                             }
                           }}
@@ -324,23 +321,23 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             <menu className="w-[50%] flex flex-col gap-6">
               <Controller
                 name="vat"
-                rules={{ required: "Select choice" }}
+                rules={{ required: 'Select choice' }}
                 control={control}
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-2">
                       <p className="flex items-center gap-2 text-[15px]">
-                        Would you like to register for VAT Certificate{" "}
+                        Would you like to register for VAT Certificate{' '}
                         <span className="text-red-600">*</span>
                       </p>
                       <menu className="flex items-center w-full gap-6">
                         <Input
                           type="radio"
                           label="Yes"
-                          checked={watch("vat") === "yes"}
+                          checked={watch('vat') === 'yes'}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setValue("vat", "yes");
+                              setValue('vat', 'yes');
                             }
                           }}
                           name={field?.name}
@@ -348,10 +345,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                         <Input
                           type="radio"
                           label="No"
-                          checked={watch("vat") === "no"}
+                          checked={watch('vat') === 'no'}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setValue("vat", "no");
+                              setValue('vat', 'no');
                             }
                           }}
                           name={field?.name}
@@ -366,7 +363,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                   );
                 }}
               />
-              {watch("vat") === "yes" && (
+              {watch('vat') === 'yes' && (
                 <Controller
                   defaultValue={0}
                   name="turnover"
@@ -375,7 +372,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                     return (
                       <label className="flex flex-col gap-1 w-[60%]">
                         <Input
-                          defaultValue={watch("turnover") || 0}
+                          defaultValue={watch('turnover') || 0}
                           label="Enter expected turnover"
                           required
                           {...field}
@@ -392,26 +389,26 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
           >
             <Button
               value="Back"
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep("company_address"));
+                dispatch(setBusinessActiveStep('company_address'));
               }}
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
+                  dispatch(setBusinessActiveTab('preview_submission'));
                 }}
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading ? <Loader /> : 'Continue'}
               submit
               primary
+              disabled={disableForm}
             />
           </menu>
         </fieldset>

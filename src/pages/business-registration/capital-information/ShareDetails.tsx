@@ -12,6 +12,7 @@ import {
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_share_details {
   company_capital: number;
@@ -51,6 +52,8 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const { user } = useSelector((state: RootState) => state.user)
+  const disableForm = RDBAdminEmailPattern.test(user?.email)
 
   // TABLE HEADERS
   const tableHeaders = [
@@ -161,12 +164,12 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-        <fieldset className="flex flex-col w-full gap-6">
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <Controller
             name="company_capital"
             control={control}
             defaultValue={share_details?.company_capital}
-            rules={{ required: "Total company capital is required" }}
+            rules={{ required: 'Total company capital is required' }}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1">
@@ -273,7 +276,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               <tr className="flex flex-row items-center justify-between w-full gap-3 p-3">
                 <h2 className="w-full font-semibold uppercase">Total</h2>
                 <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch("total_shares")} />
+                  <Input required readOnly value={watch('total_shares')} />
                 </td>
                 <span className="w-full"></span>
 
@@ -282,7 +285,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                     required
                     readOnly
                     defaultValue={share_details?.total_value}
-                    value={watch("total_value")}
+                    value={watch('total_value')}
                   />
                 </td>
               </tr>
@@ -299,28 +302,27 @@ const ShareDetails: FC<ShareDetailsProps> = ({
         >
           <Button
             value="Back"
+            disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep("employment_info"));
-              dispatch(setBusinessActiveTab("management"));
+              dispatch(setBusinessActiveStep('employment_info'));
+              dispatch(setBusinessActiveTab('management'));
             }}
           />
           {isAmending && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
-                }}
-              />
-            )}
+            <Button
+              value={'Complete Amendment'}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessActiveTab('preview_submission'));
+              }}
+            />
+          )}
           <Button
-            value={isLoading ? <Loader /> : "Continue"}
+            value={isLoading ? <Loader /> : 'Continue'}
             primary
             submit
-            disabled={Object.keys(errors)?.length > 0}
+            disabled={Object.keys(errors)?.length > 0 || disableForm}
           />
         </menu>
       </form>

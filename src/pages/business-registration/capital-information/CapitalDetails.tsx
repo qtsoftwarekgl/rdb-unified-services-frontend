@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCircleInfo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Table from '../../../components/table/Table';
@@ -19,6 +19,7 @@ import { useForm } from 'react-hook-form';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { business_share_details } from './ShareDetails';
 import { business_shareholders } from './ShareHolders';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
 
 export interface business_capital_details {
   no: number;
@@ -65,6 +66,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
     value: 0,
   });
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const { user } = useSelector((state: RootState) => state.user);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   useEffect(() => {
     setAssignedShares({
@@ -113,8 +116,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         return (
           <menu className="flex items-center gap-6">
             <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faPenToSquare}
+              className={`cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
+              icon={disableForm ? faCircleInfo : faPenToSquare}
               onClick={(e) => {
                 e.preventDefault();
                 setShareholderShareDetails(row?.original);
@@ -122,10 +125,15 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               }}
             />
             <FontAwesomeIcon
-              className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+              className={`${
+                disableForm
+                  ? 'text-secondary cursor-default'
+                  : 'text-red-600 cursor-pointer'
+              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
+                if (disableForm) return;
                 dispatch(
                   setUserApplications({
                     entry_id,
@@ -288,6 +296,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       >
         <Button
           value="Back"
+          disabled={disableForm}
           onClick={(e) => {
             e.preventDefault();
             dispatch(setBusinessActiveStep('shareholders'));
@@ -306,6 +315,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         <Button
           value={isLoading ? <Loader /> : 'Continue'}
           primary
+          disabled={disableForm}
           onClick={(e) => {
             e.preventDefault();
             // CHECK FOR SHAREHOLDERS WITH 0 SHARES
