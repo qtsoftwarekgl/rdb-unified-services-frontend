@@ -38,6 +38,7 @@ interface InputProps {
   readOnly?: boolean;
   multiple?: boolean;
   ref?: LegacyRef<HTMLInputElement> | undefined;
+  labelClassName?: string;
 }
 
 const Input: FC<InputProps> = forwardRef(
@@ -62,6 +63,7 @@ const Input: FC<InputProps> = forwardRef(
       accept = '*',
       min,
       readOnly = false,
+      labelClassName = '',
       multiple = false,
     },
     ref
@@ -153,13 +155,13 @@ const Input: FC<InputProps> = forwardRef(
               *
             </span>
           </p>
-          <DatePicker onChange={onChange} />
+          <DatePicker placeholder={placeholder} onChange={onChange} />
         </label>
       );
     }
 
     return (
-      <label className="flex flex-col gap-[5px] w-full">
+      <label className={`flex flex-col gap-[5px] w-full ${labelClassName}`}>
         <p
           className={`${
             label ? 'flex items-center gap-[5px] text-[14px]' : 'hidden'

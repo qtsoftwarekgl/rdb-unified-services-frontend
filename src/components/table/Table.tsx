@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from "react";
+import { useState, FC, useEffect } from 'react';
 import {
   flexRender,
   getCoreRowModel,
@@ -10,17 +10,18 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getFacetedRowModel,
-} from "@tanstack/react-table";
-import DebouncedInput from "./DebouncedInput";
-import Filter from "./Filter";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../states/store";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
-import Button from "../inputs/Button";
-import { setFilterModal } from "../../states/features/tableSlice";
-import TablePagination from "./TablePagination";
-import { setTotalPages } from "../../states/features/paginationSlice";
+} from '@tanstack/react-table';
+import DebouncedInput from './DebouncedInput';
+import Filter from './Filter';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../states/store';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileExport, faFilter } from '@fortawesome/free-solid-svg-icons';
+import Button from '../inputs/Button';
+import { setFilterModal } from '../../states/features/tableSlice';
+import TablePagination from './TablePagination';
+import { setTotalPages } from '../../states/features/paginationSlice';
+import exportPDF from './Export';
 
 interface Column extends ColumnDef<unknown> {
   header: string;
@@ -37,6 +38,13 @@ interface TableProps {
   className?: string;
   tableTitle?: string;
   headerClassName?: string;
+  columnsToExport?: Array<string>;
+  exportOptions?: {
+    orientation: 'portrait' | 'landscape';
+    format: 'a3' | 'a4' | 'a5' | 'letter' | 'legal';
+    fileName: string;
+  };
+  showExport?: boolean;
 }
 
 const Table: FC<TableProps> = ({
@@ -48,13 +56,21 @@ const Table: FC<TableProps> = ({
   className,
   tableTitle,
   headerClassName,
+  showExport = false,
+  exportOptions = {
+    orientation: 'landscape',
+    format: 'a4',
+    fileName: 'Applications',
+  },
+  columnsToExport = [],
 }) => {
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { size, page } = useSelector((state: RootState) => state.pagination);
   const { filterModal } = useSelector((state: RootState) => state.table);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState('');
 
   // SET TOTAL PAGES
   useEffect(() => {
@@ -68,7 +84,7 @@ const Table: FC<TableProps> = ({
     columns: columns?.map((column: Column) => {
       return {
         ...column,
-        filterFn: column.filter ? "includesString" : "auto",
+        filterFn: column.filter ? 'includesString' : 'auto',
       };
     }),
     state: {
@@ -104,15 +120,40 @@ const Table: FC<TableProps> = ({
     <section className="flex flex-col w-full gap-6 rounded-md">
       <menu
         className={`${
-          showFilter ? "flex" : "hidden"
+          showFilter ? 'flex' : 'hidden'
         } w-full items-start gap-6 justify-between `}
       >
-        <DebouncedInput
-          value={globalFilter ?? ""}
-          onChange={(value) => setGlobalFilter(String(value))}
-          className="w-full max-w-[45%]"
-          placeholder="Search all columns..."
-        />
+        <menu className="flex items-center gap-2 w-full">
+          <DebouncedInput
+            value={globalFilter ?? ''}
+            onChange={(value) => setGlobalFilter(String(value))}
+            className="!w-full !min-w-[15vw]"
+            placeholder="Search all columns..."
+          />
+          {showExport && <Button
+            className="!py-[5px] !my-auto"
+            value={
+              <menu className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faFileExport} />
+                Export
+              </menu>
+            }
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              exportPDF({
+                table,
+                fileName: exportOptions?.fileName,
+                columns: columns?.filter((column) =>
+                  columnsToExport.includes(column.accessorKey)
+                ),
+                options: {
+                  ...exportOptions,
+                },
+              });
+            }}
+          />}
+        </menu>
         <menu className="flex flex-col gap-2 w-full max-w-[50%]:">
           <Button
             primary
@@ -131,8 +172,8 @@ const Table: FC<TableProps> = ({
           <ul
             className={`${
               filterModal
-                ? "flex gap-4 w-full self-end"
-                : "!h-[0px] opacity-0 pointer-events-none"
+                ? 'flex gap-4 w-full self-end'
+                : '!h-[0px] opacity-0 pointer-events-none'
             } duration-200`}
           >
             {table.getHeaderGroups()?.map((headerGroup, index) => (
@@ -142,7 +183,7 @@ const Table: FC<TableProps> = ({
                     key={header.id}
                     className={`${
                       header?.column?.columnDef?.filterFn !==
-                        "includesString" && "hidden"
+                        'includesString' && 'hidden'
                     } text-[14px] w-full font-medium text-left`}
                   >
                     <menu className="flex justify-end w-full gap-2 items">
@@ -198,8 +239,8 @@ const Table: FC<TableProps> = ({
                               <p
                                 {...{
                                   className: header.column.getCanSort()
-                                    ? "cursor-pointer select-none text-[14px] flex min-w-[36px]"
-                                    : "",
+                                    ? 'cursor-pointer select-none text-[14px] flex min-w-[36px]'
+                                    : '',
                                   onClick:
                                     header.column.getToggleSortingHandler(),
                                 }}
@@ -226,7 +267,7 @@ const Table: FC<TableProps> = ({
                     <tr
                       key={row.id}
                       className={`${
-                        index !== arr.length - 1 && "border-b"
+                        index !== arr.length - 1 && 'border-b'
                       } ease-in-out duration-200 hover:bg-background`}
                     >
                       {row.getVisibleCells().map((cell) => (

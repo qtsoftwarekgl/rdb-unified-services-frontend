@@ -44,6 +44,7 @@ const DebouncedInput: FC<DebouncedInputProps> = ({
       type={type}
       className={`${className}`}
       placeholder={placeholder}
+      labelClassName='!w-fit'
       defaultValue={initialValue}
       onChange={(e) => setValue(e.target.value)}
     />
