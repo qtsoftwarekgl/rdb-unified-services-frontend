@@ -61,7 +61,6 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
                       comment?.tab.name === tab?.name &&
                       comment?.entry_id === entry_id
                   );
-                  console.log(".............>>>>>>", tabComments);
                   dispatch(setUserReviewComments(tabComments));
                   dispatch(setUserReviewCommentsModal(true));
                 }}

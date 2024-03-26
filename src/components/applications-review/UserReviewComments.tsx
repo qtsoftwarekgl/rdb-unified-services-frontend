@@ -26,12 +26,6 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
   const active_tab =
     user_review_comments?.length > 0 ? user_review_comments[0]?.tab : null;
 
-  console.log(
-    ".................&&&&&&&&&&&",
-    userReviewCommentsModal,
-    user_review_comments
-  );
-
   return (
     <Modal
       isOpen={userReviewCommentsModal}

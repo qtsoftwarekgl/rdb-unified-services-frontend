@@ -247,7 +247,7 @@ const CompanyAttachments = ({
                 data={
                   attachmentFiles?.length > 0
                     ? attachmentFiles
-                    : company_attachments
+                    : foreign_company_attachments.attachments
                 }
                 columns={columns}
                 showFilter={false}
