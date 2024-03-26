@@ -14,6 +14,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../constants/Users";
 
 type AttachmentsProps = {
   entry_id: string | null;
@@ -45,6 +46,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
   );
 
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   const { user_applications } = useSelector(
@@ -106,7 +108,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmitAttachments)}>
-        <fieldset disabled={user.email.includes("info@rdb")}>
+        <fieldset disabled={isFormDisabled}>
           {attachmentFiles.map((file, index) => (
             <menu
               key={index}
@@ -141,6 +143,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
                               icon={faTimes}
                               className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
                               onClick={() => {
+                                if(isFormDisabled) return
                                 removeAttachment(index);
                                 setValue(`attachment${index + 1}`, null);
                               }}
@@ -182,6 +185,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
             )}
             <Button
               value={isLoading ? <Loader /> : "Continue"}
+              disabled={isFormDisabled}
               primary
               submit
             />

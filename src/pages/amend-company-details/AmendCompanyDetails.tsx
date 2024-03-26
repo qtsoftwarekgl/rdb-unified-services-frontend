@@ -3,7 +3,7 @@ import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import ApplicatinsList from "../../components/registrations-list/ApplicationsList";
 import UserLayout from "../../containers/UserLayout";
 import { setIsAmending } from "../../states/features/amendmentSlice";
-import { formatCompanyData } from "../../helpers/Strings";
+import { capitalizeString, formatCompanyData } from "../../helpers/Strings";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 
@@ -24,9 +24,14 @@ const AmendCompanyDetails = () => {
     .map(formatCompanyData)
     .filter(
       (company) =>
-        !(company.status == "In Progress" || company.status === "In Review")
+        !(
+          // capitalizeString(company.status) === "In Progress" ||
+          (capitalizeString(company.status) === "In Review")
+        )
     )
     .sort(sortBySubmissionDate);
+
+  console.log(user_applications);
 
   const handleClickAction = () => {
     dispatch(setIsAmending(true));

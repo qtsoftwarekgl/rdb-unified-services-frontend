@@ -19,6 +19,7 @@ import {
 } from "../../states/features/userApplicationSlice";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 import Loader from "../../components/Loader";
+import { RDBAdminEmailPattern } from "../../constants/Users";
 
 interface ReviewNavigationProps {
   tabs: Array<TabType>;
@@ -41,6 +42,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
   const { application_review_comments } = useSelector(
     (state: RootState) => state.userApplication
   );
+  const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState({
     complete_review: false,
     decline: false,
@@ -108,7 +110,9 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   dispatch(
                     setUserApplications({
                       entry_id,
-                      status: "action_required",
+                      status: user?.email.includes("infoapprover@rdb")
+                        ? "approved"
+                        : "action_required",
                     })
                   );
                   navigate("/admin/review-applications");

@@ -20,6 +20,7 @@ import moment from "moment";
 import ReviewNavigation from "../business-registration/ReviewNavigation";
 import AddReviewComments from "../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../components/applications-review/ListReviewComments";
+import { RDBAdminEmailPattern } from "../../constants/Users";
 
 const EnterpriseRegistration = () => {
   const {
@@ -40,10 +41,11 @@ const EnterpriseRegistration = () => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: user?.email?.includes("info@rdb") ? "in_review" : "in_progress",
+        status: RDBAdminEmailPattern.test(user?.email) ? "in_review" : "in_progress",
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
         path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
+        owner: user?.email,
       })
     );
   }, [entry_id, dispatch]);
@@ -54,6 +56,7 @@ const EnterpriseRegistration = () => {
         <ProgressNavigation
           tabs={enterprise_registration_tabs}
           setActiveTab={setEnterpriseActiveTab}
+          activeTab={enterprise_registration_active_tab}
         />
         <menu className="flex items-center w-full gap-5 p-8 rounded ">
           {enterprise_registration_tabs?.map((tab: TabType, index: number) => {
@@ -91,9 +94,7 @@ const EnterpriseRegistration = () => {
             );
           })}
           {/* REVIEW APPLICATION SECTION */}
-          {(user?.email?.includes("info@rdb") ||
-            user?.email?.includes("verifier@rdb") ||
-            user?.email?.includes("approver@rdb")) && (
+          {RDBAdminEmailPattern.test(user?.email) && (
             <>
               <ReviewNavigation
                 entry_id={entry_id}

@@ -25,6 +25,7 @@ import Button from "../../../components/inputs/Button";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface PreviewSubmissionProps {
   entry_id: string | null;
@@ -45,12 +46,12 @@ const PreviewSubmission = ({
   const foreign_company_activities =
     current_application?.foreign_company_activities;
   const foreign_board_of_directors =
-    current_application?.foreign_board_of_directors;
+    current_application?.foreign_board_of_directors || [];
   const foreign_senior_management =
-    current_application?.foreign_senior_management;
+    current_application?.foreign_senior_management || [];
   const foreign_employment_info = current_application?.foreign_employment_info;
   const foreign_beneficial_owners =
-    current_application?.foreign_beneficial_owners;
+    current_application?.foreign_beneficial_owners || [];
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -74,6 +75,8 @@ const PreviewSubmission = ({
       accessorKey: "country",
     },
   ];
+
+  console.log(">>>>>>>>", foreign_board_of_directors)
 
   const beneficialOwnersColumns = [
     {
@@ -271,7 +274,7 @@ const PreviewSubmission = ({
       </PreviewCard>
 
       {/* BENEFICIAL OWNERS */}
-      <PreviewCard
+      {/* <PreviewCard
         header="Beneficial Owners"
         tabName="foreign_beneficial_owners"
         stepName="foreign_beneficial_owners"
@@ -295,7 +298,7 @@ const PreviewSubmission = ({
           showFilter={false}
           showPagination={false}
         />
-      </PreviewCard>
+      </PreviewCard> */}
 
       {/* ATTACHMENTS */}
       <PreviewCard
@@ -394,7 +397,7 @@ const PreviewSubmission = ({
         />
         <Button
           value={isLoading ? <Loader /> : "Submit"}
-          disabled={user.email.includes("info@rdb")}
+          disabled={RDBAdminEmailPattern.test(user?.email)}
           primary
           onClick={(e) => {
             e.preventDefault();

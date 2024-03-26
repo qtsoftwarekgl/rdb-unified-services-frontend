@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import { setIsAmending } from "../../states/features/amendmentSlice";
+import { RDBAdminEmailPattern } from "../../constants/Users";
 
 type Props = {
   entry_id: string | null;
@@ -24,6 +25,8 @@ const Preview = ({ entry_id }: Props) => {
     (state: RootState) => state.userApplication
   );
 
+  const { user } = useSelector((state: RootState) => state.user);
+
   const user_app =
     user_applications?.find((app) => app.entry_id === entry_id) || null;
 
@@ -33,6 +36,7 @@ const Preview = ({ entry_id }: Props) => {
     user_app?.business_lines?.enterprise_business_lines || null;
   const enterprise_details = user_app?.company_details || null;
   const enterprise_office_address = user_app?.office_address || null;
+
 
   const handleEditButton = (step: Step) => {
     dispatch(setEnterpriseActiveTab(step.tab_name));
@@ -210,10 +214,11 @@ const Preview = ({ entry_id }: Props) => {
         <button
           onClick={handleSubmit}
           disabled={
-            !enterprise_attachments &&
+            (!enterprise_attachments &&
             !enterprise_office_address &&
             !enterprise_business_lines &&
-            !enterprise_details
+            !enterprise_details) ||
+            RDBAdminEmailPattern.test(user?.email)
           }
           className="px-6 py-2 text-white rounded-md bg-primary"
         >

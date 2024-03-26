@@ -26,6 +26,7 @@ import ListReviewComments from "../../components/applications-review/ListReviewC
 import { useEffect } from "react";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import ReviewNavigation from "./ReviewNavigation";
+import { RDBAdminEmailPattern } from "../../constants/Users";
 
 const BusinessRegistration = () => {
   // CATCH PROGRESS ID
@@ -56,11 +57,12 @@ const BusinessRegistration = () => {
       dispatch(
         setUserApplications({
           entry_id,
-          status: user?.email?.includes("info@rdb")
+          status: RDBAdminEmailPattern.test(user?.email)
             ? "in_review"
             : "in_progress",
           path: `/business-registration/?entry_id=${entry_id}`,
           type: "business_registration",
+          owner: user?.email,
         })
       );
     } else {
@@ -75,6 +77,7 @@ const BusinessRegistration = () => {
         <ProgressNavigation
           tabs={business_registration_tabs}
           setActiveTab={setBusinessActiveTab}
+          activeTab={business_active_tab}
         />
         <menu className="flex items-center w-full gap-5">
           {business_registration_tabs?.map(
@@ -215,9 +218,7 @@ const BusinessRegistration = () => {
             }
           )}
         </menu>
-        {(user?.email?.includes("info@rdb") ||
-          user?.email?.includes("verifier@rdb") ||
-          user?.email?.includes("approver@rdb")) && (
+        {RDBAdminEmailPattern.test(user?.emal) && (
           <>
             <ReviewNavigation
               entry_id={entry_id}

@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { capitalizeString } from "../../../helpers/Strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface SeniorManagementProps {
   entry_id: string | null;
@@ -48,6 +49,7 @@ const SeniorManagement = ({
     null
   );
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
@@ -124,7 +126,7 @@ const SeniorManagement = ({
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                if (user.email.includes("info@rdb")) return;
+                if (isAmending) return;
                 dispatch(
                   setUserApplications({
                     entry_id,
@@ -149,7 +151,7 @@ const SeniorManagement = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={isFormDisabled}
         >
           <menu className="flex flex-col w-full gap-4">
             <h3 className="font-medium uppercase text-md">Add members</h3>

@@ -15,6 +15,7 @@ import {
 import Select from "../../../components/inputs/Select";
 import { countriesList } from "../../../constants/countries";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface CompanyAddressProps {
   entry_id: string | null;
@@ -72,14 +73,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     }, 1000);
   };
 
-  console.log("&&&&&&&&&&&&&&&&&&&&&&&&", foreign_company_address);
 
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={RDBAdminEmailPattern.test(user?.email)}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller

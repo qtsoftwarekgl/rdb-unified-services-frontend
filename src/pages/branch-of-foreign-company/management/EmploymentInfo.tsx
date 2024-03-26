@@ -11,6 +11,7 @@ import {
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface EmploymentInfoProps {
   entry_id: string | null;
@@ -35,6 +36,7 @@ const EmploymentInfo = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   // SET DEFAULT VALUES
   useEffect(() => {
     if (foreign_employment_info) {
@@ -70,7 +72,7 @@ const EmploymentInfo = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes("info@rdb")}
+          disabled={isFormDisabled}
         >
           <Controller
             name="has_employees"
@@ -209,6 +211,7 @@ const EmploymentInfo = ({
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               submit
+              disabled={isFormDisabled}
               primary
             />
           </menu>

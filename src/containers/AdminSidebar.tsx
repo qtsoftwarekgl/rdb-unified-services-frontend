@@ -9,15 +9,19 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion, useAnimation } from "framer-motion";
-import rdb_logo from "/rdb-logo.png";
-import rdb_icon from "/rdb-icon.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Button from "../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../states/store";
 import { toggleSidebar } from "../states/features/sidebarSlice";
 import { useEffect, useRef, useState } from "react";
+import {
+  RDBAdminEmailPattern,
+  RDBVerifierAndApproverEmailPattern,
+} from "../constants/Users";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import rdb_logo from "/rdb-logo.png";
+import rdb_icon from "/rdb-icon.png";
+import Button from "../components/inputs/Button";
 
 const AdminSidebar = () => {
   const { pathname } = useLocation();
@@ -42,48 +46,32 @@ const AdminSidebar = () => {
 
   // SIDEBAR NAV
   const sidebarNav = [
-    !(
-      user?.email?.includes("infoverifier@rdb") ||
-      user?.email?.includes("infoapprover@rdb")
-    ) && {
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
       title: "Dashboard",
       path: "/admin/dashboard",
       icon: faHouse,
     },
-    !(
-      user?.email?.includes("infoverifier@rdb") ||
-      user?.email?.includes("infoapprover@rdb")
-    ) && {
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
       title: "Users",
       path: "/admin/users",
       icon: faPen,
     },
-    !(
-      user?.email?.includes("infoverifier@rdb") ||
-      user?.email?.includes("infoapprover@rdb")
-    ) && {
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
       title: "Staff",
       path: "/admin/staff",
       icon: faPen,
     },
-    !(
-      user?.email?.includes("infoverifier@rdb") ||
-      user?.email?.includes("infoapprover@rdb")
-    ) && {
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
       title: "Roles",
       path: "/admin/roles",
       icon: faBagShopping,
     },
-    (user?.email?.includes("info@rdb") ||
-      user?.email?.includes("infoverifier@rdb") ||
-      user?.email?.includes("infoapprover@rdb")) && {
+    RDBAdminEmailPattern.test(user?.email) && {
       title: "Foreign Accounts",
       path: "/admin/foreign-applicants",
       icon: faUser,
     },
-    (user?.email?.includes("info@rdb") ||
-      user?.email?.includes("infoverifier@rdb") ||
-      user?.email?.includes("infoapprover@rdb")) && {
+    RDBAdminEmailPattern.test(user?.email) && {
       title: "Applications",
       path: "/admin/review-applications",
       icon: faMagnifyingGlassDollar,
