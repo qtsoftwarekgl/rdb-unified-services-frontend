@@ -4,7 +4,7 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faX } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
@@ -14,6 +14,7 @@ import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
+import Table from "../../../components/table/Table";
 
 interface CompanyAttachmentsProps {
   entry_id: string | null;
@@ -46,7 +47,6 @@ const CompanyAttachments = ({
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
-  // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
@@ -72,6 +72,55 @@ const CompanyAttachments = ({
     }, 1000);
     return data;
   };
+
+  // ATTACHMENTS TABLE COLUMNS
+  const columns = [
+    {
+      header: "File name",
+      accessorKey: "name",
+    },
+    {
+      header: "File size",
+      accessorKey: "size",
+    },
+    {
+      header: "File type",
+      accessorKey: "type",
+    },
+    {
+      header: "Action",
+      accessorKey: "action",
+      cell: ({ row }) => {
+        return (
+          <menu className="flex items-center gap-6">
+            <FontAwesomeIcon
+              icon={faCircleInfo}
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+            />
+            <FontAwesomeIcon
+              className={`${
+                isFormDisabled
+                  ? "text-secondary cursor-default"
+                  : "text-red-600 cursor-pointer"
+              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
+              icon={faTrash}
+              onClick={(e) => {
+                e.preventDefault();
+                if (isFormDisabled) return;
+                setAttachmentFiles((prevFiles) => {
+                  return prevFiles?.filter(
+                    (file: File) => file?.name !== row?.original?.name
+                  );
+                });
+              }}
+            />
+          </menu>
+        );
+      },
+    },
+  ];
 
   return (
     <main className="flex flex-col w-full gap-8">
@@ -182,9 +231,7 @@ const CompanyAttachments = ({
                             e.target.files &&
                             Object.values(e.target.files)?.concat();
                           files &&
-                            files.forEach((file: File) => {
-                              setAttachmentFiles([file, ...attachmentFiles]);
-                            });
+                            setAttachmentFiles([...files, ...attachmentFiles]);
                         }}
                       />
                     </ul>
@@ -196,30 +243,16 @@ const CompanyAttachments = ({
           <menu className="flex items-center w-full gap-6">
             {(attachmentFiles?.length > 0 ||
               foreign_company_attachments?.attachments.length > 0) && (
-              <menu className="flex items-center w-full gap-5">
-                <p>
-                  {attachmentFiles?.length ||
-                    foreign_company_attachments?.attachments?.length}{" "}
-                  files attached
-                </p>
-                <FontAwesomeIcon
-                  icon={faX}
-                  className="text-red-600 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setAttachmentFiles([]);
-                    dispatch(
-                      setUserApplications({
-                        entry_id,
-                        foreign_company_attachments: {
-                          attachments: [],
-                          ...foreign_company_attachments,
-                        },
-                      })
-                    );
-                  }}
-                />
-              </menu>
+              <Table
+                data={
+                  attachmentFiles?.length > 0
+                    ? attachmentFiles
+                    : company_attachments
+                }
+                columns={columns}
+                showFilter={false}
+                showPagination={false}
+              />
             )}
           </menu>
           <menu

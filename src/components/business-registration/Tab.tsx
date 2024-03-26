@@ -6,10 +6,10 @@ import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../states/features/types";
-import { ReviewComment } from '../applications-review/AddReviewComments';
-import { faComment } from '@fortawesome/free-regular-svg-icons';
-import { setUserReviewCommentsModal } from '../../states/features/userApplicationSlice';
-import { RDBAdminEmailPattern } from '../../constants/Users';
+import { ReviewComment } from "../applications-review/AddReviewComments";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { setUserReviewCommentsModal } from "../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../constants/Users";
 
 interface TabProps {
   steps: Array<Step>;
@@ -59,13 +59,13 @@ const Tab: FC<TabProps> = ({
     <section className="flex items-start w-full p-6 bg-white rounded-md shadow-sm">
       <aside
         className={`${
-          steps && steps?.length > 1 ? 'flex' : 'hidden'
+          steps && steps?.length > 1 ? "flex" : "hidden"
         } flex-col gap-2 w-[20%] p-3 px-4 rounded-md`}
       >
         {steps?.map((step: Step, index: number, arr: Array<Step>) => {
           return (
             <Link
-              to={'#'}
+              to={"#"}
               key={index}
               onClick={(e) => {
                 e.preventDefault();
@@ -82,7 +82,7 @@ const Tab: FC<TabProps> = ({
                 ) : (
                   <p
                     className={`text-[15px] h-[30px] w-[30px] flex items-center justify-center rounded-full bg-white text-secondary font-semibold ${
-                      step?.active && '!text-white !bg-primary'
+                      step?.active && "!text-white !bg-primary"
                     }`}
                   >
                     {String(index + 1)}
@@ -90,7 +90,7 @@ const Tab: FC<TabProps> = ({
                 )}
                 <hr
                   className={`border-l-[.5px] w-0 border-secondary h-8 ${
-                    index === arr?.length - 1 && 'hidden'
+                    index === arr?.length - 1 && "hidden"
                   }`}
                 />
               </figure>
@@ -108,11 +108,11 @@ const Tab: FC<TabProps> = ({
       </aside>
       <menu
         className={`flex flex-col gap-3 h-full p-5 ${
-          steps?.length <= 1 ? '!w-[90%] mx-auto' : 'w-[80%]'
+          steps?.length <= 1 ? "!w-[90%] mx-auto" : "w-[80%]"
         }`}
       >
-        <menu className="flex items-center gap-3 justify-center relative">
-          <h1 className="text-lg font-semibold text-center uppercase w-full">
+        <menu className="relative flex items-center justify-center gap-3">
+          <h1 className="w-full text-lg font-semibold text-center uppercase">
             {active_step?.label}
           </h1>
           {/* <span
@@ -124,7 +124,7 @@ const Tab: FC<TabProps> = ({
           >
             <FontAwesomeIcon
               icon={faComment}
-              className="text-white bg-primary p-2 rounded-full self-end"
+              className="self-end p-2 text-white rounded-full bg-primary"
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setUserReviewCommentsModal(true));

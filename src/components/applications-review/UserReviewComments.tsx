@@ -1,17 +1,17 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
-import Modal from '../Modal';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import Modal from "../Modal";
 import {
   setUserReviewCommentsModal,
   updateUserReviewComment,
-} from '../../states/features/userApplicationSlice';
-import { TabType } from '../../states/features/types';
-import { FC } from 'react';
-import { formatDate } from '../../helpers/Strings';
-import { ReviewComment } from './AddReviewComments';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import { faCheckDouble } from '@fortawesome/free-solid-svg-icons';
+} from "../../states/features/userApplicationSlice";
+import { TabType } from "../../states/features/types";
+import { FC } from "react";
+import { formatDate } from "../../helpers/Strings";
+import { ReviewComment } from "./AddReviewComments";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import { faCheckDouble } from "@fortawesome/free-solid-svg-icons";
 
 interface UserReviewCommentsProps {
   active_tab: TabType;
@@ -25,6 +25,12 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
   );
   const active_tab =
     user_review_comments?.length > 0 ? user_review_comments[0]?.tab : null;
+
+  console.log(
+    ".................&&&&&&&&&&&",
+    userReviewCommentsModal,
+    user_review_comments
+  );
 
   return (
     <Modal
@@ -53,7 +59,7 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
               <menu className="flex items-center gap2">
                 <FontAwesomeIcon
                   icon={comment?.checked ? faCircleCheck : faCheckDouble}
-                  className="cursor-pointer transition-all ease-in-out duration-200 hover:scale-102 bg-primary text-white w-3 h-3 p-2 rounded-full"
+                  className="w-3 h-3 p-2 text-white transition-all duration-200 ease-in-out rounded-full cursor-pointer hover:scale-102 bg-primary"
                   onClick={(e) => {
                     e.preventDefault();
                     dispatch(

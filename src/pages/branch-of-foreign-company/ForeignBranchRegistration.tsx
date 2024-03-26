@@ -25,6 +25,7 @@ import ReviewNavigation from "../business-registration/ReviewNavigation";
 import AddReviewComments from "../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../constants/Users";
+import UserReviewComments from "../../components/applications-review/UserReviewComments";
 
 const ForeignBranchRegistration = () => {
   const {
@@ -49,7 +50,9 @@ const ForeignBranchRegistration = () => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: RDBAdminEmailPattern.test(user?.email) ? "in_review" : "in_progress",
+        status: RDBAdminEmailPattern.test(user?.email)
+          ? "in_review"
+          : "in_progress",
         type: "foreign_branch",
         path: `/foreign-branch-registration?entry_id=${entry_id}`,
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
@@ -161,7 +164,7 @@ const ForeignBranchRegistration = () => {
             }
           )}
         </menu>
-        {/* REVIEW APPLICATION SECTION */}
+        <UserReviewComments active_tab={foreign_business_active_tab} />
         {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <ReviewNavigation

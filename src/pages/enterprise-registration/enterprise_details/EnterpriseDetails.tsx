@@ -59,7 +59,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   const navigate = useNavigate();
 
   const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email)
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [searchEnterprise, setSearchEnterprise] = useState({
     error: false,
@@ -107,8 +107,6 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
       setUserDetails(company_details);
     }
   }, []);
-
-  console.log(isAmending);
 
   return (
     <section className="flex flex-col w-full gap-4">

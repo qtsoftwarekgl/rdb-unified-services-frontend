@@ -1,13 +1,13 @@
-import { Link, useLocation } from 'react-router-dom';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { TabType } from '../../states/features/types';
-import { UnknownAction } from '@reduxjs/toolkit';
-import { ReviewComment } from '../applications-review/AddReviewComments';
+import { Link, useLocation } from "react-router-dom";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { TabType } from "../../states/features/types";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { ReviewComment } from "../applications-review/AddReviewComments";
 import {
   setUserReviewComments,
   setUserReviewCommentsModal,
-} from '../../states/features/userApplicationSlice';
+} from "../../states/features/userApplicationSlice";
 
 interface Props {
   tabs: TabType[];
@@ -23,7 +23,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   );
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get('entry_id');
+  const entry_id = queryParams.get("entry_id");
   const { user } = useSelector((state: RootState) => state.user);
 
   const tabComments = (tab: TabType) => {
@@ -41,14 +41,14 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
         return (
           <Link
             key={Number(index)}
-            to={'#'}
+            to={"#"}
             onClick={(e) => {
               e.preventDefault();
               dispatch(setActiveTab(tab?.name));
             }}
             className={`step rounded-none w-full h-full py-[6px] px-2 flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white ${
-              index < arr.length - 1 && 'border-r border-gray-500'
-            } ${tab?.active && 'bg-primary text-white !rounded-md'}`}
+              index < arr.length - 1 && "border-r border-gray-500"
+            } ${tab?.active && "bg-primary text-white !rounded-md"}`}
           >
             <h1 className="text-[14px] tab-name">{tab?.label}</h1>
             {!/info|admin/.test(user.email) && tabComments(tab) > 0 && (
@@ -61,6 +61,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
                       comment?.tab.name === tab?.name &&
                       comment?.entry_id === entry_id
                   );
+                  console.log(".............>>>>>>", tabComments);
                   dispatch(setUserReviewComments(tabComments));
                   dispatch(setUserReviewCommentsModal(true));
                 }}
