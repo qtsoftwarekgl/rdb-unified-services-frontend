@@ -52,6 +52,7 @@ const ForeignBranchRegistration = () => {
         type: "foreign_branch",
         path: `/foreign-branch-registration?entry_id=${entry_id}`,
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        owner: user?.email,
       })
     );
   }, [entry_id, dispatch]);
@@ -62,6 +63,7 @@ const ForeignBranchRegistration = () => {
         <ProgressNavigation
           tabs={foreign_business_registration_tabs}
           setActiveTab={setForeignBusinessActiveTab}
+          activeTab={foreign_business_active_tab}
         />
         <menu className="flex items-center w-full gap-5">
           {foreign_business_registration_tabs?.map(

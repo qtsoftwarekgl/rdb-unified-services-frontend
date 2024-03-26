@@ -2,8 +2,8 @@ import { FC, ReactNode, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { AppDispatch } from "../../states/store";
-import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../states/features/types";
 
@@ -24,6 +24,7 @@ const Tab: FC<TabProps> = ({
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const {application_review_comments} = useSelector((state: RootState) => state.userApplication);
 
   // HANDLE RENDER
   useEffect(() => {
@@ -45,7 +46,7 @@ const Tab: FC<TabProps> = ({
   if (!isOpen) return null;
 
   return (
-    <section className="flex items-start w-full bg-white p-6 rounded-md shadow-sm">
+    <section className="flex items-start w-full p-6 bg-white rounded-md shadow-sm">
       <aside
         className={`${
           steps && steps?.length > 1 ? "flex" : "hidden"

@@ -61,6 +61,7 @@ const BusinessRegistration = () => {
             : "in_progress",
           path: `/business-registration/?entry_id=${entry_id}`,
           type: "business_registration",
+          owner: user?.email,
         })
       );
     } else {
@@ -75,6 +76,7 @@ const BusinessRegistration = () => {
         <ProgressNavigation
           tabs={business_registration_tabs}
           setActiveTab={setBusinessActiveTab}
+          activeTab={business_active_tab}
         />
         <menu className="flex items-center w-full gap-5">
           {business_registration_tabs?.map(

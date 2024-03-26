@@ -121,7 +121,7 @@ const UserApplications = () => {
               handleEditClick(row);
             }}
             icon={faEdit}
-            className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+            className="text-red-500 cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
           />
         )}
       </menu>

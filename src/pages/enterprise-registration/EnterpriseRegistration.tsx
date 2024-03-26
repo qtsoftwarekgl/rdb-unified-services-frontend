@@ -44,6 +44,7 @@ const EnterpriseRegistration = () => {
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
         path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
+        owner: user?.email,
       })
     );
   }, [entry_id, dispatch]);
@@ -54,6 +55,7 @@ const EnterpriseRegistration = () => {
         <ProgressNavigation
           tabs={enterprise_registration_tabs}
           setActiveTab={setEnterpriseActiveTab}
+          activeTab={enterprise_registration_active_tab}
         />
         <menu className="flex items-center w-full gap-5 p-8 rounded ">
           {enterprise_registration_tabs?.map((tab: TabType, index: number) => {
