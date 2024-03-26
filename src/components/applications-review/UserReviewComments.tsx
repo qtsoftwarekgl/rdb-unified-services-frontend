@@ -3,6 +3,7 @@ import { AppDispatch, RootState } from "../../states/store";
 import Modal from "../Modal";
 import {
   setUserReviewCommentsModal,
+  updateReviewComment,
   updateUserReviewComment,
 } from "../../states/features/userApplicationSlice";
 import { TabType } from "../../states/features/types";
@@ -56,6 +57,9 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
                   className="w-3 h-3 p-2 text-white transition-all duration-200 ease-in-out rounded-full cursor-pointer hover:scale-102 bg-primary"
                   onClick={(e) => {
                     e.preventDefault();
+                    dispatch(
+                      updateReviewComment({ ...comment, checked: true })
+                    );
                     dispatch(
                       updateUserReviewComment({ ...comment, checked: true })
                     );

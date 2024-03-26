@@ -84,7 +84,7 @@ const UserApplications = () => {
 
   const hasComments = (applicationId: string) => {
     return application_review_comments.some(
-      (comment: ReviewComment) => comment?.entry_id === applicationId
+      (comment: ReviewComment) => comment?.entry_id === applicationId && !comment?.checked
     );
   };
 
