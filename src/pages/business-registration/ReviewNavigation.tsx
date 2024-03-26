@@ -19,7 +19,6 @@ import {
 } from "../../states/features/userApplicationSlice";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 import Loader from "../../components/Loader";
-import { RDBAdminEmailPattern } from "../../constants/Users";
 
 interface ReviewNavigationProps {
   tabs: Array<TabType>;
@@ -47,6 +46,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
     complete_review: false,
     decline: false,
     recommend_approval: false,
+    approve: false,
   });
 
   // NAVIGATION
@@ -77,19 +77,19 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           icon={faChevronCircleLeft}
           onClick={(e) => {
             if (
-              activeStep?.name.includes("company_details") ||
-              activeStep?.name === "enterprise_details"
+              activeStep?.name.includes('company_details') ||
+              activeStep?.name === 'enterprise_details'
             ) {
               return;
             }
             e.preventDefault();
-            handleNavigation("prev");
+            handleNavigation('prev');
           }}
           className={`${
-            activeStep?.name.includes("company_details") ||
-            activeStep?.name === "enterprise_details"
-              ? "text-secondary !cursor-default hover:scale-[1]"
-              : "flex"
+            activeStep?.name.includes('company_details') ||
+            activeStep?.name === 'enterprise_details'
+              ? 'text-secondary !cursor-default hover:scale-[1]'
+              : 'flex'
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
         <ul className="flex items-center gap-3">
@@ -98,10 +98,10 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           )?.length > 0 ? (
             <Button
               value={
-                isLoading?.complete_review ? <Loader /> : "Complete review"
+                isLoading?.complete_review ? <Loader /> : 'Complete review'
               }
               primary
-              disabled={!activeStep?.name.includes("preview_submission")}
+              disabled={!activeStep?.name.includes('preview_submission')}
               onClick={(e) => {
                 e.preventDefault();
                 setIsLoading({ ...isLoading, complete_review: true });
@@ -110,12 +110,12 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   dispatch(
                     setUserApplications({
                       entry_id,
-                      status: user?.email.includes("infoapprover@rdb")
-                        ? "approved"
-                        : "action_required",
+                      status: user?.email.includes('infoapprover@rdb')
+                        ? 'approved'
+                        : 'action_required',
                     })
                   );
-                  navigate("/admin/review-applications");
+                  navigate('/admin/review-applications');
                 }, 1000);
               }}
             />
@@ -124,13 +124,15 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               value={
                 isLoading?.recommend_approval ? (
                   <Loader />
+                ) : user?.email?.includes('infoverifier@rdb') ? (
+                  'Recommend approval'
                 ) : (
-                  "Recommend approval"
+                  'Approve'
                 )
               }
-              primary={activeStep?.name.includes("preview_submission")}
+              primary={activeStep?.name.includes('preview_submission')}
               disabled={
-                !activeStep?.name.includes("preview_submission") ||
+                !activeStep?.name.includes('preview_submission') ||
                 application_review_comments?.filter(
                   (comment: ReviewComment) => comment?.entry_id === entry_id
                 )?.length > 0
@@ -143,16 +145,18 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   dispatch(
                     setUserApplications({
                       entry_id,
-                      status: "pending_approval",
+                      status: user?.email?.includes('infoverifier@rdb')
+                        ? 'pending_approval'
+                        : 'approved',
                     })
                   );
-                  navigate("/admin/review-applications");
+                  navigate('/admin/review-applications');
                 }, 1000);
               }}
             />
           )}
           <Button
-            value={isLoading?.decline ? <Loader /> : "Decline"}
+            value={isLoading?.decline ? <Loader color="red-600" /> : 'Decline'}
             danger
             onClick={(e) => {
               e.preventDefault();
@@ -162,14 +166,14 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                 dispatch(
                   setUserApplications({
                     entry_id,
-                    status: "rejected",
+                    status: 'rejected',
                   })
                 );
-                navigate("/admin/review-applications");
+                navigate('/admin/review-applications');
               }, 1000);
             }}
           />
-          {!activeStep?.name.includes("preview_submission") ? (
+          {!activeStep?.name.includes('preview_submission') ? (
             <Button
               value="Add comment"
               className="!bg-orange-600 !border-none hover:!bg-orange-700 !text-white !hover:!text-white !hover:!border-none"
@@ -191,17 +195,17 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           )}
           <section
             className={`${
-              activeStep?.name.includes("preview_submission") && "hidden"
+              activeStep?.name.includes('preview_submission') && 'hidden'
             } flex flex-col gap-2`}
           >
             <menu
               className={`${
-                showMenu ? "flex" : "hidden"
+                showMenu ? 'flex' : 'hidden'
               } flex-col gap-1 absolute bottom-[80px] right-2 bg-background shadow-md rounded-sm`}
             >
               <Link
                 className={`hover:bg-primary bg-white hover:text-white p-2`}
-                to={"#"}
+                to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setListReviewCommentsModal(true));
@@ -214,7 +218,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
             <FontAwesomeIcon
               icon={showMenu ? faX : faBars}
               className={`${
-                showMenu ? "text-[13px] px-[9px]" : "text-[14px]"
+                showMenu ? 'text-[13px] px-[9px]' : 'text-[14px]'
               } p-2 cursor-pointer ease-in-out duration-200 hover:scale-[1.02] bg-primary text-white rounded-full`}
               onClick={(e) => {
                 e.preventDefault();
@@ -226,16 +230,16 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
         <FontAwesomeIcon
           icon={faChevronCircleRight}
           onClick={(e) => {
-            if (activeStep?.name.includes("preview_submission")) {
+            if (activeStep?.name.includes('preview_submission')) {
               return;
             }
             e.preventDefault();
-            handleNavigation("next");
+            handleNavigation('next');
           }}
           className={`${
-            activeStep?.name.includes("preview_submission")
-              ? "text-secondary !cursor-default hover:scale-[1]"
-              : "flex"
+            activeStep?.name.includes('preview_submission')
+              ? 'text-secondary !cursor-default hover:scale-[1]'
+              : 'flex'
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
       </menu>

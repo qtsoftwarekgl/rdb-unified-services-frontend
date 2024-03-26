@@ -5,6 +5,7 @@ import ProgressNavigation from "../../components/business-registration/ProgressN
 import { useLocation, useNavigate } from "react-router-dom";
 import Tab from "../../components/business-registration/Tab";
 import {
+  RegistrationTab,
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from "../../states/features/businessRegistrationSlice";
@@ -221,8 +222,7 @@ const BusinessRegistration = () => {
             );
           })}
         </menu>
-        <UserReviewComments active_tab={business_active_tab} />
-        {RDBAdminEmailPattern.test(user?.emal) && (
+        {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <ReviewNavigation
               entry_id={entry_id}
@@ -245,6 +245,7 @@ const BusinessRegistration = () => {
           </>
         )}
       </main>
+      <UserReviewComments active_tab={business_active_tab} />
     </UserLayout>
   );
 };

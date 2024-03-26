@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../Modal';
 import { formatDate } from '../../helpers/Strings';
 import { ReviewComment } from './AddReviewComments';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { faCircleCheck, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -50,16 +50,28 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
             return (
               <menu
                 key={index}
-                className="flex items-center justify-between w-full gap-3 p-2 px-4 rounded-md hover:bg-slate-50"
+                className={`flex items-center justify-between w-full gap-3 p-2 px-4 rounded-md hover:bg-slate-50`}
               >
-                <ul className="flex flex-col gap-1">
-                  <h3 className="font-semibold uppercase text-primary">
+                <ul
+                  className={`flex flex-col gap-1 ${
+                    comment?.checked && '!text-secondary'
+                  }`}
+                >
+                  <h3
+                    className={`font-semibold uppercase ${
+                      comment?.checked ? 'text-secondary' : 'text-primary'
+                    }`}
+                  >
                     {comment?.step?.label}
                   </h3>
                   <p className="text-[14px] font-normal">{comment.comment}</p>
                   <p className="text-sm">{formatDate(comment.created_at)}</p>
                 </ul>
-                <ul className="flex items-center gap-3">
+                <ul
+                  className={`${
+                    comment?.checked ? 'hidden' : 'flex'
+                  } items-center gap-3`}
+                >
                   <FontAwesomeIcon
                     icon={faPenToSquare}
                     className="text-[15px] text-white bg-primary p-2 rounded-full cursor-pointer ease-in-out duration-150 hover:scale-[1.02]"
@@ -79,6 +91,27 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
                       dispatch(
                         setApplicationReviewComments(
                           application_review_comments.filter(
+                            (business_comment: ReviewComment) =>
+                              business_comment !== comment
+                          )
+                        )
+                      );
+                    }}
+                  />
+                </ul>
+                <ul
+                  className={`${
+                    comment?.checked ? 'flex' : 'hidden'
+                  } items-center gap-2`}
+                >
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    className="bg-primary w-6 h-6 rounded-full cursor-pointer text-white transition-all hover:scale-[1.02]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      dispatch(
+                        setApplicationReviewComments(
+                          application_review_comments?.filter(
                             (business_comment: ReviewComment) =>
                               business_comment !== comment
                           )
