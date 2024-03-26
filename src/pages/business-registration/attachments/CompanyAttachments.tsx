@@ -4,7 +4,7 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -15,7 +15,7 @@ import Loader from '../../../components/Loader';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { business_company_details } from '../general-information/CompanyDetails';
 import Table from "../../../components/table/Table";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_company_attachments {
   name: string;
@@ -53,6 +53,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File>
   >([]);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -103,17 +104,21 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
           return (
             <menu className="flex items-center gap-6">
               <FontAwesomeIcon
-                className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-                icon={faEye}
+                icon={faCircleInfo}
                 onClick={(e) => {
                   e.preventDefault();
                 }}
               />
               <FontAwesomeIcon
-                className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                className={`${
+                  disableForm
+                    ? 'text-secondary cursor-default'
+                    : 'text-red-600 cursor-pointer'
+                } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
                 icon={faTrash}
                 onClick={(e) => {
                   e.preventDefault();
+                  if (disableForm) return;
                   setAttachmentFiles((prevFiles) => {
                     return prevFiles?.filter(
                       (file: File) => file?.name !== row?.original?.name
@@ -132,10 +137,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   return (
     <main className="flex flex-col w-full gap-8">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes('info@rdb')}
-        >
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <section
             className={`${
               company_details?.articles_of_association === 'yes'
@@ -251,7 +253,11 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
             {(attachmentFiles?.length > 0 ||
               company_attachments?.length > 0) && (
               <Table
-                data={attachmentFiles || company_attachments}
+                data={
+                  attachmentFiles?.length > 0
+                    ? attachmentFiles
+                    : company_attachments
+                }
                 columns={columns}
                 showFilter={false}
                 showPagination={false}
@@ -263,6 +269,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
           >
             <Button
               value="Back"
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setBusinessActiveStep('beneficial_owners'));
@@ -282,6 +289,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               value={isLoading ? <Loader /> : 'Continue'}
               primary
               submit
+              disabled={disableForm}
             />
           </menu>
         </fieldset>

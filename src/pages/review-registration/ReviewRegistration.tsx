@@ -1,9 +1,9 @@
-import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { capitalizeString, formatCompanyData } from "../../helpers/Strings";
 import AdminLayout from "../../containers/AdminLayout";
 import ApplicatinsList from "./ApplicationsList";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 const ReviewRegistration = () => {
   const { user_applications } = useSelector(
@@ -38,7 +38,7 @@ const ReviewRegistration = () => {
         title={"Review Applications"}
         data={applications}
         description=""
-        actionIcon={faEye}
+        actionIcon={faMagnifyingGlass}
         notDataMessage="No registrations to review"
         handleClickAction={() => {}}
       />

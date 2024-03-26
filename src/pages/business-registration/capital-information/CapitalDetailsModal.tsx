@@ -12,6 +12,7 @@ import { capitalizeString } from '../../../helpers/Strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { business_capital_details } from './CapitalDetails';
 import { business_share_details } from './ShareDetails';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
 
 interface CapitalDetailsModalProps {
   shareholder: object | null;
@@ -42,7 +43,9 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
   const { capitalDetailsModal } = useSelector(
     (state: RootState) => state.businessRegistration
   );
+  const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // TABLE HEADERS
   const tableHeaders = [
@@ -239,180 +242,182 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
           {shareholder?.last_name || ''}
         </span>
       </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <table className="w-full flex flex-col gap-3">
-          <thead className="w-full flex items-center justify-between">
-            {tableHeaders?.map((header, index) => {
-              return (
-                <tr
-                  key={index}
-                  className="flex flex-row gap-3 w-full font-medium p-3 text-center uppercase"
-                >
-                  <th className="font-medium text-center text-primary">
-                    {header}
-                  </th>
-                </tr>
-              );
-            })}
-          </thead>
-          <tbody className="w-full flex flex-col items-center justify-between gap-4 p-2">
-            {tableRows?.map((row, index) => {
-              const total_shares =
-                share_details?.shares &&
-                share_details?.shares?.find(
-                  (share: unknown) => share?.name === row.name
-                )?.no_shares;
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <fieldset disabled={disableForm} className="flex flex-col gap-4">
+          <table className="w-full flex flex-col gap-3">
+            <thead className="w-full flex items-center justify-between">
+              {tableHeaders?.map((header, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className="flex flex-row gap-3 w-full font-medium p-3 text-center uppercase"
+                  >
+                    <th className="font-medium text-center text-primary">
+                      {header}
+                    </th>
+                  </tr>
+                );
+              })}
+            </thead>
+            <tbody className="w-full flex flex-col items-center justify-between gap-4 p-2">
+              {tableRows?.map((row, index) => {
+                const total_shares =
+                  share_details?.shares &&
+                  share_details?.shares?.find(
+                    (share: unknown) => share?.name === row.name
+                  )?.no_shares;
 
-              const remaining_shares = share_details?.shares?.find(
-                (share: unknown) => share?.name === row?.name
-              )?.remaining_shares;
+                const remaining_shares = share_details?.shares?.find(
+                  (share: unknown) => share?.name === row?.name
+                )?.remaining_shares;
 
-              const share_value = share_details?.shares?.find(
-                (share) => share?.name === row?.name
-              )?.share_value;
+                const share_value = share_details?.shares?.find(
+                  (share) => share?.name === row?.name
+                )?.share_value;
 
-              return (
-                <tr key={index} className="flex flex-row gap-3 w-full">
-                  <menu className="flex flex-col gap-1 w-full">
-                    <h4 className="w-full text-[15px]">{row?.label}</h4>
-                    <p className="text-[12px]">
-                      Total: {total_shares || 'N/A'}
-                    </p>
-                    <p className="text-[12px]">
-                      Remaining:{' '}
-                      {Number(watch(`${row?.name}_remaining_shares`)) >= 0
-                        ? Number(watch(`${row?.name}_remaining_shares`))
-                        : remaining_shares || 'N/A'}
-                    </p>
-                  </menu>
-                  <td className="w-full flex flex-col gap-1">
-                    <Input
-                      required
-                      ref={
-                        inputRefs?.find((ref) => ref?.name === row?.name)
-                          ?.no_shares_ref
-                      }
-                      type="number"
-                      readOnly={total_shares && share_value ? false : true}
-                      defaultValue={
-                        shareholder?.shares &&
-                        Number(shareholder?.shares?.[row?.name])
-                      }
-                      onChange={(e) => {
-                        const remainingShares =
-                          (share_details?.shares?.find(
-                            (share) => share?.name === row?.name
-                          )?.remaining_shares ?? 0) -
-                          Number(e.target.value) +
-                          (shareholder?.shares[row?.name]
-                            ? Number(shareholder?.shares[row?.name])
-                            : 0);
-                        if (remainingShares < 0) {
-                          setError(`share_no_${index}`, {
-                            type: 'manual',
-                            message: `You are assigning more ${
-                              row?.name && capitalizeString(row?.name)
-                            }s that your company currently have. Update share details to continue.`,
-                          });
-                        } else {
-                          clearErrors(`share_no_${index}`);
-                          setValue(
-                            `${row.name}_remaining_shares`,
-                            remainingShares
-                          );
-                          setValue(`${row.name}_no`, Number(e.target.value));
-                          setValue(
-                            `${row?.name}_value`,
-                            Number(e.target.value) *
-                              Number(
-                                share_details?.shares?.find(
-                                  (share) => share?.name === row?.name
-                                )?.share_value
-                              )
-                          );
+                return (
+                  <tr key={index} className="flex flex-row gap-3 w-full">
+                    <menu className="flex flex-col gap-1 w-full">
+                      <h4 className="w-full text-[15px]">{row?.label}</h4>
+                      <p className={`${disableForm && 'hidden'} text-[12px]`}>
+                        Total: {total_shares || 'N/A'}
+                      </p>
+                      <p className={`${disableForm && 'hidden'} text-[12px]`}>
+                        Remaining:{' '}
+                        {Number(watch(`${row?.name}_remaining_shares`)) >= 0
+                          ? Number(watch(`${row?.name}_remaining_shares`))
+                          : remaining_shares || 'N/A'}
+                      </p>
+                    </menu>
+                    <td className="w-full flex flex-col gap-1">
+                      <Input
+                        required
+                        ref={
+                          inputRefs?.find((ref) => ref?.name === row?.name)
+                            ?.no_shares_ref
                         }
-                      }}
-                    />
-                  </td>
-                  <td className="w-full flex flex-col gap-1">
-                    <Input
-                      required
-                      type="number"
-                      readOnly
-                      className="!border-none"
-                      value={
-                        share_details?.shares?.find(
-                          (share: unknown) => share?.name === row?.name
-                        )?.share_value
-                      }
-                    />
-                  </td>
-                  <td className="w-full flex flex-col gap-1">
-                    <Input
-                      required
-                      ref={
-                        inputRefs?.find((ref) => ref?.name === row?.name)
-                          ?.value_ref
-                      }
-                      defaultValue={watch(`${row?.name}_value`)}
-                      readOnly
-                      value={
-                        (shareholder?.shares &&
-                          Number(shareholder?.shares[row?.name]) *
-                            Number(share_value)) ||
-                        watch(`${row.name}_value`)
-                      }
-                      type="number"
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot className="w-full flex flex-row items-center justify-between">
-            <tr className="w-full flex flex-row items-center gap-3 justify-between p-3">
-              <h2 className="uppercase font-semibold w-full">Total</h2>
-              <td className="w-full flex flex-col gap-1">
-                <Input
-                  ref={total_shares_ref}
-                  required
-                  readOnly
-                  value={watch('total_shares')}
-                />
-              </td>
-              <span className="w-full" />
-              <td className="w-full flex flex-col gap-1">
-                <Input
-                  ref={total_value_ref}
-                  required
-                  readOnly
-                  value={watch('total_value')}
-                />
-              </td>
-            </tr>
-          </tfoot>
-          <menu
-            className={`${
-              Object.keys(errors)?.length > 0 ? 'flex' : 'hidden'
-            } flex-col gap-4`}
-          >
-            {Object.values(errors)?.map((error) => {
-              return (
-                <caption className="w-full text-[13px] text-start text-red-600 caption-bottom">
-                  {String(error?.message)}
-                </caption>
-              );
-            })}
-          </menu>
-        </table>
-        {!errors?.total_value && (
-          <Button
-            value={isLoading ? <Loader /> : 'Complete'}
-            submit
-            primary
-            className="!w-[70%] mx-auto"
-          />
-        )}
+                        type="number"
+                        readOnly={total_shares && share_value ? false : true}
+                        defaultValue={
+                          shareholder?.shares &&
+                          Number(shareholder?.shares?.[row?.name])
+                        }
+                        onChange={(e) => {
+                          const remainingShares =
+                            (share_details?.shares?.find(
+                              (share) => share?.name === row?.name
+                            )?.remaining_shares ?? 0) -
+                            Number(e.target.value) +
+                            (shareholder?.shares[row?.name]
+                              ? Number(shareholder?.shares[row?.name])
+                              : 0);
+                          if (remainingShares < 0) {
+                            setError(`share_no_${index}`, {
+                              type: 'manual',
+                              message: `You are assigning more ${
+                                row?.name && capitalizeString(row?.name)
+                              }s that your company currently have. Update share details to continue.`,
+                            });
+                          } else {
+                            clearErrors(`share_no_${index}`);
+                            setValue(
+                              `${row.name}_remaining_shares`,
+                              remainingShares
+                            );
+                            setValue(`${row.name}_no`, Number(e.target.value));
+                            setValue(
+                              `${row?.name}_value`,
+                              Number(e.target.value) *
+                                Number(
+                                  share_details?.shares?.find(
+                                    (share) => share?.name === row?.name
+                                  )?.share_value
+                                )
+                            );
+                          }
+                        }}
+                      />
+                    </td>
+                    <td className="w-full flex flex-col gap-1">
+                      <Input
+                        required
+                        type="number"
+                        readOnly
+                        className="!border-none"
+                        value={
+                          share_details?.shares?.find(
+                            (share: unknown) => share?.name === row?.name
+                          )?.share_value
+                        }
+                      />
+                    </td>
+                    <td className="w-full flex flex-col gap-1">
+                      <Input
+                        required
+                        ref={
+                          inputRefs?.find((ref) => ref?.name === row?.name)
+                            ?.value_ref
+                        }
+                        defaultValue={watch(`${row?.name}_value`)}
+                        readOnly
+                        value={
+                          (shareholder?.shares &&
+                            Number(shareholder?.shares[row?.name]) *
+                              Number(share_value)) ||
+                          watch(`${row.name}_value`)
+                        }
+                        type="number"
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="w-full flex flex-row items-center justify-between">
+              <tr className="w-full flex flex-row items-center gap-3 justify-between p-3">
+                <h2 className="uppercase font-semibold w-full">Total</h2>
+                <td className="w-full flex flex-col gap-1">
+                  <Input
+                    ref={total_shares_ref}
+                    required
+                    readOnly
+                    value={watch('total_shares')}
+                  />
+                </td>
+                <span className="w-full" />
+                <td className="w-full flex flex-col gap-1">
+                  <Input
+                    ref={total_value_ref}
+                    required
+                    readOnly
+                    value={watch('total_value')}
+                  />
+                </td>
+              </tr>
+            </tfoot>
+            <menu
+              className={`${
+                Object.keys(errors)?.length > 0 ? 'flex' : 'hidden'
+              } flex-col gap-4`}
+            >
+              {Object.values(errors)?.map((error) => {
+                return (
+                  <caption className="w-full text-[13px] text-start text-red-600 caption-bottom">
+                    {String(error?.message)}
+                  </caption>
+                );
+              })}
+            </menu>
+          </table>
+          {!errors?.total_value && (
+            <Button
+              value={isLoading ? <Loader /> : 'Complete'}
+              submit
+              primary
+              className={`!w-[70%] mx-auto ${disableForm ? 'hidden' : ''}`}
+            />
+          )}
+        </fieldset>
       </form>
     </Modal>
   );

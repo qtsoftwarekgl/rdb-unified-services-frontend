@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { validNationalID } from '../../../constants/Users';
+import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
 
 export interface business_senior_management {
   first_name: string;
@@ -56,6 +56,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
+  const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -63,8 +64,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     data: null,
   });
   const positionRef = useRef<unknown>();
-
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const disableForm = RDBAdminEmailPattern.test(user?.email)
   
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -166,8 +167,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     <section className="flex flex-col gap-6">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col w-full gap-5"
       >
+        <fieldset className="flex flex-col w-full gap-5" disabled={disableForm}>
         <menu className="flex flex-col w-full gap-4">
           <h3 className="font-medium uppercase text-md">Add members</h3>
           <Controller
@@ -620,6 +621,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             value={isLoading ? <Loader /> : 'Add position'}
             submit
             primary
+            disabled={disableForm}
           />
         </section>
         <section className={`flex members-table flex-col w-full`}>
@@ -655,6 +657,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         >
           <Button
             value="Back"
+            disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
               dispatch(setBusinessActiveStep('board_of_directors'));
@@ -674,6 +677,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           <Button
             value="Continue"
             primary
+            disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
               if (!senior_management?.length) {
@@ -691,6 +695,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             }}
           />
         </menu>
+        </fieldset>
       </form>
     </section>
   );

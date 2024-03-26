@@ -1,18 +1,18 @@
-import { AppDispatch, RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import Modal from "../Modal";
-import { formatDate } from "../../helpers/Strings";
-import { ReviewComment } from "./AddReviewComments";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import Modal from '../Modal';
+import { formatDate } from '../../helpers/Strings';
+import { ReviewComment } from './AddReviewComments';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   setAddReviewCommentsModal,
   setApplicationReviewComments,
   setListReviewCommentsModal,
-} from "../../states/features/userApplicationSlice";
-import { FC } from "react";
-import { UnknownAction } from "@reduxjs/toolkit";
+} from '../../states/features/userApplicationSlice';
+import { FC } from 'react';
+import { UnknownAction } from '@reduxjs/toolkit';
 
 interface ListReviewCommentsProps {
   entry_id: string | null;

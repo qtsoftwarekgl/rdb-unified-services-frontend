@@ -25,6 +25,7 @@ import {
 import { capitalizeString, generateUUID } from '../../../helpers/Strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import moment from 'moment';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
 
 export interface business_shareholders {
   shareholder_type: string;
@@ -73,6 +74,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
     data: null,
   });
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
   const shareholderTypeRef = useRef();
 
   // HANDLE FORM SUBMIT
@@ -134,10 +136,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               }}
             />
             <FontAwesomeIcon
-              className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+              className={`${
+                disableForm
+                  ? 'text-secondary cursor-default'
+                  : 'text-red-600 cursor-pointer'
+              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
+                if (disableForm) return;
                 const newShareholders = shareholders.filter(
                   (_: unknown, index: number) => {
                     return index !== row?.original?.no;
@@ -162,10 +169,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes('info@rdb')}
-        >
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <Controller
             name="shareholder_type"
             control={control}
@@ -989,6 +993,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           >
             <Button
               value="Back"
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setBusinessActiveStep('share_details'));
@@ -997,18 +1002,17 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
+                  dispatch(setBusinessActiveTab('preview_submission'));
                 }}
               />
             )}
             <Button
               value="Continue"
               primary
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setBusinessCompletedStep('shareholders'));

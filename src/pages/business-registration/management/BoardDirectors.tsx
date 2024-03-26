@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString } from '../../../helpers/Strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { validNationalID } from '../../../constants/Users';
+import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
 
 export interface business_board_of_directors {
   first_name: string;
@@ -65,6 +65,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const positionRef = useRef();
+  const disableForm = RDBAdminEmailPattern.test(user?.email)
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -152,10 +153,15 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               }}
             />
             <FontAwesomeIcon
-              className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+              className={`${
+                disableForm
+                  ? 'text-secondary cursor-default'
+                  : 'text-red-600 cursor-pointer'
+              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
+                if (disableForm) return;
                 dispatch(
                   setUserApplications({
                     entry_id,
@@ -181,7 +187,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={user?.email?.includes('info@rdb')}
+          disabled={disableForm}
         >
           <menu className="flex flex-col w-full gap-4">
             <h3 className="font-medium uppercase text-md">Add members</h3>
@@ -648,6 +654,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               value={isLoading ? <Loader /> : 'Add board member'}
               submit
               primary
+              disabled={disableForm}
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
@@ -680,6 +687,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           >
             <Button
               value="Back"
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setBusinessActiveStep('business_activity_vat'));
@@ -700,6 +708,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             <Button
               value="Continue"
               primary
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setBusinessCompletedStep('board_of_directors'));

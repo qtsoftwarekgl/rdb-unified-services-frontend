@@ -614,6 +614,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           >
             <Button
               value="Back"
+              disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setBusinessActiveStep("company_details"));
@@ -634,6 +635,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               value={isLoading ? <Loader /> : "Continue"}
               primary
               submit
+              disabled={disableForm}
             />
           </menu>
         </fieldset>
