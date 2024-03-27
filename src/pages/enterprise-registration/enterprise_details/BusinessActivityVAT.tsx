@@ -40,7 +40,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
     (state: RootState) => state.enterpriseRegistration
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email)
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   const { user_applications } = useSelector(
@@ -129,28 +129,17 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                             onClick={(e) => {
                               e.preventDefault();
                               if (isFormDisabled) return;
-                              if (enterprise_business_lines?.length > 0) {
-                                dispatch(
-                                  setUserApplications({
-                                    business_lines: {
-                                      enterprise_business_lines: [
-                                        ...enterprise_business_lines,
-                                        subActivity,
-                                      ],
-                                    },
-                                    entry_id,
-                                  })
-                                );
-                              } else {
-                                dispatch(
-                                  setUserApplications({
-                                    business_lines: {
-                                      enterprise_business_lines: [subActivity],
-                                    },
-                                    entry_id,
-                                  })
-                                );
-                              }
+                              dispatch(
+                                setUserApplications({
+                                  business_lines: {
+                                    enterprise_business_lines: [
+                                      ...(enterprise_business_lines ?? []),
+                                      subActivity,
+                                    ],
+                                  },
+                                  entry_id,
+                                })
+                              );
                             }}
                           />
                         ) : (

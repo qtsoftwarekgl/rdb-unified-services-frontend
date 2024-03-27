@@ -35,8 +35,10 @@ export const NewRegistration = ({
     (state: RootState) => state.userApplication
   );
 
+  console.log(user_applications);
+
   const applicationsInProgress = user_applications
-    .filter((app) => app.status === 'in_progress')
+    .filter((app) => app.status === 'in_progress' && path.split("?")[0] === app.path.split("?")[0])
     .map(formatCompanyData);
 
   const [useReservedNames, setUseReservedNames] = useState(false);
@@ -169,7 +171,7 @@ export const NewRegistration = ({
             )}
             {applicationsInProgress.length > 0 && (
               <menu className="flex flex-col gap-2 max-md:w-full">
-                <h1 className="text-base font-bold pl-2">
+                <h1 className="pl-2 text-base font-bold">
                   Applications in progress
                 </h1>
                 <Table

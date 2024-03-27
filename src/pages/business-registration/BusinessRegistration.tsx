@@ -76,7 +76,7 @@ const BusinessRegistration = () => {
           status: RDBAdminEmailPattern.test(user?.email)
             ? "in_review"
             : "in_progress",
-          path: `/business-registration/?entry_id=${entry_id}`,
+          path: `/business-registration?entry_id=${entry_id}`,
           type: "business_registration",
           owner: user?.email,
         })

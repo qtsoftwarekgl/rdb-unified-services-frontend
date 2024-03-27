@@ -128,6 +128,15 @@ export const dormancyReasons = [
   { label: 'Legal problems', value: 'legal_problems' },
 ];
 
+
+export const tranferReasons = [
+  { label: 'Liquidation', value: 'liquidation' },
+  { label: 'Voluntary close of business', value: 'voluntary_close_of_business' },
+  { label: 'Amalgamation', value: 'smalgamation' },
+  { label: 'Death', value: 'death' },
+  { label: 'Court Order', value: 'court_order' },
+]
+
 export const cessationCompanies = [
   {
     tin: '123456789',
