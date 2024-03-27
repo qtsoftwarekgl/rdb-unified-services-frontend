@@ -63,6 +63,9 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
                     dispatch(
                       updateUserReviewComment({ ...comment, checked: true })
                     );
+                    dispatch(
+                      updateReviewComment({ ...comment, checked: true })
+                    );
                   }}
                 />
               </menu>

@@ -808,18 +808,6 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   watch('beneficial_type') === 'person'
                     ? 'Phone number is required'
                     : false,
-                validate: (value) => {
-                  if (
-                    watch('address') === 'no' &&
-                    watch('document_type') === 'nid'
-                  ) {
-                    return (
-                      validateInputs(value, 'tel') || 'Invalid phone number'
-                    );
-                  } else {
-                    return true;
-                  }
-                },
               }}
               render={({ field }) => {
                 return (
