@@ -615,3 +615,30 @@ export const ownerRelationships = [
     label: "Contractual association",
   },
 ];
+
+export const dissolutionReasons = [
+  {
+    label: 'Liquidation',
+    value: 'liquidation',
+  },
+  {
+    label: 'Voluntary close of business',
+    value: 'voluntary_close',
+  },
+  {
+    label: 'Amalgamation',
+    value: 'amalgamation',
+  },
+  {
+    label: 'Death',
+    value: 'death',
+  },
+  {
+    label: 'Court order',
+    value: 'court_order',
+  },
+  {
+    label: 'Other',
+    value: 'other',
+  },
+]

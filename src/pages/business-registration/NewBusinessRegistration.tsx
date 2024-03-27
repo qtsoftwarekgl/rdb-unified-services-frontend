@@ -149,6 +149,7 @@ export const NewRegistration = ({
     },
   ];
 
+
   return (
     <UserLayout>
       <main className="flex flex-col w-full gap-8 px-8 py-12 bg-[#f2f2f2] rounded-md shadow-sm">

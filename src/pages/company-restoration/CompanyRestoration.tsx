@@ -115,7 +115,9 @@ const CompanyRestoration = () => {
                       return {
                         label: `${app?.entry_id
                           ?.split('-')[0]
-                          ?.toUpperCase()} - ${app?.company_details?.name}`,
+                          ?.toUpperCase()} - ${
+                          app?.company_details?.name || 'N/A'
+                        }`,
                         value: app?.entry_id,
                       };
                     })}

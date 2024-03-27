@@ -206,17 +206,19 @@ const BusinessNewBranch = () => {
                   <Select
                     label="Select company"
                     required
-                    options={user_applications?.map((business) => {
-                      return {
-                        ...business,
-                        value: business?.entry_id,
-                        label: `${business?.entry_id
-                          ?.split('-')[0]
-                          ?.toUpperCase()} - ${
-                          business?.company_details?.name
-                        }`,
-                      };
-                    })}
+                    options={user_applications
+                      ?.filter((app) => app?.status !== 'in_progress')
+                      ?.map((business) => {
+                        return {
+                          ...business,
+                          value: business?.entry_id,
+                          label: `${business?.entry_id
+                            ?.split('-')[0]
+                            ?.toUpperCase()} - ${
+                            business?.company_details?.name
+                          }`,
+                        };
+                      })}
                     onChange={(e) => {
                       field.onChange(e?.value);
                     }}
