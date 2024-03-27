@@ -11,7 +11,7 @@ import {
   getRwandaProvinces,
   getRwandaSectors,
   getRwandaVillages,
-} from "../../../helpers/Data";
+} from "../../../helpers/data";
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import {

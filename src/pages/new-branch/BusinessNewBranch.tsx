@@ -10,7 +10,7 @@ import {
   getRwandaProvinces,
   getRwandaSectors,
   getRwandaVillages,
-} from '../../helpers/Data';
+} from '../../helpers/data';
 import { useEffect, useState } from 'react';
 import { AdministrativeUnits } from '../business-registration/general-information/CompanyAddress';
 import validateInputs from '../../helpers/Validations';

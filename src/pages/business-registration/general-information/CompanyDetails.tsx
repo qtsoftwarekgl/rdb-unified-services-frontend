@@ -29,6 +29,7 @@ export interface business_company_details {
   position: string;
   articles_of_association: string;
   step: string;
+  name_reserved?: boolean;
 }
 
 interface CompanyDetailsProps {
@@ -136,7 +137,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="Search company name"
                       required
                       defaultValue={company_details?.name}
-                      suffixIcon={faSearch}
+                      suffixIcon={company_details?.name_reserved ? undefined : faSearch}
+                      readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
                         field.onChange(e);
