@@ -258,7 +258,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                       required
                       options={documentTypes}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                         if (userDetails) {
                           setUserDetails({
                             ...userDetails,
@@ -623,7 +623,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             required
                             options={dummyPhones}
                             onChange={(e) => {
-                              field.onChange(e?.value);
+                              field.onChange(e);
                             }}
                             defaultValue={dummyPhones.find(
                               (type) =>

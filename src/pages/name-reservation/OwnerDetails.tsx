@@ -130,7 +130,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                     }
                     required
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                       if (e?.value === 'passport') {
                         setValue('document_no', '');
                         setSearchMember({
@@ -445,7 +445,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       };
                     })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.country && (
@@ -523,7 +523,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   )}

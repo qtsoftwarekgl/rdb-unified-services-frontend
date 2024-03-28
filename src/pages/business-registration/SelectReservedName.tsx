@@ -83,7 +83,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                   ref={nameReservationRef}
                   label="Select a name"
                   onChange={(e) => {
-                    field.onChange(e?.value);
+                    field.onChange(e);
                     setValue('name_reservation', e?.value);
                   }}
                   options={reservedNames?.map((name) => {

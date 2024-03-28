@@ -76,6 +76,7 @@ const Input: FC<InputProps> = forwardRef(
           <input
             type={type}
             name={name}
+            value={value}
             checked={checked}
             onChange={onChange}
             className={`w-5 h-5 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}

@@ -118,7 +118,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.country && (

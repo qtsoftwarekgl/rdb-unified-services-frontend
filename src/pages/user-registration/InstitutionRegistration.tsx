@@ -130,7 +130,7 @@ const InstitutionRegistration = () => {
                     label="Institution type"
                     required
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                     options={[
                       { value: 'private_sector', label: 'Private Sector' },

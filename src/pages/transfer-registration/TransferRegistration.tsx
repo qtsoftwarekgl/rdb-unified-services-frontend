@@ -157,7 +157,7 @@ const TransferRegistration = () => {
                       label="Transfer reason"
                       required
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors.transfer_reason && (

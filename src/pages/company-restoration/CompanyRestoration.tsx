@@ -122,7 +122,7 @@ const CompanyRestoration = () => {
                       };
                     })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.company && (

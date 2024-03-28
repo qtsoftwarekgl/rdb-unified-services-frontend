@@ -1,27 +1,25 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
-import Input from "../../../components/inputs/Input";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/Validations";
-import {
-  getRwandaCells,
-  getRwandaDistricts,
-  getRwandaProvinces,
-  getRwandaSectors,
-  getRwandaVillages,
-} from "../../../helpers/data";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
+import Input from '../../../components/inputs/Input';
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
+import validateInputs from '../../../helpers/Validations';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+} from '../../../states/features/businessRegistrationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
+import { provicesList } from '../../../constants/provinces';
+import { districtsList } from '../../../constants/districts';
+import { sectorsList } from '../../../constants/sectors';
+import { cellsList } from '../../../constants/cells';
+import { villagesList } from '../../../constants/villages';
 
 export interface business_company_address {
   province: string;
@@ -42,14 +40,6 @@ interface CompanyAddressProps {
   entry_id: string | null;
 }
 
-export interface AdministrativeUnits {
-  provinces: string[];
-  districts: string[];
-  sectors: string[];
-  cells: string[];
-  villages: string[];
-}
-
 const CompanyAddress: FC<CompanyAddressProps> = ({
   isOpen,
   company_address,
@@ -67,14 +57,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [administrativeValues, setAdministrativeValues] =
-    useState<AdministrativeUnits>({
-      provinces: [],
-      districts: [],
-      sectors: [],
-      cells: [],
-      villages: [],
-    });
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
@@ -83,83 +65,20 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   // SET DEFAULT VALUES
   useEffect(() => {
     if (company_address) {
-      setValue("province", company_address?.province);
-      setValue("district", company_address?.district);
-      setValue("sector", company_address?.sector);
-      setValue("cell", company_address?.cell);
-      setValue("village", company_address?.village);
-      setValue("street_name", company_address?.street_name);
-      setValue("po_box", company_address?.po_box);
-      setValue("fax", company_address?.fax);
-      setValue("email", company_address?.email);
-      setValue("phone", company_address?.phone);
+      setValue('province', company_address?.province);
+      setValue('district', company_address?.district);
+      setValue('sector', company_address?.sector);
+      setValue('cell', company_address?.cell);
+      setValue('village', company_address?.village);
+      setValue('street_name', company_address?.street_name);
+      setValue('po_box', company_address?.po_box);
+      setValue('fax', company_address?.fax);
+      setValue('email', company_address?.email);
+      setValue('phone', company_address?.phone);
     } else {
-      dispatch(removeBusinessCompletedStep("company_address"));
+      dispatch(removeBusinessCompletedStep('company_address'));
     }
   }, [company_address, dispatch, setValue]);
-
-  useEffect(() => {
-    if (watch("province")) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        districts: getRwandaDistricts(watch("province")),
-      });
-      setValue("district", "");
-      setValue("sector", "");
-      setValue("cell", "");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("province")]);
-
-  useEffect(() => {
-    if (watch("district") && watch("province")) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        sectors: getRwandaSectors(watch("province"), watch("district")),
-      });
-      setValue("sector", "");
-      setValue("cell", "");
-      setValue("village", "");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setValue, watch("district")]);
-
-  useEffect(() => {
-    if (watch("sector") && watch("district") && watch("province")) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        cells: getRwandaCells(
-          watch("province"),
-          watch("district"),
-          watch("sector")
-        ),
-      });
-      setValue("cell", "");
-      setValue("village", "");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("sector")]);
-
-  useEffect(() => {
-    if (
-      watch("cell") &&
-      watch("sector") &&
-      watch("district") &&
-      watch("province")
-    ) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        villages: getRwandaVillages(
-          watch("province"),
-          watch("district"),
-          watch("sector"),
-          watch("cell")
-        ),
-      });
-      setValue("village", "");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("cell")]);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -178,51 +97,38 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           },
         })
       );
-      dispatch(setBusinessActiveStep("business_activity_vat"));
-      dispatch(setBusinessCompletedStep("company_address"));
+      dispatch(setBusinessActiveStep('business_activity_vat'));
+      dispatch(setBusinessCompletedStep('company_address'));
     }, 1000);
   };
-
 
   if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={disableForm}
-        >
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <menu className="flex items-start w-full gap-6">
             <Controller
               name="province"
               defaultValue={company_address?.province}
               control={control}
-              rules={{ required: "Select province of residence" }}
+              rules={{ required: 'Select province of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={
-                        company_address?.province &&
-                        getRwandaProvinces()
-                          ?.filter(
-                            (province) => province === company_address?.province
-                          )
-                          ?.map((province) => {
-                            return { label: province, value: province };
-                          })[0]
-                      }
+                      defaultValue={company_address?.province}
                       required
                       label="Province"
-                      options={getRwandaProvinces()?.map((province: string) => {
+                      options={provicesList?.map((province) => {
                         return {
-                          label: province,
-                          value: province,
+                          label: province.name,
+                          value: province.code,
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.province && (
@@ -238,39 +144,27 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="district"
               control={control}
               defaultValue={company_address?.district}
-              rules={{ required: "Select district of residence" }}
+              rules={{ required: 'Select district of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={
-                        company_address?.district &&
-                        company_address?.province &&
-                        getRwandaDistricts(company_address?.province)
-                          ?.filter(
-                            (district: string) =>
-                              district === company_address?.district
-                          )
-                          ?.map((district: string) => {
-                            return { label: district, value: district };
-                          })[0]
-                      }
+                      defaultValue={company_address?.district}
                       required
                       label="District"
-                      options={
-                        watch("province")
-                          ? administrativeValues?.districts?.map(
-                              (district: string) => {
-                                return {
-                                  label: district,
-                                  value: district,
-                                };
-                              }
-                            )
-                          : []
-                      }
+                      options={districtsList
+                        ?.filter(
+                          (district) =>
+                            district?.province_code === watch('province')
+                        )
+                        ?.map((district) => {
+                          return {
+                            label: district.name,
+                            value: district.code,
+                          };
+                        })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.district && (
@@ -288,51 +182,35 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="sector"
               control={control}
               defaultValue={
-                company_address?.sector &&
-                company_address?.province &&
-                company_address?.district &&
-                getRwandaSectors(
-                  company_address?.province,
-                  company_address?.district
-                )?.find((sector: string) => sector === company_address?.sector)
+                sectorsList?.find(
+                  (sector) => sector?.code === company_address?.sector
+                )?.code
               }
-              rules={{ required: "Select sector of residence" }}
+              rules={{ required: 'Select sector of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       defaultValue={
-                        company_address?.sector &&
-                        company_address?.province &&
-                        company_address?.district &&
-                        getRwandaSectors(
-                          company_address?.province,
-                          company_address?.district
-                        )
-                          ?.filter(
-                            (sector: string) =>
-                              sector === company_address?.sector
-                          )
-                          ?.map((sector: string) => {
-                            return { label: sector, value: sector };
-                          })[0]
+                        sectorsList?.find(
+                          (sector) => sector?.code === company_address?.sector
+                        )?.code
                       }
                       required
                       label="Sector"
-                      options={
-                        watch("province") && watch("district")
-                          ? administrativeValues?.sectors?.map(
-                              (sector: string) => {
-                                return {
-                                  label: sector,
-                                  value: sector,
-                                };
-                              }
-                            )
-                          : []
-                      }
+                      options={sectorsList
+                        ?.filter(
+                          (sector) =>
+                            sector?.district_code === watch('district')
+                        )
+                        ?.map((sector) => {
+                          return {
+                            label: sector.name,
+                            value: sector.code,
+                          };
+                        })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.sector && (
@@ -347,55 +225,34 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="cell"
               control={control}
-              rules={{ required: "Select cell of residence" }}
+              rules={{ required: 'Select cell of residence' }}
               defaultValue={
-                company_address?.cell &&
-                company_address?.province &&
-                company_address?.district &&
-                company_address?.sector &&
-                getRwandaCells(
-                  company_address?.province,
-                  company_address?.district,
-                  company_address?.sector
-                )?.find((cell: string) => cell === company_address?.cell)
+                cellsList?.find((cell) => cell?.code === company_address?.cell)
+                  ?.code
               }
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       defaultValue={
-                        company_address?.cell &&
-                        company_address?.province &&
-                        company_address?.district &&
-                        company_address?.sector &&
-                        getRwandaCells(
-                          company_address?.province,
-                          company_address?.district,
-                          company_address?.sector
-                        )
-                          ?.filter(
-                            (cell: string) => cell === company_address?.cell
-                          )
-                          ?.map((cell: string) => {
-                            return { label: cell, value: cell };
-                          })[0]
+                        cellsList?.find(
+                          (cell) => cell?.code === company_address?.cell
+                        )?.code
                       }
                       required
                       label="Cell"
-                      options={
-                        watch("province") &&
-                        watch("district") &&
-                        watch("sector")
-                          ? administrativeValues?.cells?.map((cell: string) => {
-                              return {
-                                label: cell,
-                                value: cell,
-                              };
-                            })
-                          : []
-                      }
+                      options={cellsList
+                        ?.filter(
+                          (cell) => cell?.sector_code === watch('sector')
+                        )
+                        ?.map((cell) => {
+                          return {
+                            label: cell.name,
+                            value: cell.code,
+                          };
+                        })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.cell && (
@@ -412,65 +269,36 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="village"
               control={control}
-              rules={{ required: "Select village of residence" }}
+              rules={{ required: 'Select village of residence' }}
               defaultValue={
-                company_address?.village &&
-                company_address?.province &&
-                company_address?.district &&
-                company_address?.sector &&
-                company_address?.cell &&
-                getRwandaVillages(
-                  company_address?.province,
-                  company_address?.district,
-                  company_address?.sector,
-                  company_address?.cell
-                )?.find(
-                  (village: string) => village === company_address?.village
-                )
+                villagesList?.find(
+                  (village) => village?.code === company_address?.village
+                )?.code
               }
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       defaultValue={
-                        company_address?.village &&
-                        company_address?.province &&
-                        company_address?.district &&
-                        company_address?.sector &&
-                        company_address?.cell &&
-                        getRwandaVillages(
-                          company_address?.province,
-                          company_address?.district,
-                          company_address?.sector,
-                          company_address?.cell
-                        )
-                          ?.filter(
-                            (village: string) =>
-                              village === company_address?.village
-                          )
-                          ?.map((village: string) => {
-                            return { label: village, value: village };
-                          })[0]
+                        villagesList?.find(
+                          (village) =>
+                            village?.code === company_address?.village
+                        )?.code
                       }
                       required
                       label="Village"
-                      options={
-                        watch("province") &&
-                        watch("district") &&
-                        watch("sector") &&
-                        watch("cell")
-                          ? administrativeValues?.villages?.map(
-                              (village: string) => {
-                                return {
-                                  label: village,
-                                  value: village,
-                                };
-                              }
-                            )
-                          : []
-                      }
+                      options={villagesList
+                        ?.filter(
+                          (village) => village?.cell_code === watch('cell')
+                        )
+                        ?.map((village) => {
+                          return {
+                            label: village.name,
+                            value: village.code,
+                          };
+                        })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.village && (
@@ -486,14 +314,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               control={control}
               name="street_name"
               defaultValue={
-                watch("street_name") || company_address?.street_name
+                watch('street_name') || company_address?.street_name
               }
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       defaultValue={
-                        watch("street_name") || company_address?.street_name
+                        watch('street_name') || company_address?.street_name
                       }
                       label="Street Name"
                       placeholder="Street name"
@@ -507,7 +335,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           <menu className="flex items-start w-full gap-6">
             <Controller
               control={control}
-              defaultValue={watch("po_box") || company_address?.po_box}
+              defaultValue={watch('po_box') || company_address?.po_box}
               name="po_box"
               render={({ field }) => {
                 return (
@@ -515,7 +343,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       label="P.O Box"
                       placeholder="Postal code"
-                      defaultValue={watch("po_box") || company_address?.po_box}
+                      defaultValue={watch('po_box') || company_address?.po_box}
                       {...field}
                     />
                   </label>
@@ -525,13 +353,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               control={control}
               name="fax"
-              defaultValue={watch("fax") || company_address?.fax}
+              defaultValue={watch('fax') || company_address?.fax}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       label="Fax"
-                      defaultValue={watch("fax") || company_address?.fax}
+                      defaultValue={watch('fax') || company_address?.fax}
                       placeholder="Fax"
                       {...field}
                     />
@@ -544,13 +372,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="email"
               control={control}
-              defaultValue={watch("email") || company_address?.email}
+              defaultValue={watch('email') || company_address?.email}
               rules={{
-                required: "Email address is required",
+                required: 'Email address is required',
                 validate: (value) => {
                   return (
-                    validateInputs(String(value), "email") ||
-                    "Invalid email address"
+                    validateInputs(String(value), 'email') ||
+                    'Invalid email address'
                   );
                 },
               }}
@@ -560,7 +388,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       required
                       label="Email"
-                      defaultValue={watch("email") || company_address?.email}
+                      defaultValue={watch('email') || company_address?.email}
                       placeholder="name@domain.com"
                       {...field}
                     />
@@ -575,15 +403,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             />
             <Controller
               name="phone"
-              defaultValue={watch("phone") || company_address?.phone}
+              defaultValue={watch('phone') || company_address?.phone}
               rules={{
-                required: "Phone number is required",
+                required: 'Phone number is required',
                 validate: (value) => {
                   return (
                     validateInputs(
                       value?.length < 10 ? `0${value}` : String(value),
-                      "tel"
-                    ) || "Invalid phone number"
+                      'tel'
+                    ) || 'Invalid phone number'
                   );
                 },
               }}
@@ -593,7 +421,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       required
-                      defaultValue={watch("phone") || company_address?.phone}
+                      defaultValue={watch('phone') || company_address?.phone}
                       label="Phone"
                       prefixText="+250"
                       placeholder="Phone number"
@@ -617,22 +445,20 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep("company_details"));
+                dispatch(setBusinessActiveStep('company_details'));
               }}
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
+                  dispatch(setBusinessActiveTab('preview_submission'));
                 }}
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading ? <Loader /> : 'Continue'}
               primary
               submit
               disabled={disableForm}

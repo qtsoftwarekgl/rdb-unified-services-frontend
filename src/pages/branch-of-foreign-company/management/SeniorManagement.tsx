@@ -187,7 +187,7 @@ const SeniorManagement = ({
                       required
                       options={options}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.position && (
@@ -220,7 +220,7 @@ const SeniorManagement = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     </label>
@@ -509,7 +509,7 @@ const SeniorManagement = ({
                             };
                           })}
                           onChange={(e) => {
-                            field.onChange(e?.value);
+                            field.onChange(e);
                           }}
                         />
                         {errors?.country && (

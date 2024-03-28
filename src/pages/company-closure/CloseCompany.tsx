@@ -127,7 +127,7 @@ const CloseCompany = () => {
                         };
                       })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.company && (
@@ -171,7 +171,7 @@ const CloseCompany = () => {
                       label="Dissolution reason"
                       options={dissolutionReasons}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   </label>

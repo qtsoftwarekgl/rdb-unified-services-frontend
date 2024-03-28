@@ -189,7 +189,7 @@ const BeneficialOwners = ({
                       required
                       options={personnelTypes}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.beneficial_type && (
@@ -271,7 +271,7 @@ const BeneficialOwners = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     </label>
@@ -612,7 +612,7 @@ const BeneficialOwners = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.country && (
@@ -827,7 +827,7 @@ const BeneficialOwners = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.residential_country && (
@@ -1044,7 +1044,7 @@ const BeneficialOwners = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.incorporation_country && (
@@ -1204,7 +1204,7 @@ const BeneficialOwners = ({
                           };
                         })}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.beneficial_relationship && (
@@ -1231,7 +1231,7 @@ const BeneficialOwners = ({
                           { value: "indirect", label: "Indirect" },
                         ]}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.control_type && (
@@ -1268,7 +1268,7 @@ const BeneficialOwners = ({
                         label="Nature and extent of ownership"
                         options={[{ value: "shares", label: "Shares" }]}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     </label>

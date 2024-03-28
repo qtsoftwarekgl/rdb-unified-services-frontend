@@ -204,7 +204,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                       };
                     })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.country && (

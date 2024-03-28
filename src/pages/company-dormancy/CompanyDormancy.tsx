@@ -125,7 +125,7 @@ const CompanyDormancy = () => {
                       };
                     })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.company && (
@@ -196,7 +196,7 @@ const CompanyDormancy = () => {
                       label="Dormancy reason"
                       options={dormancyReasons}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   </label>

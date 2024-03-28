@@ -107,7 +107,7 @@ const CessationToDormant = () => {
                       })}
                       required
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                         setValue(
                           "cessation_date",
                           moment(

@@ -202,7 +202,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     ref={positionRef}
                     options={options}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.position && (
@@ -239,7 +239,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       label="Document Type"
                       required
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   </label>
@@ -493,7 +493,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   )}
@@ -525,7 +525,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.country && (

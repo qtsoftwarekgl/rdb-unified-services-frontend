@@ -213,7 +213,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         },
                       ]}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                         if (
                           errors?.position_conflict &&
                           e?.value !== 'chairman'
@@ -256,7 +256,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     </label>
@@ -517,7 +517,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           };
                         })}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     )}
@@ -549,7 +549,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           };
                         })}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.country && (

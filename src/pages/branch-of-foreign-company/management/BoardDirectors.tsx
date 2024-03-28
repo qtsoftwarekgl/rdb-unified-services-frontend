@@ -180,7 +180,7 @@ const BoardDirectors = ({
                         },
                       ]}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.position && (
@@ -213,7 +213,7 @@ const BoardDirectors = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     </label>
@@ -503,7 +503,7 @@ const BoardDirectors = ({
                             };
                           })}
                           onChange={(e) => {
-                            field.onChange(e?.value);
+                            field.onChange(e);
                           }}
                         />
                         {errors?.country && (

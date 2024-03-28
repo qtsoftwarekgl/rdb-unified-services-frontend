@@ -133,7 +133,7 @@ const AddInstitution = () => {
                 <Select
                   label="Institution type"
                   onChange={(e) => {
-                    field.onChange(e?.value);
+                    field.onChange(e);
                   }}
                   options={[
                     { value: 'private_sector', label: 'Private Sector' },

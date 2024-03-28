@@ -220,7 +220,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.document_type && (
@@ -580,7 +580,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.country && (
@@ -644,7 +644,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                           };
                         })}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     )}
@@ -813,7 +813,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.incorporation_country && (

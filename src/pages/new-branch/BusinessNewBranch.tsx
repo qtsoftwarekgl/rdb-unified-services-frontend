@@ -4,15 +4,7 @@ import Select from '../../components/inputs/Select';
 import { RootState } from '../../states/store';
 import { useSelector } from 'react-redux';
 import Input from '../../components/inputs/Input';
-import {
-  getRwandaCells,
-  getRwandaDistricts,
-  getRwandaProvinces,
-  getRwandaSectors,
-  getRwandaVillages,
-} from '../../helpers/data';
 import { useEffect, useState } from 'react';
-import { AdministrativeUnits } from '../business-registration/general-information/CompanyAddress';
 import validateInputs from '../../helpers/Validations';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
@@ -21,6 +13,11 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Button from '../../components/inputs/Button';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/Loader';
+import { provicesList } from '../../constants/provinces';
+import { districtsList } from '../../constants/districts';
+import { sectorsList } from '../../constants/sectors';
+import { cellsList } from '../../constants/cells';
+import { villagesList } from '../../constants/villages';
 
 const BusinessNewBranch = () => {
   // REACT HOOK FORM
@@ -36,14 +33,6 @@ const BusinessNewBranch = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const [administrativeValues, setAdministrativeValues] =
-    useState<AdministrativeUnits>({
-      provinces: [],
-      districts: [],
-      sectors: [],
-      cells: [],
-      villages: [],
-    });
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File> | unknown | null
   >(null);
@@ -51,73 +40,6 @@ const BusinessNewBranch = () => {
 
   // NAVIGATE
   const navigate = useNavigate();
-
-  // DISTRICTS
-  useEffect(() => {
-    if (watch('province')) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        districts: getRwandaDistricts(watch('province')),
-      });
-      setValue('district', '');
-      setValue('sector', '');
-      setValue('cell', '');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('province')]);
-
-  // SECTORS
-  useEffect(() => {
-    if (watch('district') && watch('province')) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        sectors: getRwandaSectors(watch('province'), watch('district')),
-      });
-      setValue('sector', '');
-      setValue('cell', '');
-      setValue('village', '');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setValue, watch('district')]);
-
-  // CELLS
-  useEffect(() => {
-    if (watch('sector') && watch('district') && watch('province')) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        cells: getRwandaCells(
-          watch('province'),
-          watch('district'),
-          watch('sector')
-        ),
-      });
-      setValue('cell', '');
-      setValue('village', '');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('sector')]);
-
-  // VILLAGES
-  useEffect(() => {
-    if (
-      watch('cell') &&
-      watch('sector') &&
-      watch('district') &&
-      watch('province')
-    ) {
-      setAdministrativeValues({
-        ...administrativeValues,
-        villages: getRwandaVillages(
-          watch('province'),
-          watch('district'),
-          watch('sector'),
-          watch('cell')
-        ),
-      });
-      setValue('village', '');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('cell')]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -220,7 +142,7 @@ const BusinessNewBranch = () => {
                         };
                       })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.company && (
@@ -265,18 +187,18 @@ const BusinessNewBranch = () => {
               rules={{ required: 'Select province of residence' }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       required
                       label="Province"
-                      options={getRwandaProvinces()?.map((province: string) => {
+                      options={provicesList?.map((province) => {
                         return {
-                          label: province,
-                          value: province,
+                          label: province.name,
+                          value: province.code,
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.province && (
@@ -294,24 +216,26 @@ const BusinessNewBranch = () => {
               rules={{ required: 'Select district of residence' }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       required
                       label="District"
                       options={
-                        watch('province')
-                          ? administrativeValues?.districts?.map(
-                              (district: string) => {
-                                return {
-                                  label: district,
-                                  value: district,
-                                };
-                              }
-                            )
-                          : []
+                        watch('province') &&
+                        districtsList
+                          ?.filter(
+                            (district) =>
+                              district?.province_code === watch('province')
+                          )
+                          ?.map((district) => {
+                            return {
+                              label: district.name,
+                              value: district.code,
+                            };
+                          })
                       }
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.district && (
@@ -323,30 +247,34 @@ const BusinessNewBranch = () => {
                 );
               }}
             />
+          </menu>
+          <menu className="flex items-start w-full gap-6">
             <Controller
               name="sector"
               control={control}
               rules={{ required: 'Select sector of residence' }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       required
                       label="Sector"
                       options={
-                        watch('province') && watch('district')
-                          ? administrativeValues?.sectors?.map(
-                              (sector: string) => {
-                                return {
-                                  label: sector,
-                                  value: sector,
-                                };
-                              }
-                            )
-                          : []
+                        watch('district') &&
+                        sectorsList
+                          ?.filter(
+                            (sector) =>
+                              sector?.district_code === watch('district')
+                          )
+                          ?.map((sector) => {
+                            return {
+                              label: sector.name,
+                              value: sector.code,
+                            };
+                          })
                       }
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.sector && (
@@ -364,24 +292,25 @@ const BusinessNewBranch = () => {
               rules={{ required: 'Select cell of residence' }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       required
                       label="Cell"
                       options={
-                        watch('province') &&
-                        watch('district') &&
-                        watch('sector')
-                          ? administrativeValues?.cells?.map((cell: string) => {
-                              return {
-                                label: cell,
-                                value: cell,
-                              };
-                            })
-                          : []
+                        watch('sector') &&
+                        cellsList
+                          ?.filter(
+                            (cell) => cell?.sector_code === watch('sector')
+                          )
+                          ?.map((cell) => {
+                            return {
+                              label: cell.name,
+                              value: cell.code,
+                            };
+                          })
                       }
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.cell && (
@@ -393,33 +322,33 @@ const BusinessNewBranch = () => {
                 );
               }}
             />
+          </menu>
+          <menu className="flex items-start w-full gap-6">
             <Controller
               name="village"
               control={control}
               rules={{ required: 'Select village of residence' }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       required
                       label="Village"
                       options={
-                        watch('province') &&
-                        watch('district') &&
-                        watch('sector') &&
-                        watch('cell')
-                          ? administrativeValues?.villages?.map(
-                              (village: string) => {
-                                return {
-                                  label: village,
-                                  value: village,
-                                };
-                              }
-                            )
-                          : []
+                        watch('cell') &&
+                        villagesList
+                          ?.filter(
+                            (village) => village?.cell_code === watch('cell')
+                          )
+                          ?.map((village) => {
+                            return {
+                              label: village.name,
+                              value: village.code,
+                            };
+                          })
                       }
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.village && (

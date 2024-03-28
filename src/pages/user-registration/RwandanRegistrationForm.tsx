@@ -226,7 +226,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                       };
                     })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.phone && (
