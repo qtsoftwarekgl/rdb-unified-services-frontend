@@ -497,7 +497,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : 'Continue'}
+              value={isLoading ? <Loader /> : 'Save & Continue'}
               primary
               submit
               disabled={disableForm}

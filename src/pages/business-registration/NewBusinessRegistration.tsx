@@ -14,6 +14,7 @@ import {
 } from '../../states/features/businessRegistrationSlice';
 import SelectReservedName from './SelectReservedName';
 import { setSelectReservedNameModal } from '../../states/features/nameReservationSlice';
+import { deleteUserApplication } from '../../states/features/userApplicationSlice';
 
 interface NewRegistrationProps {
   description: string;
@@ -66,7 +67,7 @@ export const NewRegistration = ({
 
   function renderActionCell({ row }) {
     return (
-      <menu className="flex items-center gap-2 cursor-pointer">
+      <menu className="flex items-center gap-6 cursor-pointer">
         <Button
           value="Resume"
           styled={false}
@@ -82,6 +83,16 @@ export const NewRegistration = ({
             navigate(row?.original?.path);
           }}
         />
+        <Button
+          value="Delete"
+          danger
+          styled={false}
+          className="!bg-transparent hover:!bg-transparent !text-red-600 hover:!text-red-600 !shadow-none !p-0"
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(deleteUserApplication(row?.original?.entry_id));
+          }}
+        />
       </menu>
     );
   }
@@ -90,13 +101,17 @@ export const NewRegistration = ({
     { header: 'Registration Number', accessorKey: 'reg_number' },
     { header: 'Company Name', accessorKey: 'company_name' },
     { header: 'Service Name', accessorKey: 'service_name' },
-    { header: 'Progress', accessorKey: 'active_tab', cell: ({row}) => {
-      return (
-        <p className="text-[14px]">
-          {capitalizeString(row?.original?.active_step)}
-        </p>
-      );
-    } },
+    {
+      header: 'Progress',
+      accessorKey: 'active_tab',
+      cell: ({ row }) => {
+        return (
+          <p className="text-[14px]">
+            {capitalizeString(row?.original?.active_step)}
+          </p>
+        );
+      },
+    },
     { header: 'Submission Date', accessorKey: 'submission_date' },
     {
       header: 'Action',

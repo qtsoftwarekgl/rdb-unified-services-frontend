@@ -49,15 +49,17 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setActiveStep('company_details'))
-      dispatch(setActiveTab('general_information'))
-      dispatch(setUserApplications({
-        entry_id: path?.split('=')[1],
-        company_details: {
-          name: data?.name_reservation,
-          name_reserved: true,
-        },
-      }))
+      dispatch(setActiveStep('company_details'));
+      dispatch(setActiveTab('general_information'));
+      dispatch(
+        setUserApplications({
+          entry_id: path?.split('=')[1],
+          company_details: {
+            name: data?.name_reservation,
+            name_reserved: true,
+          },
+        })
+      );
       navigate(path);
     }, 1000);
   };
@@ -84,10 +86,12 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                   label="Select a name"
                   onChange={(e) => {
                     field.onChange(e);
-                    setValue('name_reservation', e?.value);
+                    setValue('name_reservation', e);
                   }}
                   options={reservedNames?.map((name) => {
-                    const expiry_date = moment(name?.created_at).add(3, 'months').format('MM/DD/YYYY');
+                    const expiry_date = moment(name?.created_at)
+                      .add(3, 'months')
+                      .format('MM/DD/YYYY');
                     return {
                       label: `${name?.name} (Expires on ${expiry_date})`,
                       value: name?.name,

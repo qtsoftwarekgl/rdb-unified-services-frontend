@@ -675,7 +675,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               />
             )}
           <Button
-            value="Continue"
+            value="Save & Continue"
             primary
             disabled={disableForm}
             onClick={(e) => {

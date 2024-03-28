@@ -95,6 +95,12 @@ export const userApplicationsSlice = createSlice({
     setUserReviewComments: (state, action) => {
       state.user_review_comments = action.payload;
     },
+
+    // DELETE USER APPLICATION
+    deleteUserApplication: (state, action) => {
+      state.user_applications = state.user_applications.filter(
+        (app) => app?.entry_id !== action.payload);
+    },
   },
 });
 
@@ -108,5 +114,6 @@ export const {
   updateReviewComment,
   setUserReviewCommentsModal,
   setUserReviewComments,
-  updateUserReviewComment
+  updateUserReviewComment,
+  deleteUserApplication
 } = userApplicationsSlice.actions;

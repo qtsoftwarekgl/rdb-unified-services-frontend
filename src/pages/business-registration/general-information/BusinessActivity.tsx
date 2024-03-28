@@ -460,7 +460,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : 'Continue'}
+              value={isLoading ? <Loader /> : 'Save & Continue'}
               submit
               primary
               disabled={disableForm}

@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, FieldValues, set, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
 import Input from '../../../components/inputs/Input';
@@ -89,6 +89,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     clearErrors('position_conflict');
+    clearErrors('board_of_directors');
 
     setIsLoading(true);
     setTimeout(() => {
@@ -435,6 +436,28 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
+              name="passport_no"
+              control={control}
+              rules={{ required: 'Passport number is required' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Input
+                      required
+                      placeholder="Passport number"
+                      label="Passport number"
+                      {...field}
+                    />
+                    {errors?.passport_no && (
+                      <span className="text-sm text-red-500">
+                        {String(errors?.passport_no?.message)}
+                      </span>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
               name="first_name"
               control={control}
               defaultValue={searchMember?.data?.first_name}
@@ -603,13 +626,15 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       <Select
                         isSearchable
                         label="Country"
-                        options={countriesList?.map((country) => {
-                          return {
-                            ...country,
-                            label: country.name,
-                            value: country?.code,
-                          };
-                        })}
+                        options={countriesList
+                          ?.filter((country) => country?.code !== 'RW')
+                          ?.map((country) => {
+                            return {
+                              ...country,
+                              label: country.name,
+                              value: country?.code,
+                            };
+                          })}
                         onChange={(e) => {
                           field.onChange(e);
                         }}
@@ -735,7 +760,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             />
           </section>
           {errors?.board_of_directors && (
-            <p className="text-red-600 text-[13px]">
+            <p className="text-red-600 text-[13px] text-center">
               {String(errors?.board_of_directors?.message)}
             </p>
           )}
@@ -761,11 +786,21 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               />
             )}
             <Button
-              value="Continue"
+              value="Save & Continue"
               primary
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
+                if (board_of_directors?.length <= 0) {
+                  setError('board_of_directors', {
+                    type: 'manual',
+                    message: 'Add at least one board member',
+                  });
+                  setTimeout(() => {
+                    clearErrors('board_of_directors');
+                  }, 4000);
+                  return;
+                }
                 dispatch(setBusinessCompletedStep('board_of_directors'));
                 dispatch(setBusinessActiveStep('senior_management'));
               }}

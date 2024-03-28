@@ -186,7 +186,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                     )}
                     options={personnelTypes}
                     onChange={(e) => {
-                      field?.onChange(e?.value);
+                      field?.onChange(e);
                     }}
                   />
                   {errors?.shareholder_type && (
