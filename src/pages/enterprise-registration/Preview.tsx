@@ -37,7 +37,6 @@ const Preview = ({ entry_id }: Props) => {
   const enterprise_details = user_app?.company_details || null;
   const enterprise_office_address = user_app?.office_address || null;
 
-
   const handleEditButton = (step: Step) => {
     dispatch(setEnterpriseActiveTab(step.tab_name));
     dispatch(setEnterpriseActiveStep(step.name));
@@ -215,9 +214,9 @@ const Preview = ({ entry_id }: Props) => {
           onClick={handleSubmit}
           disabled={
             (!enterprise_attachments &&
-            !enterprise_office_address &&
-            !enterprise_business_lines &&
-            !enterprise_details) ||
+              !enterprise_office_address &&
+              !enterprise_business_lines &&
+              !enterprise_details) ||
             RDBAdminEmailPattern.test(user?.email)
           }
           className="px-6 py-2 text-white rounded-md bg-primary"

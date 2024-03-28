@@ -2,14 +2,12 @@ import { useState } from "react";
 import Button from "../../components/inputs/Button";
 import Modal from "../../components/Modal";
 import Select from "../../components/inputs/Select";
-import { useNavigate } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CreateAmendment = () => {
   const [createAmandment, setCreateAmandment] = useState<boolean>(false);
   const [amendmentType, setAmendmentType] = useState<string>("");
-  const navigate = useNavigate();
 
   const amendmentTypes = [
     {
@@ -114,18 +112,6 @@ const CreateAmendment = () => {
               <Button
                 value={"Cancel"}
                 onClick={() => {
-                  setCreateAmandment(false);
-                  setAmendmentType("");
-                }}
-              />
-
-              <Button
-                value={"Create Amendment"}
-                route={amendmentType}
-                disabled={!amendmentType}
-                primary
-                onClick={() => {
-                  navigate(amendmentType);
                   setCreateAmandment(false);
                   setAmendmentType("");
                 }}

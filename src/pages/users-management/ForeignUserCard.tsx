@@ -1,6 +1,11 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Divider from "../../components/Divider";
 import Modal from "../../components/Modal";
 import Button from "../../components/inputs/Button";
+import Table from "../../components/table/Table";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { useState } from "react";
+import ViewDocument from "../user-company-details/ViewDocument";
 
 type User = {
   first_name: string;
@@ -12,6 +17,8 @@ type User = {
   gender: string;
   address: string;
   city: string;
+  phone: string;
+  attachments: [];
 };
 
 type Props = {
@@ -20,6 +27,32 @@ type Props = {
 };
 
 const UserCard = ({ user, setUserToView }: Props) => {
+  const [attachmentPreview, setAttachmentPreview] = useState("");
+
+  const attachmentColumns = [
+    {
+      header: "Document Type",
+      accessorKey: "document_type",
+    },
+    {
+      header: "Action",
+      accessorKey: "action",
+      cell: ({ row }) => {
+        return (
+          <menu className="flex items-center gap-2">
+            <FontAwesomeIcon
+              icon={faEye}
+              className="cursor-pointer text-primary"
+              onClick={() => {
+                setAttachmentPreview(row?.original?.document_url);
+              }}
+            />
+          </menu>
+        );
+      },
+    },
+  ];
+
   return (
     <Modal isOpen={user !== null} onClose={() => setUserToView(null)}>
       <main className="flex flex-col w-full gap-6 p-4 ">
@@ -92,8 +125,25 @@ const UserCard = ({ user, setUserToView }: Props) => {
               <h1 className="w-1/2 text-secondary ">City</h1>
               <p className="w-1/2 text-gray-300">{user.city}</p>
             </div>
+            <div className="flex text-base font-semibold ">
+              <h1 className="w-1/2 text-secondary ">Phone</h1>
+              <p className="w-1/2 text-gray-300">{user.phone}</p>
+            </div>
           </div>
         </div>
+        <label className="flex flex-col gap-4">Attachments</label>
+        <Table
+          columns={attachmentColumns}
+          data={user?.attachments}
+          showFilter={false}
+          showPagination={false}
+        />
+        {attachmentPreview && (
+          <ViewDocument
+            documentUrl={attachmentPreview}
+            setDocumentUrl={setAttachmentPreview}
+          />
+        )}
         <menu className="flex items-center justify-end gap-12 mt-12">
           <Button
             onClick={() => setUserToView(null)}

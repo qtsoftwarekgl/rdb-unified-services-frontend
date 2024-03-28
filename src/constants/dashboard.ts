@@ -163,37 +163,37 @@ export const companyDocuments = [
     documentName: "Certificate of Incorporation",
     documentType: "Certificate",
     issuedDate: "12-06-2022",
-    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/BusinessCrt_202104051447207533.pdf",
   },
   {
     documentName: "Memorandum of Association",
     documentType: "Certificate",
     issuedDate: "12-06-2022",
-    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/BusinessCrt_202104051447207533.pdf",
   },
   {
     documentName: "Article of Association",
     documentType: "Certificate",
     issuedDate: "12-06-2022",
-    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/BusinessCrt_202104051447207533.pdf",
   },
   {
     documentName: "Form CAC 7",
     documentType: "Copy Right",
     issuedDate: "12-06-2022",
-    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/BusinessCrt_202104051447207533.pdf",
   },
   {
     documentName: "Form CAC 2",
     documentType: "Copy Right",
     issuedDate: "12-06-2022",
-    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/BusinessCrt_202104051447207533.pdf",
   },
   {
     documentName: "Form CAC 3",
     documentType: "Copy Right",
     issuedDate: "12-06-2022",
-    documentUrl: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/BusinessCrt_202104051447207533.pdf",
   },
 ];
 
@@ -208,6 +208,13 @@ export const foreignApplications = [
     gender: "Male",
     address: "KG 230",
     city: "Manchester",
+    phone: "0788888888",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Emma",
@@ -219,6 +226,13 @@ export const foreignApplications = [
     gender: "Female",
     address: "17 Cherry Tree Lane",
     city: "London",
+    phone: "0788888888",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Michael",
@@ -230,6 +244,13 @@ export const foreignApplications = [
     gender: "Male",
     address: "45 Oak Street",
     city: "Birmingham",
+    phone: "0788888888",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Olivia",
@@ -241,6 +262,13 @@ export const foreignApplications = [
     gender: "Female",
     address: "29 Maple Avenue",
     city: "Liverpool",
+    phone: "0788888888",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Charlie",
@@ -252,6 +280,12 @@ export const foreignApplications = [
     gender: "Male",
     address: "72 Elm Street",
     city: "Leeds",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Sophia",
@@ -263,6 +297,12 @@ export const foreignApplications = [
     gender: "Female",
     address: "13 Willow Road",
     city: "Sheffield",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Jacob",
@@ -274,6 +314,12 @@ export const foreignApplications = [
     gender: "Male",
     address: "88 Pine Street",
     city: "Bristol",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Amelia",
@@ -285,6 +331,12 @@ export const foreignApplications = [
     gender: "Female",
     address: "54 Cedar Avenue",
     city: "Nottingham",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Jack",
@@ -296,6 +348,12 @@ export const foreignApplications = [
     gender: "Male",
     address: "31 Birch Street",
     city: "Newcastle",
+    attachments: [
+      {
+        document_type: "Passport",
+        document_url: "/public/passport.pdf",
+      }
+    ]
   },
   {
     first_name: "Isabella",
