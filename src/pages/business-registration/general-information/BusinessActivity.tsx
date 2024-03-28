@@ -1,27 +1,26 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
 import {
   businessActivities,
   businessSubActivities,
-} from "../../../constants/businessRegistration";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
+} from '../../../constants/businessRegistration';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setCompanySubActivities,
-} from "../../../states/features/businessRegistrationSlice";
-import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
-import Input from "../../../components/inputs/Input";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+} from '../../../states/features/businessRegistrationSlice';
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import { Link } from 'react-router-dom';
+import Input from '../../../components/inputs/Input';
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
 
 export interface business_company_activities {
   vat: string;
@@ -55,9 +54,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [randomNumber, setRandomNumber] = useState<number>(5);
-  const { company_business_lines } = useSelector(
-    (state: RootState) => state.businessRegistration
-  );
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
@@ -65,11 +61,23 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
     // CHECK IF BUSINESS LINES ARE SELECTED
-    if (company_business_lines?.length === 0) {
+    if (company_activities?.business_lines?.length <= 0) {
       setIsLoading(false);
       setError('business_lines', {
         type: 'manual',
         message: 'Select at least one business line',
+      });
+      return;
+    }
+    if (
+      company_activities?.business_lines?.find(
+        (activity: object) => activity?.main === true
+      ) === undefined
+    ) {
+      setIsLoading(false);
+      setError('business_lines', {
+        type: 'manual',
+        message: 'Select a main business line',
       });
       return;
     }
@@ -87,7 +95,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             ...company_activities,
             vat: data?.vat,
             turnover: data?.turnover,
-            business_lines: company_business_lines,
+            business_lines: company_activities?.business_lines,
             step: 'business_activity_vat',
           },
         })
@@ -109,12 +117,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   // SET DEFAULT VALUES
   useEffect(() => {
     if (company_activities) {
-      setValue("vat", company_activities?.vat);
-      setValue("turnover", company_activities?.turnover);
-
-      if (company_activities?.business_lines?.length > 0) {
-        dispatch(setCompanySubActivities(company_activities?.business_lines));
-      }
+      setValue('vat', company_activities?.vat);
+      setValue('turnover', company_activities?.turnover);
     }
   }, [company_activities, dispatch, setValue]);
 
@@ -158,9 +162,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                 {businessSubActivities
                   ?.slice(0, randomNumber)
                   .map((subActivity) => {
-                    const subActivityExists = company_business_lines?.find(
-                      (activity: object) => activity?.id === subActivity?.id
-                    );
+                    const subActivityExists =
+                      company_activities?.business_lines?.find(
+                        (activity: object) => activity?.id === subActivity?.id
+                      );
                     return (
                       <li
                         key={subActivity.id}
@@ -174,16 +179,30 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                             onClick={(e) => {
                               e.preventDefault();
                               if (disableForm) return;
-                              if (company_business_lines?.length > 0) {
+                              if (
+                                company_activities?.business_lines?.length > 0
+                              ) {
                                 dispatch(
-                                  setCompanySubActivities([
-                                    ...company_business_lines,
-                                    subActivity,
-                                  ])
+                                  setUserApplications({
+                                    entry_id,
+                                    company_activities: {
+                                      ...company_activities,
+                                      business_lines: [
+                                        subActivity,
+                                        ...company_activities.business_lines,
+                                      ],
+                                    },
+                                  })
                                 );
                               } else {
                                 dispatch(
-                                  setCompanySubActivities([subActivity])
+                                  setUserApplications({
+                                    entry_id,
+                                    company_activities: {
+                                      ...company_activities,
+                                      business_lines: [subActivity],
+                                    },
+                                  })
                                 );
                               }
                               clearErrors('business_lines');
@@ -205,9 +224,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             <section className="flex flex-col w-full gap-4">
               <h1 className="text-md">Selected business lines</h1>
               <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                {company_business_lines?.map(
+                {company_activities?.business_lines?.map(
                   (business_line: unknown, index: number) => {
-                    const mainExists = company_business_lines?.find(
+                    const mainExists = company_activities?.business_lines?.find(
                       (activity: object) => activity?.main === true
                     );
                     const mainBusinessLine =
@@ -229,21 +248,27 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                                   e.preventDefault();
                                   if (disableForm) return;
                                   dispatch(
-                                    setCompanySubActivities(
-                                      company_business_lines?.map(
-                                        (activity: object) => {
-                                          if (
-                                            activity?.id === business_line?.id
-                                          ) {
-                                            return {
-                                              ...activity,
-                                              main: false,
-                                            };
-                                          }
-                                          return activity;
-                                        }
-                                      )
-                                    )
+                                    setUserApplications({
+                                      entry_id,
+                                      company_activities: {
+                                        ...company_activities,
+                                        business_lines:
+                                          company_activities?.business_lines?.map(
+                                            (activity: object) => {
+                                              if (
+                                                activity?.id ===
+                                                business_line?.id
+                                              ) {
+                                                return {
+                                                  ...activity,
+                                                  main: false,
+                                                };
+                                              }
+                                              return activity;
+                                            }
+                                          ),
+                                      },
+                                    })
                                   );
                                 }}
                               />
@@ -252,27 +277,33 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           {!mainExists && (
                             <Link
                               to="#"
-                              className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
+                              className="text-[11px] bg-primary text-white p-1 rounded-md shadow-sm"
                               onClick={(e) => {
                                 e.preventDefault();
                                 if (disableForm) return;
                                 dispatch(
-                                  setCompanySubActivities(
-                                    company_business_lines?.map(
-                                      (activity: object) => {
-                                        if (
-                                          activity?.id === business_line?.id
-                                        ) {
-                                          return {
-                                            ...activity,
-                                            main: true,
-                                          };
-                                        }
-                                        return activity;
-                                      }
-                                    )
-                                  )
+                                  setUserApplications({
+                                    entry_id,
+                                    company_activities: {
+                                      ...company_activities,
+                                      business_lines:
+                                        company_activities?.business_lines?.map(
+                                          (activity: object) => {
+                                            if (
+                                              activity?.id === business_line?.id
+                                            ) {
+                                              return {
+                                                ...activity,
+                                                main: true,
+                                              };
+                                            }
+                                            return activity;
+                                          }
+                                        ),
+                                    },
+                                  })
                                 );
+                                clearErrors('business_lines');
                               }}
                             >
                               Set main
@@ -286,15 +317,23 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                             e.preventDefault();
                             if (disableForm) return;
                             const updatedSubActivities =
-                              company_business_lines?.filter(
+                              company_activities?.business_lines?.filter(
                                 (subActivity: unknown) => {
                                   return subActivity?.id !== business_line?.id;
                                 }
                               );
                             dispatch(
-                              setCompanySubActivities(updatedSubActivities)
+                              setUserApplications({
+                                entry_id,
+                                company_activities: {
+                                  ...company_activities,
+                                  business_lines: updatedSubActivities,
+                                },
+                              })
                             );
-                            if (company_business_lines?.length <= 1) {
+                            if (
+                              company_activities?.business_lines?.length <= 1
+                            ) {
                               setError('business_lines', {
                                 type: 'manual',
                                 message: 'Select at least one business line',
@@ -335,10 +374,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           type="radio"
                           label="Yes"
                           checked={watch('vat') === 'yes'}
+                          value={'yes'}
                           onChange={(e) => {
-                            if (e.target.checked) {
-                              setValue('vat', 'yes');
-                            }
+                            field.onChange(e?.target.value);
                           }}
                           name={field?.name}
                         />
@@ -346,10 +384,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           type="radio"
                           label="No"
                           checked={watch('vat') === 'no'}
+                          value={'no'}
                           onChange={(e) => {
-                            if (e.target.checked) {
-                              setValue('vat', 'no');
-                            }
+                            field.onChange(e?.target.value);
                           }}
                           name={field?.name}
                         />
@@ -365,18 +402,36 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               />
               {watch('vat') === 'yes' && (
                 <Controller
-                  defaultValue={0}
                   name="turnover"
+                  defaultValue={
+                    company_activities?.turnover || watch('turnover')
+                  }
+                  rules={{
+                    required:
+                      watch('vat') === 'yes' ? 'Turnover is required' : false,
+                    validate: (value) => {
+                      if (watch('vat') === 'yes' && value <= 0) {
+                        return 'Turnover must be greater than 0';
+                      } else {
+                        return true;
+                      }
+                    },
+                  }}
                   control={control}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col gap-1 w-[60%]">
                         <Input
-                          defaultValue={watch('turnover') || 0}
+                          defaultValue={watch('turnover')}
                           label="Enter expected turnover"
                           required
                           {...field}
                         />
+                        {errors?.turnover && (
+                          <p className="text-[13px] text-red-500">
+                            {String(errors?.turnover.message)}
+                          </p>
+                        )}
                       </label>
                     );
                   }}

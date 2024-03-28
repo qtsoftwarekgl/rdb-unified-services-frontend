@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/inputs/Button';
 import Table from '../../components/table/Table';
 import SuperAdminLayout from '../../containers/SuperAdminLayout';
-import { capitalizeString, formatDate } from '../../helpers/Strings';
+import { capitalizeString, formatDate } from '../../helpers/strings';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { institutions } from '../../constants/dashboard';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';

@@ -5,7 +5,7 @@ import { setAddInstitutionModal, updateInstitutionsList } from '../../states/fea
 import { Controller, useForm } from 'react-hook-form';
 import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
-import validateInputs from '../../helpers/Validations';
+import validateInputs from '../../helpers/validations';
 import Select from '../../components/inputs/Select';
 import { useState } from 'react';
 import Loader from '../../components/Loader';

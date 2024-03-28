@@ -1,4 +1,4 @@
-import { generateUUID } from "../../helpers/Strings";
+import { generateUUID } from "../../helpers/strings";
 import { NewRegistration } from "../business-registration/NewBusinessRegistration";
 
 const NewEnterpriseRegistration = () => {

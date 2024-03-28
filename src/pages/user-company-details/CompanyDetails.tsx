@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import CreateAmendment from "./CreateAmendment";
 import { useParams } from "react-router-dom";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
-import { capitalizeString } from "../../helpers/Strings";
+import { capitalizeString } from "../../helpers/strings";
 import { countriesList } from "../../constants/countries";
 
 const CompanyDetails = () => {

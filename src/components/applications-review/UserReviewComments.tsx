@@ -8,7 +8,7 @@ import {
 } from "../../states/features/userApplicationSlice";
 import { TabType } from "../../states/features/types";
 import { FC } from "react";
-import { formatDate } from "../../helpers/Strings";
+import { formatDate } from "../../helpers/strings";
 import { ReviewComment } from "./AddReviewComments";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";

@@ -1,10 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
-import validateInputs from '../../../helpers/Validations';
+import validateInputs from '../../../helpers/validations';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -57,10 +57,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const provinceRef = useRef();
+  const districtRef = useRef();
+  const sectorRef = useRef();
+  const cellRef = useRef();
+  const villageRef = useRef();
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -120,6 +124,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Select
                       defaultValue={company_address?.province}
                       required
+                      ref={provinceRef}
                       label="Province"
                       options={provicesList?.map((province) => {
                         return {
@@ -129,6 +134,18 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       })}
                       onChange={(e) => {
                         field.onChange(e);
+                        if (districtRef?.current) {
+                          districtRef.current.clearValue();
+                        }
+                        if (sectorRef?.current) {
+                          sectorRef.current.clearValue();
+                        }
+                        if (cellRef?.current) {
+                          cellRef.current.clearValue();
+                        }
+                        if (villageRef?.current) {
+                          villageRef.current.clearValue();
+                        }
                       }}
                     />
                     {errors?.province && (
@@ -151,6 +168,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Select
                       defaultValue={company_address?.district}
                       required
+                      ref={districtRef}
                       label="District"
                       options={districtsList
                         ?.filter(
@@ -165,6 +183,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         })}
                       onChange={(e) => {
                         field.onChange(e);
+                        if (sectorRef?.current) {
+                          sectorRef?.current.clearValue();
+                        }
+                        if (cellRef?.current) {
+                          cellRef?.current.clearValue();
+                        }
+                        if (villageRef?.current) {
+                          villageRef?.current.clearValue();
+                        }
                       }}
                     />
                     {errors?.district && (
@@ -197,6 +224,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         )?.code
                       }
                       required
+                      ref={sectorRef}
                       label="Sector"
                       options={sectorsList
                         ?.filter(
@@ -211,6 +239,12 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         })}
                       onChange={(e) => {
                         field.onChange(e);
+                        if (cellRef?.current) {
+                          cellRef.current.clearValue();
+                        }
+                        if (villageRef?.current) {
+                          villageRef.current.clearValue();
+                        }
                       }}
                     />
                     {errors?.sector && (
@@ -241,6 +275,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       }
                       required
                       label="Cell"
+                      ref={cellRef}
                       options={cellsList
                         ?.filter(
                           (cell) => cell?.sector_code === watch('sector')
@@ -253,6 +288,9 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         })}
                       onChange={(e) => {
                         field.onChange(e);
+                        if (villageRef?.current) {
+                          villageRef?.current.clearValue();
+                        }
                       }}
                     />
                     {errors?.cell && (
@@ -286,6 +324,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         )?.code
                       }
                       required
+                      ref={villageRef}
                       label="Village"
                       options={villagesList
                         ?.filter(

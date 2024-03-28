@@ -642,3 +642,18 @@ export const dissolutionReasons = [
     value: 'other',
   },
 ]
+
+export const attachmentFileColumns = [
+  {
+    header: 'File size',
+    accessorKey: 'size',
+  },
+  {
+    header: 'File name',
+    accessorKey: 'name',
+  },
+  {
+    header: 'File type',
+    accessorKey: 'type',
+  },
+];

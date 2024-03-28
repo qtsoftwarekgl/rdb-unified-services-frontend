@@ -6,7 +6,7 @@ import {
 } from "react-hook-form";
 import Modal from "../../components/Modal";
 import Select from "../../components/inputs/Select";
-import validateInputs from "../../helpers/Validations";
+import validateInputs from "../../helpers/validations";
 import Input from "../../components/inputs/Input";
 import Button from "../../components/inputs/Button";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";

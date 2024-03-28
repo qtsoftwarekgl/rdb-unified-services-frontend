@@ -1,7 +1,7 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
-import { formatCompanyData, formatDate } from "../../helpers/Strings";
+import { formatCompanyData, formatDate } from "../../helpers/strings";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../states/store";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";

@@ -11,7 +11,7 @@ import { setRegistrationStep } from "../../states/features/authSlice";
 import moment from "moment";
 import Select from "../../components/inputs/Select";
 import { countriesList } from "../../constants/countries";
-import validateInputs from "../../helpers/Validations";
+import validateInputs from "../../helpers/validations";
 import { useNavigate } from "react-router-dom";
 
 interface ForeignRegistrationFormProps {

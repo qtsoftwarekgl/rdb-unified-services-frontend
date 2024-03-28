@@ -5,7 +5,7 @@ import {
   SubmitHandler,
 } from "react-hook-form";
 import Input from "../../components/inputs/Input";
-import validateInputs from "../../helpers/Validations";
+import validateInputs from "../../helpers/validations";
 import Divider from "../../components/Divider";
 import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/inputs/Button";

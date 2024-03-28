@@ -18,7 +18,7 @@ import {
   setForeignBusinessRegistrationTabs,
   foreign_business_registration_tabs_initial_state,
 } from "../../../states/features/foreignBranchRegistrationSlice";
-import { capitalizeString } from "../../../helpers/Strings";
+import { capitalizeString } from "../../../helpers/strings";
 import Table from "../../../components/table/Table";
 import { countriesList } from "../../../constants/countries";
 import Button from "../../../components/inputs/Button";

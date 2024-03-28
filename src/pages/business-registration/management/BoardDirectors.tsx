@@ -3,7 +3,7 @@ import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
 import Input from '../../../components/inputs/Input';
-import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import { countriesList } from '../../../constants/countries';
 import Button from '../../../components/inputs/Button';
@@ -17,14 +17,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString } from '../../../helpers/Strings';
+import { capitalizeString, generateUUID } from '../../../helpers/strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
+import validateInputs from '../../../helpers/validations';
+import { attachmentFileColumns } from '../../../constants/businessRegistration';
+import { getBase64 } from '../../../helpers/uploads';
+import Modal from '../../../components/Modal';
 
 export interface business_board_of_directors {
   first_name: string;
   middle_name: string;
   last_name: string;
+  id: string
 }
 
 interface BoardDirectorsProps {
@@ -56,6 +61,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState<boolean>(false);
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -81,18 +88,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    if (
-      data?.position === 'chairman' &&
-      board_of_directors?.find((director) => director?.position === 'chairman')
-    ) {
-      setError('position_conflict', {
-        type: 'manual',
-        message: 'Cannot have more than one chairpeople in a company.',
-      });
-
-      return;
-    }
-
     clearErrors('position_conflict');
 
     setIsLoading(true);
@@ -108,6 +103,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               ...data,
               attachment: attachmentFile?.name,
               step: 'board_of_directors',
+              id: generateUUID(),
             },
             ...board_of_directors,
           ],
@@ -162,16 +158,71 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 if (disableForm) return;
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    board_of_directors: board_of_directors?.filter(
-                      (_: unknown, index: number) => {
-                        return index !== row?.original?.no;
-                      }
-                    ),
-                  })
-                );
+                setConfirmDeleteModal(row?.original);
+              }}
+            />
+            <Modal
+              isOpen={confirmDeleteModal}
+              onClose={() => {
+                setConfirmDeleteModal(null);
+              }}
+            >
+              <section className="flex flex-col gap-6">
+                <h1 className="font-medium uppercase text-center">
+                  Are you sure you want to delete{' '}
+                  {confirmDeleteModal?.first_name}{' '}
+                  {confirmDeleteModal?.last_name || ''}
+                </h1>
+                <menu className="flex items-center gap-3 justify-between">
+                  <Button
+                    value="Cancel"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setConfirmDeleteModal(false);
+                    }}
+                  />
+                  <Button
+                    value="Delete"
+                    danger
+                    onClick={(e) => {
+                      e.preventDefault();
+                      dispatch(
+                        setUserApplications({
+                          entry_id,
+                          board_of_directors: board_of_directors?.filter(
+                            (director: business_board_of_directors) => {
+                              return director?.id !== row?.original?.id;
+                            }
+                          ),
+                        })
+                      );
+                      setConfirmDeleteModal(false);
+                    }}
+                  />
+                </menu>
+              </section>
+            </Modal>
+          </menu>
+        );
+      },
+    },
+  ];
+
+  const attachmentColumns = [
+    ...attachmentFileColumns,
+    {
+      header: 'action',
+      accesorKey: 'action',
+      cell: ({ row }) => {
+        return (
+          <menu className="flex items-center gap-2">
+            <FontAwesomeIcon
+              icon={faEye}
+              onClick={(e) => {
+                e.preventDefault();
+                getBase64(row?.original, (result) => {
+                  setAttachmentPreview(result);
+                });
               }}
             />
           </menu>
@@ -185,10 +236,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   return (
     <section className="flex flex-col gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={disableForm}
-        >
+        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <menu className="flex flex-col w-full gap-4">
             <h3 className="font-medium uppercase text-md">Add members</h3>
             <Controller
@@ -213,13 +261,28 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         },
                       ]}
                       onChange={(e) => {
-                        field.onChange(e);
+                        if (
+                          String(e) === 'chairman' &&
+                          board_of_directors?.find(
+                            (director) => director?.position === 'chairman'
+                          )
+                        ) {
+                          setError('position_conflict', {
+                            type: 'manual',
+                            message:
+                              'Cannot have more than one chairpeople in a company.',
+                          });
+                          setValue('position', '');
+                          setValue('document_type', '');
+                          return;
+                        }
                         if (
                           errors?.position_conflict &&
-                          e?.value !== 'chairman'
+                          String(e) !== 'chairman'
                         ) {
                           clearErrors('position_conflict');
                         }
+                        field.onChange(e);
                       }}
                     />
                     {errors?.position && (
@@ -271,6 +334,12 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     required: watch('document_type')
                       ? 'Document number is required'
                       : false,
+                    validate: (value) => {
+                      return (
+                        validateInputs(value, 'nid') ||
+                        'National ID must be 16 characters long'
+                      );
+                    },
                   }}
                   render={({ field }) => {
                     return (
@@ -307,9 +376,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                                   loading: false,
                                   error: true,
                                 });
-                              }
-
-                              if (userDetails) {
+                              } else {
                                 setSearchMember({
                                   ...searchMember,
                                   data: userDetails,
@@ -453,28 +520,23 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         <Input
                           type="radio"
                           label="Male"
+                          value={'Male'}
                           name={field?.name}
                           onChange={(e) => {
                             field.onChange(e.target.value);
-                            if (e.target.checked) {
-                              setValue('gender', 'Male');
-                            }
                           }}
                         />
                         <Input
                           type="radio"
                           label="Female"
                           name={field?.name}
+                          value={'Female'}
                           onChange={(e) => {
                             field.onChange(e.target.value);
-                            if (e.target.checked) {
-                              setValue('gender', 'Female');
-                            }
                           }}
                         />
                       </menu>
                     )}
-
                     {errors?.gender && (
                       <span className="text-red-500 text-[13px]">
                         {String(errors?.gender?.message)}
@@ -598,37 +660,28 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 control={control}
                 render={({ field }) => {
                   return (
-                    <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                        <Input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          className="!w-fit max-sm:!w-full"
-                          onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            setAttachmentFile(e?.target?.files?.[0]);
-                            clearErrors('attachment');
-                            setValue('attachment', e?.target?.files?.[0]?.name);
-                          }}
-                        />
+                    <label className="flex flex-col w-full items-start gap-2 max-sm:!w-full">
+                      <Input
+                        type="file"
+                        accept="application/pdf,image/*"
+                        className="!w-fit max-sm:!w-full self-start"
+                        onChange={(e) => {
+                          field.onChange(e?.target?.files?.[0]);
+                          setAttachmentFile(e?.target?.files?.[0]);
+                          clearErrors('attachment');
+                          setValue('attachment', e?.target?.files?.[0]?.name);
+                        }}
+                      />
+                      <ul className="flex flex-col items-center gap-3 w-full">
                         {(attachmentFile || board_of_directors?.attachment) && (
-                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                            {board_of_directors?.attachment ||
-                              attachmentFile?.name}
-                            <FontAwesomeIcon
-                              icon={faX}
-                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setAttachmentFile(null);
-                                setValue('attachment', null);
-                                setError('attachment', {
-                                  type: 'manual',
-                                  message: 'Passport is required',
-                                });
-                              }}
-                            />
-                          </p>
+                          <Table
+                            columns={attachmentColumns}
+                            data={[
+                              attachmentFile || board_of_directors?.attachment,
+                            ]}
+                            showPagination={false}
+                            showFilter={false}
+                          />
                         )}
                       </ul>
                       {errors?.attachment && (
@@ -664,7 +717,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   ? board_of_directors?.map((member, index) => {
                       return {
                         ...member,
-                        no: index + 1,
+                        no: index,
                         name: `${member?.first_name || ''} ${
                           member?.middle_name || ''
                         } ${member?.last_name || ''}`,
@@ -681,7 +734,11 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               tableTitle="Board members"
             />
           </section>
-          {errors?.board_of_directors && <p></p>}
+          {errors?.board_of_directors && (
+            <p className="text-red-600 text-[13px]">
+              {String(errors?.board_of_directors?.message)}
+            </p>
+          )}
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -696,12 +753,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setBusinessActiveTab("preview_submission")
-                  );
+                  dispatch(setBusinessActiveTab('preview_submission'));
                 }}
               />
             )}

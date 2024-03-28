@@ -1,7 +1,7 @@
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../Modal';
-import { formatDate } from '../../helpers/Strings';
+import { formatDate } from '../../helpers/strings';
 import { ReviewComment } from './AddReviewComments';
 import { faCircleCheck, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';

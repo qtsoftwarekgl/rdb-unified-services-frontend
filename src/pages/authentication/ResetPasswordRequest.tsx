@@ -1,7 +1,7 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
-import validateInputs from '../../helpers/Validations';
+import validateInputs from '../../helpers/validations';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';

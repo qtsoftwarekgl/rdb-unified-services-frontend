@@ -4,7 +4,7 @@ import Select from '../../../components/inputs/Select';
 import Input from '../../../components/inputs/Input';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
-import validateInputs from '../../../helpers/Validations';
+import validateInputs from '../../../helpers/validations';
 import { AppDispatch, RootState } from '../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {

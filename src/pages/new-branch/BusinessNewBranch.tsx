@@ -5,7 +5,7 @@ import { RootState } from '../../states/store';
 import { useSelector } from 'react-redux';
 import Input from '../../components/inputs/Input';
 import { useEffect, useState } from 'react';
-import validateInputs from '../../helpers/Validations';
+import validateInputs from '../../helpers/validations';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import Table from '../../components/table/Table';

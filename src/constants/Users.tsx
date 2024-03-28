@@ -1236,7 +1236,7 @@ export const columns = [
   },
 ];
 
-export const validNationalID = "1120001111111111";
+export const validNationalID = "1111111111111111";
 export const passportNumberRegex = /^[a-zA-Z0-9]{12}$/;
 
 export const RDBAdminEmailPattern =

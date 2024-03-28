@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString } from '../../../helpers/Strings';
+import { capitalizeString } from '../../../helpers/strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
 

@@ -9,12 +9,12 @@ import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { userData, workingIds } from "../../../constants/authentication";
 import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/Validations";
+import validateInputs from "../../../helpers/validations";
 import { countriesList } from "../../../constants/countries";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../../components/inputs/Button";
 import Table from "../../../components/table/Table";
-import { capitalizeString } from "../../../helpers/Strings";
+import { capitalizeString } from "../../../helpers/strings";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,

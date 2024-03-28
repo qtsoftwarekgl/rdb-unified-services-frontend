@@ -15,7 +15,7 @@ import {
   setNameReservationOwnerDetails,
   setReservedNames,
 } from "../../states/features/nameReservationSlice";
-import { generateUUID } from "../../helpers/Strings";
+import { generateUUID } from "../../helpers/strings";
 
 type Props = {
   isOpen: boolean;

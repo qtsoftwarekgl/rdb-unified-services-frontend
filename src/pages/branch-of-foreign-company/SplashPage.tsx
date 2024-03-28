@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { generateUUID } from "../../helpers/Strings";
+import { generateUUID } from "../../helpers/strings";
 import { NewRegistration } from "../business-registration/NewBusinessRegistration";
 import { setForeignCompanyDetails } from "../../states/features/foreignBranchRegistrationSlice";
 

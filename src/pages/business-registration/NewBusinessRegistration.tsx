@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/inputs/Button';
 import UserLayout from '../../containers/UserLayout';
-import { capitalizeString, generateUUID } from '../../helpers/Strings';
+import { capitalizeString, generateUUID } from '../../helpers/strings';
 import { AppDispatch, RootState } from '../../states/store';
 import Table from '../../components/table/Table';
 import moment from 'moment';

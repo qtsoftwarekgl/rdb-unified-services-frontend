@@ -9,7 +9,7 @@ import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import Loader from '../../../components/Loader';
-import validateInputs from '../../../helpers/Validations';
+import validateInputs from '../../../helpers/validations';
 import { countriesList } from '../../../constants/countries';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../../components/inputs/Button';
@@ -22,7 +22,7 @@ import {
   setBusinessActiveTab,
   setBusinessCompletedStep,
 } from '../../../states/features/businessRegistrationSlice';
-import { capitalizeString, generateUUID } from '../../../helpers/Strings';
+import { capitalizeString, generateUUID } from '../../../helpers/strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import moment from 'moment';
 import { RDBAdminEmailPattern } from '../../../constants/Users';

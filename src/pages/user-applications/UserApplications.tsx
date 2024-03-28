@@ -5,7 +5,7 @@ import UserLayout from "../../containers/UserLayout";
 import Button from "../../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
-import { formatCompanyData } from "../../helpers/Strings";
+import { formatCompanyData } from "../../helpers/strings";
 import {
   business_registration_tabs_initial_state,
   setBusinessActiveStep,
