@@ -28,7 +28,10 @@ import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { useNavigate } from "react-router-dom";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+import {
+  RDBAdminEmailPattern,
+  validNationalID,
+} from "../../../constants/Users";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import ViewDocument from "../../user-company-details/ViewDocument";
 
@@ -78,6 +81,18 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     setError,
     watch,
   } = useForm();
+
+  useEffect(() => {
+    if (watch("document_type") === "passport") {
+      setValue("country", "");
+      setValue("phone", "");
+      setValue("street_name", "");
+      setValue("first_name", "");
+      setValue("middle_name", "");
+      setValue("last_name", "");
+      // setValue("gender", "");
+    }
+  }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
     setIsLoading(true);
@@ -327,10 +342,10 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           setTimeout(() => {
                             setUserDetails(null);
                             const index =
-                              field?.value.trim() === "1120001111111111"
+                              field?.value.trim() === validNationalID
                                 ? Math.floor(Math.random() * 10)
                                 : Math.floor(Math.random() * 11) + 11;
-                            console.log(index);
+
                             const userDetails = userData[index];
                             if (!userDetails) {
                               setNationalIdError(true);
@@ -524,24 +539,33 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                         <p className="flex items-center gap-1 text-[15px]">
                           Gender<span className="text-red-500">*</span>
                         </p>
-                        <menu className="flex items-center gap-4">
-                          {gender === "Male" && (
-                            <Input
-                              type="radio"
-                              label="Male"
-                              checked={watch("gender") === "Male"}
-                              {...field}
-                            />
-                          )}
-                          {gender === "Female" && (
-                            <Input
-                              type="radio"
-                              label="Female"
-                              {...field}
-                              checked={watch("gender") === "Female"}
-                            />
-                          )}
-                        </menu>
+                        {!(watch("document_type") === "passport") ? (
+                          <menu className="flex items-center gap-4">
+                            {gender === "Male" && (
+                              <Input
+                                type="radio"
+                                label="Male"
+                                readOnly
+                                checked={watch("gender") === "Male"}
+                                {...field}
+                              />
+                            )}
+                            {gender === "Female" && (
+                              <Input
+                                type="radio"
+                                label="Female"
+                                readOnly
+                                {...field}
+                                checked={watch("gender") === "Female"}
+                              />
+                            )}
+                          </menu>
+                        ) : (
+                          <menu className="flex items-center gap-4 mt-2">
+                            <Input type="radio" label="Male" {...field} />
+                            <Input type="radio" label="Female" {...field} />
+                          </menu>
+                        )}
                         {errors?.gender && (
                           <span className="text-sm text-red-500">
                             {String(errors?.gender?.message)}
@@ -1328,7 +1352,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   {attachmentFile && (
                     <p className="flex items-center gap-2 text-[14px] text-black font-normal">
                       <FontAwesomeIcon
-                      className="cursor-pointer text-primary"
+                        className="cursor-pointer text-primary"
                         icon={faEye}
                         onClick={(e) => {
                           e.stopPropagation();

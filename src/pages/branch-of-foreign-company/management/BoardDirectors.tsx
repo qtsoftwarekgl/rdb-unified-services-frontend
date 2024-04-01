@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, set, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import Loader from "../../../components/Loader";
 import Input from "../../../components/inputs/Input";
@@ -17,10 +17,16 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { capitalizeString } from "../../../helpers/Strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+import {
+  RDBAdminEmailPattern,
+  passportNumberRegex,
+  validNationalID,
+} from "../../../constants/Users";
+import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
+import ViewDocument from "../../user-company-details/ViewDocument";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
 
 interface BoardDirectorsProps {
   entry_id: string | null;
@@ -38,7 +44,6 @@ const BoardDirectors = ({
     setError,
     watch,
     setValue,
-    clearErrors,
     reset,
     formState: { isSubmitSuccessful, errors },
   } = useForm();
@@ -48,6 +53,10 @@ const BoardDirectors = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [confirmModalData, setConfirmModalData] = useState({});
+  const [previewAttachment, setPreviewAttachment] = useState<string>("");
+
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -71,7 +80,6 @@ const BoardDirectors = ({
     }
   }, [isSubmitSuccessful, reset]);
 
-
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
     if (watch("document_type") === "passport") {
@@ -81,6 +89,8 @@ const BoardDirectors = ({
       setValue("first_name", "");
       setValue("middle_name", "");
       setValue("last_name", "");
+      setValue("document_no", "");
+      setValue("gender", "");
     }
   }, [setValue, watch("document_type")]);
 
@@ -123,31 +133,15 @@ const BoardDirectors = ({
       accessorKey: "action",
       cell: ({ row }) => {
         return (
-          <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
+          <menu className="flex items-center">
             <FontAwesomeIcon
               className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
                 if (isFormDisabled) return;
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    foreign_board_of_directors:
-                      foreign_board_of_directors?.filter(
-                        (_: unknown, index: number) => {
-                          return index !== row?.original?.no;
-                        }
-                      ),
-                  })
-                );
+                setConfirmModalData(row?.original);
+                setConfirmModal(true);
               }}
             />
           </menu>
@@ -279,7 +273,11 @@ const BoardDirectors = ({
                               error: false,
                             });
                             setTimeout(() => {
-                              const index = workingIds.indexOf(field.value);
+                              const index =
+                                field?.value.trim() === validNationalID
+                                  ? Math.floor(Math.random() * 10)
+                                  : Math.floor(Math.random() * 11) + 11;
+
                               const userDetails = userData[index];
                               if (!userDetails) {
                                 setSearchMember({
@@ -301,8 +299,8 @@ const BoardDirectors = ({
                                   userDetails?.middle_name
                                 );
                                 setValue("last_name", userDetails?.last_name);
-                                setValue("gender", userDetails?.data?.gender);
-                                setValue("phone", userDetails?.data?.phone);
+                                setValue("gender", userDetails?.gender);
+                                setValue("phone", userDetails?.phone);
                               }
                             }, 700);
                           }}
@@ -324,6 +322,41 @@ const BoardDirectors = ({
                           <p className="text-red-500 text-[13px]">
                             {String(errors?.document_no?.message)}
                           </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+              )}
+              {watch("document_type") === "passport" && (
+                <Controller
+                  name="document_no"
+                  rules={{
+                    required: "Passport number is required",
+                    pattern: {
+                      value: passportNumberRegex,
+                      message:
+                        "Invalid passport number format. It should be a 12-digit unique code containing alphabets and numerals.",
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label
+                        className={`flex flex-col gap-1 w-full items-start ${
+                          watch("document_type") !== "nid" && "!w-[49%]"
+                        }`}
+                      >
+                        <Input
+                          required
+                          placeholder="Passport number"
+                          label="Passport number"
+                          {...field}
+                        />
+                        {errors?.document_no && (
+                          <span className="text-sm text-red-500">
+                            {String(errors?.document_no?.message)}
+                          </span>
                         )}
                       </label>
                     );
@@ -399,22 +432,50 @@ const BoardDirectors = ({
               }}
             />
             <Controller
-              name="gender"
               control={control}
-              defaultValue={searchMember?.data?.gender}
-              rules={{ required: "Select gender" }}
+              name="gender"
+              defaultValue={
+                watch("gender") ||
+                searchMember?.data?.gender ||
+                foreign_board_of_directors?.gender
+              }
+              rules={{ required: "Gender is required" }}
               render={({ field }) => {
+                const gender = watch("gender");
                 return (
-                  <label className="flex flex-col gap-2 items-start w-[49%]">
+                  <label className="flex items-center w-full gap-2 py-4">
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    <menu className="flex items-center gap-4 mt-2">
-                      <Input type="radio" label="Male" {...field} />
-                      <Input type="radio" label="Female" {...field} />
-                    </menu>
+                    {!(watch("document_type") === "passport") ? (
+                      <menu className="flex items-center gap-4">
+                        {gender === "Male" && (
+                          <Input
+                            type="radio"
+                            label="Male"
+                            readOnly
+                            checked={watch("gender") === "Male"}
+                            {...field}
+                          />
+                        )}
+                        {gender === "Female" && (
+                          <Input
+                            type="radio"
+                            label="Female"
+                            readOnly
+                            {...field}
+                            checked={watch("gender") === "Female"}
+                          />
+                        )}
+                      </menu>
+                    ) : (
+                      <menu className="flex items-center gap-4 mt-2">
+                        <Input type="radio" label="Male" {...field} />
+                        <Input type="radio" label="Female" {...field} />
+                      </menu>
+                    )}
                     {errors?.gender && (
-                      <span className="text-red-500 text-[13px]">
+                      <span className="text-sm text-red-500">
                         {String(errors?.gender?.message)}
                       </span>
                     )}
@@ -557,59 +618,61 @@ const BoardDirectors = ({
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
+                Passport copy <span className="text-red-600">*</span>
               </h3>
-              <Controller
-                defaultValue={attachmentFile?.name}
-                name="attachment"
-                rules={{
-                  required:
-                    watch("document_type") === "passport"
-                      ? "Document attachment is required"
-                      : false,
-                }}
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                        <Input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          className="!w-fit max-sm:!w-full"
-                          onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            setAttachmentFile(e?.target?.files?.[0]);
-                            setValue("attachment", e?.target?.files?.[0]?.name);
-                            clearErrors("attachment");
-                          }}
-                        />
-                        {(attachmentFile ||
-                          foreign_board_of_directors?.attachment) && (
-                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                            {foreign_board_of_directors?.attachment ||
-                              attachmentFile?.name}
-                            <FontAwesomeIcon
-                              icon={faX}
-                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setAttachmentFile(null);
-                                setValue("attachment", null);
-                              }}
-                            />
+              <menu className="flex gap-4">
+                <Controller
+                  name="attachment"
+                  rules={{ required: "Passport is required" }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                        <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            className="!w-fit max-sm:!w-full"
+                            onChange={(e) => {
+                              field.onChange(e?.target?.files?.[0]);
+                              setAttachmentFile(e?.target?.files?.[0]);
+                            }}
+                          />
+                        </ul>
+                        {errors?.attachment && (
+                          <p className="text-sm text-red-500">
+                            {String(errors?.attachment?.message)}
                           </p>
                         )}
-                      </ul>
-                      {errors?.attachment && (
-                        <p className="text-sm text-red-500">
-                          {String(errors?.attachment?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
+                      </label>
+                    );
+                  }}
+                />
+                {attachmentFile && (
+                  <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                    <FontAwesomeIcon
+                      className="cursor-pointer text-primary"
+                      icon={faEye}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewAttachment(
+                          URL.createObjectURL(attachmentFile)
+                        );
+                      }}
+                    />
+                    {attachmentFile?.name}
+                    <FontAwesomeIcon
+                      icon={faX}
+                      className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setAttachmentFile(null);
+                        setValue("attachment", null);
+                      }}
+                    />
+                  </p>
+                )}
+              </menu>
             </menu>
           </section>
           <section className="flex items-center justify-end w-full">
@@ -679,6 +742,34 @@ const BoardDirectors = ({
           </menu>
         </fieldset>
       </form>
+      {previewAttachment && (
+        <ViewDocument
+          documentUrl={previewAttachment}
+          setDocumentUrl={setPreviewAttachment}
+        />
+      )}
+      <ConfirmModal
+        isOpen={confirmModal}
+        onClose={() => {
+          setConfirmModal(false);
+          setConfirmModalData({});
+        }}
+        onConfirm={(e) => {
+          e.preventDefault();
+          dispatch(
+            setUserApplications({
+              entry_id,
+              foreign_board_of_directors: foreign_board_of_directors?.filter(
+                (_: unknown, index: number) => {
+                  return index !== confirmModalData?.no - 1;
+                }
+              ),
+            })
+          );
+        }}
+        message="Are you sure you want to delete this member?"
+        description="This action cannot be undone"
+      />
     </section>
   );
 };

@@ -3,7 +3,36 @@ import {
   faDatabase,
   faPerson,
   faPersonCircleCheck,
+  faPersonCircleQuestion,
 } from "@fortawesome/free-solid-svg-icons";
+
+export const backOfficeDashboardCards = [
+  {
+    title: "Applicantions",
+    value: 5000,
+    icon: faDatabase,
+    route: "/admin/review-applications",
+  },
+
+  {
+    title: "Pending Applications",
+    value: 300,
+    icon: faPersonCircleQuestion,
+    route: "/admin/review-applications",
+  },
+  {
+    title: "Foreign Accounts",
+    value: 100,
+    icon: faDatabase,
+    route: "/admin/foreign-applicants",
+  },
+  {
+    title: "Pending Foreign Accounts",
+    value: 200,
+    icon: faPersonCircleQuestion,
+    route: "/admin/foreign-applicants",
+  },
+];
 
 // DASHBOARD CARDS
 export const adminDashboardCards = [
@@ -67,6 +96,37 @@ export const superAdminDashboardCards = [
     route: "/super-admin/users?role=external_member",
   },
 ];
+
+export const backOfficeRecentAcitivities = [
+{
+  title: "Logged in",
+  date: "2022-10-10, 10:00",
+},
+{
+  title: "Logged out",
+  date: "2022-10-10, 10:00",
+},
+{
+  title: "Approved a new user",
+  date: "2022-10-10, 10:00",
+},
+{
+  title: "Rejected a user",
+  date: "2022-10-10, 10:00",
+},
+{
+  title: "Approved Domestic Business Registration",
+  date: "2022-10-10, 10:00",
+},
+{
+  title: "Approved Foreign Business Registration",
+  date: "2022-10-10, 10:00",
+},
+{
+  title: "Approved a new user",
+  date: "2022-10-10, 10:00",
+}
+]
 
 // RECENT ACTIVITIES
 export const recentActivities = [
@@ -209,12 +269,15 @@ export const foreignApplications = [
     address: "KG 230",
     city: "Manchester",
     phone: "0788888888",
+    passport_number: "123456789",
+    passport_expiry_date: "2/3/2025",
+    date_of_birth: "2/3/1990",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Emma",
@@ -227,12 +290,15 @@ export const foreignApplications = [
     address: "17 Cherry Tree Lane",
     city: "London",
     phone: "0788888888",
+    passport_expiry_date: "4/15/2024",
+    passport_number: "123456789",
+    date_of_birth: "4/15/1990",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Michael",
@@ -245,12 +311,15 @@ export const foreignApplications = [
     address: "45 Oak Street",
     city: "Birmingham",
     phone: "0788888888",
+    passport_number: "123456789",
+    passport_expiry_date: "1/9/2025",
+    date_of_birth: "1/9/1990",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Olivia",
@@ -263,12 +332,15 @@ export const foreignApplications = [
     address: "29 Maple Avenue",
     city: "Liverpool",
     phone: "0788888888",
+    passport_number: "123456789",
+    passport_expiry_date: "8/21/2024",
+    date_of_birth: "8/21/1990",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Charlie",
@@ -279,13 +351,16 @@ export const foreignApplications = [
     country: "England",
     gender: "Male",
     address: "72 Elm Street",
+    passport_expiry_date: "5/7/2025",
+    date_of_birth: "5/7/1990",
+    passport_number: "123456789",
     city: "Leeds",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Sophia",
@@ -297,12 +372,15 @@ export const foreignApplications = [
     gender: "Female",
     address: "13 Willow Road",
     city: "Sheffield",
+    passport_expiry_date: "11/12/2024",
+    date_of_birth: "11/12/1990",
+    passport_number: "123456789",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Jacob",
@@ -314,12 +392,15 @@ export const foreignApplications = [
     gender: "Male",
     address: "88 Pine Street",
     city: "Bristol",
+    passport_expiry_date: "3/18/2025",
+    passport_number: "123456789",
+    date_of_birth: "3/18/1990",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Amelia",
@@ -331,12 +412,15 @@ export const foreignApplications = [
     gender: "Female",
     address: "54 Cedar Avenue",
     city: "Nottingham",
+    passport_expiry_date: "7/5/2024",
+    passport_number: "123456789",
+    date_of_birth: "7/5/1990",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Jack",
@@ -347,13 +431,16 @@ export const foreignApplications = [
     country: "England",
     gender: "Male",
     address: "31 Birch Street",
+    passport_expiry_date: "10/30/2025",
+    date_of_birth: "10/30/1990",
+    passport_number: "123456789",
     city: "Newcastle",
     attachments: [
       {
         document_type: "Passport",
         document_url: "/public/passport.pdf",
-      }
-    ]
+      },
+    ],
   },
   {
     first_name: "Isabella",
@@ -364,6 +451,7 @@ export const foreignApplications = [
     country: "United Kingdom",
     gender: "Female",
     address: "78 Oakwood Lane",
+
     city: "Leicester",
   },
   // Add more users here...

@@ -23,7 +23,7 @@ export const userData = [
   {
     id: 1,
     first_name: "Eachelle",
-    gender: "Female",
+    gender: "Male",
     date_of_birth: "2/3/2024",
     nationality: "Syria",
     phone: "1203032891",
@@ -153,7 +153,7 @@ export const userData = [
   {
     id: 10,
     first_name: "Leticia",
-    gender: "Female",
+    gender: "Male",
     country: "China",
     sector: "Kabuga",
     date_of_birth: "4/20/2023",

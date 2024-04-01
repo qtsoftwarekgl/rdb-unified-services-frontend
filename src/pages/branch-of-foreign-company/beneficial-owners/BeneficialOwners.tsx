@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, set, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
   ownerRelationships,
@@ -22,9 +22,11 @@ import {
 } from "../../../states/features/foreignBranchRegistrationSlice";
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
+import ViewDocument from "../../user-company-details/ViewDocument";
+import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
 
 interface BeneficialOwnersProps {
   entry_id: string | null;
@@ -53,6 +55,9 @@ const BeneficialOwners = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [confirmModalData, setConfirmModalData] = useState({});
+  const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
@@ -61,6 +66,25 @@ const BeneficialOwners = ({
 
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+
+  useEffect(() => {
+    setValue("rwandan_company", "");
+    setValue("document_type", "");
+    setValue("company_code", "");
+    setValue("company_name", "");
+    setValue("email", "");
+    setValue("gender", "");
+    setValue("phone", "");
+    setValue("residential_country", "");
+    setValue("residential_street_name", "");
+    setValue("residential_phone", "");
+    setValue("document_no", "");
+    setValue("first_name", "");
+    setValue("postal_code", "");
+    setValue("middle_name", "");
+    setValue("last_name", "");
+  }, [watch("beneficial_type")]);
 
   // CLEAR FORM
   useEffect(() => {
@@ -119,29 +143,21 @@ const BeneficialOwners = ({
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
+            {/* <FontAwesomeIcon
               className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
               icon={faEye}
               onClick={(e) => {
                 e.preventDefault();
               }}
-            />
+            /> */}
             <FontAwesomeIcon
               className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                const newBeneficialOwners = foreign_beneficial_owners?.filter(
-                  (_: unknown, index: number) => {
-                    return index !== row?.original?.no;
-                  }
-                );
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    foreign_beneficial_owners: newBeneficialOwners,
-                  })
-                );
+                if (isFormDisabled) return;
+                setConfirmModalData(row?.original);
+                setConfirmModal(true);
               }}
             />
           </menu>
@@ -155,7 +171,7 @@ const BeneficialOwners = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={RDBAdminEmailPattern.test(user?.email)}
+          disabled={isFormDisabled}
         >
           <menu className="flex flex-col gap-3">
             <h3 className="text-lg font-medium uppercase">
@@ -186,6 +202,53 @@ const BeneficialOwners = ({
               }}
             />
           </menu>
+          {watch("beneficial_type") &&
+            watch("beneficial_type") !== "person" && (
+              <Controller
+                control={control}
+                name="rwandan_company"
+                rules={{ required: "Select Rwandan company status" }}
+                render={({ field }) => {
+                  return (
+                    <menu className="flex flex-col gap-2">
+                      <p className="flex items-center gap-2 text-[15px]">
+                        is the beneficial owner a Rwandan company?
+                        <span className="text-red-600">*</span>
+                      </p>
+                      <menu className="flex items-center w-full gap-6">
+                        <Input
+                          type="radio"
+                          label="Yes"
+                          checked={watch("rwandan_company") === "yes"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setValue("rwandan_company", "yes");
+                            }
+                          }}
+                          name={field?.name}
+                        />
+                        <Input
+                          type="radio"
+                          label="No"
+                          checked={watch("rwandan_company") === "no"}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setValue("rwandan_company", "no");
+                            }
+                          }}
+                          name={field?.name}
+                        />
+                        {errors?.rwandan_company && (
+                          <p className="text-[13px] text-red-500">
+                            {String(errors?.rwandan_company.message)}
+                          </p>
+                        )}
+                      </menu>
+                    </menu>
+                  );
+                }}
+              />
+            )}
           <ul className={`w-full flex items-start gap-6`}>
             {watch("beneficial_type") === "person" && (
               <Controller
@@ -217,7 +280,8 @@ const BeneficialOwners = ({
               />
             )}
             {watch("beneficial_type") &&
-              watch("beneficial_type") !== "person" && (
+              watch("beneficial_type") !== "person" &&
+              watch("rwandan_company") == "yes" && (
                 <Controller
                   name="company_code"
                   control={control}
@@ -473,25 +537,50 @@ const BeneficialOwners = ({
               }}
             />
             <Controller
-              name="gender"
               control={control}
-              defaultValue={searchMember?.data?.gender}
-              rules={{
-                required:
-                  watch("beneficial_type") === "person" && "Select gender",
-              }}
+              name="gender"
+              defaultValue={
+                watch("gender") ||
+                searchMember?.data?.gender ||
+                foreign_beneficial_owners?.gender
+              }
+              rules={{ required: "Gender is required" }}
               render={({ field }) => {
+                const gender = watch("gender");
                 return (
-                  <label className="flex flex-col gap-2 items-start w-[49%]">
+                  <label className="flex items-center w-full gap-2 py-4">
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    <menu className="flex items-center gap-4 mt-2">
-                      <Input type="radio" label="Male" {...field} />
-                      <Input type="radio" label="Female" {...field} />
-                    </menu>
+                    {!(watch("document_type") === "passport") ? (
+                      <menu className="flex items-center gap-4">
+                        {gender === "Male" && (
+                          <Input
+                            type="radio"
+                            label="Male"
+                            readOnly
+                            checked={watch("gender") === "Male"}
+                            {...field}
+                          />
+                        )}
+                        {gender === "Female" && (
+                          <Input
+                            type="radio"
+                            label="Female"
+                            readOnly
+                            {...field}
+                            checked={watch("gender") === "Female"}
+                          />
+                        )}
+                      </menu>
+                    ) : (
+                      <menu className="flex items-center gap-4 mt-2">
+                        <Input type="radio" label="Male" {...field} />
+                        <Input type="radio" label="Female" {...field} />
+                      </menu>
+                    )}
                     {errors?.gender && (
-                      <span className="text-red-500 text-[13px]">
+                      <span className="text-sm text-red-500">
                         {String(errors?.gender?.message)}
                       </span>
                     )}
@@ -599,57 +688,72 @@ const BeneficialOwners = ({
                 watch("document_type") === "passport" ? "flex" : "hidden"
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
-              <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
-              </h3>
-              <Controller
-                name="attachment"
-                rules={{
-                  required:
-                    watch("document_type") === "passport" &&
-                    watch("beneficial_type") === "person"
-                      ? "Document attachment is required"
-                      : false,
-                }}
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                        <Input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          className="!w-fit max-sm:!w-full"
-                          onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            setAttachmentFile(e?.target?.files?.[0]);
-                            setValue("attachment", e?.target?.files?.[0]?.name);
-                          }}
-                        />
-                        {attachmentFile && (
-                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                            {attachmentFile?.name}
-                            <FontAwesomeIcon
-                              icon={faX}
-                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setAttachmentFile(null);
-                                setValue("attachment", null);
-                              }}
-                            />
+              <menu className="flex gap-4">
+                <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
+                  Passport copy <span className="text-red-600">*</span>
+                </h3>
+                <Controller
+                  name="attachment"
+                  rules={{
+                    required:
+                      watch("document_type") === "passport" &&
+                      watch("beneficial_type") === "person"
+                        ? "Document attachment is required"
+                        : false,
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                        <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            className="!w-fit max-sm:!w-full"
+                            onChange={(e) => {
+                              field.onChange(e?.target?.files?.[0]);
+                              setAttachmentFile(e?.target?.files?.[0]);
+                              setValue(
+                                "attachment",
+                                e?.target?.files?.[0]?.name
+                              );
+                            }}
+                          />
+                        </ul>
+                        {errors?.attachment && (
+                          <p className="text-sm text-red-500">
+                            {String(errors?.attachment?.message)}
                           </p>
                         )}
-                      </ul>
-                      {errors?.attachment && (
-                        <p className="text-sm text-red-500">
-                          {String(errors?.attachment?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
+                      </label>
+                    );
+                  }}
+                />
+                {attachmentFile && (
+                  <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                    <FontAwesomeIcon
+                      className="cursor-pointer text-primary"
+                      icon={faEye}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewAttachment(
+                          URL.createObjectURL(attachmentFile)
+                        );
+                      }}
+                    />
+                    {attachmentFile?.name}
+                    <FontAwesomeIcon
+                      icon={faX}
+                      className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setAttachmentFile(null);
+                        setValue("attachment", null);
+                      }}
+                    />
+                  </p>
+                )}
+              </menu>
             </menu>
           </section>
           {watch("beneficial_type") === "person" &&
@@ -802,57 +906,72 @@ const BeneficialOwners = ({
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachment <span className="text-red-600">*</span>
+                Passport copy <span className="text-red-600">*</span>
               </h3>
-              <Controller
-                name="residential_attachment"
-                rules={{
-                  required:
-                    watch("address") === "yes" &&
-                    watch("document_type") === "passport" &&
-                    watch("beneficial_type") === "person"
-                      ? "Document attachment is required"
-                      : false,
-                }}
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                        <Input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          className="!w-fit max-sm:!w-full"
-                          onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            setAttachmentFile(e?.target?.files?.[0]);
-                            setValue("attachment", e?.target?.files?.[0]?.name);
-                          }}
-                        />
-                        {attachmentFile && (
-                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                            {attachmentFile?.name}
-                            <FontAwesomeIcon
-                              icon={faX}
-                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setAttachmentFile(null);
-                                setValue("attachment", null);
-                              }}
-                            />
+              <menu className="flex gap-4">
+                <Controller
+                  name="residential_attachment"
+                  rules={{
+                    required:
+                      watch("address") === "yes" &&
+                      watch("document_type") === "passport" &&
+                      watch("beneficial_type") === "person"
+                        ? "Document attachment is required"
+                        : false,
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                        <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                          <Input
+                            type="file"
+                            accept="application/pdf,image/*"
+                            className="!w-fit max-sm:!w-full"
+                            onChange={(e) => {
+                              field.onChange(e?.target?.files?.[0]);
+                              setAttachmentFile(e?.target?.files?.[0]);
+                              setValue(
+                                "attachment",
+                                e?.target?.files?.[0]?.name
+                              );
+                            }}
+                          />
+                        </ul>
+                        {errors?.residential_attachment && (
+                          <p className="text-sm text-red-500">
+                            {String(errors?.residential_attachment?.message)}
                           </p>
                         )}
-                      </ul>
-                      {errors?.residential_attachment && (
-                        <p className="text-sm text-red-500">
-                          {String(errors?.residential_attachment?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
+                      </label>
+                    );
+                  }}
+                />
+                {attachmentFile && (
+                  <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                    <FontAwesomeIcon
+                      className="cursor-pointer text-primary"
+                      icon={faEye}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewAttachment(
+                          URL.createObjectURL(attachmentFile)
+                        );
+                      }}
+                    />
+                    {attachmentFile?.name}
+                    <FontAwesomeIcon
+                      icon={faX}
+                      className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setAttachmentFile(null);
+                        setValue("attachment", null);
+                      }}
+                    />
+                  </p>
+                )}
+              </menu>
             </menu>
           </section>
           <section
@@ -1220,19 +1339,20 @@ const BeneficialOwners = ({
           }}
         />
         {isAmending && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
-                }}
-              />
-            )}
+          <Button
+            value={"Complete Amendment"}
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(
+                setForeignBusinessActiveTab("foreign_preview_submission")
+              );
+            }}
+          />
+        )}
         <Button
           value="Continue"
           primary
+          disabled={isFormDisabled}
           onClick={(e) => {
             e.preventDefault();
             dispatch(
@@ -1243,6 +1363,35 @@ const BeneficialOwners = ({
           }}
         />
       </menu>
+      {previewAttachment && (
+        <ViewDocument
+          documentUrl={previewAttachment}
+          setDocumentUrl={setPreviewAttachment}
+        />
+      )}
+      <ConfirmModal
+        isOpen={confirmModal}
+        onClose={() => {
+          setConfirmModal(false);
+          setConfirmModalData({});
+        }}
+        onConfirm={(e) => {
+          e.preventDefault();
+          const newBeneficialOwners = foreign_beneficial_owners?.filter(
+            (_: unknown, index: number) => {
+              return index !== confirmModalData?.no;
+            }
+          );
+          dispatch(
+            setUserApplications({
+              entry_id,
+              foreign_beneficial_owners: newBeneficialOwners,
+            })
+          );
+        }}
+        message="Are you sure you want to delete this benefical owner?"
+        description="This action cannot be undone"
+      />
     </section>
   );
 };

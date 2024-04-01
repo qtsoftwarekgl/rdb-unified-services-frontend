@@ -21,7 +21,7 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
     >
       <main className="flex flex-col w-full gap-6 px-12 py-16 bg-white rounded-md">
         <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
-          User Profile
+          User Information
         </h1>
         {/* User Info */}
         <div className="flex flex-col justify-between md:flex-row">

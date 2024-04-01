@@ -17,6 +17,7 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from "../../states/features/businessRegistrationSlice";
+import ConfirmModal from "../../components/confirm-modal/ConfirmModal";
 
 interface NewRegistrationProps {
   description: string;
@@ -38,11 +39,15 @@ export const NewRegistration = ({
   console.log(user_applications);
 
   const applicationsInProgress = user_applications
-    .filter((app) => app.status === 'in_progress' && path.split("?")[0] === app.path.split("?")[0])
+    .filter(
+      (app) =>
+        app.status === "in_progress" &&
+        path.split("?")[0] === app.path.split("?")[0]
+    )
     .map(formatCompanyData);
 
   const [useReservedNames, setUseReservedNames] = useState(false);
-  const [reservedName, setReservedName] = useState('');
+  const [reservedName, setReservedName] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -123,24 +128,24 @@ export const NewRegistration = ({
 
   const requiredAttachments = [
     {
-      name: 'Attachment 1',
-      description: 'Attach a document that shows your business plan',
-      max_size: '200kb',
+      name: "Attachment 1",
+      description: "Attach a document that shows your business plan",
+      max_size: "200kb",
     },
     {
-      name: 'Attachment 2',
-      description: 'Attach a document that shows ownership structure',
-      max_size: '500kb',
+      name: "Attachment 2",
+      description: "Attach a document that shows ownership structure",
+      max_size: "500kb",
     },
     {
-      name: 'Attachment 3',
-      description: 'Attach a document that shows your business plan',
-      max_size: '200kb',
+      name: "Attachment 3",
+      description: "Attach a document that shows your business plan",
+      max_size: "200kb",
     },
     {
-      name: 'Attachment 4',
-      description: 'Other documents',
-      max_size: '800kb',
+      name: "Attachment 4",
+      description: "Other documents",
+      max_size: "800kb",
     },
   ];
 
@@ -221,47 +226,31 @@ export const NewRegistration = ({
         </section>
       </main>
       {useReservedNames && (
-        <Modal
-          isOpen={useReservedNames}
+        <ConfirmModal
           onClose={() => setUseReservedNames(false)}
+          isOpen={!!reservedName}
+          onConfirm={(e) => {
+            e.preventDefault();
+            dispatch(
+              setUserApplications({
+                entry_id: path?.split("=")[1],
+                company_details: {
+                  name: reservedName,
+                },
+              })
+            );
+            dispatch(removeFromReservedNames(reservedName));
+            navigate(path);
+            setUseReservedNames(false);
+          }}
+          description="You are about to use a reserved name for this application"
+          message=" Are you sure you want to use this name?"
         >
-          <section className="flex flex-col gap-4 p-8 bg-white rounded-md">
-            <h1 className="text-2xl font-bold">
-              Use Reserved Name{" "}
-              <span className="text-primary"> ( {reservedName} )</span>
-            </h1>
-            <menu className="flex flex-col gap-4">
-              <h3 className="text-base font-semibold">
-                You are about to use a reserved name for this application
-              </h3>
-              <h3 className="text-base font-semibold">
-                Are you sure you want to use this name?
-              </h3>
-              <menu className="flex items-center justify-between">
-                <Button value="No" onClick={() => setUseReservedNames(false)} />
-                <Button
-                  value="Yes"
-                  route="#"
-                  primary
-                  onClick={(e) => {
-                    e.preventDefault();
-                    dispatch(
-                      setUserApplications({
-                        entry_id: path?.split("=")[1],
-                        company_details: {
-                          name: reservedName,
-                        },
-                      })
-                    );
-                    dispatch(removeFromReservedNames(reservedName));
-                    navigate(path);
-                    setUseReservedNames(false);
-                  }}
-                />
-              </menu>
-            </menu>
-          </section>
-        </Modal>
+          <h1 className="text-2xl font-bold">
+            Use Reserved Name{" "}
+            <span className="text-primary"> ( {reservedName} )</span>
+          </h1>
+        </ConfirmModal>
       )}
     </UserLayout>
   );

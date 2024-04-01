@@ -29,7 +29,6 @@ const UserProfile = () => {
               <h1 className="text-xl font-semibold text-secondary">
                 Sandra Isheja
               </h1>
-              <p className="text-lg font-light text-gray-500">Verifier</p>
               <p className="text-base font-light text-gray-500">
                 {user?.email}
               </p>

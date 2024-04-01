@@ -18,6 +18,9 @@ type User = {
   address: string;
   city: string;
   phone: string;
+  passport_expiry_date: string;
+  passport_number: string;
+  date_of_birth: string;
   attachments: [];
 };
 
@@ -40,9 +43,10 @@ const UserCard = ({ user, setUserToView }: Props) => {
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-2">
-            <FontAwesomeIcon
-              icon={faEye}
-              className="cursor-pointer text-primary"
+            <Button
+              value="preview document"
+              styled={false}
+              className="!bg-transparent"
               onClick={() => {
                 setAttachmentPreview(row?.original?.document_url);
               }}
@@ -54,32 +58,15 @@ const UserCard = ({ user, setUserToView }: Props) => {
   ];
 
   return (
-    <Modal isOpen={user !== null} onClose={() => setUserToView(null)}>
+    <Modal
+      isOpen={user !== null}
+      onClose={() => setUserToView(null)}
+      className="!w-full"
+    >
       <main className="flex flex-col w-full gap-6 p-4 ">
-        <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
-          User Profile
+        <h1 className="pb-2 text-2xl font-medium text-secondary w-fit">
+          User Information
         </h1>
-        {/* User Info */}
-        <div className="flex justify-between">
-          <div className="flex">
-            <figure className="overflow-hidden inline w-[7rem] h-[7rem] relative rounded-full mr-4">
-              <img
-                src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                className="object-cover w-full h-full"
-              />
-            </figure>
-
-            <div className="flex flex-col justify-center">
-              <h1 className="text-xl font-semibold text-secondary">
-                {user.first_name + " " + user.last_name}
-              </h1>
-              <p className="text-lg font-light text-gray-500">Verifier</p>
-              <p className="text-base font-light text-gray-500">
-                {user?.email}
-              </p>
-            </div>
-          </div>
-        </div>
         <Divider />
         {/* Personal Details */}
         <h1 className=" text-tertiary w-fit">Personal Details</h1>
@@ -93,9 +80,17 @@ const UserCard = ({ user, setUserToView }: Props) => {
             </div>
             <div className="flex ">
               <h1 className="w-1/2 text-base font-semibold text-secondary">
-                Document Number
+                Passport Number
               </h1>
-              <p className="w-1/2 text-gray-300">11918191819</p>
+              <p className="w-1/2 text-gray-300">{user?.passport_number}</p>
+            </div>
+            <div className="flex ">
+              <h1 className="w-1/2 text-base font-semibold text-secondary">
+                Expiry Date
+              </h1>
+              <p className="w-1/2 text-gray-300">
+                {user?.passport_expiry_date || "N/A"}
+              </p>
             </div>
           </div>
           <div className="flex flex-col gap-4">
@@ -117,16 +112,20 @@ const UserCard = ({ user, setUserToView }: Props) => {
             </div>
           </div>
           <div className="flex flex-col gap-4">
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">Country</h1>
+            <div className="flex gap-8 text-base font-semibold ">
+              <h1 className="w-fit text-secondary ">Country</h1>
               <p className="w-1/2 text-gray-300">{user.country}</p>
             </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">City</h1>
+            <div className="flex gap-8 text-base font-semibold ">
+              <h1 className="w-fit text-secondary ">City</h1>
               <p className="w-1/2 text-gray-300">{user.city}</p>
             </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">Phone</h1>
+            <div className="flex gap-8 text-base font-semibold ">
+              <h1 className="w-fit text-secondary ">Email</h1>
+              <p className="w-1/2 text-gray-300">{user.email}</p>
+            </div>
+            <div className="flex gap-8 text-base font-semibold ">
+              <h1 className="w-fit text-secondary ">Phone</h1>
               <p className="w-1/2 text-gray-300">{user.phone}</p>
             </div>
           </div>
