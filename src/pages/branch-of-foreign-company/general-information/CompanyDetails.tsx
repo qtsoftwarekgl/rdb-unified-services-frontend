@@ -21,7 +21,6 @@ import {
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
 
-
 interface CompanyDetailsProps {
   entry_id: string | null;
   company_details: any;
@@ -45,7 +44,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchCompany, setSearchCompany] = useState({
     error: false,
-    success: false,
+    success: company_details?.name ? true : false,
     loading: false,
     name: "",
   });
@@ -374,7 +373,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary={!searchCompany?.error}
-              disabled={searchCompany?.error}
+              disabled={searchCompany?.error || !searchCompany?.success}
               submit
             />
           </menu>

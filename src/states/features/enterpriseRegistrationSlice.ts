@@ -82,6 +82,7 @@ export const enterpriseRegistrationSlice = createSlice({
       label: "Enterprise Details",
       name: "enterprise_details",
     },
+  isNavigationFromPreview: false,
     usedIds: JSON.parse(String(localStorage.getItem("usedIds"))) || [],
   },
   reducers: {

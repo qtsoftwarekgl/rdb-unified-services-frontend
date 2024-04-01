@@ -1,4 +1,4 @@
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, set, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import Input from "../../../components/inputs/Input";
@@ -28,7 +28,12 @@ import { countriesList } from "../../../constants/countries";
 import moment from "moment";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { useNavigate } from "react-router-dom";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+import {
+  RDBAdminEmailPattern,
+  validNationalID,
+} from "../../../constants/Users";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import ViewDocument from "../../user-company-details/ViewDocument";
 
 type EnterpriseDetailsProps = {
   entry_id: string | null;
@@ -55,6 +60,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
+  const [previewAttachment, setPreviewAttachment] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -75,6 +81,18 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     setError,
     watch,
   } = useForm();
+
+  useEffect(() => {
+    if (watch("document_type") === "passport") {
+      setValue("country", "");
+      setValue("phone", "");
+      setValue("street_name", "");
+      setValue("first_name", "");
+      setValue("middle_name", "");
+      setValue("last_name", "");
+      // setValue("gender", "");
+    }
+  }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
     setIsLoading(true);
@@ -324,10 +342,10 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                           setTimeout(() => {
                             setUserDetails(null);
                             const index =
-                              field?.value.trim() === "1120001111111111"
+                              field?.value.trim() === validNationalID
                                 ? Math.floor(Math.random() * 10)
                                 : Math.floor(Math.random() * 11) + 11;
-                            console.log(index);
+
                             const userDetails = userData[index];
                             if (!userDetails) {
                               setNationalIdError(true);
@@ -521,24 +539,33 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                         <p className="flex items-center gap-1 text-[15px]">
                           Gender<span className="text-red-500">*</span>
                         </p>
-                        <menu className="flex items-center gap-4">
-                          {gender === "Male" && (
-                            <Input
-                              type="radio"
-                              label="Male"
-                              checked={watch("gender") === "Male"}
-                              {...field}
-                            />
-                          )}
-                          {gender === "Female" && (
-                            <Input
-                              type="radio"
-                              label="Female"
-                              {...field}
-                              checked={watch("gender") === "Female"}
-                            />
-                          )}
-                        </menu>
+                        {!(watch("document_type") === "passport") ? (
+                          <menu className="flex items-center gap-4">
+                            {gender === "Male" && (
+                              <Input
+                                type="radio"
+                                label="Male"
+                                readOnly
+                                checked={watch("gender") === "Male"}
+                                {...field}
+                              />
+                            )}
+                            {gender === "Female" && (
+                              <Input
+                                type="radio"
+                                label="Female"
+                                readOnly
+                                {...field}
+                                checked={watch("gender") === "Female"}
+                              />
+                            )}
+                          </menu>
+                        ) : (
+                          <menu className="flex items-center gap-4 mt-2">
+                            <Input type="radio" label="Male" {...field} />
+                            <Input type="radio" label="Female" {...field} />
+                          </menu>
+                        )}
                         {errors?.gender && (
                           <span className="text-sm text-red-500">
                             {String(errors?.gender?.message)}
@@ -1164,7 +1191,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     company_details?.gender
                   }
                   rules={{ required: "Gender is required" }}
-                  render={({ field }) => {
+                  render={() => {
                     return (
                       <label className="flex items-center w-full gap-2 py-4">
                         <p className="flex items-center gap-1 text-[15px]">
@@ -1292,53 +1319,71 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               </menu>
               <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
                 <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                  Passport <span className="text-red-600">*</span>
+                  Passport copy <span className="text-red-600">*</span>
                 </h3>
-                <Controller
-                  name="attachment"
-                  rules={{ required: "Passport is required" }}
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                        <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                          <Input
-                            type="file"
-                            accept="application/pdf,image/*"
-                            className="!w-fit max-sm:!w-full"
-                            onChange={(e) => {
-                              field.onChange(e?.target?.files?.[0]);
-                              setAttachmentFile(e?.target?.files?.[0]);
-                            }}
-                          />
-                          {attachmentFile && (
-                            <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                              {attachmentFile?.name}
-                              <FontAwesomeIcon
-                                icon={faX}
-                                className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  setAttachmentFile(null);
-                                  setValue("attachment", null);
-                                }}
-                              />
+                <menu className="flex gap-4">
+                  <Controller
+                    name="attachment"
+                    rules={{ required: "Passport is required" }}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                          <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              className="!w-fit max-sm:!w-full"
+                              onChange={(e) => {
+                                field.onChange(e?.target?.files?.[0]);
+                                setAttachmentFile(e?.target?.files?.[0]);
+                              }}
+                            />
+                          </ul>
+                          {errors?.attachment && (
+                            <p className="text-sm text-red-500">
+                              {String(errors?.attachment?.message)}
                             </p>
                           )}
-                        </ul>
-                        {errors?.attachment && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.attachment?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
+                        </label>
+                      );
+                    }}
+                  />
+                  {attachmentFile && (
+                    <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                      <FontAwesomeIcon
+                        className="cursor-pointer text-primary"
+                        icon={faEye}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewAttachment(
+                            URL.createObjectURL(attachmentFile)
+                          );
+                        }}
+                      />
+                      {attachmentFile?.name}
+                      <FontAwesomeIcon
+                        icon={faX}
+                        className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setAttachmentFile(null);
+                          setValue("attachment", null);
+                        }}
+                      />
+                    </p>
+                  )}
+                </menu>
               </menu>
             </section>
           )}
 
+          {previewAttachment && (
+            <ViewDocument
+              documentUrl={previewAttachment}
+              setDocumentUrl={setPreviewAttachment}
+            />
+          )}
           <menu
             className={`flex items-center mt-8 gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >

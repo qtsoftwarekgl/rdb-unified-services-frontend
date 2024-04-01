@@ -52,6 +52,7 @@ import CloseCompany from "./pages/company-closure/CloseCompany";
 import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
 import ReviewRegistration from "./pages/review-registration/ReviewRegistration";
 import LandingPage from "./pages/home/LandingPage";
+import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
 
 const Routes = () => {
   return (
@@ -185,6 +186,10 @@ const Routes = () => {
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
           <Route path="/admin/foreign-applicants" element={<ForeignUsers />} />
+          <Route
+            path="/back-office/dashboard"
+            element={<BackOfficeDashboard />}
+          />
           <Route
             path="/admin/review-applications"
             element={<ReviewRegistration />}

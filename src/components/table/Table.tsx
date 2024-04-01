@@ -44,6 +44,7 @@ interface TableProps {
     format: 'a3' | 'a4' | 'a5' | 'letter' | 'legal';
     fileName: string;
   };
+  exportFIleName?: string;
   showExport?: boolean;
 }
 
@@ -57,10 +58,11 @@ const Table: FC<TableProps> = ({
   tableTitle,
   headerClassName,
   showExport = false,
+  exportFIleName,
   exportOptions = {
     orientation: 'landscape',
     format: 'a4',
-    fileName: 'Applications',
+    fileName: exportFIleName ?? 'Applications',
   },
   columnsToExport = [],
 }) => {
@@ -123,7 +125,7 @@ const Table: FC<TableProps> = ({
           showFilter ? 'flex' : 'hidden'
         } w-full items-start gap-6 justify-between `}
       >
-        <menu className="flex items-center gap-2 w-full">
+        <menu className="flex items-center w-full gap-2">
           <DebouncedInput
             value={globalFilter ?? ''}
             onChange={(value) => setGlobalFilter(String(value))}

@@ -2,6 +2,7 @@ import {
   faBagShopping,
   faBars,
   faBook,
+  faH,
   faHouse,
   faMagnifyingGlassDollar,
   faPen,
@@ -49,6 +50,11 @@ const AdminSidebar = () => {
     !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
       title: "Dashboard",
       path: "/admin/dashboard",
+      icon: faHouse,
+    },
+    RDBVerifierAndApproverEmailPattern.test(user?.email) && {
+      title: "Dashboard",
+      path: "/back-office/dashboard",
       icon: faHouse,
     },
     !RDBVerifierAndApproverEmailPattern.test(user?.email) && {

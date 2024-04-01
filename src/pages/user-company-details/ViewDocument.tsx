@@ -10,7 +10,11 @@ interface ViewDocumentProps {
 
 const ViewDocument = ({ documentUrl, setDocumentUrl }: ViewDocumentProps) => {
   return (
-    <Modal isOpen={documentUrl !== ""} onClose={() => setDocumentUrl("")}>
+    <Modal
+      className="overflow-auto "
+      isOpen={documentUrl !== ""}
+      onClose={() => setDocumentUrl("")}
+    >
       <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
         <Viewer fileUrl={documentUrl} />
       </Worker>

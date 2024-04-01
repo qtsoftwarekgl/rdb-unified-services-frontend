@@ -5,6 +5,7 @@ import AdminLayout from "../../containers/AdminLayout";
 import Table from "../../components/table/Table";
 import { foreignApplications } from "../../constants/dashboard";
 import UserCard from "./ForeignUserCard";
+import Button from "../../components/inputs/Button";
 
 const ForeignUsers = () => {
   const [userToView, setUserToView] = useState(null);
@@ -50,7 +51,7 @@ const ForeignUsers = () => {
       accessorKey: "country",
     },
     {
-      header: "",
+      header: "Actions",
       accessorKey: "actions",
       cell: ({ row }: { row: unknown }) => {
         return (
@@ -60,10 +61,8 @@ const ForeignUsers = () => {
               setUserToView(row?.original);
             }}
           >
-            <FontAwesomeIcon
-              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-              icon={faEye}
-            />
+            <Button styled={false}
+          className="!bg-transparent" value={"View"} />
           </menu>
         );
       },
@@ -99,7 +98,12 @@ const ForeignUsers = () => {
         <Table
           columns={columns}
           data={foreignApplications}
+          showExport
           className="bg-white rounded-2xl"
+          columnsToExport={columns
+            ?.map((column) => column?.accessorKey)
+            ?.filter((column) => column !== "action")}
+          exportFIleName="Foreign Account Applications"
         />
         {userToView && (
           <UserCard user={userToView} setUserToView={setUserToView} />
