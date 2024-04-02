@@ -21,28 +21,28 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     {
       no: 1,
       label: "General Information",
-      name: "foreign_general_information",
+      name: "general_information",
       completed: false,
       active: true,
       steps: [
         {
           label: "Company Details",
-          name: "foreign_company_details",
-          tab_name: "foreign_general_information",
+          name: "company_details",
+          tab_name: "general_information",
           active: true,
           completed: false,
         },
         {
           label: "Company Address",
           name: "foreign_company_address",
-          tab_name: "foreign_general_information",
+          tab_name: "general_information",
           active: false,
           completed: false,
         },
         {
           label: "Business Activity & VAT",
           name: "foreign_business_activity_vat",
-          tab_name: "foreign_general_information",
+          tab_name: "general_information",
           active: false,
           completed: false,
         },
@@ -139,16 +139,16 @@ export const foreignBranchRegistrationSlice = createSlice({
       String(localStorage.getItem("business_active_step"))
     ) || {
       label: "Company Details",
-      name: "foreign_company_details",
+      name: "company_details",
     },
     foreign_business_active_tab: JSON.parse(
       String(localStorage.getItem("business_active_tab"))
     ) || {
       label: "General Information",
-      name: "foreign_general_information",
+      name: "general_information",
     },
     foreign_company_details:
-      JSON.parse(String(localStorage.getItem("foreign_company_details"))) ||
+      JSON.parse(String(localStorage.getItem("company_details"))) ||
       null,
     foreign_company_address:
       JSON.parse(String(localStorage.getItem("foreign_company_address"))) ||
@@ -371,7 +371,7 @@ export const foreignBranchRegistrationSlice = createSlice({
     setForeignCompanyDetails: (state, action) => {
       state.foreign_company_details = action.payload;
       localStorage.setItem(
-        "foreign_company_details",
+        "company_details",
         JSON.stringify(action.payload)
       );
     },

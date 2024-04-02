@@ -103,8 +103,8 @@ const PreviewSubmission = ({
       {foreign_company_details && (
         <PreviewCard
           header="Company Details"
-          tabName="foreign_general_information"
-          stepName="foreign_company_details"
+          tabName="general_information"
+          stepName="company_details"
           setActiveStep={setForeignBusinessActiveStep}
           setActiveTab={setForeignBusinessActiveTab}
         >
@@ -150,7 +150,7 @@ const PreviewSubmission = ({
       {/* COMPANY ACTIVITIES */}
       <PreviewCard
         header="Business Activities & VAT"
-        tabName="foreign_general_information"
+        tabName="general_information"
         stepName="foreign_business_activity_vat"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
@@ -407,7 +407,7 @@ const PreviewSubmission = ({
               dispatch(
                 setUserApplications({
                   entry_id,
-                  status: "submitted",
+                  status: "pending_approval",
                 })
               );
               dispatch(setForeignCompanyDetails(null));
@@ -422,9 +422,9 @@ const PreviewSubmission = ({
                 setForeignBusinessCompletedStep("foreign_preview_submission")
               );
               dispatch(
-                setForeignBusinessActiveTab("foreign_general_information")
+                setForeignBusinessActiveTab("general_information")
               );
-              dispatch(setForeignBusinessActiveStep("foreign_company_details"));
+              dispatch(setForeignBusinessActiveStep("company_details"));
               dispatch(setForeignCompanySubActivities([]));
               dispatch(
                 setForeignBusinessRegistrationTabs(

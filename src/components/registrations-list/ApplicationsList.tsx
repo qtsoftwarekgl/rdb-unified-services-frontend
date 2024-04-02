@@ -1,21 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import Table from "../../components/table/Table";
-import { RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from "../../states/features/businessRegistrationSlice";
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
-} from "../../states/features/enterpriseRegistrationSlice";
-import {
-  setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
-} from "../../states/features/foreignBranchRegistrationSlice";
+
 
 type Props = {
   title: string;
@@ -92,16 +84,8 @@ const ApplicatinsList = ({
   ];
 
   const handleEditClick = (row) => {
-    if (row?.original?.service_name.toLowerCase() === "business_registration") {
-      dispatch(setBusinessActiveTab("general_information"));
-      dispatch(setBusinessActiveStep("company_details"));
-    } else if (row?.original?.service_name.toLowerCase() === "enterprise") {
-      dispatch(setEnterpriseActiveTab("enterprise_details"));
-      dispatch(setEnterpriseActiveStep("enterprise_details"));
-    } else if (row?.original?.service_name.toLowerCase() === "foreign_branch") {
-      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
-      dispatch(setForeignBusinessActiveStep("foreign_company_details"));
-    }
+    dispatch(setBusinessActiveTab("general_information"));
+    dispatch(setBusinessActiveStep("company_details"));
 
     navigate(row.original?.path);
   };

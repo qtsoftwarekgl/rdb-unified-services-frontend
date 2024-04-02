@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../constants/Users";
+import ViewDocument from "../user-company-details/ViewDocument";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
 
 type AttachmentsProps = {
   entry_id: string | null;
@@ -48,6 +50,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const [previewAttachment, setPreviewAttachment] = useState<string>("");
 
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -125,38 +128,54 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
                   }}
                   control={control}
                   render={({ field }) => (
-                    <label className="flex flex-col w-1/2 items-start gap-2 max-sm:!w-full">
-                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                        <Input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          className="!w-fit max-sm:!w-full"
-                          onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            handleFileChange(index, e?.target?.files?.[0]);
-                          }}
-                        />
-                        {(file?.file || attachmentFilesNames?.length > 0) && (
-                          <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                            {file.file?.name || attachmentFilesNames[index]}
-                            <FontAwesomeIcon
-                              icon={faTimes}
-                              className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                              onClick={() => {
-                                if(isFormDisabled) return
-                                removeAttachment(index);
-                                setValue(`attachment${index + 1}`, null);
-                              }}
-                            />
+                    <menu className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                      <label className="flex flex-col items-start gap-2 max-sm:!w-full">
+                        <ul>
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            className="!w-fit max-sm:!w-full"
+                            onChange={(e) => {
+                              field.onChange(e?.target?.files?.[0]);
+                              handleFileChange(index, e?.target?.files?.[0]);
+                            }}
+                          />
+                        </ul>
+                        {errors[`attachment${index + 1}`] && (
+                          <p className="text-sm text-red-500">
+                            {errors[`attachment${index + 1}`].message}
                           </p>
                         )}
-                      </ul>
-                      {errors[`attachment${index + 1}`] && (
-                        <p className="text-sm text-red-500">
-                          {errors[`attachment${index + 1}`].message}
+                      </label>
+                      {file.file && (
+                        <FontAwesomeIcon
+                          icon={faEye}
+                          onClick={() => {
+                            if (!file.file) return;
+                            const url = URL.createObjectURL(file.file);
+                            setPreviewAttachment(url);
+                          }}
+                          className="text-primary text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                        />
+                      )}
+                      {(file?.file || attachmentFilesNames?.length > 0) && (
+                        <p className="flex  items-center gap-2 text-[14px] text-black font-normal">
+                          <span className="truncate">
+                            {file.file?.name || attachmentFilesNames[index]}
+                          </span>
+
+                          <FontAwesomeIcon
+                            icon={faTimes}
+                            className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                            onClick={() => {
+                              if (isFormDisabled) return;
+                              removeAttachment(index);
+                              setValue(`attachment${index + 1}`, null);
+                            }}
+                          />
                         </p>
                       )}
-                    </label>
+                    </menu>
                   )}
                 />
               </menu>
@@ -168,7 +187,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
             <Button
               value="Back"
               onClick={() => {
-                dispatch(setEnterpriseActiveTab("enterprise_details"));
+                dispatch(setEnterpriseActiveTab("general_information"));
                 dispatch(setEnterpriseActiveStep("office_address"));
               }}
             />
@@ -192,6 +211,12 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
           </menu>
         </fieldset>
       </form>
+      {previewAttachment && (
+        <ViewDocument
+          documentUrl={previewAttachment}
+          setDocumentUrl={setPreviewAttachment}
+        />
+      )}
     </section>
   );
 };

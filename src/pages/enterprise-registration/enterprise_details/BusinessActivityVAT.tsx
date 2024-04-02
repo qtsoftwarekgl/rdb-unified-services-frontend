@@ -330,7 +330,7 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setEnterpriseActiveStep("enterprise_details"));
+                dispatch(setEnterpriseActiveStep("company_details"));
               }}
             />
             {isAmending && (

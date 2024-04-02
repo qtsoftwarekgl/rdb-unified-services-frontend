@@ -16,14 +16,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
-} from "../../states/features/enterpriseRegistrationSlice";
-import {
-  setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
-} from "../../states/features/foreignBranchRegistrationSlice";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -43,6 +35,8 @@ const UserApplications = () => {
         new Date(b?.submissionDate).getTime() -
         new Date(a?.submissionDate).getTime()
     );
+
+  console.log(">>>>>>>>>>>>>>>>>>", registeredBusinesses);
 
   const colors = (status: string) => {
     const colorMap = {
@@ -84,22 +78,14 @@ const UserApplications = () => {
 
   const hasComments = (applicationId: string) => {
     return application_review_comments.some(
-      (comment: ReviewComment) => comment?.entry_id === applicationId && !comment?.checked
+      (comment: ReviewComment) =>
+        comment?.entry_id === applicationId && !comment?.checked
     );
   };
 
   const handleEditClick = (row) => {
-    if (row?.original?.service_name.toLowerCase() === "business_registration") {
-      dispatch(setBusinessActiveTab("general_information"));
-      dispatch(setBusinessActiveStep("company_details"));
-    } else if (row?.original?.service_name.toLowerCase() === "enterprise") {
-      dispatch(setEnterpriseActiveTab("enterprise_details"));
-      dispatch(setEnterpriseActiveStep("enterprise_details"));
-    } else if (row?.original?.service_name.toLowerCase() === "foreign_branch") {
-      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
-      dispatch(setForeignBusinessActiveStep("foreign_company_details"));
-    }
-
+    dispatch(setBusinessActiveTab("general_information"));
+    dispatch(setBusinessActiveStep("company_details"));
     navigate(row.original?.path);
   };
 
