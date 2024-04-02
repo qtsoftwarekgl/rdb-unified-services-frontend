@@ -213,9 +213,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                           watch(`${row.name}_no_shares`) ||
                           share_details?.shares?.find(
                             (share) => share?.name === row?.name
-                          )?.no_shares ||
-                          0
-                        }
+                          )?.no_shares}
                         type="number"
                         onChange={(e) => {
                           if (Number(e.target.value) < 0) {
@@ -241,9 +239,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                           watch(`${row.name}_share_value`) ||
                           share_details?.shares?.find(
                             (share) => share?.name === row?.name
-                          )?.share_value ||
-                          0
-                        }
+                          )?.share_value}
                         onChange={(e) => {
                           if (Number(e.target.value) < 0) {
                             return;

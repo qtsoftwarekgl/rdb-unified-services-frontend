@@ -34,6 +34,9 @@ export const validateInputs = (value: string, type: string) => {
     if (type === 'nid' && value?.length !== 16) {
       return false;
     }
+    if (type === 'tin' && value?.length !== 9) {
+      return false;
+    }
     if (type === 'nid' && value?.length !== 16) {
       return false;
     }
@@ -41,6 +44,9 @@ export const validateInputs = (value: string, type: string) => {
       type === 'password' &&
       !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,}$/.test(value)
     ) {
+      return false;
+    }
+    if (type === 'passport' && !/^[a-zA-Z0-9]{12}$/g.test(value)) {
       return false;
     }
   }

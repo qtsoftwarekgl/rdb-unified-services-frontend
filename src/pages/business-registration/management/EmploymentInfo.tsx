@@ -199,6 +199,11 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                       label="Account reference date"
                       {...field}
                     />
+                    {errors?.reference_date && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.reference_date?.message)}
+                      </p>
+                    )}
                   </label>
                 );
               }}

@@ -269,7 +269,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
 
                 const remaining_shares = share_details?.shares?.find(
                   (share: unknown) => share?.name === row?.name
-                )?.remaining_shares;
+                )?.remaining_shares || 0;
 
                 const share_value = share_details?.shares?.find(
                   (share) => share?.name === row?.name
@@ -280,13 +280,13 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                     <menu className="flex flex-col gap-1 w-full">
                       <h4 className="w-full text-[15px]">{row?.label}</h4>
                       <p className={`${disableForm && 'hidden'} text-[12px]`}>
-                        Total: {total_shares || 'N/A'}
+                        Total: {total_shares || 0}
                       </p>
                       <p className={`${disableForm && 'hidden'} text-[12px]`}>
                         Remaining:{' '}
                         {Number(watch(`${row?.name}_remaining_shares`)) >= 0
                           ? Number(watch(`${row?.name}_remaining_shares`))
-                          : remaining_shares || 'N/A'}
+                          : remaining_shares || 0}
                       </p>
                     </menu>
                     <td className="w-full flex flex-col gap-1">

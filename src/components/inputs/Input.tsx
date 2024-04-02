@@ -156,10 +156,7 @@ const Input: FC<InputProps> = forwardRef(
               *
             </span>
           </p>
-          <DatePicker
-            placeholder={placeholder}
-            onChange={onChange || (() => {})}
-          />
+          <DatePicker placeholder={placeholder} onChange={onChange || (() => {})} />
         </label>
       );
     }
@@ -181,7 +178,7 @@ const Input: FC<InputProps> = forwardRef(
             defaultValue={defaultValue}
             min={min}
             value={value}
-            type={type || "text"}
+            type={type || 'text'}
             readOnly={readOnly}
             name={name}
             ref={ref}
@@ -210,7 +207,7 @@ const Input: FC<InputProps> = forwardRef(
               <input
                 defaultValue={defaultValue}
                 value={value}
-                type={type || "text"}
+                type={type || 'text'}
                 readOnly={readOnly}
                 name={name}
                 onChange={onChange}
@@ -241,7 +238,7 @@ const Input: FC<InputProps> = forwardRef(
               <input
                 defaultValue={defaultValue}
                 value={value}
-                type={type || "text"}
+                type={type || 'text'}
                 onChange={onChange}
                 readOnly={readOnly}
                 name={name}

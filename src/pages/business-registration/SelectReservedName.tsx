@@ -60,6 +60,10 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
           },
         })
       );
+      dispatch(setSelectReservedNameModal(false));
+      dispatch(
+        setBusinessRegistrationTabs(business_registration_tabs_initial_state)
+      );
       navigate(path);
     }, 1000);
   };
