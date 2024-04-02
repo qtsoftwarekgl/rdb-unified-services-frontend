@@ -36,6 +36,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     control,
     formState: { errors },
     setValue,
+    setError,
     watch,
   } = useForm();
 
@@ -126,10 +127,22 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                           loading: false,
                         });
+                        setError("name", {
+                          type: "manual",
+                          message: "",
+                        });
                       }}
                       suffixIconHandler={(e) => {
                         e.preventDefault();
-                        if (!searchCompany?.name) {
+                        if (
+                          !searchCompany?.name ||
+                          searchCompany?.name.length < 3
+                        ) {
+                          setError("name", {
+                            type: "manual",
+                            message:
+                              "Company name must be at least 3 characters",
+                          });
                           return;
                         }
                         setSearchCompany({
@@ -139,8 +152,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                         });
                         setTimeout(() => {
-                          const randomNumber = Math.floor(Math.random() * 10);
-                          if (randomNumber < 7) {
+                          if (
+                            searchCompany.name.trim().toLowerCase() === "xyz"
+                          ) {
                             setValue("name", searchCompany.name);
                             setSearchCompany({
                               ...searchCompany,
@@ -196,7 +210,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         </span>
                       </p>
                     </menu>
-                    {errors.name && !searchCompany?.name && (
+                    {errors.name && (
                       <p className="text-xs text-red-500">
                         {String(errors.name.message)}
                       </p>

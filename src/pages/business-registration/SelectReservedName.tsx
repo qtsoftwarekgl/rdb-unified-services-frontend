@@ -64,6 +64,8 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
     }, 1000);
   };
 
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>");
+
   return (
     <Modal
       isOpen={selectReservedNameModal}
@@ -122,7 +124,11 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                   dispatch(setNameReservation(null));
                   dispatch(setActiveStep("company_details"));
                   dispatch(setActiveTab("general_information"));
-                  setSelectReservedNameModal(false);
+                  dispatch(setSelectReservedNameModal(false));
+                  setValue("name_reservation", "");
+                  if (nameReservationRef.current) {
+                    nameReservationRef.current.clearValue();
+                  }
                   navigate(path);
                 }}
               />
