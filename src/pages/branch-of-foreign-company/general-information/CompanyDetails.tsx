@@ -227,7 +227,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.category && (
@@ -263,7 +263,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.type && (
@@ -298,7 +298,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.position && (

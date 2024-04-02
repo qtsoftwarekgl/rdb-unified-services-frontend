@@ -29,6 +29,7 @@ export interface business_company_details {
   position: string;
   articles_of_association: string;
   step: string;
+  name_reserved?: boolean;
 }
 
 interface CompanyDetailsProps {
@@ -136,7 +137,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="Search company name"
                       required
                       defaultValue={company_details?.name}
-                      suffixIcon={faSearch}
+                      suffixIcon={company_details?.name_reserved ? undefined : faSearch}
+                      readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
                         field.onChange(e);
@@ -257,7 +259,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.category && (
@@ -302,7 +304,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.type && (
@@ -343,7 +345,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.position && (
@@ -368,35 +370,21 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={
-                        ((watch('articles_of_association') ||
-                          company_details?.articles_of_association) &&
-                          watch('articles_of_association') === 'yes') ||
-                        company_details?.articles_of_association === 'yes'
-                      }
+                      value={'yes'}
+                      checked={watch('articles_of_association') === 'yes'}
                       onChange={(e) => {
-                        if (e.target.checked) {
-                          field.onChange(e?.target?.value);
-                          setValue('articles_of_association', 'yes');
-                        }
+                        field.onChange(e?.target?.value);
                       }}
                       name={field?.name}
                     />
                     <Input
                       type="radio"
                       label="No"
-                      checked={
-                        ((watch('articles_of_association') ||
-                          company_details?.articles_of_association) &&
-                          watch('articles_of_association') === 'no') ||
-                        company_details?.articles_of_association === 'no'
-                      }
+                      value={'no'}
+                      checked={watch('articles_of_association') === 'no'}
                       name={field?.name}
                       onChange={(e) => {
-                        if (e.target.checked) {
-                          field.onChange(e?.target?.value);
-                          setValue('articles_of_association', 'no');
-                        }
+                        field.onChange(e?.target?.value);
                       }}
                     />
                     {errors?.articles_of_association && (

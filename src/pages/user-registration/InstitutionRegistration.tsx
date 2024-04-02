@@ -1,7 +1,7 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import RegistrationNavbar from './RegistrationNavbar';
 import Input from '../../components/inputs/Input';
-import validateInputs from '../../helpers/Validations';
+import validateInputs from '../../helpers/validations';
 import Select from '../../components/inputs/Select';
 import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
@@ -130,7 +130,7 @@ const InstitutionRegistration = () => {
                     label="Institution type"
                     required
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                     options={[
                       { value: 'private_sector', label: 'Private Sector' },

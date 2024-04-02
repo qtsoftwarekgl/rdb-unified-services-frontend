@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString } from '../../../helpers/Strings';
+import { capitalizeString } from '../../../helpers/strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
 
@@ -202,7 +202,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     ref={positionRef}
                     options={options}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.position && (
@@ -239,7 +239,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       label="Document Type"
                       required
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   </label>
@@ -493,7 +493,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   )}
@@ -525,7 +525,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.country && (
@@ -675,7 +675,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               />
             )}
           <Button
-            value="Continue"
+            value="Save & Continue"
             primary
             disabled={disableForm}
             onClick={(e) => {

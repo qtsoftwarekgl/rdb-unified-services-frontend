@@ -15,7 +15,7 @@ import {
   setNameReservationOwnerDetails,
   setReservedNames,
 } from "../../states/features/nameReservationSlice";
-import { generateUUID } from "../../helpers/Strings";
+import { generateUUID } from "../../helpers/strings";
 
 type Props = {
   isOpen: boolean;
@@ -87,40 +87,47 @@ const NameReservationSearch = ({ isOpen }: Props) => {
         <Controller
           name="name"
           control={control}
-          defaultValue={watch("name") || name_reservation}
-          rules={{ required: "Company name is required" }}
+          defaultValue={watch('name') || name_reservation}
+          rules={{ required: 'Company name is required' }}
           render={({ field }) => {
             return (
               <label className="flex flex-col w-full gap-3">
                 <Input
                   label={`${
-                    name_reservation ? "" : "Enter"
+                    name_reservation ? '' : 'Enter'
                   } the company name to reserve`}
                   suffixIcon={!name_reservation ? faSearch : undefined}
-                  defaultValue={watch("name") || name_reservation}
+                  defaultValue={watch('name') || name_reservation}
                   readOnly={name_reservation ? true : false}
                   suffixIconPrimary
                   suffixIconHandler={(e) => {
                     e.preventDefault();
+                    if (field.value?.length < 3) {
+                      setError('name', {
+                        type: 'manual',
+                        message: 'Company name must be at least 3 characters',
+                      });
+                      return;
+                    }
                     if (!field?.value) {
-                      setError("name", {
-                        type: "manual",
-                        message: "Company name is required",
+                      setError('name', {
+                        type: 'manual',
+                        message: 'Company name is required',
                       });
                       return;
                     } else {
-                      clearErrors("name");
+                      clearErrors('name');
                       setIsLoading({
                         submit: false,
                         search: true,
                         success: false,
                       });
                       setTimeout(() => {
-                        if (field?.value.trim().toLowerCase() !== "xyz") {
-                          setError("name", {
-                            type: "manual",
+                        if (field?.value.trim().toLowerCase() !== 'xyz') {
+                          setError('name', {
+                            type: 'manual',
                             message: `${watch(
-                              "name"
+                              'name'
                             )} is not available. Try another name`,
                           });
                           setIsLoading({
@@ -129,7 +136,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                             success: false,
                           });
                         } else {
-                          clearErrors("name");
+                          clearErrors('name');
 
                           setIsLoading({
                             submit: false,
@@ -143,7 +150,12 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                   required
                   onChange={(e) => {
                     field.onChange(e);
-                    clearErrors("name");
+                    clearErrors('name');
+                    setError('name', {
+                      type: 'manual',
+                      message:
+                        'Check if company name is available before submitting',
+                    });
                     setIsLoading({
                       submit: false,
                       search: false,
@@ -162,11 +174,11 @@ const NameReservationSearch = ({ isOpen }: Props) => {
                       icon={faCheck}
                       className="text-green-700"
                     />
-                    {watch("name")} is available
+                    {watch('name')} is available
                   </p>
                 )}
                 {errors?.name && (
-                  <p className="text-sm text-red-500">
+                  <p className="text-[12px] text-red-500">
                     {String(errors?.name?.message)}
                   </p>
                 )}
@@ -181,14 +193,15 @@ const NameReservationSearch = ({ isOpen }: Props) => {
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setNameReservationActiveStep("owner_details"));
-              dispatch(setNameReservationActiveTab("owner_details"));
+              dispatch(setNameReservationActiveStep('owner_details'));
+              dispatch(setNameReservationActiveTab('owner_details'));
             }}
           />
           <Button
-            value={isLoading?.submit ? <Loader /> : "Submit"}
+            value={isLoading?.submit ? <Loader /> : 'Submit'}
             primary
             submit
+            disabled={Object.keys(errors)?.length > 0}
           />
         </menu>
       </form>

@@ -9,7 +9,7 @@ import {
   setBusinessCompletedStep,
   setBusinessRegistrationTabs,
 } from "../../../states/features/businessRegistrationSlice";
-import { capitalizeString } from "../../../helpers/Strings";
+import { capitalizeString } from "../../../helpers/strings";
 import Table from "../../../components/table/Table";
 import { countriesList } from "../../../constants/countries";
 import Button from "../../../components/inputs/Button";

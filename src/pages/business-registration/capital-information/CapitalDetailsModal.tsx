@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from '../../../states/store';
 import Button from '../../../components/inputs/Button';
 import { setCapitalDetailsModal } from '../../../states/features/businessRegistrationSlice';
 import Loader from '../../../components/Loader';
-import { capitalizeString } from '../../../helpers/Strings';
+import { capitalizeString } from '../../../helpers/strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { business_capital_details } from './CapitalDetails';
 import { business_share_details } from './ShareDetails';

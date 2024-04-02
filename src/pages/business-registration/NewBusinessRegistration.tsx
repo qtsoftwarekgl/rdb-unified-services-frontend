@@ -1,23 +1,20 @@
-import { useDispatch, useSelector } from "react-redux";
-import Button from "../../components/inputs/Button";
-import UserLayout from "../../containers/UserLayout";
-import { formatCompanyData, generateUUID } from "../../helpers/Strings";
-import { RootState } from "../../states/store";
-import Table from "../../components/table/Table";
-import moment from "moment";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-regular-svg-icons";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { removeFromReservedNames } from "../../states/features/nameReservationSlice";
-import Modal from "../../components/Modal";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { setUserApplications } from "../../states/features/userApplicationSlice";
+import { useDispatch, useSelector } from 'react-redux';
+import Button from '../../components/inputs/Button';
+import UserLayout from '../../containers/UserLayout';
+import { capitalizeString, generateUUID } from '../../helpers/strings';
+import { AppDispatch, RootState } from '../../states/store';
+import Table from '../../components/table/Table';
+import moment from 'moment';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from "../../states/features/businessRegistrationSlice";
-import ConfirmModal from "../../components/confirm-modal/ConfirmModal";
+} from '../../states/features/businessRegistrationSlice';
+import SelectReservedName from './SelectReservedName';
+import { setSelectReservedNameModal } from '../../states/features/nameReservationSlice';
+import { deleteUserApplication } from '../../states/features/userApplicationSlice';
 
 interface NewRegistrationProps {
   description: string;
@@ -28,72 +25,49 @@ export const NewRegistration = ({
   description,
   path,
 }: NewRegistrationProps) => {
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
   const { reservedNames } = useSelector(
     (state: RootState) => state.nameReservation
   );
+
+  // NAVIGATION
+  const navigate = useNavigate();
 
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
 
-  console.log(user_applications);
-
   const applicationsInProgress = user_applications
     .filter(
       (app) =>
-        app.status === "in_progress" &&
-        path.split("?")[0] === app.path.split("?")[0]
+        app.status === 'in_progress' &&
+        app?.type === 'business_registration' &&
+        app?.company_details
     )
-    .map(formatCompanyData);
-
-  const [useReservedNames, setUseReservedNames] = useState(false);
-  const [reservedName, setReservedName] = useState("");
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const reservedNamesCols = [
-    {
-      header: "Registration Number",
-      accessorKey: "registration_number",
-    },
-    {
-      header: "Reserved Name",
-      accessorKey: "name",
-    },
-    {
-      header: "Submission Date",
-      accessorKey: "created_at",
-      cell: ({ row }: { row: any }) => {
-        return (
-          <span>{moment(row.original.created_at).format("DD/MM/YY")}</span>
-        );
-      },
-    },
-    {
-      header: "Action",
-      accessorKey: "action",
-      cell: ({ row }: { row: any }) => {
-        return (
-          <menu className="flex items-center gap-2 cursor-pointer">
-            <FontAwesomeIcon
-              onClick={(e) => {
-                e.preventDefault();
-                setReservedName(row?.original?.name);
-                setUseReservedNames(true);
-              }}
-              icon={faCheck}
-              className="text-primary"
-            />
-          </menu>
-        );
-      },
-    },
-  ];
+    .map((business) => {
+      return {
+        ...business,
+        submission_date: moment(business?.submission_date).format('DD/MM/YYYY'),
+        company_name: business?.company_details?.name,
+        status: capitalizeString(business?.status),
+        id:
+          business?.id ||
+          business?.entry_id ||
+          Math.floor(Math.random() * 9000) + 1000,
+        reg_number: `REG-${(
+          business?.entry_id?.split('-')[0] || ''
+        ).toUpperCase()}`,
+        service_name: capitalizeString(business?.type),
+        path: business?.path,
+        active_tab: business?.active_tab,
+        active_step: business?.active_step,
+      };
+    });
 
   function renderActionCell({ row }) {
     return (
-      <menu className="flex items-center gap-2 cursor-pointer">
+      <menu className="flex items-center gap-6 cursor-pointer">
         <Button
           value="Resume"
           styled={false}
@@ -109,43 +83,60 @@ export const NewRegistration = ({
             navigate(row?.original?.path);
           }}
         />
+        <Button
+          value="Delete"
+          danger
+          styled={false}
+          className="!bg-transparent hover:!bg-transparent !text-red-600 hover:!text-red-600 !shadow-none !p-0"
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(deleteUserApplication(row?.original?.entry_id));
+          }}
+        />
       </menu>
     );
   }
 
-  const applicationsInprogressColumns = [
-    { header: "Registration Number", accessorKey: "reg_number" },
-    { header: "Company Name", accessorKey: "company_name" },
-    { header: "Service Name", accessorKey: "service_name" },
-    { header: "Submission Date", accessorKey: "submission_date" },
+  const businessRegistrationApplicationColumns = [
+    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Company Name', accessorKey: 'company_name' },
+    { header: 'Service Name', accessorKey: 'service_name' },
     {
-      header: "Action",
-      accessorKey: "actions",
+      header: 'Progress',
+      accessorKey: 'active_tab',
+      cell: ({ row }) => {
+        return (
+          <p className="text-[14px]">
+            {capitalizeString(row?.original?.active_step)}
+          </p>
+        );
+      },
+    },
+    { header: 'Submission Date', accessorKey: 'submission_date' },
+    {
+      header: 'Action',
+      accessorKey: 'actions',
       enableSorting: false,
       cell: renderActionCell,
     },
   ];
 
-  const requiredAttachments = [
+  const businessRegistrationAttachments = [
     {
-      name: "Attachment 1",
-      description: "Attach a document that shows your business plan",
-      max_size: "200kb",
+      name: 'Article of association',
+      required: true,
     },
     {
-      name: "Attachment 2",
-      description: "Attach a document that shows ownership structure",
-      max_size: "500kb",
+      name: 'Resolution',
+      required: true,
     },
     {
-      name: "Attachment 3",
-      description: "Attach a document that shows your business plan",
-      max_size: "200kb",
+      name: 'Shareholder attachments',
+      required: false,
     },
     {
-      name: "Attachment 4",
-      description: "Other documents",
-      max_size: "800kb",
+      name: 'Others',
+      required: false,
     },
   ];
 
@@ -156,102 +147,71 @@ export const NewRegistration = ({
           <h3 className="text-base  max-w-[70%]">{description}</h3>
           <img src="/busreg.png" className="h-52 w-52" />
         </menu>
-        <menu className="flex justify-end">
-          <Button value="Continue" primary route={path} />
-        </menu>
-        <section className="flex w-full gap-12 max-md:flex-col">
-          <section className="flex flex-col w-1/2 gap-8 max-md:w-full">
-            {reservedNames?.length > 0 && (
-              <menu className="flex flex-col gap-2 max-md:w-full">
-                <h1 className="text-base font-bold">Your Reserved Names</h1>
-                <Table
-                  data={reservedNames}
-                  columns={reservedNamesCols}
-                  showFilter={false}
-                  showPagination={false}
-                  headerClassName="bg-primary text-white"
-                  className="bg-white rounded-2xl "
-                />
-              </menu>
-            )}
-            {applicationsInProgress.length > 0 && (
-              <menu className="flex flex-col gap-2 max-md:w-full">
-                <h1 className="pl-2 text-base font-bold">
-                  Applications in progress
-                </h1>
-                <Table
-                  data={applicationsInProgress}
-                  columns={applicationsInprogressColumns}
-                  showFilter={false}
-                  showPagination={false}
-                  headerClassName="bg-primary text-white"
-                  className="bg-white rounded-2xl "
-                />
-              </menu>
-            )}
-          </section>
-          <section className="flex flex-col w-1/2 gap-4 max-md:w-full">
-            <h1 className="text-base font-bold">
+        <section className="flex flex-col w-full gap-6">
+          <section className="flex flex-col gap-4 max-md:w-full">
+            <h1 className="text-base font-semibold uppercase px-1">
               Required Attachments for this application
             </h1>
-            <menu className="flex flex-col gap-4 p-8 bg-white rounded-md flex-s">
-              {requiredAttachments.map((attachment, index) => {
+            <menu className="flex items-center justify-between gap-4 p-4 bg-white rounded-md">
+              {businessRegistrationAttachments?.map((attachment, index) => {
                 return (
-                  <menu
-                    key={index}
-                    className="border flex flex-col gap-4 p-2 rounded-md border-[#f1f1f1]"
-                  >
-                    <menu className="flex items-center gap-4">
-                      <menu className="px-4 py-2 bg-[#ebf9f5] rounded-lg ">
-                        <FontAwesomeIcon
-                          icon={faFile}
-                          className="text-[#4bbe69]"
-                        />
-                      </menu>
-                      <menu>
-                        <h3 className="font-semibold">{attachment.name}</h3>
-                        <menu className="flex gap-4">
-                          <p className="text-[#808080] font-light">
-                            {attachment.description}
-                          </p>
-                          <span>Max size {attachment.max_size}</span>
-                        </menu>
-                      </menu>
-                    </menu>
-                  </menu>
+                  <li key={index} className="w-fit flex items-center gap-2">
+                    <FontAwesomeIcon icon={faCircle} className="w-1 h-1" />
+                    <p className="text-[14px] font-normal flex items-center gap-1">
+                      {attachment.name}{' '}
+                      <span className="text-[14px]">
+                        {attachment.required ? '(Required)' : '(Optional)'}
+                      </span>
+                    </p>
+                  </li>
                 );
               })}
             </menu>
           </section>
+          <section className="flex flex-col gap-8 max-md:w-full">
+            {applicationsInProgress.length > 0 && (
+              <menu className="flex flex-col gap-2 max-md:w-full">
+                <h1 className="text-base font-semibold uppercase px-2">
+                  Applications in progress
+                </h1>
+                <Table
+                  data={applicationsInProgress}
+                  columns={businessRegistrationApplicationColumns}
+                  showFilter={false}
+                  showPagination={false}
+                  headerClassName="bg-primary text-white"
+                  className="bg-white rounded-md"
+                />
+              </menu>
+            )}
+          </section>
         </section>
+        <menu className="flex justify-center items-center">
+          <Button
+            value={
+              <menu className="flex items-center gap-2">
+                <span>Start Business Registration</span>
+                <FontAwesomeIcon icon={faArrowRight} />
+              </menu>
+            }
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              if (reservedNames?.length > 0) {
+                dispatch(setSelectReservedNameModal(true));
+              } else {
+                navigate(path);
+              }
+            }}
+          />
+        </menu>
       </main>
-      {useReservedNames && (
-        <ConfirmModal
-          onClose={() => setUseReservedNames(false)}
-          isOpen={!!reservedName}
-          onConfirm={(e) => {
-            e.preventDefault();
-            dispatch(
-              setUserApplications({
-                entry_id: path?.split("=")[1],
-                company_details: {
-                  name: reservedName,
-                },
-              })
-            );
-            dispatch(removeFromReservedNames(reservedName));
-            navigate(path);
-            setUseReservedNames(false);
-          }}
-          description="You are about to use a reserved name for this application"
-          message=" Are you sure you want to use this name?"
-        >
-          <h1 className="text-2xl font-bold">
-            Use Reserved Name{" "}
-            <span className="text-primary"> ( {reservedName} )</span>
-          </h1>
-        </ConfirmModal>
-      )}
+      <SelectReservedName
+        path={path}
+        application_type="Business Registration"
+        setActiveStep={setBusinessActiveStep}
+        setActiveTab={setBusinessActiveTab}
+      />
     </UserLayout>
   );
 };
@@ -260,9 +220,8 @@ const NewBusinessRegistration = () => {
   return (
     <NewRegistration
       description="You are going to start a business registration process which
-      involves 6 steps. You may be required to provide documents that you
-      do not have at this moment. Feel free to pause the process and
-      resume whenever is convenient for you. Your progress will be saved."
+      involves 6 steps. Below you will find a list of all documents you will be required to submit during the application process. Feel free to pause the process and
+      resume whenever is convenient for you. Your progress will be saved automatically."
       path={`/business-registration?entry_id=${generateUUID()}`}
     />
   );

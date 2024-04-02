@@ -179,6 +179,7 @@ export const businessRegistrationSlice = createSlice({
     company_business_lines:
       JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
     capitalDetailsModal: false,
+    confirmDeleteModal: false,
   },
   reducers: {
     // SET REGISTRATION TABS
@@ -381,6 +382,11 @@ export const businessRegistrationSlice = createSlice({
       state.capitalDetailsModal = action.payload;
   },
 
+  // SET CONFIRM DELETE MODAL
+  setConfirmDeleteModal: (state, action) => {
+    state.confirmDeleteModal = action.payload;
+  }
+
 }});
 
 export default businessRegistrationSlice.reducer;
@@ -394,4 +400,5 @@ export const {
   setBusinessRegistrationTabs,
   setBusinessCompletedTab,
   setCapitalDetailsModal,
+  setConfirmDeleteModal,
 } = businessRegistrationSlice.actions;

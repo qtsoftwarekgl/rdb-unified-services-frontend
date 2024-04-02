@@ -7,7 +7,7 @@ import {
 import rdb_icon from "/rdb-logo.png";
 import Input from "../../components/inputs/Input";
 import Button from "../../components/inputs/Button";
-import validateInputs from "../../helpers/Validations";
+import validateInputs from "../../helpers/validations";
 import InfoPanel from "./InfoPanel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";

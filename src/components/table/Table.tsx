@@ -49,7 +49,7 @@ interface TableProps {
 }
 
 const Table: FC<TableProps> = ({
-  data,
+  data = [],
   columns,
   showPagination = true,
   pageSize,

@@ -4,7 +4,7 @@ import AdminLayout from '../../containers/AdminLayout';
 import { faCirclePlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Table from '../../components/table/Table';
 import { roles } from '../../constants/dashboard';
-import { capitalizeString, formatDate } from '../../helpers/Strings';
+import { capitalizeString, formatDate } from '../../helpers/strings';
 import AddRole from './AddRole';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';

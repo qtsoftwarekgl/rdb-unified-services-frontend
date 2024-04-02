@@ -4,7 +4,7 @@ import ReactSelect, {
   MultiValue,
   OptionsOrGroups,
   GroupBase,
-  ThemeConfig,
+  PropsValue,
 } from "react-select";
 
 interface Option {
@@ -22,13 +22,12 @@ interface SelectProps {
   onChange: ((e: SingleValue<Option> | MultiValue<Option>) => void);
   className?: string;
   disabled?: boolean;
-  selectedValue?: string;
   defaultLabel?: string;
   isSearchable?: boolean;
   multiple?: boolean;
   autoFocus?: boolean;
   onBlur?: () => void | undefined;
-  defaultValue?: Option | Option[] | null;
+  defaultValue?: PropsValue<Option | MultiValue<Option>> | undefined | string;
   styled?: boolean;
   label?: string | JSX.Element;
   required?: boolean;
@@ -42,7 +41,7 @@ const Select: FC<SelectProps> = forwardRef(
       options = [],
       onChange,
       className = '',
-      defaultValue = null,
+      defaultValue = undefined,
       disabled = false,
       isSearchable = true,
       multiple = false,
@@ -78,53 +77,23 @@ const Select: FC<SelectProps> = forwardRef(
           <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>
         </p>
         <ReactSelect
-          onChange={(
-            e: unknown | Option | SingleValue<Option> | MultiValue<Option>
-          ) => {
+          onChange={(e: SingleValue<Option> | MultiValue<Option>) => {
             if (multiple) {
               onChange(Array.isArray(e) ? e.map((item) => item?.value) : []);
             } else {
-              onChange(e);
+              onChange(e?.value);
             }
           }}
           isSearchable={isSearchable}
           isMulti={multiple}
           isDisabled={disabled}
           autoFocus={autoFocus}
-          defaultValue={defaultValue}
           onBlur={onBlur}
           unstyled={!styled}
           ref={ref}
           options={mappedOptions}
+          defaultValue={options?.find((option) => option.value === String(defaultValue))}
           className={`${className}`}
-          theme={(theme: ThemeConfig) => ({
-            ...theme,
-            borderRadius: '0.5rem',
-            paddingTop: '0.2px',
-            fontSize: '13px',
-            colors: {
-              ...theme.colors,
-              primary: '#005A96',
-              primary25: '#005A96',
-            },
-          })}
-          styles={
-            styled
-              ? {
-                  control: (provided) => ({
-                    ...provided,
-                    display: 'flex',
-                    border: '1.5px solid #D1D5DB',
-                    '&hover': {
-                      border: '1.6px solid #005A96',
-                    },
-                    '&focus': {
-                      border: '1.6px solid #005A96',
-                    },
-                  }),
-                }
-              : {}
-          }
         />
       </label>
     );

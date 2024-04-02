@@ -6,7 +6,7 @@ import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { userData, workingIds } from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
-import validateInputs from "../../../helpers/Validations";
+import validateInputs from "../../../helpers/validations";
 import Button from "../../../components/inputs/Button";
 import {
   setForeignBusinessActiveStep,
@@ -17,7 +17,8 @@ import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { capitalizeString } from "../../../helpers/Strings";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { capitalizeString } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
@@ -26,7 +27,6 @@ import {
 } from "../../../constants/Users";
 import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
 import ViewDocument from "../../user-company-details/ViewDocument";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
 
 interface BoardDirectorsProps {
   entry_id: string | null;
@@ -180,7 +180,7 @@ const BoardDirectors = ({
                         },
                       ]}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.position && (
@@ -213,7 +213,7 @@ const BoardDirectors = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     </label>
@@ -503,7 +503,7 @@ const BoardDirectors = ({
                             };
                           })}
                           onChange={(e) => {
-                            field.onChange(e?.value);
+                            field.onChange(e);
                           }}
                         />
                         {errors?.country && (

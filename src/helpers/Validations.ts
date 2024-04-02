@@ -31,6 +31,18 @@ export const validateInputs = (value: string, type: string) => {
     if (type === 'textarea' && !/^\s*[\s\S]+?\s*$/.test(value)) {
       return false;
     }
+    if (type === 'nid' && value?.length !== 16) {
+      return false;
+    }
+    if (type === 'nid' && value?.length !== 16) {
+      return false;
+    }
+    if (
+      type === 'password' &&
+      !/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,}$/.test(value)
+    ) {
+      return false;
+    }
   }
 
   return true;

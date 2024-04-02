@@ -5,7 +5,7 @@ import { faCircleInfo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Table from '../../../components/table/Table';
-import { capitalizeString, generateUUID } from '../../../helpers/Strings';
+import { capitalizeString, generateUUID } from '../../../helpers/strings';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,

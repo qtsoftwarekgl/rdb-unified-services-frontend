@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../states/store';
-import { capitalizeString, formatCompanyData } from '../../helpers/Strings';
+import { capitalizeString, formatCompanyData } from '../../helpers/strings';
 import AdminLayout from '../../containers/AdminLayout';
 import ApplicatinsList from './ApplicationsList';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';

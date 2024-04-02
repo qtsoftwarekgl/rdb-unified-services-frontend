@@ -9,7 +9,7 @@ import {
   setRegistrationStep,
   setUserDetails,
 } from '../../states/features/authSlice';
-import validateInputs from '../../helpers/Validations';
+import validateInputs from '../../helpers/validations';
 import { useNavigate } from 'react-router';
 import Loader from '../../components/Loader';
 import Select from '../../components/inputs/Select';
@@ -226,7 +226,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                       };
                     })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.phone && (

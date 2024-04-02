@@ -6,7 +6,6 @@ import { AppDispatch } from "../../states/store";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../states/features/types";
-import { ReviewComment } from "../applications-review/AddReviewComments";
 
 interface TabProps {
   steps: Array<Step>;
@@ -14,7 +13,6 @@ interface TabProps {
   children: ReactNode;
   setActiveStep: (step: string) => UnknownAction;
   active_tab?: TabType;
-  comments: ReviewComment[];
 }
 
 const Tab: FC<TabProps> = ({

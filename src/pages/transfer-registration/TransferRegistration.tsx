@@ -1,7 +1,7 @@
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import UserLayout from "../../containers/UserLayout";
 import Select from "../../components/inputs/Select";
-import { cessationCompanies } from "../../constants/businessRegistration";
+import { cessationCompanies, dissolutionReasons } from "../../constants/businessRegistration";
 import Input from "../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
@@ -21,6 +21,7 @@ const TransferRegistration = () => {
     control,
     handleSubmit,
     formState: { errors },
+    watch
   } = useForm();
 
   const [attachedFIles, setAttachedFiles] = useState<Attachment[]>([]);
@@ -92,7 +93,7 @@ const TransferRegistration = () => {
               <Controller
                 name="company"
                 control={control}
-                rules={{ required: "Select a Company" }}
+                rules={{ required: 'Select a Company' }}
                 render={({ field }) => (
                   <label className="flex flex-col">
                     <Select
@@ -100,7 +101,7 @@ const TransferRegistration = () => {
                       options={cessationCompanies.map((company) => {
                         return {
                           value: company.name,
-                          label: company.tin + "          " + company.name,
+                          label: company.tin + '          ' + company.name,
                         };
                       })}
                       required
@@ -120,10 +121,10 @@ const TransferRegistration = () => {
                 control={control}
                 name="transfer_date"
                 rules={{
-                  required: "Transfer Date is required",
+                  required: 'Transfer Date is required',
                   validate: (value) => {
                     if (moment(value).format() < moment(new Date()).format()) {
-                      return "Select a valid Date";
+                      return 'Select a valid Date';
                     }
                     return true;
                   },
@@ -148,30 +149,41 @@ const TransferRegistration = () => {
               <Controller
                 control={control}
                 name="transfer_reason"
+                rules={{ required: 'Transfer reason is required' }}
                 render={({ field }) => (
                   <label className="flex flex-col w-1/2 gap-1 max-sm:w-full">
-                    <Input
-                      label="Transfer Reason "
-                      placeholder="Reason for Transfer"
-                      {...field}
+                    <Select
+                      options={dissolutionReasons}
+                      label="Transfer reason"
+                      required
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
                     />
+                    {errors.transfer_reason && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors.transfer_reason.message)}
+                      </p>
+                    )}
                   </label>
                 )}
               />
             </menu>
-            <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
+            <menu
+              className={`${
+                watch('transfer_reason') === 'other' ? 'flex' : 'hidden'
+              } flex-col items-start w-full gap-3 my-3 max-md:items-center`}
+            >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
                 Attachments <span className="text-red-600">*</span>
               </h3>
               <Controller
                 name="attachment"
                 rules={{
-                  validate: () => {
-                    if (attachedFIles?.length === 0) {
-                      return "Attachments are required";
-                    }
-                    return true;
-                  },
+                  required:
+                    watch('transfer_reason') === 'other'
+                      ? 'Attach at least one document'
+                      : false,
                 }}
                 control={control}
                 render={({ field }) => {
@@ -209,7 +221,7 @@ const TransferRegistration = () => {
               />
             )}
             <menu className="flex items-center justify-center w-full p-8">
-              <Button value={"Submit"} primary submit />
+              <Button value={'Submit'} primary submit />
             </menu>
           </form>
         </section>

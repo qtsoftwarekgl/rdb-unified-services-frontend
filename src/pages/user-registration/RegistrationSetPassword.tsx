@@ -2,7 +2,6 @@ import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Input from '../../components/inputs/Input';
@@ -10,6 +9,7 @@ import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
+import validateInputs from '../../helpers/validations';
 
 const RegistrationSetPassword = () => {
 
@@ -66,7 +66,15 @@ const RegistrationSetPassword = () => {
             <Controller
               name="password"
               control={control}
-              rules={{ required: `${t('password-required')}` }}
+              rules={{
+                required: `${t('password-required')}`,
+                validate: (value) => {
+                  return (
+                    validateInputs(value, 'password') ||
+                    'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character.'
+                  );
+                },
+              }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start gap-1 w-[90%] mx-auto">
@@ -135,6 +143,7 @@ const RegistrationSetPassword = () => {
                 className="w-[90%] mx-auto !text-[14px]"
                 submit
                 primary
+                disabled={Object.keys(errors)?.length > 0}
               />
               <Button
                 className="!text-[14px]"

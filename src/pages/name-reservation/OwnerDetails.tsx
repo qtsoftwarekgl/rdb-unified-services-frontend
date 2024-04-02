@@ -104,466 +104,513 @@ const OwnerDetails = ({ isOpen }: Props) => {
   if (!isOpen) return null;
 
   return (
-    <section>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-        <menu className="w-full flex items-start gap-5">
-          <Controller
-            name="document_type"
-            rules={{ required: 'Select document type' }}
-            defaultValue={owner_details?.document_type || 'nid'}
-            control={control}
-            render={({ field }) => {
-              const options = [
-                { value: 'nid', label: 'National ID' },
-                { label: 'Passport', value: 'passport' },
-              ];
-              return (
-                <label className={`flex flex-col gap-1 w-[49%] items-start`}>
-                  <Select
-                    options={options}
-                    label="Document Type"
-                    defaultValue={
-                      options?.find(
-                        (document) =>
-                          document?.value === owner_details?.document_type
-                      ) || options[0]
-                    }
-                    required
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                      if (e?.value === 'passport') {
-                        setValue('document_no', '');
-                        setSearchMember({
-                          ...searchMember,
-                          data: null,
-                        });
-                      }
-                    }}
-                  />
-                </label>
-              );
-            }}
-          />
-          {watch('document_type') === 'nid' && (
+    <section className="flex flex-col gap-6">
+      <menu className="flex flex-col gap-4">
+        <p>
+          I am reserving for: <span className="text-red-600">*</span>
+        </p>
+        <Controller
+          name="name_owner"
+          control={control}
+          render={({ field }) => {
+            return (
+              <ul className="flex items-center gap-3">
+                <Input
+                  type="radio"
+                  name={field?.name}
+                  checked={!field?.value || field?.value === 'owner'}
+                  value={'owner'}
+                  label="Myself"
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                  }}
+                />
+                <Input
+                  type="radio"
+                  name={field?.name}
+                  value={'other'}
+                  label="Someone else"
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                  }}
+                />
+              </ul>
+            );
+          }}
+        />
+      </menu>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={`${
+          watch('name_owner') === 'other' ? 'flex' : 'hidden'
+        } flex-col gap-5`}
+      >
+        <section className={`flex-col gap-4 w-full`}>
+          <menu className="w-full flex items-start gap-5">
             <Controller
+              name="document_type"
+              rules={{ required: 'Select document type' }}
+              defaultValue={owner_details?.document_type || 'nid'}
               control={control}
-              defaultValue={owner_details?.document_no}
-              name="document_no"
-              rules={{
-                required:
-                  watch('document_type') === 'nid'
-                    ? 'Document number is required'
-                    : false,
-                validate: (value) => {
-                  if (
-                    watch('document_type') === 'nid' &&
-                    value?.length !== 16
-                  ) {
-                    return 'Document number is invalid';
-                  }
-                  return true;
-                },
-              }}
               render={({ field }) => {
+                const options = [
+                  { value: 'nid', label: 'National ID' },
+                  { label: 'Passport', value: 'passport' },
+                ];
                 return (
-                  <label className="flex flex-col gap-2 items-start w-[49%]">
-                    <Input
+                  <label className={`flex flex-col gap-1 w-[49%] items-start`}>
+                    <Select
+                      options={options}
+                      label="Document Type"
+                      defaultValue={
+                        options?.find(
+                          (document) =>
+                            document?.value === owner_details?.document_type
+                        ) || options[0]
+                      }
                       required
-                      suffixIcon={faSearch}
-                      defaultValue={owner_details?.document_no}
-                      suffixIconHandler={async (e) => {
-                        e.preventDefault();
-                        if (!field.value) {
-                          setError('document_no', {
-                            type: 'manual',
-                            message: 'Document number is required',
-                          });
-                          return;
-                        }
-                        if (field.value?.length !== 16) {
-                          clearErrors('document_no');
-                          setError('document_no', {
-                            type: 'manual',
-                            message: 'Document number must be 16 characters',
-                          });
-                          return;
-                        }
-                        setSearchMember({
-                          ...searchMember,
-                          loading: true,
-                          error: false,
-                        });
-                        setTimeout(() => {
-                          const randomNumber = Math.floor(Math.random() * 16);
-                          const userDetails = userData[randomNumber];
-
-                          if (!userDetails) {
-                            setSearchMember({
-                              ...searchMember,
-                              data: null,
-                              loading: false,
-                              error: true,
-                            });
-                          }
-
-                          if (userDetails) {
-                            clearErrors();
-                            setSearchMember({
-                              ...searchMember,
-                              data: userDetails,
-                              loading: false,
-                              error: false,
-                            });
-                            setValue('first_name', userDetails?.first_name);
-                            setValue('middle_name', userDetails?.middle_name);
-                            setValue('last_name', userDetails?.last_name);
-                            setValue('gender', userDetails?.data?.gender);
-                            setValue('phone', userDetails?.data?.phone);
-                          }
-                        }, 700);
-                      }}
-                      label="ID Document No"
-                      suffixIconPrimary
-                      placeholder="1 XXXX X XXXXXXX X XX"
-                      onChange={async (e) => {
+                      onChange={(e) => {
                         field.onChange(e);
-                        if (e?.target?.value?.length !== 16) {
-                          setError('document_no', {
-                            type: 'manual',
-                            message: 'Document number must be 16 characters',
+                        if (e?.value === 'passport') {
+                          setValue('document_no', '');
+                          setSearchMember({
+                            ...searchMember,
+                            data: null,
                           });
-                        } else {
-                          clearErrors('document_no');
-                          await trigger('document_no');
                         }
                       }}
                     />
-                    {searchMember?.loading &&
-                      !errors?.document_no &&
-                      !searchMember?.error && (
-                        <span className="flex items-center gap-[2px] text-[13px]">
-                          <Loader size={4} /> Validating document
+                  </label>
+                );
+              }}
+            />
+            {watch('document_type') === 'nid' && (
+              <Controller
+                control={control}
+                defaultValue={owner_details?.document_no}
+                name="document_no"
+                rules={{
+                  required:
+                    watch('document_type') === 'nid'
+                      ? 'Document number is required'
+                      : false,
+                  validate: (value) => {
+                    if (
+                      watch('document_type') === 'nid' &&
+                      value?.length !== 16
+                    ) {
+                      return 'Document number is invalid';
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col gap-2 items-start w-[49%]">
+                      <Input
+                        required
+                        suffixIcon={faSearch}
+                        defaultValue={owner_details?.document_no}
+                        suffixIconHandler={async (e) => {
+                          e.preventDefault();
+                          if (!field.value) {
+                            setError('document_no', {
+                              type: 'manual',
+                              message: 'Document number is required',
+                            });
+                            return;
+                          }
+                          if (field.value?.length !== 16) {
+                            clearErrors('document_no');
+                            setError('document_no', {
+                              type: 'manual',
+                              message: 'Document number must be 16 characters',
+                            });
+                            return;
+                          }
+                          setSearchMember({
+                            ...searchMember,
+                            loading: true,
+                            error: false,
+                          });
+                          setTimeout(() => {
+                            const randomNumber = Math.floor(Math.random() * 16);
+                            const userDetails = userData[randomNumber];
+
+                            if (!userDetails) {
+                              setSearchMember({
+                                ...searchMember,
+                                data: null,
+                                loading: false,
+                                error: true,
+                              });
+                            }
+
+                            if (userDetails) {
+                              clearErrors();
+                              setSearchMember({
+                                ...searchMember,
+                                data: userDetails,
+                                loading: false,
+                                error: false,
+                              });
+                              setValue('first_name', userDetails?.first_name);
+                              setValue('middle_name', userDetails?.middle_name);
+                              setValue('last_name', userDetails?.last_name);
+                              setValue('gender', userDetails?.data?.gender);
+                              setValue('phone', userDetails?.data?.phone);
+                            }
+                          }, 700);
+                        }}
+                        label="ID Document No"
+                        suffixIconPrimary
+                        placeholder="1 XXXX X XXXXXXX X XX"
+                        onChange={async (e) => {
+                          field.onChange(e);
+                          if (e?.target?.value?.length !== 16) {
+                            setError('document_no', {
+                              type: 'manual',
+                              message: 'Document number must be 16 characters',
+                            });
+                          } else {
+                            clearErrors('document_no');
+                            await trigger('document_no');
+                          }
+                        }}
+                      />
+                      {searchMember?.loading &&
+                        !errors?.document_no &&
+                        !searchMember?.error && (
+                          <span className="flex items-center gap-[2px] text-[13px]">
+                            <Loader size={4} /> Validating document
+                          </span>
+                        )}
+                      {searchMember?.error && !searchMember?.loading && (
+                        <span className="text-red-600 text-[13px]">
+                          Invalid document number
                         </span>
                       )}
-                    {searchMember?.error && !searchMember?.loading && (
-                      <span className="text-red-600 text-[13px]">
-                        Invalid document number
+                      {errors?.document_no && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.document_no?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
+          </menu>
+          <section
+            className={`${
+              (watch('document_type') === 'nid' && searchMember?.data) ||
+              watch('document_type') === 'passport'
+                ? 'flex'
+                : 'hidden'
+            } flex w-full gap-5 flex-wrap items-start mt-4`}
+          >
+            <Controller
+              name="first_name"
+              control={control}
+              defaultValue={
+                owner_details?.first_name || searchMember?.data?.first_name
+              }
+              rules={{
+                required: 'First name is required',
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Input
+                      required
+                      readOnly={watch('document_type') === 'nid'}
+                      defaultValue={
+                        owner_details?.first_name ||
+                        searchMember?.data?.first_name
+                      }
+                      placeholder="First name"
+                      label="First name"
+                      {...field}
+                    />
+                    {errors?.first_name && (
+                      <span className="text-red-500 text-sm">
+                        {String(errors?.first_name?.message)}
                       </span>
-                    )}
-                    {errors?.document_no && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.document_no?.message)}
-                      </p>
                     )}
                   </label>
                 );
               }}
             />
-          )}
-        </menu>
-        <section
-          className={`${
-            (watch('document_type') === 'nid' && searchMember?.data) ||
-            watch('document_type') === 'passport'
-              ? 'flex'
-              : 'hidden'
-          } flex w-full gap-5 flex-wrap items-start mt-4`}
-        >
-          <Controller
-            name="first_name"
-            control={control}
-            defaultValue={
-              owner_details?.first_name || searchMember?.data?.first_name
-            }
-            rules={{
-              required: 'First name is required',
-            }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1 items-start">
-                  <Input
-                    required
-                    readOnly={watch('document_type') === 'nid'}
-                    defaultValue={
-                      owner_details?.first_name ||
-                      searchMember?.data?.first_name
-                    }
-                    placeholder="First name"
-                    label="First name"
-                    {...field}
-                  />
-                  {errors?.first_name && (
-                    <span className="text-red-500 text-sm">
-                      {String(errors?.first_name?.message)}
-                    </span>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="middle_name"
-            control={control}
-            defaultValue={
-              owner_details?.middle_name || searchMember?.data?.middle_name
-            }
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1 items-start">
-                  <Input
-                    readOnly={watch('document_type') === 'nid'}
-                    defaultValue={
-                      owner_details?.middle_name ||
-                      searchMember?.data?.middle_name
-                    }
-                    placeholder="Middle name"
-                    label="Middle name"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="last_name"
-            control={control}
-            defaultValue={
-              owner_details?.last_name || searchMember?.data?.last_name
-            }
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1 items-start">
-                  <Input
-                    readOnly={watch('document_type') === 'nid'}
-                    defaultValue={
-                      owner_details?.last_name || searchMember?.last_name
-                    }
-                    placeholder="Last name"
-                    label="Last name"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="gender"
-            control={control}
-            defaultValue={owner_details?.gender || searchMember?.data?.gender}
-            rules={{
-              required:
-                watch('document_type') === 'passport' ? 'Select gender' : false,
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col gap-2 items-start w-[49%]">
-                  <p className="flex items-center gap-1 text-[15px]">
-                    Gender<span className="text-red-500">*</span>
-                  </p>
-                  {watch('document_type') === 'nid' ? (
-                    <p className="px-2 py-1 rounded-md bg-background">
-                      {searchMember?.data?.gender || watch('gender')}
+            <Controller
+              name="middle_name"
+              control={control}
+              defaultValue={
+                owner_details?.middle_name || searchMember?.data?.middle_name
+              }
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Input
+                      readOnly={watch('document_type') === 'nid'}
+                      defaultValue={
+                        owner_details?.middle_name ||
+                        searchMember?.data?.middle_name
+                      }
+                      placeholder="Middle name"
+                      label="Middle name"
+                      {...field}
+                    />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="last_name"
+              control={control}
+              defaultValue={
+                owner_details?.last_name || searchMember?.data?.last_name
+              }
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Input
+                      readOnly={watch('document_type') === 'nid'}
+                      defaultValue={
+                        owner_details?.last_name || searchMember?.last_name
+                      }
+                      placeholder="Last name"
+                      label="Last name"
+                      {...field}
+                    />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="gender"
+              control={control}
+              defaultValue={owner_details?.gender || searchMember?.data?.gender}
+              rules={{
+                required:
+                  watch('document_type') === 'passport'
+                    ? 'Select gender'
+                    : false,
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col gap-2 items-start w-[49%]">
+                    <p className="flex items-center gap-1 text-[15px]">
+                      Gender<span className="text-red-500">*</span>
                     </p>
-                  ) : (
-                    <menu className="flex items-center gap-4 mt-2">
-                      <Input
-                        type="radio"
-                        checked={
-                          searchMember?.data?.gender === 'Female' ||
-                          watch('gender') === 'Male'
-                        }
-                        label="Male"
-                        name={field?.name}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          if (e.target.checked) {
-                            setValue('gender', 'Male');
+                    {watch('document_type') === 'nid' ? (
+                      <p className="px-2 py-1 rounded-md bg-background">
+                        {searchMember?.data?.gender || watch('gender')}
+                      </p>
+                    ) : (
+                      <menu className="flex items-center gap-4 mt-2">
+                        <Input
+                          type="radio"
+                          checked={
+                            searchMember?.data?.gender === 'Female' ||
+                            watch('gender') === 'Male'
                           }
-                        }}
-                      />
-                      <Input
-                        type="radio"
-                        checked={
-                          searchMember?.data?.gender === 'Female' ||
-                          watch('gender') === 'Female'
-                        }
-                        label="Female"
-                        name={field?.name}
-                        onChange={(e) => {
-                          field.onChange(e.target.value);
-                          if (e.target.checked) {
-                            setValue('gender', 'Female');
+                          label="Male"
+                          name={field?.name}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            if (e.target.checked) {
+                              setValue('gender', 'Male');
+                            }
+                          }}
+                        />
+                        <Input
+                          type="radio"
+                          checked={
+                            searchMember?.data?.gender === 'Female' ||
+                            watch('gender') === 'Female'
                           }
-                        }}
-                      />
-                    </menu>
-                  )}
+                          label="Female"
+                          name={field?.name}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            if (e.target.checked) {
+                              setValue('gender', 'Female');
+                            }
+                          }}
+                        />
+                      </menu>
+                    )}
 
-                  {errors?.gender && (
-                    <span className="text-red-500 text-[13px]">
-                      {String(errors?.gender?.message)}
-                    </span>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="country"
-            control={control}
-            defaultValue={owner_details?.country}
-            rules={{
-              required:
-                watch('document_type') === 'passport'
-                  ? 'Nationality is required'
-                  : false,
-            }}
-            render={({ field }) => {
-              if (watch('document_type') === 'nid') return undefined;
-              return (
-                <label className="w-[49%] flex flex-col gap-1 items-start">
-                  <Select
-                    isSearchable
-                    required
-                    label="Country"
-                    defaultValue={countriesList
-                      ?.filter(
-                        (country) => country?.code === owner_details?.country
-                      )
-                      .map((country) => {
+                    {errors?.gender && (
+                      <span className="text-red-500 text-[13px]">
+                        {String(errors?.gender?.message)}
+                      </span>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="country"
+              control={control}
+              defaultValue={owner_details?.country}
+              rules={{
+                required:
+                  watch('document_type') === 'passport'
+                    ? 'Nationality is required'
+                    : false,
+              }}
+              render={({ field }) => {
+                if (watch('document_type') === 'nid') return undefined;
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Select
+                      isSearchable
+                      required
+                      label="Country"
+                      defaultValue={countriesList
+                        ?.filter(
+                          (country) => country?.code === owner_details?.country
+                        )
+                        .map((country) => {
+                          return {
+                            ...country,
+                            label: country.name,
+                            value: country?.code,
+                          };
+                        })}
+                      options={countriesList?.map((country) => {
                         return {
                           ...country,
                           label: country.name,
                           value: country?.code,
                         };
                       })}
-                    options={countriesList?.map((country) => {
-                      return {
-                        ...country,
-                        label: country.name,
-                        value: country?.code,
-                      };
-                    })}
-                    onChange={(e) => {
-                      field.onChange(e?.value);
-                    }}
-                  />
-                  {errors?.country && (
-                    <p className="text-red-500 text-sm">
-                      {String(errors?.country?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="date_of_birth"
-            control={control}
-            defaultValue={owner_details?.date_of_birth}
-            rules={{
-              required: 'Select date of birth',
-              validate: (value) => {
-                if (moment(value).format() > moment(new Date()).format()) {
-                  return 'Select a valid date of birth';
-                }
-                return true;
-              },
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start w-[49%] gap-1">
-                  <Input
-                    required
-                    defaultValue={owner_details?.date_of_birth}
-                    type="date"
-                    label="Date of birth"
-                    {...field}
-                  />
-                  {errors?.date_of_birth && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.date_of_birth?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="phone"
-            control={control}
-            rules={{
-              required: 'Phone number is required',
-            }}
-            defaultValue={owner_details?.phone}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col w-[49%] gap-1">
-                  {watch('document_type') === 'passport' ? (
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                    {errors?.country && (
+                      <p className="text-red-500 text-sm">
+                        {String(errors?.country?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="date_of_birth"
+              control={control}
+              defaultValue={owner_details?.date_of_birth}
+              rules={{
+                required: 'Select date of birth',
+                validate: (value) => {
+                  if (moment(value).format() > moment(new Date()).format()) {
+                    return 'Select a valid date of birth';
+                  }
+                  return true;
+                },
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col items-start w-[49%] gap-1">
                     <Input
-                      label="Phone number"
                       required
-                      defaultValue={owner_details?.phone}
-                      type="tel"
+                      defaultValue={owner_details?.date_of_birth}
+                      type="date"
+                      label="Date of birth"
                       {...field}
                     />
-                  ) : (
-                    <Select
-                      label="Phone number"
-                      required
-                      defaultValue={{
-                        label: `(+250) ${userData?.[0]?.phone}`,
-                        value: userData?.[0]?.phone,
-                      }}
-                      options={userData?.slice(0, 3)?.map((user) => {
-                        return {
-                          ...user,
-                          label: `(+250) ${user?.phone}`,
-                          value: user?.phone,
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e?.value);
-                      }}
-                    />
-                  )}
-                  {errors?.phone && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.phone?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          {watch('document_type') === 'nid' && (
+                    {errors?.date_of_birth && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.date_of_birth?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="phone"
+              control={control}
+              rules={{
+                required: 'Phone number is required',
+              }}
+              defaultValue={owner_details?.phone}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    {watch('document_type') === 'passport' ? (
+                      <Input
+                        label="Phone number"
+                        required
+                        defaultValue={owner_details?.phone}
+                        type="tel"
+                        {...field}
+                      />
+                    ) : (
+                      <Select
+                        label="Phone number"
+                        required
+                        defaultValue={{
+                          label: `(+250) ${userData?.[0]?.phone}`,
+                          value: userData?.[0]?.phone,
+                        }}
+                        options={userData?.slice(0, 3)?.map((user) => {
+                          return {
+                            ...user,
+                            label: `(+250) ${user?.phone}`,
+                            value: user?.phone,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                    )}
+                    {errors?.phone && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.phone?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            {watch('document_type') === 'nid' && (
+              <Controller
+                control={control}
+                name="street_name"
+                render={({ field }) => {
+                  return (
+                    <label className="w-[49%] flex flex-col gap-1">
+                      <Input
+                        label="Street Name"
+                        placeholder="Street name"
+                        {...field}
+                      />
+                    </label>
+                  );
+                }}
+              />
+            )}
             <Controller
               control={control}
-              name="street_name"
+              name="po_box"
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
                     <Input
-                      label="Street Name"
-                      placeholder="Street name"
+                      label="PO Box"
+                      placeholder="Postal code"
                       {...field}
                     />
                   </label>
                 );
               }}
             />
-          )}
-          <Controller
-            control={control}
-            name="po_box"
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Input label="PO Box" placeholder="Postal code" {...field} />
-                </label>
-              );
-            }}
-          />
+          </section>
         </section>
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -578,6 +625,29 @@ const OwnerDetails = ({ isOpen }: Props) => {
           <Button value={isLoading ? <Loader /> : 'Submit'} primary submit />
         </menu>
       </form>
+      <menu
+        className={`${
+          watch('name_owner') === 'other' ? 'hidden' : 'flex'
+        } items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+      >
+        <Button
+          value="Back"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate('/services');
+          }}
+        />
+        <Button
+          primary
+          value={isLoading ? <Loader /> : 'Submit'}
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(setNameReservationActiveTab('name_reservation'));
+            dispatch(setNameReservationActiveStep('name_reservation'));
+            dispatch(setNameReservationCompletedStep('owner_details'));
+          }}
+        />
+      </menu>
     </section>
   );
 };

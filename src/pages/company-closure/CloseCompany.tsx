@@ -13,6 +13,7 @@ import Button from '../../components/inputs/Button';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import { toast } from 'react-toastify';
+import { dissolutionReasons } from '../../constants/businessRegistration';
 
 const CloseCompany = () => {
   // REACT HOOK FORM
@@ -111,19 +112,22 @@ const CloseCompany = () => {
                   <Select
                     label="Select company"
                     required
-                    options={user_applications?.map((application) => {
-                      return {
-                        ...application,
-                        value: application?.entry_id,
-                        label: `${application?.entry_id
-                          ?.split('-')[0]
-                          ?.toUpperCase()} - ${
-                          application?.company_details?.name
-                        }`,
-                      };
-                    })}
+                    options={user_applications
+                      ?.filter((app) => app.status !== 'in_progress')
+                      ?.map((application) => {
+                        return {
+                          ...application,
+                          value: application?.entry_id,
+                          label:
+                            `${application?.entry_id
+                              ?.split('-')[0]
+                              ?.toUpperCase()} - ${
+                              application?.company_details?.name || 'N/A'
+                            }`,
+                        };
+                      })}
                     onChange={(e) => {
-                      field.onChange(e?.value);
+                      field.onChange(e);
                     }}
                   />
                   {errors?.company && (
@@ -165,9 +169,9 @@ const CloseCompany = () => {
                   <label className="w-[49%] flex flex-col gap-1">
                     <Select
                       label="Dissolution reason"
-                      options={[]}
+                      options={dissolutionReasons}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                   </label>
@@ -178,7 +182,9 @@ const CloseCompany = () => {
 
           <section
             className={`${
-              watch('company') ? 'flex' : 'hidden'
+              watch('company') && watch('dissolution_reason') === 'other'
+                ? 'flex'
+                : 'hidden'
             } w-full flex flex-col gap-3`}
           >
             <h1 className="text-md uppercase font-semibold flex items-center gap-1">
@@ -187,7 +193,12 @@ const CloseCompany = () => {
             <Controller
               control={control}
               name="attachments"
-              rules={{ required: 'Attach at least one document' }}
+              rules={{
+                required:
+                  watch('dissolution_reason') === 'other'
+                    ? 'Attach at least one document'
+                    : false,
+              }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1">

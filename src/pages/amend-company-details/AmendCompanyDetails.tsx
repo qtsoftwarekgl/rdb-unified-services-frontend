@@ -3,7 +3,7 @@ import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import ApplicatinsList from "../../components/registrations-list/ApplicationsList";
 import UserLayout from "../../containers/UserLayout";
 import { setIsAmending } from "../../states/features/amendmentSlice";
-import { capitalizeString, formatCompanyData } from "../../helpers/Strings";
+import { capitalizeString, formatCompanyData } from "../../helpers/strings";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 

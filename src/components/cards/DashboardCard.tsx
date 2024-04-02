@@ -1,7 +1,7 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FC, useState } from 'react';
-import { formatNumbers } from '../../helpers/Strings';
+import { formatNumbers } from '../../helpers/strings';
 import Button from '../inputs/Button';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 

@@ -11,7 +11,6 @@ import {
 
 interface Props {
   tabs: TabType[];
-  activeTab: TabType;
   setActiveTab: (tab: string) => UnknownAction;
 }
 

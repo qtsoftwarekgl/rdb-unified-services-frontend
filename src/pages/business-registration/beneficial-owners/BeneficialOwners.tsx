@@ -9,12 +9,12 @@ import Input from '../../../components/inputs/Input';
 import { faCircleInfo, faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
 import { userData } from '../../../constants/authentication';
 import Loader from '../../../components/Loader';
-import validateInputs from '../../../helpers/Validations';
+import validateInputs from '../../../helpers/validations';
 import { countriesList } from '../../../constants/countries';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../../components/inputs/Button';
 import Table from '../../../components/table/Table';
-import { capitalizeString } from '../../../helpers/Strings';
+import { capitalizeString } from '../../../helpers/strings';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -180,7 +180,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       required
                       options={personnelTypes}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.beneficial_type && (
@@ -215,7 +215,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         label="Document Type"
                         required
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.document_type && (
@@ -553,7 +553,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.country && (
@@ -614,7 +614,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           };
                         })}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                     )}
@@ -770,7 +770,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.residential_country && (
@@ -957,7 +957,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         };
                       })}
                       onChange={(e) => {
-                        field.onChange(e?.value);
+                        field.onChange(e);
                       }}
                     />
                     {errors?.incorporation_country && (
@@ -1117,7 +1117,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           };
                         })}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.beneficial_relationship && (
@@ -1144,7 +1144,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           { value: 'indirect', label: 'Indirect' },
                         ]}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.control_type && (
@@ -1198,7 +1198,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         label="Nature and extent of ownership"
                         options={[{ value: 'shares', label: 'Shares' }]}
                         onChange={(e) => {
-                          field.onChange(e?.value);
+                          field.onChange(e);
                         }}
                       />
                       {errors?.ownership_type && (

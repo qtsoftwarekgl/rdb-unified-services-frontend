@@ -9,7 +9,7 @@ import {
 import { setAddRoleModal } from '../../states/features/roleSlice';
 import Table from '../../components/table/Table';
 import { permissions } from '../../constants/dashboard';
-import { formatDate } from '../../helpers/Strings';
+import { formatDate } from '../../helpers/strings';
 import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faX } from '@fortawesome/free-solid-svg-icons';

@@ -56,6 +56,7 @@ export const nameReservationSlice = createSlice({
       JSON.parse(String(localStorage.getItem("name_reservation"))) || null,
     reservedNames:
       JSON.parse(String(localStorage.getItem("reservedNames"))) || [],
+      selectReservedNameModal: false
   },
 
   reducers: {
@@ -227,6 +228,9 @@ export const nameReservationSlice = createSlice({
         JSON.stringify(state.reservedNames)
       );
     },
+    setSelectReservedNameModal: (state, action) => {
+      state.selectReservedNameModal = action.payload;
+    },
   },
 });
 
@@ -241,4 +245,5 @@ export const {
   resetToInitialState,
   setReservedNames,
   removeFromReservedNames,
+  setSelectReservedNameModal
 } = nameReservationSlice.actions;
