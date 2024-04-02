@@ -296,7 +296,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBusinessActiveStep("foreign_company_details")
+                  setForeignBusinessActiveStep("company_details")
                 );
               }}
             />

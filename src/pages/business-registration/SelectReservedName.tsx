@@ -1,21 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
-import Modal from '../../components/Modal';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import Modal from "../../components/Modal";
 import {
   setNameReservation,
   setSelectReservedNameModal,
-} from '../../states/features/nameReservationSlice';
-import { FC, useRef, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../components/inputs/Select';
-import Button from '../../components/inputs/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faBan } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
-import Loader from '../../components/Loader';
-import { UnknownAction } from '@reduxjs/toolkit';
-import { setUserApplications } from '../../states/features/userApplicationSlice';
-import moment from 'moment';
+} from "../../states/features/nameReservationSlice";
+import { FC, useRef, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../components/inputs/Select";
+import Button from "../../components/inputs/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faBan } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../components/Loader";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
+import moment from "moment";
 
 interface SelectReservedNameProps {
   path: string;
@@ -49,11 +49,11 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setActiveStep('company_details'));
-      dispatch(setActiveTab('general_information'));
+      dispatch(setActiveStep("company_details"));
+      dispatch(setActiveTab("general_information"));
       dispatch(
         setUserApplications({
-          entry_id: path?.split('=')[1],
+          entry_id: path?.split("=")[1],
           company_details: {
             name: data?.name_reservation,
             name_reserved: true,
@@ -71,7 +71,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
         dispatch(setSelectReservedNameModal(false));
       }}
     >
-      <section className="flex flex-col gap-4 w-full">
+      <section className="flex flex-col w-full gap-4">
         <h1 className="font-medium uppercase">
           You have name reservations for {application_type}
         </h1>
@@ -86,12 +86,12 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                   label="Select a name"
                   onChange={(e) => {
                     field.onChange(e);
-                    setValue('name_reservation', e);
+                    setValue("name_reservation", e);
                   }}
                   options={reservedNames?.map((name) => {
                     const expiry_date = moment(name?.created_at)
-                      .add(3, 'months')
-                      .format('MM/DD/YYYY');
+                      .add(3, "months")
+                      .format("MM/DD/YYYY");
                     return {
                       label: `${name?.name} (Expires on ${expiry_date})`,
                       value: name?.name,
@@ -103,12 +103,12 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
           />
           <menu className="flex flex-col gap-2">
             <Button
-              value={isLoading ? <Loader /> : 'Select name'}
+              value={isLoading ? <Loader /> : "Select name"}
               submit
               primary
-              disabled={!watch('name_reservation')}
+              disabled={!watch("name_reservation")}
             />
-            {isLoading ? null : !watch('name_reservation') ? (
+            {isLoading ? null : !watch("name_reservation") ? (
               <Button
                 value={
                   <menu className="flex items-center gap-2 text-[14px] justify-center hover:gap-3 transition-all duration-200">
@@ -120,8 +120,9 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setNameReservation(null));
-                  dispatch(setActiveStep('company_details'));
-                  dispatch(setActiveTab('general_information'));
+                  dispatch(setActiveStep("company_details"));
+                  dispatch(setActiveTab("general_information"));
+                  setSelectReservedNameModal(false);
                   navigate(path);
                 }}
               />
@@ -136,7 +137,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setValue('name_reservation', '');
+                  setValue("name_reservation", "");
                   if (nameReservationRef.current) {
                     nameReservationRef.current.clearValue();
                   }
@@ -147,7 +148,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
         </form>
         <p
           className={
-            watch('name_reservation') ? 'text-[12.5px] text-center' : 'hidden'
+            watch("name_reservation") ? "text-[12.5px] text-center" : "hidden"
           }
         >
           When you select a reserved name, you will not be able to change it

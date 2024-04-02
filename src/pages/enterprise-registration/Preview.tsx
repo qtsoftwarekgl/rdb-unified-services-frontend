@@ -7,6 +7,7 @@ import {
   resetToInitialState,
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
+  setEnterpriseCompletedStep,
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
@@ -47,11 +48,13 @@ const Preview = ({ entry_id }: Props) => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: "submitted",
+        status: "pending_approval",
       })
     );
     dispatch(setIsAmending(false));
     dispatch(resetToInitialState());
+    dispatch(setEnterpriseActiveStep("company_details"));
+    dispatch(setEnterpriseActiveTab("general_information"));
     navigate("/success", { state: { redirectUrl: "/user-applications" } });
   };
 

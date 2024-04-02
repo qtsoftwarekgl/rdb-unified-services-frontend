@@ -68,13 +68,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             type: data?.type,
             position: data?.position,
             articles_of_association: data?.articles_of_association,
-            step: "foreign_company_details",
+            step: "company_details",
           },
         })
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setForeignBusinessCompletedStep("foreign_company_details"));
+      dispatch(setForeignBusinessCompletedStep("company_details"));
 
       // SET ACTIVE STEP
       dispatch(setForeignBusinessActiveStep("foreign_company_address"));
@@ -113,9 +113,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       label="Search company name"
+                      readOnly={company_details?.name ? true : false}
                       required
                       defaultValue={watch("name") || company_details?.name}
-                      suffixIcon={faSearch}
+                      suffixIcon={!company_details?.name ? faSearch : undefined}
                       suffixIconPrimary
                       onChange={(e) => {
                         setSearchCompany({
@@ -316,7 +317,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="articles_of_association"
-              rules={{ required: "Select one of the choices provided" }}
+              rules={{ required: "This field is required" }}
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
@@ -354,6 +355,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 );
               }}
             />
+            {errors?.articles_of_association && (
+              <p className="text-xs text-red-500">
+                {String(errors?.articles_of_association?.message)}
+              </p>
+            )}
           </menu>
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}

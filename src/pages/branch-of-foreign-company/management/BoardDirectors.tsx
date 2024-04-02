@@ -4,7 +4,7 @@ import Select from "../../../components/inputs/Select";
 import Loader from "../../../components/Loader";
 import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData, workingIds } from "../../../constants/authentication";
+import { userData} from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
 import validateInputs from "../../../helpers/validations";
 import Button from "../../../components/inputs/Button";
@@ -710,7 +710,7 @@ const BoardDirectors = ({
                   setForeignBusinessActiveStep("foreign_business_activity_vat")
                 );
                 dispatch(
-                  setForeignBusinessActiveTab("foreign_general_information")
+                  setForeignBusinessActiveTab("general_information")
                 );
               }}
             />

@@ -37,6 +37,7 @@ const BusinessActivity = ({
     control,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm();
 
@@ -72,7 +73,7 @@ const BusinessActivity = ({
       );
 
       // SET CURRENT TAB AS COMPLETED
-      dispatch(setForeignBusinessActiveTab("foreign_general_information"));
+      dispatch(setForeignBusinessActiveTab("general_information"));
 
       // SET THE NEXT TAB AS ACTIVE
       dispatch(setForeignBusinessActiveTab("foreign_management"));
@@ -88,6 +89,8 @@ const BusinessActivity = ({
       setValue("turnover", foreign_company_activities?.turnover);
     }
   }, [foreign_company_activities, dispatch, setValue]);
+
+  console.log(">>>>>>>>>>>>>>>>", foreign_company_activities);
 
   return (
     <section className="flex flex-col w-full gap-5">
@@ -121,190 +124,223 @@ const BusinessActivity = ({
               </p>
             )}
           </label>
-          <menu className="flex items-start w-full gap-6">
-            <section className="flex flex-col w-full gap-4">
-              <h1 className="text-md">Select business line</h1>
-              <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                {businessSubActivities
-                  ?.slice(0, randomNumber)
-                  .map((subActivity) => {
-                    const subActivityExists =
-                      foreign_company_activities?.business_lines?.find(
-                        (activity: object) => activity?.id === subActivity?.id
-                      );
-                    return (
-                      <li
-                        key={subActivity.id}
-                        className="flex items-center justify-between w-full gap-3 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white hover:shadow-md"
-                      >
-                        <p className="text-start">{subActivity?.name}</p>
-                        {!subActivityExists ? (
-                          <FontAwesomeIcon
-                            className="bg-transparent hover:bg-white hover:text-primary rounded-full p-[4px] px-[5px] cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
-                            icon={faPlus}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (isFormDisabled) return;
-                              if (
-                                foreign_company_activities?.business_lines
-                                  ?.length > 0
-                              ) {
-                                dispatch(
-                                  setUserApplications({
-                                    foreign_company_activities: {
-                                      ...foreign_company_activities,
-                                      business_lines: [
-                                        ...foreign_company_activities.business_lines,
-                                        subActivity,
-                                      ],
-                                    },
-                                    entry_id,
-                                  })
-                                );
-                              } else {
-                                dispatch(
-                                  setUserApplications({
-                                    foreign_company_activities: {
-                                      ...foreign_company_activities,
-                                      business_lines: [subActivity],
-                                    },
-                                    entry_id,
-                                  })
-                                );
-                              }
-                            }}
-                          />
-                        ) : (
-                          <FontAwesomeIcon
-                            icon={faCircleCheck}
-                            onClick={(e) => {
-                              e.preventDefault();
-                            }}
-                          />
-                        )}
-                      </li>
-                    );
-                  })}
-              </ul>
-            </section>
-            <section className="flex flex-col w-full gap-4">
-              <h1 className="text-md">Selected business lines</h1>
-              <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                {foreign_company_activities?.business_lines?.map(
-                  (business_line: unknown, index: number) => {
-                    const mainExists =
-                      foreign_company_activities?.business_lines?.find(
-                        (activity: object) => activity?.main === true
-                      );
-                    const mainBusinessLine =
-                      mainExists?.id === business_line?.id;
-                    return (
-                      <li
-                        key={index}
-                        className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-md"
-                      >
-                        <menu className="flex items-center gap-2">
-                          <p className="text-start">{business_line?.name}</p>
-                          {mainExists && mainBusinessLine && (
-                            <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
-                              Main{" "}
+          <Controller
+            name="business_lines"
+            rules={{
+              validate: () => {
+                // check if business lines have main business line
+                const mainExists =
+                  foreign_company_activities?.business_lines?.find(
+                    (activity: object) => activity?.main === true
+                  );
+                if (!mainExists) {
+                  return "Please select a main business line";
+                }
+              },
+            }}
+            control={control}
+            render={() => (
+              <menu className="flex items-start w-full gap-6">
+                <section className="flex flex-col w-full gap-4">
+                  <h1 className="text-md">Select business line</h1>
+                  <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
+                    {businessSubActivities
+                      ?.slice(0, randomNumber)
+                      .map((subActivity) => {
+                        const subActivityExists =
+                          foreign_company_activities?.business_lines?.find(
+                            (activity: object) =>
+                              activity?.id === subActivity?.id
+                          );
+                        return (
+                          <li
+                            key={subActivity.id}
+                            className="flex items-center justify-between w-full gap-3 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white hover:shadow-md"
+                          >
+                            <p className="text-start">{subActivity?.name}</p>
+                            {!subActivityExists ? (
                               <FontAwesomeIcon
-                                icon={faMinus}
-                                className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
+                                className="bg-transparent hover:bg-white hover:text-primary rounded-full p-[4px] px-[5px] cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
+                                icon={faPlus}
                                 onClick={(e) => {
                                   e.preventDefault();
                                   if (isFormDisabled) return;
-                                  dispatch(
-                                    setUserApplications({
-                                      foreign_company_activities: {
-                                        ...foreign_company_activities,
-                                        business_lines:
-                                          foreign_company_activities?.business_lines?.map(
-                                            (activity: object) => {
-                                              if (
-                                                activity?.id ===
-                                                business_line?.id
-                                              ) {
-                                                return {
-                                                  ...activity,
-                                                  main: false,
-                                                };
-                                              }
-                                              return activity;
-                                            }
-                                          ),
-                                      },
-                                      entry_id,
-                                    })
-                                  );
+                                  if (
+                                    foreign_company_activities?.business_lines
+                                      ?.length > 0
+                                  ) {
+                                    dispatch(
+                                      setUserApplications({
+                                        foreign_company_activities: {
+                                          ...foreign_company_activities,
+                                          business_lines: [
+                                            ...foreign_company_activities.business_lines,
+                                            subActivity,
+                                          ],
+                                        },
+                                        entry_id,
+                                      })
+                                    );
+                                  } else {
+                                    dispatch(
+                                      setUserApplications({
+                                        foreign_company_activities: {
+                                          ...foreign_company_activities,
+                                          business_lines: [subActivity],
+                                        },
+                                        entry_id,
+                                      })
+                                    );
+                                  }
                                 }}
                               />
-                            </p>
-                          )}
-                          {!mainExists && (
-                            <Link
-                              to="#"
-                              className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
+                            ) : (
+                              <FontAwesomeIcon
+                                icon={faCircleCheck}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                }}
+                              />
+                            )}
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </section>
+                <section className="flex flex-col w-full gap-4">
+                  <h1 className="text-md">Selected business lines</h1>
+                  <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
+                    {foreign_company_activities?.business_lines?.map(
+                      (business_line: unknown, index: number) => {
+                        const mainExists =
+                          foreign_company_activities?.business_lines?.find(
+                            (activity: object) => activity?.main === true
+                          );
+                        const mainBusinessLine =
+                          mainExists?.id === business_line?.id;
+                        return (
+                          <li
+                            key={index}
+                            className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-md"
+                          >
+                            <menu className="flex items-center gap-2">
+                              <p className="text-start">
+                                {business_line?.name}
+                              </p>
+                              {mainExists && mainBusinessLine && (
+                                <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
+                                  Main{" "}
+                                  <FontAwesomeIcon
+                                    icon={faMinus}
+                                    className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      if (isFormDisabled) return;
+                                      dispatch(
+                                        setUserApplications({
+                                          foreign_company_activities: {
+                                            ...foreign_company_activities,
+                                            business_lines:
+                                              foreign_company_activities?.business_lines?.map(
+                                                (activity: object) => {
+                                                  if (
+                                                    activity?.id ===
+                                                    business_line?.id
+                                                  ) {
+                                                    return {
+                                                      ...activity,
+                                                      main: false,
+                                                    };
+                                                  }
+                                                  return activity;
+                                                }
+                                              ),
+                                          },
+                                          entry_id,
+                                        })
+                                      );
+                                    }}
+                                  />
+                                </p>
+                              )}
+                              {!mainExists && (
+                                <Link
+                                  to="#"
+                                  className="text-[12px] bg-primary text-white p-1 rounded-md shadow-sm"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    if (isFormDisabled) return;
+                                    dispatch(
+                                      setUserApplications({
+                                        foreign_company_activities: {
+                                          business_lines:
+                                            foreign_company_activities?.business_lines?.map(
+                                              (activity: object) => {
+                                                if (
+                                                  activity?.id ===
+                                                  business_line?.id
+                                                ) {
+                                                  return {
+                                                    ...activity,
+                                                    main: true,
+                                                  };
+                                                }
+                                                return activity;
+                                              }
+                                            ),
+                                        },
+                                        entry_id,
+                                      })
+                                    );
+                                    setError("business_lines", {
+                                      type: "manual",
+                                      message: "",
+                                    });
+                                  }}
+                                >
+                                  Set main
+                                </Link>
+                              )}
+                            </menu>
+                            <FontAwesomeIcon
+                              className="bg-transparent hover:bg-primary hover:text-white rounded-full p-[7px] px-2 cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
+                              icon={faMinus}
                               onClick={(e) => {
                                 e.preventDefault();
                                 if (isFormDisabled) return;
+                                const updatedSubActivities =
+                                  foreign_company_activities?.business_lines?.filter(
+                                    (subActivity: unknown) => {
+                                      return (
+                                        subActivity?.id !== business_line?.id
+                                      );
+                                    }
+                                  );
                                 dispatch(
                                   setUserApplications({
                                     foreign_company_activities: {
-                                      business_lines:
-                                        foreign_company_activities?.business_lines?.map(
-                                          (activity: object) => {
-                                            if (
-                                              activity?.id === business_line?.id
-                                            ) {
-                                              return {
-                                                ...activity,
-                                                main: true,
-                                              };
-                                            }
-                                            return activity;
-                                          }
-                                        ),
+                                      ...foreign_company_activities,
+                                      business_lines: updatedSubActivities,
                                     },
                                     entry_id,
                                   })
                                 );
                               }}
-                            >
-                              Set main
-                            </Link>
-                          )}
-                        </menu>
-                        <FontAwesomeIcon
-                          className="bg-transparent hover:bg-primary hover:text-white rounded-full p-[7px] px-2 cursor-pointer ease-in-out duration-300 hover:scale-[1.03]"
-                          icon={faMinus}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (isFormDisabled) return;
-                            const updatedSubActivities =
-                              foreign_company_activities?.business_lines?.filter(
-                                (subActivity: unknown) => {
-                                  return subActivity?.id !== business_line?.id;
-                                }
-                              );
-                            dispatch(
-                              setUserApplications({
-                                foreign_company_activities: {
-                                  ...foreign_company_activities,
-                                  business_lines: updatedSubActivities,
-                                },
-                                entry_id,
-                              })
-                            );
-                          }}
-                        />
-                      </li>
-                    );
-                  }
-                )}
-              </ul>
-            </section>
-          </menu>
+                            />
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                </section>
+              </menu>
+            )}
+          />
+          {errors.business_lines && (
+            <p className="text-[13px] text-red-500">
+              {String(errors.business_lines.message)}
+            </p>
+          )}
           <section className="flex flex-col w-full gap-6">
             <h1 className="text-lg font-semibold text-center uppercase">
               VAT Certificate
@@ -356,18 +392,36 @@ const BusinessActivity = ({
               />
               {watch("vat") === "yes" && (
                 <Controller
-                  defaultValue={0}
                   name="turnover"
+                  defaultValue={
+                    foreign_company_activities?.turnover || watch("turnover")
+                  }
+                  rules={{
+                    required:
+                      watch("vat") === "yes" ? "Turnover is required" : false,
+                    validate: (value) => {
+                      if (watch("vat") === "yes" && value <= 0) {
+                        return "Turnover must be greater than 0";
+                      } else {
+                        return true;
+                      }
+                    },
+                  }}
                   control={control}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col gap-1 w-[60%]">
                         <Input
-                          defaultValue={watch("turnover") || 0}
+                          defaultValue={watch("turnover")}
                           label="Enter expected turnover"
                           required
                           {...field}
                         />
+                        {errors?.turnover && (
+                          <p className="text-[13px] text-red-500">
+                            {String(errors?.turnover.message)}
+                          </p>
+                        )}
                       </label>
                     );
                   }}

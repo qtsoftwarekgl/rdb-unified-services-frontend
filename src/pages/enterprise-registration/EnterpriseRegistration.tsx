@@ -57,7 +57,6 @@ const EnterpriseRegistration = () => {
         <ProgressNavigation
           tabs={enterprise_registration_tabs}
           setActiveTab={setEnterpriseActiveTab}
-          activeTab={enterprise_registration_active_tab}
         />
         <menu className="flex items-center w-full gap-5 p-8 rounded ">
           {enterprise_registration_tabs?.map((tab: TabType, index: number) => {
@@ -74,7 +73,7 @@ const EnterpriseRegistration = () => {
               >
                 {isActiveTab && (
                   <>
-                    {activeStepName === "enterprise_details" && (
+                    {activeStepName === "company_details" && (
                       <EnterpriseDetails entry_id={entry_id} />
                     )}
                     {activeStepName === "business_activity_vat" && (

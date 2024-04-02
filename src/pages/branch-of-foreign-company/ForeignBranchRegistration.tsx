@@ -85,7 +85,7 @@ const ForeignBranchRegistration = () => {
                 >
                   {isActiveTab && (
                     <>
-                      {activeStepName === "foreign_company_details" && (
+                      {activeStepName === "company_details" && (
                         <CompanyDetails
                           entry_id={entry_id}
                           company_details={current_application?.company_details}

@@ -1,21 +1,21 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/free-regular-svg-icons';
-import Table from '../../components/table/Table';
-import { RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
+import Table from "../../components/table/Table";
+import { RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../states/features/businessRegistrationSlice';
+} from "../../states/features/businessRegistrationSlice";
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-} from '../../states/features/enterpriseRegistrationSlice';
+} from "../../states/features/enterpriseRegistrationSlice";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-} from '../../states/features/foreignBranchRegistrationSlice';
+} from "../../states/features/foreignBranchRegistrationSlice";
 
 type Props = {
   title: string;
@@ -43,13 +43,13 @@ const ApplicatinsList = ({
   // Render status cell
   const renderStatusCell = ({ row }) => {
     const statusColors = {
-      Verified: 'bg-[#82ffa3] text-[#0d7b3e]',
-      Rejected: 'bg-[#eac3c3] text-red-500',
-      approved: 'bg-[#e8ffef] text-[#409261]',
-      'Action Required': 'bg-[#e4e4e4] text-[#6b6b6b]',
-      Submitted: 'bg-[#e8ffef] text-black',
+      Verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      Rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#e8ffef] text-[#409261]",
+      "Action Required": "bg-[#e4e4e4] text-[#6b6b6b]",
+      Submitted: "bg-[#e8ffef] text-black",
     };
-    const statusColor = statusColors[row?.original?.status] || '';
+    const statusColor = statusColors[row?.original?.status] || "";
     return (
       <span
         className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
@@ -76,22 +76,22 @@ const ApplicatinsList = ({
   };
 
   const columns = [
-    { header: 'Company Code', accessorKey: 'reg_number' },
+    { header: "Company Code", accessorKey: "reg_number" },
     {
-      header: 'Company/Enterprise Name',
-      accessorKey: 'company_name',
+      header: "Company/Enterprise Name",
+      accessorKey: "company_name",
     },
-    { header: 'Application Type', accessorKey: 'service_name', filter: true },
+    { header: "Application Type", accessorKey: "service_name", filter: true },
     {
-      header: 'Application Status',
-      accessorKey: 'status',
+      header: "Application Status",
+      accessorKey: "status",
       filter: true,
       cell: renderStatusCell,
     },
-    { header: 'Registration Date', accessorKey: 'submission_date' },
+    { header: "Registration Date", accessorKey: "submission_date" },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -104,16 +104,8 @@ const ApplicatinsList = ({
     );
     if (!company) return;
 
-    if (company.type === 'business_registration') {
-      dispatch(setBusinessActiveTab('general_information'));
-      dispatch(setBusinessActiveStep('company_details'));
-    } else if (company.type === 'enterprise') {
-      dispatch(setEnterpriseActiveTab('enterprise_details'));
-      dispatch(setEnterpriseActiveStep('enterprise_details'));
-    } else if (company.type === 'foreign_branch') {
-      dispatch(setForeignBusinessActiveTab('foreign_general_information'));
-      dispatch(setForeignBusinessActiveStep('foreign_company_details'));
-    }
+    dispatch(setBusinessActiveTab("general_information"));
+    dispatch(setBusinessActiveStep("company_details"));
 
     navigate(row.original?.path);
   };
@@ -135,7 +127,7 @@ const ApplicatinsList = ({
             showPagination={true}
             columnsToExport={columns
               ?.map((column) => column?.accessorKey)
-              ?.filter((column) => column !== 'action')}
+              ?.filter((column) => column !== "action")}
           />
         ) : (
           <span className="flex items-center justify-start w-full">

@@ -10,28 +10,28 @@ export const enterpriseRegistrationSlice = createSlice({
       {
         no: 1,
         label: "Enterprise Details",
-        name: "enterprise_details",
+        name: "general_information",
         completed: false,
         active: true,
         steps: [
           {
             label: "Enterprise Details",
-            name: "enterprise_details",
-            tab_name: "enterprise_details",
+            name: "company_details",
+            tab_name: "general_information",
             active: true,
             completed: false,
           },
           {
             label: "Business Activity & VAT",
             name: "business_activity_vat",
-            tab_name: "enterprise_details",
+            tab_name: "general_information",
             active: false,
             completed: false,
           },
           {
             label: "Office Address",
             name: "office_address",
-            tab_name: "enterprise_details",
+            tab_name: "general_information",
             active: false,
             completed: false,
           },
@@ -74,15 +74,15 @@ export const enterpriseRegistrationSlice = createSlice({
       String(localStorage.getItem("enterprise_registration_active_tab"))
     ) || {
       label: "Enterprise Details",
-      name: "enterprise_details",
+      name: "general_information",
     },
     enterprise_registration_active_step: JSON.parse(
       String(localStorage.getItem("enterprise_registration_active_step"))
     ) || {
       label: "Enterprise Details",
-      name: "enterprise_details",
+      name: "company_details",
     },
-  isNavigationFromPreview: false,
+    isNavigationFromPreview: false,
     usedIds: JSON.parse(String(localStorage.getItem("usedIds"))) || [],
   },
   reducers: {
@@ -224,28 +224,28 @@ export const enterpriseRegistrationSlice = createSlice({
         {
           no: 1,
           label: "Enterprise Details",
-          name: "enterprise_details",
+          name: "general_information",
           completed: false,
           active: true,
           steps: [
             {
               label: "Enterprise Details",
-              name: "enterprise_details",
-              tab_name: "enterprise_details",
+              name: "company_details",
+              tab_name: "general_information",
               active: true,
               completed: false,
             },
             {
               label: "Business Activity & VAT",
               name: "business_activity_vat",
-              tab_name: "enterprise_details",
+              tab_name: "general_information",
               active: false,
               completed: false,
             },
             {
               label: "Office Address",
               name: "office_address",
-              tab_name: "enterprise_details",
+              tab_name: "general_information",
               active: false,
               completed: false,
             },
@@ -286,11 +286,11 @@ export const enterpriseRegistrationSlice = createSlice({
       ];
       state.enterprise_registration_active_tab = {
         label: "Enterprise Details",
-        name: "enterprise_details",
+        name: "general_information",
       };
       state.enterprise_registration_active_step = {
         label: "Enterprise Details",
-        name: "enterprise_details",
+        name: "company_details",
       };
     },
   },

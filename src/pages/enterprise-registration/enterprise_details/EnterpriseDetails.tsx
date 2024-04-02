@@ -83,15 +83,28 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   } = useForm();
 
   useEffect(() => {
-    if (watch("document_type") === "passport") {
-      setValue("country", "");
-      setValue("phone", "");
-      setValue("street_name", "");
-      setValue("first_name", "");
-      setValue("middle_name", "");
-      setValue("last_name", "");
-      // setValue("gender", "");
-    }
+    // if (watch("document_type") === "passport") {
+    setValue("country", "");
+    setValue("phone", "");
+    setValue("street_name", "");
+    setValue("first_name", "");
+    setValue("middle_name", "");
+    setValue("last_name", "");
+    setValue("gender", "");
+    setValue("date_of_birth", "");
+    setValue("nationality", "");
+    setValue("province", "");
+    setValue("district", "");
+    setValue("sector", "");
+    setValue("cell", "");
+    setValue("village", "");
+    setValue("email", "");
+    setValue("pob", "");
+    setValue("passport_no", "");
+    setValue("passport_expiry_date", "");
+    setValue("id_no", "");
+    setUserDetails({});
+    // }
   }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
@@ -112,7 +125,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
       setIsLoading(false);
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setEnterpriseCompletedStep("enterprise_details"));
+      dispatch(setEnterpriseCompletedStep("company_details"));
 
       // SET ACTIVE STEP
       dispatch(setEnterpriseActiveStep("business_activity_vat"));
@@ -323,19 +336,19 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             type: "manual",
                             message: "Invalid document number",
                           });
-                        } else if (e.target.value.length === 16) {
-                          setError("id_no", {
-                            type: "manual",
-                            message: "",
-                          });
+                          return;
                         }
+                        setError("id_no", {
+                          type: "manual",
+                          message: "",
+                        });
                       }}
                       suffixIconHandler={(e) => {
                         e.preventDefault();
                         if (watch("id_no").length !== 16) {
                           setError("id_no", {
                             type: "manual",
-                            message: "Invalid document number",
+                            message: "ID number must be 16 numbers",
                           });
                         } else {
                           setIsNationalIdLoading(true);
@@ -389,7 +402,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
             )}
           </menu>
 
-          {userDetails?.document_type === "nid" &&
+          {watch("document_type") === "nid" &&
             Object.keys(userDetails).length > 3 && (
               <section>
                 <menu className="flex items-start gap-6 max-sm:flex-col">
@@ -533,20 +546,23 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   }
                   rules={{ required: "Gender is required" }}
                   render={({ field }) => {
-                    const gender = watch("gender");
+                    const gender =
+                      watch("gender") ||
+                      userDetails?.gender ||
+                      company_details?.gender;
                     return (
                       <label className="flex items-center w-full gap-2 py-4">
                         <p className="flex items-center gap-1 text-[15px]">
                           Gender<span className="text-red-500">*</span>
                         </p>
-                        {!(watch("document_type") === "passport") ? (
+                        {watch("document_type") === "nid" && (
                           <menu className="flex items-center gap-4">
                             {gender === "Male" && (
                               <Input
                                 type="radio"
                                 label="Male"
                                 readOnly
-                                checked={watch("gender") === "Male"}
+                                checked={gender === "Male"}
                                 {...field}
                               />
                             )}
@@ -556,14 +572,9 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                                 label="Female"
                                 readOnly
                                 {...field}
-                                checked={watch("gender") === "Female"}
+                                checked={gender === "Female"}
                               />
                             )}
-                          </menu>
-                        ) : (
-                          <menu className="flex items-center gap-4 mt-2">
-                            <Input type="radio" label="Male" {...field} />
-                            <Input type="radio" label="Female" {...field} />
                           </menu>
                         )}
                         {errors?.gender && (
@@ -913,7 +924,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               </section>
             )}
 
-          {userDetails?.document_type === "passport" && (
+          {watch("document_type") === "passport" && (
             <section>
               <menu className="flex items-start gap-6 max-sm:flex-col">
                 <Controller

@@ -10,11 +10,13 @@ import { useDispatch, useSelector } from "react-redux";
 import Table from "../../components/table/Table";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
-import CreateAmendment from "./CreateAmendment";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { capitalizeString } from "../../helpers/strings";
 import { countriesList } from "../../constants/countries";
+import Button from "../../components/inputs/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBackward } from "@fortawesome/free-solid-svg-icons";
 
 const CompanyDetails = () => {
   const { id } = useParams();
@@ -26,6 +28,7 @@ const CompanyDetails = () => {
   );
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -134,7 +137,19 @@ const CompanyDetails = () => {
           <h1 className="text-2xl font-medium text-center text-black ">
             {t("company details")}
           </h1>
-          <CreateAmendment />
+          <Button
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/user-applications");
+            }}
+            value={
+              <menu className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faBackward} />
+                Back
+              </menu>
+            }
+          />
         </menu>
         {companyInfo && (
           <Accordion type="single" collapsible className="p-8 bg-white">

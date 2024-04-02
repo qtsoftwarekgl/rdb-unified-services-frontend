@@ -78,7 +78,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           onClick={(e) => {
             if (
               activeStep?.name.includes('company_details') ||
-              activeStep?.name === 'enterprise_details'
+              activeStep?.name === 'company_details'
             ) {
               return;
             }
@@ -87,7 +87,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           }}
           className={`${
             activeStep?.name.includes('company_details') ||
-            activeStep?.name === 'enterprise_details'
+            activeStep?.name === 'company_details'
               ? 'text-secondary !cursor-default hover:scale-[1]'
               : 'flex'
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
