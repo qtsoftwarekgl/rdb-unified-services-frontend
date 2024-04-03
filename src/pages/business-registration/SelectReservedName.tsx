@@ -64,8 +64,8 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
     }, 1000);
   };
 
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>");
 
+  
   return (
     <Modal
       isOpen={selectReservedNameModal}

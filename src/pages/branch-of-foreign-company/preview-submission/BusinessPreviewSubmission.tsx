@@ -76,7 +76,6 @@ const PreviewSubmission = ({
     },
   ];
 
-  console.log(">>>>>>>>", foreign_board_of_directors)
 
   const beneficialOwnersColumns = [
     {

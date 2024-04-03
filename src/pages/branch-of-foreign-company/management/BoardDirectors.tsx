@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, set, useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import Loader from "../../../components/Loader";
 import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData} from "../../../constants/authentication";
+import { userData } from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
 import validateInputs from "../../../helpers/validations";
 import Button from "../../../components/inputs/Button";
@@ -22,7 +22,6 @@ import { capitalizeString } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
-  passportNumberRegex,
   validNationalID,
 } from "../../../constants/Users";
 import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
@@ -44,6 +43,7 @@ const BoardDirectors = ({
     setError,
     watch,
     setValue,
+    clearErrors,
     reset,
     formState: { isSubmitSuccessful, errors },
   } = useForm();
@@ -66,6 +66,7 @@ const BoardDirectors = ({
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const positionRef = useRef();
 
   // CLEAR FORM
   useEffect(() => {
@@ -91,12 +92,15 @@ const BoardDirectors = ({
       setValue("last_name", "");
       setValue("document_no", "");
       setValue("gender", "");
+      clearErrors();
     }
   }, [setValue, watch("document_type")]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
+    clearErrors("position_conflict");
+    clearErrors("board_of_directors");
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
@@ -112,8 +116,23 @@ const BoardDirectors = ({
           ],
         })
       );
-      reset(undefined, { keepDirtyValues: true });
+
       setValue("attachment", null);
+      reset();
+      setValue("document_type", "");
+      setValue("position", "");
+      setValue("country", "");
+      setValue("phone", "");
+      if (positionRef?.current) {
+        positionRef.current.clearValue();
+        setValue("position", "");
+        setValue("document_type", "");
+      }
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
     }, 1000);
     return data;
   };
@@ -167,6 +186,7 @@ const BoardDirectors = ({
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
+                      ref={positionRef}
                       label="Select position"
                       required
                       options={[
@@ -180,6 +200,27 @@ const BoardDirectors = ({
                         },
                       ]}
                       onChange={(e) => {
+                        if (
+                          String(e) === "chairman" &&
+                          foreign_board_of_directors?.find(
+                            (director) => director?.position === "chairman"
+                          )
+                        ) {
+                          setError("position_conflict", {
+                            type: "manual",
+                            message:
+                              "Cannot have more than one chairpeople in a company.",
+                          });
+                          setValue("position", "");
+                          setValue("document_type", "");
+                          return;
+                        }
+                        if (
+                          errors?.position_conflict &&
+                          String(e) !== "chairman"
+                        ) {
+                          clearErrors("position_conflict");
+                        }
                         field.onChange(e);
                       }}
                     />
@@ -192,7 +233,11 @@ const BoardDirectors = ({
                 );
               }}
             />
-            <ul className="flex items-start w-full gap-6">
+            <ul
+              className={`${
+                watch("position") ? "flex" : "hidden"
+              } items-start w-full gap-6`}
+            >
               <Controller
                 name="document_type"
                 rules={{ required: "Select document type" }}
@@ -330,13 +375,14 @@ const BoardDirectors = ({
               )}
               {watch("document_type") === "passport" && (
                 <Controller
-                  name="document_no"
+                  name="passport_no"
                   rules={{
                     required: "Passport number is required",
-                    pattern: {
-                      value: passportNumberRegex,
-                      message:
-                        "Invalid passport number format. It should be a 12-digit unique code containing alphabets and numerals.",
+                    validate: (value) => {
+                      return (
+                        validateInputs(value, "passsport") ||
+                        "Invalid passport number"
+                      );
                     },
                   }}
                   control={control}
@@ -353,9 +399,9 @@ const BoardDirectors = ({
                           label="Passport number"
                           {...field}
                         />
-                        {errors?.document_no && (
+                        {errors?.passport_no && (
                           <span className="text-sm text-red-500">
-                            {String(errors?.document_no?.message)}
+                            {String(errors?.passport_no?.message)}
                           </span>
                         )}
                       </label>
@@ -434,44 +480,38 @@ const BoardDirectors = ({
             <Controller
               control={control}
               name="gender"
-              defaultValue={
-                watch("gender") ||
-                searchMember?.data?.gender ||
-                foreign_board_of_directors?.gender
-              }
+              defaultValue={watch("gender") || searchMember?.data?.gender}
               rules={{ required: "Gender is required" }}
               render={({ field }) => {
-                const gender = watch("gender");
                 return (
                   <label className="flex items-center w-full gap-2 py-4">
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {!(watch("document_type") === "passport") ? (
-                      <menu className="flex items-center gap-4">
-                        {gender === "Male" && (
-                          <Input
-                            type="radio"
-                            label="Male"
-                            readOnly
-                            checked={watch("gender") === "Male"}
-                            {...field}
-                          />
-                        )}
-                        {gender === "Female" && (
-                          <Input
-                            type="radio"
-                            label="Female"
-                            readOnly
-                            {...field}
-                            checked={watch("gender") === "Female"}
-                          />
-                        )}
-                      </menu>
+                    {watch("document_type") !== "passport" ? (
+                      <p className="px-2 py-1 rounded-md bg-background">
+                        {searchMember?.data?.gender || watch("gender")}
+                      </p>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
-                        <Input type="radio" label="Male" {...field} />
-                        <Input type="radio" label="Female" {...field} />
+                        <Input
+                          type="radio"
+                          label="Male"
+                          name={field?.name}
+                          value={"Male"}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
+                        />
+                        <Input
+                          type="radio"
+                          label="Female"
+                          name={field?.name}
+                          value={"Female"}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
+                        />
                       </menu>
                     )}
                     {errors?.gender && (
@@ -483,203 +523,176 @@ const BoardDirectors = ({
                 );
               }}
             />
+            <Controller
+              name="phone"
+              control={control}
+              defaultValue={userData?.[0]?.phone}
+              rules={{
+                required: "Phone number is required",
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    {watch("document_type") === "passport" ? (
+                      <Input
+                        label="Phone number"
+                        required
+                        type="tel"
+                        {...field}
+                      />
+                    ) : (
+                      <Select
+                        label="Phone number"
+                        required
+                        defaultValue={{
+                          label: `(+250) ${userData?.[0]?.phone}`,
+                          value: userData?.[0]?.phone,
+                        }}
+                        options={userData?.slice(0, 3)?.map((user) => {
+                          return {
+                            ...user,
+                            label: `(+250) ${user?.phone}`,
+                            value: user?.phone,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                    )}
+                    {errors?.phone && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.phone?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
             {watch("document_type") !== "nid" ? (
-              <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
-                <Controller
-                  name="country"
-                  control={control}
-                  rules={{ required: "Nationality is required" }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col items-start w-full gap-1">
-                        <Select
-                          isSearchable
-                          label="Country"
-                          options={countriesList?.map((country) => {
+              <Controller
+                name="country"
+                control={control}
+                rules={{ required: "Nationality is required" }}
+                render={({ field }) => {
+                  return (
+                    <label className="w-[49%] flex flex-col gap-1 items-start">
+                      <Select
+                        isSearchable
+                        label="Country"
+                        options={countriesList
+                          ?.filter((country) => country?.code !== "RW")
+                          ?.map((country) => {
                             return {
                               ...country,
                               label: country.name,
                               value: country?.code,
                             };
                           })}
-                          onChange={(e) => {
-                            field.onChange(e);
-                          }}
-                        />
-                        {errors?.country && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.country?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  name="phone"
-                  control={control}
-                  defaultValue={searchMember?.data?.phone}
-                  rules={{
-                    required: "Phone number is required",
-                  }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-full gap-1">
-                        <p className="flex items-center gap-1">
-                          Phone number <span className="text-red-600">*</span>
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                      {errors?.country && (
+                        <p className="text-sm text-red-500">
+                          {String(errors?.country?.message)}
                         </p>
-                        <menu className="relative flex items-center gap-0">
-                          <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-                            <select
-                              className="w-full !text-[12px]"
-                              onChange={(e) => {
-                                field.onChange(e.target.value);
-                              }}
-                            >
-                              {countriesList?.map((country) => {
-                                return (
-                                  <option
-                                    key={country?.dial_code}
-                                    value={country?.dial_code}
-                                  >
-                                    {`${country?.code} ${country?.dial_code}`}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </span>
-                          <input
-                            onChange={field.onChange}
-                            className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
-                            type="text"
-                          />
-                        </menu>
-                        {errors?.phone && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.phone?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-              </menu>
+                      )}
+                    </label>
+                  );
+                }}
+              />
             ) : (
-              <menu className="flex items-start w-full gap-6">
-                <Controller
-                  name="phone"
-                  control={control}
-                  rules={{
-                    required: "Phone number is required",
-                    validate: (value) => {
+              <Controller
+                control={control}
+                name="street_name"
+                render={({ field }) => {
+                  return (
+                    <label className="w-[49%] flex flex-col gap-1">
+                      <Input
+                        label="Street Name"
+                        placeholder="Street name"
+                        {...field}
+                      />
+                    </label>
+                  );
+                }}
+              />
+            )}
+            {watch("document_type") !== "nid" && (
+              <menu className="flex-col items-start w-full gap-3 my-3 max-md:items-center">
+                <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
+                  Passport copy <span className="text-red-600">*</span>
+                </h3>
+                <menu className="flex gap-4">
+                  <Controller
+                    name="attachment"
+                    rules={{ required: "Passport is required" }}
+                    control={control}
+                    render={({ field }) => {
                       return (
-                        validateInputs(value, "tel") || "Invalid phone number"
+                        <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                          <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              className="!w-fit max-sm:!w-full"
+                              onChange={(e) => {
+                                field.onChange(e?.target?.files?.[0]);
+                                setAttachmentFile(e?.target?.files?.[0]);
+                              }}
+                            />
+                          </ul>
+                          {errors?.attachment && (
+                            <p className="text-sm text-red-500">
+                              {String(errors?.attachment?.message)}
+                            </p>
+                          )}
+                        </label>
                       );
-                    },
-                  }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-full gap-1">
-                        <Input
-                          label="Phone number"
-                          placeholder="07XX XXX XXX"
-                          required
-                          {...field}
-                        />
-                        {errors?.phone && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.phone?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  control={control}
-                  name="street_name"
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-full gap-1">
-                        <Input
-                          label="Street Name"
-                          placeholder="Street name"
-                          {...field}
-                        />
-                      </label>
-                    );
-                  }}
-                />
+                    }}
+                  />
+                  {attachmentFile && (
+                    <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                      <FontAwesomeIcon
+                        className="cursor-pointer text-primary"
+                        icon={faEye}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewAttachment(
+                            URL.createObjectURL(attachmentFile)
+                          );
+                        }}
+                      />
+                      {attachmentFile?.name}
+                      <FontAwesomeIcon
+                        icon={faX}
+                        className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setAttachmentFile(null);
+                          setValue("attachment", null);
+                        }}
+                      />
+                    </p>
+                  )}
+                </menu>
               </menu>
             )}
-            <menu
-              className={`${
-                watch("document_type") === "passport" ? "flex" : "hidden"
-              } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
-            >
-              <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Passport copy <span className="text-red-600">*</span>
-              </h3>
-              <menu className="flex gap-4">
-                <Controller
-                  name="attachment"
-                  rules={{ required: "Passport is required" }}
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                        <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                          <Input
-                            type="file"
-                            accept="application/pdf"
-                            className="!w-fit max-sm:!w-full"
-                            onChange={(e) => {
-                              field.onChange(e?.target?.files?.[0]);
-                              setAttachmentFile(e?.target?.files?.[0]);
-                            }}
-                          />
-                        </ul>
-                        {errors?.attachment && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.attachment?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-                {attachmentFile && (
-                  <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                    <FontAwesomeIcon
-                      className="cursor-pointer text-primary"
-                      icon={faEye}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPreviewAttachment(
-                          URL.createObjectURL(attachmentFile)
-                        );
-                      }}
-                    />
-                    {attachmentFile?.name}
-                    <FontAwesomeIcon
-                      icon={faX}
-                      className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setAttachmentFile(null);
-                        setValue("attachment", null);
-                      }}
-                    />
-                  </p>
-                )}
-              </menu>
-            </menu>
           </section>
+          <menu className="flex items-center justify-center w-full">
+            {errors?.position_conflict && (
+              <p className="text-red-600 text-[14px] text-center">
+                {String(errors?.position_conflict?.message)}
+              </p>
+            )}
+          </menu>
           <section className="flex items-center justify-end w-full">
             <Button
               value={isLoading ? <Loader /> : "Add board member"}
               submit
               primary
+              disabled={isFormDisabled}
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
@@ -688,7 +701,9 @@ const BoardDirectors = ({
                 return {
                   ...member,
                   no: index + 1,
-                  name: `${member?.first_name} ${member?.middle_name} ${member?.last_name}`,
+                  name: `${member?.first_name} ${member?.middle_name ?? ""} ${
+                    member?.last_name ?? ""
+                  }`,
                   position:
                     member?.position && capitalizeString(member?.position),
                 };
@@ -699,6 +714,11 @@ const BoardDirectors = ({
               tableTitle="Board members"
             />
           </section>
+          {errors?.board_of_directors && (
+            <p className="text-red-600 text-[13px] text-center">
+              {String(errors?.board_of_directors?.message)}
+            </p>
+          )}
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -709,9 +729,7 @@ const BoardDirectors = ({
                 dispatch(
                   setForeignBusinessActiveStep("foreign_business_activity_vat")
                 );
-                dispatch(
-                  setForeignBusinessActiveTab("general_information")
-                );
+                dispatch(setForeignBusinessActiveTab("general_information"));
               }}
             />
             {isAmending && (
@@ -726,11 +744,21 @@ const BoardDirectors = ({
               />
             )}
             <Button
-              value="Continue"
+              value="Save & Continue"
               primary
               disabled={isFormDisabled}
               onClick={(e) => {
                 e.preventDefault();
+                if (foreign_board_of_directors?.length <= 0) {
+                  setError("board_of_directors", {
+                    type: "manual",
+                    message: "Add at least one board member",
+                  });
+                  setTimeout(() => {
+                    clearErrors("board_of_directors");
+                  }, 4000);
+                  return;
+                }
                 dispatch(
                   setForeignBusinessCompletedStep("foreign_board_of_directors")
                 );

@@ -23,7 +23,10 @@ import {
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+import {
+  RDBAdminEmailPattern,
+  validNationalID,
+} from "../../../constants/Users";
 import ViewDocument from "../../user-company-details/ViewDocument";
 import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
@@ -55,6 +58,9 @@ const BeneficialOwners = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
+  const [residential_attachment, setResidentialAttachment] = useState<
+    File | null | undefined
+  >(null);
   const [confirmModal, setConfirmModal] = useState(false);
   const [confirmModalData, setConfirmModalData] = useState({});
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
@@ -116,6 +122,8 @@ const BeneficialOwners = ({
           ],
         })
       );
+      setValue("attachment", null);
+      setValue("beneficial_type", "");
     }, 1000);
   };
 
@@ -388,7 +396,7 @@ const BeneficialOwners = ({
                             ) {
                               setError("document_no", {
                                 type: "manual",
-                                message: "Invalid document number",
+                                message: "Invalid ID document number",
                               });
                             } else if (e.target.value.length === 16) {
                               setError("document_no", {
@@ -412,7 +420,15 @@ const BeneficialOwners = ({
                               error: false,
                             });
                             setTimeout(() => {
-                              const index = workingIds.indexOf(field.value);
+                              setSearchMember({
+                                ...searchMember,
+                                loading: false,
+                                error: false,
+                              });
+                              const index =
+                                field?.value.trim() === validNationalID
+                                  ? Math.floor(Math.random() * 10)
+                                  : Math.floor(Math.random() * 11) + 11;
                               const userDetails = userData[index];
                               if (!userDetails) {
                                 setSearchMember({
@@ -539,44 +555,43 @@ const BeneficialOwners = ({
             <Controller
               control={control}
               name="gender"
-              defaultValue={
-                watch("gender") ||
-                searchMember?.data?.gender ||
-                foreign_beneficial_owners?.gender
-              }
-              rules={{ required: "Gender is required" }}
+              defaultValue={watch("gender") || searchMember?.data?.gender}
+              rules={{
+                required:
+                  watch("document_type") === "passport"
+                    ? "Select gender"
+                    : false,
+              }}
               render={({ field }) => {
-                const gender = watch("gender");
                 return (
                   <label className="flex items-center w-full gap-2 py-4">
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {!(watch("document_type") === "passport") ? (
-                      <menu className="flex items-center gap-4">
-                        {gender === "Male" && (
-                          <Input
-                            type="radio"
-                            label="Male"
-                            readOnly
-                            checked={watch("gender") === "Male"}
-                            {...field}
-                          />
-                        )}
-                        {gender === "Female" && (
-                          <Input
-                            type="radio"
-                            label="Female"
-                            readOnly
-                            {...field}
-                            checked={watch("gender") === "Female"}
-                          />
-                        )}
-                      </menu>
+                    {watch("document_type") !== "passport" ? (
+                      <p className="px-2 py-1 rounded-md bg-background">
+                        {searchMember?.data?.gender || watch("gender")}
+                      </p>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
-                        <Input type="radio" label="Male" {...field} />
-                        <Input type="radio" label="Female" {...field} />
+                        <Input
+                          type="radio"
+                          label="Male"
+                          name={field?.name}
+                          value={"Male"}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
+                        />
+                        <Input
+                          type="radio"
+                          label="Female"
+                          name={field?.name}
+                          value={"Female"}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
+                        />
                       </menu>
                     )}
                     {errors?.gender && (
@@ -643,37 +658,40 @@ const BeneficialOwners = ({
             <Controller
               name="phone"
               control={control}
-              defaultValue={searchMember?.data?.phone}
+              defaultValue={userData?.[0]?.phone}
               rules={{
-                required:
-                  watch("beneficial_type") === "person" &&
-                  "Phone number is required",
-                validate: (value) => {
-                  if (
-                    watch("beneficial_type") === "person" &&
-                    watch("document_type") === "nid"
-                  ) {
-                    return (
-                      validateInputs(value, "tel") || "Invalid phone number"
-                    );
-                  } else {
-                    return true;
-                  }
-                },
+                required: "Phone number is required",
               }}
               render={({ field }) => {
                 return (
-                  <label className="flex flex-col gap-1 w-[49%]">
-                    <Input
-                      label="Phone number"
-                      placeholder="07XX XXX XXX"
-                      required
-                      type={
-                        watch("document_type") === "passport" ? "tel" : "text"
-                      }
-                      defaultValue={searchMember?.data?.phone}
-                      {...field}
-                    />
+                  <label className="flex flex-col w-[49%] gap-1">
+                    {watch("document_type") === "passport" ? (
+                      <Input
+                        label="Phone number"
+                        required
+                        type="tel"
+                        {...field}
+                      />
+                    ) : (
+                      <Select
+                        label="Phone number"
+                        required
+                        defaultValue={{
+                          label: `(+250) ${userData?.[0]?.phone}`,
+                          value: userData?.[0]?.phone,
+                        }}
+                        options={userData?.slice(0, 3)?.map((user) => {
+                          return {
+                            ...user,
+                            label: `(+250) ${user?.phone}`,
+                            value: user?.phone,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                    )}
                     {errors?.phone && (
                       <p className="text-sm text-red-500">
                         {String(errors?.phone?.message)}
@@ -761,11 +779,13 @@ const BeneficialOwners = ({
               (watch("document_type") === "nid" && !!searchMember?.data)) && (
               <article className="flex flex-col gap-3">
                 <h1>
-                  Is the professional address same as the residential address?
+                  Is the professional address same as the residential address?{" "}
+                  <span className="text-red-600">*</span>
                 </h1>
                 <Controller
                   name="address"
                   control={control}
+                  rules={{ required: "Select an option" }}
                   render={({ field }) => {
                     return (
                       <ul className="flex items-center gap-6">
@@ -777,6 +797,7 @@ const BeneficialOwners = ({
                             if (e.target.checked) {
                               field.onChange(e.target.value);
                               setValue("address", "yes");
+                              clearErrors("address");
                             }
                           }}
                         />
@@ -788,9 +809,15 @@ const BeneficialOwners = ({
                             if (e.target.checked) {
                               field.onChange(e.target.value);
                               setValue("address", "no");
+                              clearErrors("address");
                             }
                           }}
                         />
+                        {errors?.address && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.address?.message)}
+                          </p>
+                        )}
                       </ul>
                     );
                   }}
@@ -799,7 +826,7 @@ const BeneficialOwners = ({
             )}
           <section
             className={`${
-              watch("address") === "yes" ? "flex" : "hidden"
+              watch("address") === "no" ? "flex" : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -807,7 +834,7 @@ const BeneficialOwners = ({
               control={control}
               rules={{
                 required:
-                  watch("address") === "yes" &&
+                  watch("address") === "no" &&
                   watch("beneficial_type") === "person" &&
                   watch("document_type") === "passport" &&
                   "Nationality is required",
@@ -861,22 +888,10 @@ const BeneficialOwners = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch("address") === "yes" &&
+                  watch("address") === "no" &&
                   watch("beneficial_type") === "person"
                     ? "Phone number is required"
                     : false,
-                validate: (value) => {
-                  if (
-                    watch("address") === "yes" &&
-                    watch("document_type") === "nid"
-                  ) {
-                    return (
-                      validateInputs(value, "tel") || "Invalid phone number"
-                    );
-                  } else {
-                    return true;
-                  }
-                },
               }}
               render={({ field }) => {
                 return (
@@ -906,14 +921,15 @@ const BeneficialOwners = ({
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Passport copy <span className="text-red-600">*</span>
+                Residential Passport copy{" "}
+                <span className="text-red-600">*</span>
               </h3>
               <menu className="flex gap-4">
                 <Controller
                   name="residential_attachment"
                   rules={{
                     required:
-                      watch("address") === "yes" &&
+                      watch("address") === "no" &&
                       watch("document_type") === "passport" &&
                       watch("beneficial_type") === "person"
                         ? "Document attachment is required"
@@ -926,13 +942,13 @@ const BeneficialOwners = ({
                         <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
                           <Input
                             type="file"
-                            accept="application/pdf,image/*"
+                            accept="application/pdf"
                             className="!w-fit max-sm:!w-full"
                             onChange={(e) => {
                               field.onChange(e?.target?.files?.[0]);
-                              setAttachmentFile(e?.target?.files?.[0]);
+                              setResidentialAttachment(e?.target?.files?.[0]);
                               setValue(
-                                "attachment",
+                                "residential_attachment",
                                 e?.target?.files?.[0]?.name
                               );
                             }}
@@ -947,7 +963,7 @@ const BeneficialOwners = ({
                     );
                   }}
                 />
-                {attachmentFile && (
+                {residential_attachment && (
                   <p className="flex items-center gap-2 text-[14px] text-black font-normal">
                     <FontAwesomeIcon
                       className="cursor-pointer text-primary"
@@ -955,18 +971,18 @@ const BeneficialOwners = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         setPreviewAttachment(
-                          URL.createObjectURL(attachmentFile)
+                          URL.createObjectURL(residential_attachment)
                         );
                       }}
                     />
-                    {attachmentFile?.name}
+                    {residential_attachment?.name}
                     <FontAwesomeIcon
                       icon={faX}
                       className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
                       onClick={(e) => {
                         e.preventDefault();
-                        setAttachmentFile(null);
-                        setValue("attachment", null);
+                        setResidentialAttachment(null);
+                        setValue("residential_attachment", null);
                       }}
                     />
                   </p>
@@ -976,7 +992,9 @@ const BeneficialOwners = ({
           </section>
           <section
             className={`${
-              watch("beneficial_type") !== "person" ? "flex" : "hidden"
+              watch("beneficial_type") && watch("beneficial_type") !== "person"
+                ? "flex"
+                : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller

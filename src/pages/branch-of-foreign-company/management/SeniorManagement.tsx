@@ -199,7 +199,11 @@ const SeniorManagement = ({
                 );
               }}
             />
-            <ul className="flex items-start w-full gap-6">
+            <ul
+              className={`${
+                watch("position") ? "flex" : "hidden"
+              } items-start w-full gap-6`}
+            >
               <Controller
                 name="document_type"
                 rules={{ required: "Select document type" }}
@@ -447,32 +451,16 @@ const SeniorManagement = ({
               }
               rules={{ required: "Gender is required" }}
               render={({ field }) => {
-                const gender = watch("gender");
                 return (
                   <label className="flex items-center w-full gap-2 py-4">
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {!(watch("document_type") === "passport") ? (
+                    {watch("document_type") !== "passport" ? (
                       <menu className="flex items-center gap-4">
-                        {gender === "Male" && (
-                          <Input
-                            type="radio"
-                            label="Male"
-                            readOnly
-                            checked={watch("gender") === "Male"}
-                            {...field}
-                          />
-                        )}
-                        {gender === "Female" && (
-                          <Input
-                            type="radio"
-                            label="Female"
-                            readOnly
-                            {...field}
-                            checked={watch("gender") === "Female"}
-                          />
-                        )}
+                        <p className="px-2 py-1 rounded-md bg-background">
+                          {searchMember?.data?.gender || watch("gender")}
+                        </p>
                       </menu>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
@@ -489,197 +477,160 @@ const SeniorManagement = ({
                 );
               }}
             />
+            <Controller
+              name="phone"
+              control={control}
+              defaultValue={userData?.[0]?.phone}
+              rules={{
+                required: "Phone number is required",
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-[49%] gap-1">
+                    {watch("document_type") === "passport" ? (
+                      <Input
+                        label="Phone number"
+                        required
+                        type="tel"
+                        {...field}
+                      />
+                    ) : (
+                      <Select
+                        label="Phone number"
+                        required
+                        defaultValue={{
+                          label: `(+250) ${userData?.[0]?.phone}`,
+                          value: userData?.[0]?.phone,
+                        }}
+                        options={userData?.slice(0, 3)?.map((user) => {
+                          return {
+                            ...user,
+                            label: `(+250) ${user?.phone}`,
+                            value: user?.phone,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                    )}
+                    {errors?.phone && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.phone?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
             {watch("document_type") !== "nid" ? (
-              <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
-                <Controller
-                  name="country"
-                  control={control}
-                  rules={{ required: "Nationality is required" }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col items-start w-full gap-1">
-                        <Select
-                          isSearchable
-                          label="Country"
-                          options={countriesList?.map((country) => {
-                            return {
-                              ...country,
-                              label: country.name,
-                              value: country?.code,
-                            };
-                          })}
-                          onChange={(e) => {
-                            field.onChange(e);
-                          }}
-                        />
-                        {errors?.country && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.country?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  name="phone"
-                  control={control}
-                  defaultValue={searchMember?.data?.phone}
-                  rules={{
-                    required: "Phone number is required",
-                  }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-full gap-1">
-                        <p className="flex items-center gap-1">
-                          Phone number <span className="text-red-600">*</span>
+              <Controller
+                name="country"
+                control={control}
+                rules={{ required: "Nationality is required" }}
+                render={({ field }) => {
+                  return (
+                    <label className="w-[49%] flex flex-col gap-1 items-start">
+                      <Select
+                        isSearchable
+                        label="Country"
+                        options={countriesList?.map((country) => {
+                          return {
+                            ...country,
+                            label: country.name,
+                            value: country?.code,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                      {errors?.country && (
+                        <p className="text-sm text-red-500">
+                          {String(errors?.country?.message)}
                         </p>
-                        <menu className="relative flex items-center gap-0">
-                          <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-                            <select
-                              className="w-full !text-[12px]"
-                              onChange={(e) => {
-                                field.onChange(e.target.value);
-                              }}
-                            >
-                              {countriesList?.map((country) => {
-                                return (
-                                  <option
-                                    key={country?.dial_code}
-                                    value={country?.dial_code}
-                                  >
-                                    {`${country?.code} ${country?.dial_code}`}
-                                  </option>
-                                );
-                              })}
-                            </select>
-                          </span>
-                          <input
-                            onChange={field.onChange}
-                            className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
-                            type="text"
-                          />
-                        </menu>
-                        {errors?.phone && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.phone?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-              </menu>
+                      )}
+                    </label>
+                  );
+                }}
+              />
             ) : (
-              <menu className="flex items-center w-full gap-6">
-                <Controller
-                  name="phone"
-                  control={control}
-                  rules={{
-                    required: "Phone number is required",
-                    validate: (value) => {
+              <Controller
+                control={control}
+                name="street_name"
+                render={({ field }) => {
+                  return (
+                    <label className="w-[49%] flex flex-col gap-1">
+                      <Input
+                        label="Street Name"
+                        placeholder="Street name"
+                        {...field}
+                      />
+                    </label>
+                  );
+                }}
+              />
+            )}
+            {watch("document_type") === "passport" && (
+              <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
+                <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
+                  Passport copy <span className="text-red-600">*</span>
+                </h3>
+                <menu className="flex gap-4">
+                  <Controller
+                    name="attachment"
+                    rules={{ required: "Passport is required" }}
+                    control={control}
+                    render={({ field }) => {
                       return (
-                        validateInputs(value, "tel") || "Invalid phone number"
+                        <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
+                          <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              className="!w-fit max-sm:!w-full"
+                              onChange={(e) => {
+                                field.onChange(e?.target?.files?.[0]);
+                                setAttachmentFile(e?.target?.files?.[0]);
+                              }}
+                            />
+                          </ul>
+                          {errors?.attachment && (
+                            <p className="text-sm text-red-500">
+                              {String(errors?.attachment?.message)}
+                            </p>
+                          )}
+                        </label>
                       );
-                    },
-                  }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-full gap-1">
-                        <Input
-                          label="Phone number"
-                          placeholder="07XX XXX XXX"
-                          required
-                          {...field}
-                        />
-                        {errors?.phone && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.phone?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
-                  control={control}
-                  name="street_name"
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-full gap-1">
-                        <Input
-                          label="Street Name"
-                          placeholder="Street name"
-                          {...field}
-                        />
-                      </label>
-                    );
-                  }}
-                />
+                    }}
+                  />
+                  {attachmentFile && (
+                    <p className="flex items-center gap-2 text-[14px] text-black font-normal">
+                      <FontAwesomeIcon
+                        className="cursor-pointer text-primary"
+                        icon={faEye}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPreviewAttachment(
+                            URL.createObjectURL(attachmentFile)
+                          );
+                        }}
+                      />
+                      {attachmentFile?.name}
+                      <FontAwesomeIcon
+                        icon={faX}
+                        className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setAttachmentFile(null);
+                          setValue("attachment", null);
+                        }}
+                      />
+                    </p>
+                  )}
+                </menu>
               </menu>
             )}
-            <menu
-              className={`${
-                watch("document_type") === "passport" ? "flex" : "hidden"
-              } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
-            >
-              <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Passport copy <span className="text-red-600">*</span>
-              </h3>
-              <menu className="flex gap-4">
-                <Controller
-                  name="attachment"
-                  rules={{ required: "Passport is required" }}
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                        <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                          <Input
-                            type="file"
-                            accept="application/pdf"
-                            className="!w-fit max-sm:!w-full"
-                            onChange={(e) => {
-                              field.onChange(e?.target?.files?.[0]);
-                              setAttachmentFile(e?.target?.files?.[0]);
-                            }}
-                          />
-                        </ul>
-                        {errors?.attachment && (
-                          <p className="text-sm text-red-500">
-                            {String(errors?.attachment?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-                {attachmentFile && (
-                  <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                    <FontAwesomeIcon
-                      className="cursor-pointer text-primary"
-                      icon={faEye}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPreviewAttachment(
-                          URL.createObjectURL(attachmentFile)
-                        );
-                      }}
-                    />
-                    {attachmentFile?.name}
-                    <FontAwesomeIcon
-                      icon={faX}
-                      className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setAttachmentFile(null);
-                        setValue("attachment", null);
-                      }}
-                    />
-                  </p>
-                )}
-              </menu>
-            </menu>
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
@@ -694,7 +645,9 @@ const SeniorManagement = ({
                 return {
                   ...member,
                   no: index + 1,
-                  name: `${member?.first_name} ${member?.middle_name} ${member?.last_name}`,
+                  name: `${member?.first_name} ${member?.middle_name ?? ""} ${
+                    member?.last_name ?? ""
+                  }`,
                   position:
                     member?.position && capitalizeString(member?.position),
                 };
