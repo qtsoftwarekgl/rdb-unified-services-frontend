@@ -15,15 +15,20 @@ import {
 import SelectReservedName from './SelectReservedName';
 import { setSelectReservedNameModal } from '../../states/features/nameReservationSlice';
 import { deleteUserApplication } from '../../states/features/userApplicationSlice';
+import { UnknownAction } from '@reduxjs/toolkit';
 
 interface NewRegistrationProps {
   description: string;
   path: string;
+  setActiveTab: (tab: string) => UnknownAction;
+  setActiveStep: (string: string) => UnknownAction;
 }
 
 export const NewRegistration = ({
   description,
   path,
+  setActiveStep,
+  setActiveTab
 }: NewRegistrationProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -149,13 +154,13 @@ export const NewRegistration = ({
         </menu>
         <section className="flex flex-col w-full gap-6">
           <section className="flex flex-col gap-4 max-md:w-full">
-            <h1 className="text-base font-semibold uppercase px-1">
+            <h1 className="px-1 text-base font-semibold uppercase">
               Required Attachments for this application
             </h1>
             <menu className="flex items-center justify-between gap-4 p-4 bg-white rounded-md">
               {businessRegistrationAttachments?.map((attachment, index) => {
                 return (
-                  <li key={index} className="w-fit flex items-center gap-2">
+                  <li key={index} className="flex items-center gap-2 w-fit">
                     <FontAwesomeIcon icon={faCircle} className="w-1 h-1" />
                     <p className="text-[14px] font-normal flex items-center gap-1">
                       {attachment.name}{' '}
@@ -171,7 +176,7 @@ export const NewRegistration = ({
           <section className="flex flex-col gap-8 max-md:w-full">
             {applicationsInProgress.length > 0 && (
               <menu className="flex flex-col gap-2 max-md:w-full">
-                <h1 className="text-base font-semibold uppercase px-2">
+                <h1 className="px-2 text-base font-semibold uppercase">
                   Applications in progress
                 </h1>
                 <Table
@@ -186,7 +191,7 @@ export const NewRegistration = ({
             )}
           </section>
         </section>
-        <menu className="flex justify-center items-center">
+        <menu className="flex items-center justify-center">
           <Button
             value={
               <menu className="flex items-center gap-2">
@@ -201,6 +206,8 @@ export const NewRegistration = ({
                 dispatch(setSelectReservedNameModal(true));
               } else {
                 navigate(path);
+                dispatch(setActiveStep("company_details"));
+                dispatch(setActiveTab("general_information"));
               }
             }}
           />
@@ -209,8 +216,8 @@ export const NewRegistration = ({
       <SelectReservedName
         path={path}
         application_type="Business Registration"
-        setActiveStep={setBusinessActiveStep}
-        setActiveTab={setBusinessActiveTab}
+        setActiveStep={setActiveStep}
+        setActiveTab={setActiveTab}
       />
     </UserLayout>
   );
@@ -223,6 +230,8 @@ const NewBusinessRegistration = () => {
       involves 6 steps. Below you will find a list of all documents you will be required to submit during the application process. Feel free to pause the process and
       resume whenever is convenient for you. Your progress will be saved automatically."
       path={`/business-registration?entry_id=${generateUUID()}`}
+      setActiveStep={setBusinessActiveStep}
+      setActiveTab={setBusinessActiveTab}
     />
   );
 };

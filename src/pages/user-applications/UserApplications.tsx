@@ -36,7 +36,6 @@ const UserApplications = () => {
         new Date(a?.submissionDate).getTime()
     );
 
-  console.log(">>>>>>>>>>>>>>>>>>", registeredBusinesses);
 
   const colors = (status: string) => {
     const colorMap = {

@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { Controller, FieldValues, set, useForm } from 'react-hook-form';
+import { Controller, FieldValues,  useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
 import Input from '../../../components/inputs/Input';
@@ -169,12 +169,12 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               }}
             >
               <section className="flex flex-col gap-6">
-                <h1 className="font-medium uppercase text-center">
+                <h1 className="font-medium text-center uppercase">
                   Are you sure you want to delete{' '}
                   {confirmDeleteModal?.first_name}{' '}
                   {confirmDeleteModal?.last_name || ''}
                 </h1>
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
                     value="Cancel"
                     onClick={(e) => {
@@ -697,7 +697,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           setValue('attachment', e?.target?.files?.[0]?.name);
                         }}
                       />
-                      <ul className="flex flex-col items-center gap-3 w-full">
+                      <ul className="flex flex-col items-center w-full gap-3">
                         {(attachmentFile || board_of_directors?.attachment) && (
                           <Table
                             columns={attachmentColumns}
@@ -720,7 +720,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               />
             </menu>
           </section>
-          <article className="w-full flex items-center justify-center">
+          <article className="flex items-center justify-center w-full">
             {errors?.position_conflict && (
               <p className="text-red-600 text-[14px] text-center">
                 {String(errors?.position_conflict?.message)}

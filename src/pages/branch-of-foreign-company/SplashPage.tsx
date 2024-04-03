@@ -1,10 +1,23 @@
 import { useEffect } from "react";
 import { generateUUID } from "../../helpers/strings";
 import { NewRegistration } from "../business-registration/NewBusinessRegistration";
-import { setForeignCompanyDetails } from "../../states/features/foreignBranchRegistrationSlice";
+import {
+  foreign_business_registration_tabs_initial_state,
+  setForeignBusinessActiveStep,
+  setForeignBusinessActiveTab,
+  setForeignBusinessRegistrationTabs,
+} from "../../states/features/foreignBranchRegistrationSlice";
+import { useDispatch } from "react-redux";
 
 const ForeignBranchSplashPage = () => {
-  useEffect(() => {}, []);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(
+      setForeignBusinessRegistrationTabs(
+        foreign_business_registration_tabs_initial_state
+      )
+    );
+  }, []);
 
   return (
     <NewRegistration
@@ -13,7 +26,8 @@ const ForeignBranchSplashPage = () => {
     do not have at this moment. Feel free to pause the process and
     resume whenever is convenient for you. Your progress will be saved."
       path={`/foreign-branch-registration?entry_id=${generateUUID()}`}
-      setDetails={setForeignCompanyDetails}
+      setActiveStep={setForeignBusinessActiveStep}
+      setActiveTab={setForeignBusinessActiveTab}
     />
   );
 };

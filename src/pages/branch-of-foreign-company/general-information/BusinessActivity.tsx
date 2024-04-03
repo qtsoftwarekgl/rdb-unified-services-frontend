@@ -90,8 +90,8 @@ const BusinessActivity = ({
     }
   }, [foreign_company_activities, dispatch, setValue]);
 
-  console.log(">>>>>>>>>>>>>>>>", foreign_company_activities);
 
+  
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>

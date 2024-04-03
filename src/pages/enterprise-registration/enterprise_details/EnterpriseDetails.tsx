@@ -83,7 +83,6 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   } = useForm();
 
   useEffect(() => {
-    // if (watch("document_type") === "passport") {
     setValue("country", "");
     setValue("phone", "");
     setValue("street_name", "");
@@ -104,7 +103,6 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     setValue("passport_expiry_date", "");
     setValue("id_no", "");
     setUserDetails({});
-    // }
   }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
