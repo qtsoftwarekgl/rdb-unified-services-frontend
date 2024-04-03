@@ -1,9 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Divider from "../../components/Divider";
 import Modal from "../../components/Modal";
 import Button from "../../components/inputs/Button";
 import Table from "../../components/table/Table";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import ViewDocument from "../user-company-details/ViewDocument";
 
@@ -44,7 +42,7 @@ const UserCard = ({ user, setUserToView }: Props) => {
         return (
           <menu className="flex items-center gap-2">
             <Button
-              value="preview document"
+              value="Preview"
               styled={false}
               className="!bg-transparent"
               onClick={() => {

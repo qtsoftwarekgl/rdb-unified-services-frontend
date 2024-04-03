@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Table from '../../../components/table/Table';
 import { capitalizeString, generateUUID } from '../../../helpers/strings';
 import {
+  removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
@@ -213,30 +214,54 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   return (
     <section className="flex flex-col w-full gap-6">
       <menu className="flex flex-col w-full gap-2">
-        <Table
-          tableTitle="Shareholders"
-          data={
-            capital_details?.length > 0
-              ? capital_details?.map((shareholder: unknown, index: number) => {
-                  return {
-                    ...shareholder,
-                    no: index,
-                    name: shareholder?.first_name
-                      ? `${shareholder?.first_name || ''} ${
-                          shareholder?.last_name || ''
-                        }`
-                      : shareholder?.company_name,
-                    type: capitalizeString(shareholder?.shareholder_type),
-                    total_shares: shareholder?.shares?.total_shares || 0,
-                    total_value: `RWF ${shareholder?.shares?.total_value || 0}`,
-                  };
-                })
-              : []
-          }
-          columns={columns}
-          showFilter={false}
-          showPagination={false}
-        />
+        {shareholders?.length > 0 ? (
+          <Table
+            tableTitle="Shareholders"
+            data={
+              capital_details?.length > 0
+                ? capital_details?.map(
+                    (shareholder: unknown, index: number) => {
+                      return {
+                        ...shareholder,
+                        no: index,
+                        name: shareholder?.first_name
+                          ? `${shareholder?.first_name || ''} ${
+                              shareholder?.last_name || ''
+                            }`
+                          : shareholder?.company_name,
+                        type: capitalizeString(shareholder?.shareholder_type),
+                        total_shares: shareholder?.shares?.total_shares || 0,
+                        total_value: `RWF ${
+                          shareholder?.shares?.total_value || 0
+                        }`,
+                      };
+                    }
+                  )
+                : []
+            }
+            columns={columns}
+            showFilter={false}
+            showPagination={false}
+          />
+        ) : (
+          <menu className="flex flex-col gap-2">
+            <p className="text-center text-[14px] text-gray-500">
+              No shareholders have been added yet.
+            </p>
+            <Button
+              value="Click here to add shareholders"
+              styled={false}
+              className="hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessActiveTab('capital_information'));
+                dispatch(removeBusinessCompletedStep('capital_details'));
+                dispatch(dispatch(removeBusinessCompletedStep('shareholders')));
+                dispatch(setBusinessActiveStep('shareholders'));
+              }}
+            />
+          </menu>
+        )}
         {errors?.total_shares && (
           <p className="text-red-500 text-[13px] text-center">
             {String(errors?.total_shares?.message)}

@@ -4,7 +4,7 @@ import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
 import Input from '../../../components/inputs/Input';
 import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { userData } from '../../../constants/authentication';
+import { previewUrl, userData } from '../../../constants/authentication';
 import { countriesList } from '../../../constants/countries';
 import Button from '../../../components/inputs/Button';
 import {
@@ -19,17 +19,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { capitalizeString, generateUUID } from '../../../helpers/strings';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
+import {
+  RDBAdminEmailPattern,
+  validNationalID,
+} from '../../../constants/Users';
 import validateInputs from '../../../helpers/validations';
 import { attachmentFileColumns } from '../../../constants/businessRegistration';
-import { getBase64 } from '../../../helpers/uploads';
 import Modal from '../../../components/Modal';
+import ViewDocument from '../../user-company-details/ViewDocument';
 
 export interface business_board_of_directors {
   first_name: string;
   middle_name: string;
   last_name: string;
-  id: string
+  id: string;
 }
 
 interface BoardDirectorsProps {
@@ -61,7 +64,15 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const [confirmDeleteModal, setConfirmDeleteModal] = useState<boolean>(false);
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
+    director: boolean;
+    attachment: boolean;
+    first_name?: string;
+    last_name?: string;
+  }>({
+    director: false,
+    attachment: false,
+  });
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
@@ -72,7 +83,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const positionRef = useRef();
-  const disableForm = RDBAdminEmailPattern.test(user?.email)
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -120,7 +131,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       if (positionRef?.current) {
         positionRef.current.clearValue();
         setValue('position', '');
-        setValue('document_type', '')
+        setValue('document_type', '');
       }
     }, 1000);
     return data;
@@ -159,13 +170,21 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 if (disableForm) return;
-                setConfirmDeleteModal(row?.original);
+                setConfirmDeleteModal({
+                  ...confirmDeleteModal,
+                  director: true,
+                  first_name: row?.original?.first_name,
+                  last_name: row?.original?.last_name,
+                });
               }}
             />
             <Modal
-              isOpen={confirmDeleteModal}
+              isOpen={confirmDeleteModal?.director}
               onClose={() => {
-                setConfirmDeleteModal(null);
+                setConfirmDeleteModal({
+                  ...confirmDeleteModal,
+                  director: false,
+                });
               }}
             >
               <section className="flex flex-col gap-6">
@@ -179,7 +198,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     value="Cancel"
                     onClick={(e) => {
                       e.preventDefault();
-                      setConfirmDeleteModal(false);
+                      setConfirmDeleteModal({
+                        ...confirmDeleteModal,
+                        director: false,
+                      });
                     }}
                   />
                   <Button
@@ -197,7 +219,12 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           ),
                         })
                       );
-                      setConfirmDeleteModal(false);
+                      setConfirmDeleteModal({
+                        ...confirmDeleteModal,
+                        director: false,
+                        first_name: '',
+                        last_name: '',
+                      });
                     }}
                   />
                 </menu>
@@ -216,16 +243,70 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       accesorKey: 'action',
       cell: ({ row }) => {
         return (
-          <menu className="flex items-center gap-2">
+          <menu className="flex items-center gap-4">
             <FontAwesomeIcon
+              className="cursor-pointer text-primary font-bold text-[20px] ease-in-out duration-300 hover:scale-[1.02]"
               icon={faEye}
               onClick={(e) => {
                 e.preventDefault();
-                getBase64(row?.original, (result) => {
-                  setAttachmentPreview(result);
+                setAttachmentPreview(previewUrl);
+              }}
+            />
+            <FontAwesomeIcon
+              className="cursor-pointer text-white bg-red-600 p-2 w-[13px] h-[13px] text-[16px] rounded-full font-bold ease-in-out duration-300 hover:scale-[1.02]"
+              icon={faTrash}
+              onClick={(e) => {
+                e.preventDefault();
+                setConfirmDeleteModal({
+                  ...confirmDeleteModal,
+                  attachment: true,
                 });
               }}
             />
+            <Modal
+              isOpen={confirmDeleteModal?.attachment}
+              onClose={() => {
+                setConfirmDeleteModal({
+                  ...confirmDeleteModal,
+                  attachment: false,
+                });
+              }}
+            >
+              <section className="flex flex-col gap-6">
+                <h1 className="font-medium uppercase text-center">
+                  Are you sure you want to delete {attachmentFile?.name}
+                </h1>
+                <menu className="flex items-center gap-3 justify-between">
+                  <Button
+                    value="Cancel"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setConfirmDeleteModal({
+                        ...confirmDeleteModal,
+                        attachment: false,
+                      });
+                    }}
+                  />
+                  <Button
+                    value="Delete"
+                    danger
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setAttachmentFile(null);
+                      setValue('attachment', null);
+                      setError('attachment', {
+                        type: 'manual',
+                        message: 'Passport is required',
+                      });
+                      setConfirmDeleteModal({
+                        ...confirmDeleteModal,
+                        attachment: false,
+                      });
+                    }}
+                  />
+                </menu>
+              </section>
+            </Modal>
           </menu>
         );
       },
@@ -438,10 +519,28 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             <Controller
               name="passport_no"
               control={control}
-              rules={{ required: 'Passport number is required' }}
+              rules={{
+                required:
+                  watch('document_type') === 'passport'
+                    ? 'Passport number is required'
+                    : false,
+                validate: (value) => {
+                  if (watch('document_type') !== 'passport') {
+                    return true;
+                  }
+                  return (
+                    validateInputs(value, 'passport') ||
+                    'Invalid passport number'
+                  );
+                },
+              }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <label
+                    className={`${
+                      watch('document_type') === 'passport' ? 'flex' : 'hidden'
+                    } w-[49%] flex flex-col gap-1 items-start`}
+                  >
                     <Input
                       required
                       placeholder="Passport number"
@@ -694,7 +793,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
                           clearErrors('attachment');
-                          setValue('attachment', e?.target?.files?.[0]?.name);
+                          setValue('attachment', e?.target?.files?.[0]);
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
@@ -808,6 +907,12 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           </menu>
         </fieldset>
       </form>
+      {attachmentPreview && (
+        <ViewDocument
+          documentUrl={attachmentPreview}
+          setDocumentUrl={setAttachmentPreview}
+        />
+      )}
     </section>
   );
 };

@@ -1,5 +1,3 @@
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import AdminLayout from "../../containers/AdminLayout";
 import Table from "../../components/table/Table";

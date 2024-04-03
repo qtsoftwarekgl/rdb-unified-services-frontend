@@ -90,7 +90,6 @@ export const NewRegistration = ({
         />
         <Button
           value="Delete"
-          danger
           styled={false}
           className="!bg-transparent hover:!bg-transparent !text-red-600 hover:!text-red-600 !shadow-none !p-0"
           onClick={(e) => {
