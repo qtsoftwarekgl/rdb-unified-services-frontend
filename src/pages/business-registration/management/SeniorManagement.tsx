@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
@@ -68,7 +68,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     error: false,
     data: null,
   });
-  const positionRef = useRef<unknown>();
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email)
   const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
@@ -84,14 +83,18 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
   
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch('document_type') === 'passport') {
       setValue('country', '');
       setValue('phone', '');
       setValue('street_name', '');
       setValue('first_name', '');
       setValue('middle_name', '');
       setValue('last_name', '');
-    }
+      setSearchMember({
+        ...searchMember,
+        data: null,
+        loading: false,
+        error: false,
+      });
   }, [setValue, watch('document_type')]);
 
   // HANDLE FORM SUBMIT
@@ -108,6 +111,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           senior_management: [
             {
               ...data,
+              attachment: {
+                name: attachmentFile?.name,
+                size: attachmentFile?.size,
+                type: attachmentFile?.type,
+              },
             },
             ...senior_management,
           ],
@@ -121,11 +129,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
       });
       setValue('attachment', null);
       reset();
-      if (positionRef?.current) {
-        positionRef.current?.clearValue();
-        setValue('position', '');
-        setValue('document_type', '');
-      }
     }, 1000);
     return data;
   };
@@ -343,10 +346,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     <Select
                       label="Select position"
                       required
-                      ref={positionRef}
                       options={options}
+                      {...field}
                       onChange={(e) => {
                         field.onChange(e);
+                        clearErrors('position');
+                        trigger('position');
+                        setValue('document_type', '');
                       }}
                     />
                     {errors?.position && (
@@ -382,9 +388,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         options={options}
                         label="Document Type"
                         required
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     </label>
                   );
@@ -628,20 +632,14 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         <Input
                           type="radio"
                           label="Male"
-                          name={field?.name}
+                          {...field}
                           value={'Male'}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                         <Input
                           type="radio"
                           label="Female"
-                          name={field?.name}
+                          {...field}
                           value={'Female'}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                       </menu>
                     )}
@@ -658,7 +656,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             <Controller
               name="phone"
               control={control}
-              defaultValue={userData?.[0]?.phone}
               rules={{
                 required: 'Phone number is required',
               }}
@@ -676,10 +673,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -687,9 +680,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                             value: user?.phone,
                           };
                         })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.phone && (
@@ -721,9 +712,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                               value: country?.code,
                             };
                           })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                       {errors?.country && (
                         <p className="text-sm text-red-500">
@@ -783,11 +772,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         }}
                       />
                       <ul className="flex flex-col items-center gap-3 w-full">
-                        {(attachmentFile || senior_management?.attachment) && (
+                        {(attachmentFile) && (
                           <Table
                             columns={attachmentColumns}
                             data={[
-                              attachmentFile || senior_management?.attachment,
+                              attachmentFile,
                             ]}
                             showPagination={false}
                             showFilter={false}

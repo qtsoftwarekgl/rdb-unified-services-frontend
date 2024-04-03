@@ -122,6 +122,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 setShareholderShareDetails(row?.original);
+                clearErrors('total_shares');
                 dispatch(setCapitalDetailsModal(true));
               }}
             />

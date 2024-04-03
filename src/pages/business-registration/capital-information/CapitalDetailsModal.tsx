@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, MutableRefObject, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Modal from '../../../components/Modal';
 import { FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../components/inputs/Input';
@@ -118,50 +118,25 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
     }, 1000);
   };
 
-  // RESET FORM
-  const inputRefs: {
-    no_shares_ref: MutableRefObject<null>;
-    name: string;
-    value_ref: MutableRefObject<null>;
-  }[] = [];
-  tableRows?.forEach((row) => {
-    inputRefs.push({
-      no_shares_ref: useRef(null),
-      name: row?.name,
-      value_ref: useRef(null),
-    });
-  });
-  const total_shares_ref = useRef(null);
-  const total_value_ref = useRef(null);
   useEffect(() => {
     if (!capitalDetailsModal) {
       reset();
-      inputRefs?.forEach((input) => {
-        if (input?.no_shares_ref?.current && input?.value_ref?.current) {
-          input.no_shares_ref.current.value = '';
-          input.value_ref.current.value = '';
-        }
-      });
-      if (total_shares_ref?.current) {
-        total_shares_ref.current.value = '';
+      if (watch('total_shares')) {
+        setValue('total_shares', '');
       }
-      if (total_value_ref?.current) {
-        total_value_ref.current.value = '';
+      if (watch('total_value')) {
+        setValue('total_value', '');
       }
     } else if (capitalDetailsModal && shareholder?.shares) {
-      inputRefs?.forEach((input) => {
-        if (input?.no_shares_ref?.current && input?.value_ref?.current) {
-          input.no_shares_ref.current.value =
-            shareholder?.shares && shareholder?.shares?.[input.name];
-          input.value_ref.current.value =
-            shareholder?.shares &&
-            Number(shareholder?.shares?.[input.name]) *
-              Number(
-                share_details?.shares?.find(
-                  (share) => share?.name === input.name
-                )?.share_value
-              );
-        }
+      tableRows?.forEach((row) => {
+        setValue(
+          `${row?.name}_value`,
+          shareholder?.shares && shareholder?.shares?.[row?.name]
+        );
+        setValue(
+          `${row?.name}_no`,
+          shareholder?.shares && shareholder?.shares[`${row?.name}`]
+        );
       });
     }
   }, [capitalDetailsModal, reset]);
@@ -171,9 +146,9 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
     setValue(
       'total_shares',
       tableRows
-        ?.map((row) => watch(`${row.name}_no`))
+        ?.map((row) => Number(watch(`${row.name}_no`)))
         ?.filter((row) => Number(row) === row)
-        ?.reduce((a, b) => a + b, 0)
+        ?.reduce((a, b) => Number(a) + Number(b), 0)
     );
   }, [
     watch('ordinary_share_no'),
@@ -267,9 +242,10 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                     (share: unknown) => share?.name === row.name
                   )?.no_shares;
 
-                const remaining_shares = share_details?.shares?.find(
-                  (share: unknown) => share?.name === row?.name
-                )?.remaining_shares || 0;
+                const remaining_shares =
+                  share_details?.shares?.find(
+                    (share: unknown) => share?.name === row?.name
+                  )?.remaining_shares || 0;
 
                 const share_value = share_details?.shares?.find(
                   (share) => share?.name === row?.name
@@ -292,16 +268,9 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                     <td className="w-full flex flex-col gap-1">
                       <Input
                         required
-                        ref={
-                          inputRefs?.find((ref) => ref?.name === row?.name)
-                            ?.no_shares_ref
-                        }
                         type="number"
                         readOnly={total_shares && share_value ? false : true}
-                        defaultValue={
-                          shareholder?.shares &&
-                          Number(shareholder?.shares?.[row?.name])
-                        }
+                        value={watch(`${row.name}_no`)}
                         onChange={(e) => {
                           const remainingShares =
                             (share_details?.shares?.find(
@@ -311,6 +280,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                             (shareholder?.shares[row?.name]
                               ? Number(shareholder?.shares[row?.name])
                               : 0);
+                          setValue(`${row.name}_no`, e.target.value);
                           if (remainingShares < 0) {
                             setError(`share_no_${index}`, {
                               type: 'manual',
@@ -324,7 +294,6 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                               `${row.name}_remaining_shares`,
                               remainingShares
                             );
-                            setValue(`${row.name}_no`, Number(e.target.value));
                             setValue(
                               `${row?.name}_value`,
                               Number(e.target.value) *
@@ -354,11 +323,6 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
                     <td className="w-full flex flex-col gap-1">
                       <Input
                         required
-                        ref={
-                          inputRefs?.find((ref) => ref?.name === row?.name)
-                            ?.value_ref
-                        }
-                        defaultValue={watch(`${row?.name}_value`)}
                         readOnly
                         value={
                           (shareholder?.shares &&
@@ -377,21 +341,11 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
               <tr className="w-full flex flex-row items-center gap-3 justify-between p-3">
                 <h2 className="uppercase font-semibold w-full">Total</h2>
                 <td className="w-full flex flex-col gap-1">
-                  <Input
-                    ref={total_shares_ref}
-                    required
-                    readOnly
-                    value={watch('total_shares')}
-                  />
+                  <Input required readOnly value={watch('total_shares')} />
                 </td>
                 <span className="w-full" />
                 <td className="w-full flex flex-col gap-1">
-                  <Input
-                    ref={total_value_ref}
-                    required
-                    readOnly
-                    value={watch('total_value')}
-                  />
+                  <Input required readOnly value={watch('total_value')} />
                 </td>
               </tr>
             </tfoot>
