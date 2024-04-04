@@ -121,7 +121,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           ],
         })
       );
-      setSearchMember({
+    setSearchMember({
         ...searchMember,
         data: null,
         loading: false,
@@ -149,13 +149,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
             <FontAwesomeIcon
               className={`${
                 disableForm

@@ -36,13 +36,16 @@ interface CompanyDetailsProps {
   isOpen: boolean;
   entry_id: string | null;
   company_details: business_company_details | null;
+  status: string;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
   isOpen,
   entry_id,
   company_details,
+  status
 }) => {
+
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -56,7 +59,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const [searchCompany, setSearchCompany] = useState({
     error: false,
     success: false,
@@ -79,29 +85,52 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === 'in_preview' ? false : true,
+      preview: status === 'in_preview' ? true : false,
+    });
     setTimeout(() => {
-      setIsLoading(false);
-      dispatch(setUserApplications({
-        entry_id,
-        active_tab: 'general_information',
-        active_step: 'company_address',
-        company_details: {
-          ...company_details,
-          name: data?.name,
-          category: data?.category,
-          type: data?.type,
-          position: data?.position,
-          articles_of_association: data?.articles_of_association,
-          step: 'company_details',
-        }
-      }))
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
+      dispatch(
+        setUserApplications({
+          entry_id,
+          active_tab: 'general_information',
+          active_step: 'company_address',
+          status: 'in_progress',
+          company_details: {
+            ...company_details,
+            name: data?.name,
+            category: data?.category,
+            type: data?.type,
+            position: data?.position,
+            articles_of_association: data?.articles_of_association,
+            step: 'company_details',
+          },
+        })
+      );
+
+      // SET ACTIVE TAB AND STEP
+      let active_tab = 'general_information';
+      let active_step = 'company_address';
+
+      if (status === 'in_preview') {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
+      }
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep("company_details"));
+      dispatch(setBusinessCompletedStep('company_details'));
+
+      // SET ACTIVE TAB
+      dispatch(setBusinessActiveTab(active_tab));
 
       // SET ACTIVE STEP
-      dispatch(setBusinessActiveStep("company_address"));
+      dispatch(setBusinessActiveStep(active_step));
     }, 1000);
   };
 
@@ -386,8 +415,20 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 }}
               />
             )}
+            {status === 'in_preview' && (
+              <Button
+              value={isLoading?.preview ? <Loader /> : 'Save & Complete Preview'}
+              primary={!searchCompany?.error}
+              disabled={
+                searchCompany?.error ||
+                disableForm ||
+                Object.keys(errors).length > 0
+              }
+              submit
+            />
+            )}
             <Button
-              value={isLoading ? <Loader /> : 'Continue'}
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
               primary={!searchCompany?.error}
               disabled={
                 searchCompany?.error ||

@@ -153,14 +153,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       accessorKey: "action",
       cell: ({ row }) => {
         return (
-          <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
+          <menu className="flex items-center gap-6 w-fit justify-center">
             <FontAwesomeIcon
               className={`${
                 disableForm
@@ -355,13 +348,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                             message:
                               "Cannot have more than one chairpeople in a company.",
                           });
-                          setValue("position", "");
-                          setValue("document_type", "");
+                          setValue('document_type', '');
+                          setValue('position', '');
                           return;
                         }
                         if (
                           errors?.position_conflict &&
-                          String(e) !== "chairman"
+                          String(e) !== 'chairman' && e !== undefined
                         ) {
                           clearErrors("position_conflict");
                         }

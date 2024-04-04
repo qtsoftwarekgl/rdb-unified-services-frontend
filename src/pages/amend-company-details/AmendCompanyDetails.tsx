@@ -31,8 +31,6 @@ const AmendCompanyDetails = () => {
     )
     .sort(sortBySubmissionDate);
 
-  console.log(user_applications);
-
   const handleClickAction = () => {
     dispatch(setIsAmending(true));
   };
