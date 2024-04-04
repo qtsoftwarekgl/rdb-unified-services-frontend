@@ -51,8 +51,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   });
 
   const { isAmending } = useSelector((state: RootState) => state.amendment);
-
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -86,6 +86,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   useEffect(() => {
     if (company_details) {
       setValue("name", company_details?.name);
+      setSearchCompany({
+        ...searchCompany,
+        name: company_details?.name,
+        success: true,
+        error: false,
+      });
       setValue("category", company_details?.category);
       setValue("type", company_details?.type);
       setValue("position", company_details?.position);
@@ -101,7 +107,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={RDBAdminEmailPattern.test(user?.email)}
+          disabled={isFormDisabled}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller
@@ -117,7 +123,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     : true;
                 },
               }}
-              render={() => {
+              render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
@@ -125,11 +131,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       required
                       defaultValue={watch("name") || company_details?.name}
                       suffixIcon={
-                        company_details?.name_reserved ? undefined : faSearch
+                        company_details?.name_reserved || isFormDisabled
+                          ? undefined
+                          : faSearch
                       }
                       readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
+                        field.onChange(e);
                         setSearchCompany({
                           ...searchCompany,
                           name: e.target.value,
@@ -171,6 +180,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                               loading: false,
                               success: true,
                               error: false,
+                            });
+                            setError("name", {
+                              type: "manual",
+                              message: "",
                             });
                           } else {
                             setSearchCompany({

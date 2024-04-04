@@ -34,13 +34,14 @@ import {
 } from "../../../constants/Users";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import ViewDocument from "../../user-company-details/ViewDocument";
+import validateInputs from "../../../helpers/validations";
 
 type EnterpriseDetailsProps = {
   entry_id: string | null;
 };
 
 export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
-  const { enterprise_registration_active_step, usedIds } = useSelector(
+  const { enterprise_registration_active_step } = useSelector(
     (state: RootState) => state.enterpriseRegistration
   );
 
@@ -81,6 +82,16 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     setError,
     watch,
   } = useForm();
+
+  useEffect(() => {
+    if (company_details) {
+      setValue("name", company_details?.name);
+      setSearchEnterprise({
+        ...searchEnterprise,
+        name: company_details?.name,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (watch("document_type") === "passport") {
@@ -150,7 +161,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
             <Controller
               name="name"
               control={control}
-              defaultValue={watch("name") || company_details?.name}
+              defaultValue={company_details?.name || watch("name")}
               rules={{
                 required: "Enterprise name is required",
                 validate: () => {
@@ -160,21 +171,24 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                     : true;
                 },
               }}
-              render={() => {
+              render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-1/2 gap-1">
                     <Input
                       label={`${
-                        company_details?.name ? "" : "Search"
+                        company_details?.name_reserved ? "" : "Search"
                       }  company name"`}
                       required
                       defaultValue={watch("name") || company_details?.name}
                       suffixIcon={
-                        company_details?.name_reserved ? undefined : faSearch
+                        company_details?.name_reserved || isFormDisabled
+                          ? undefined
+                          : faSearch
                       }
                       readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
+                        field.onChange(e);
                         setSearchEnterprise({
                           ...searchEnterprise,
                           name: e.target.value,
@@ -217,6 +231,10 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                               success: true,
                               error: false,
                             });
+                            setError("name", {
+                              type: "manual",
+                              message: "",
+                            })
                           } else {
                             setSearchEnterprise({
                               ...searchEnterprise,
@@ -900,7 +918,14 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                       company_details?.email ||
                       userDetails?.email
                     }
-                    rules={{ required: "Email is required" }}
+                    rules={{
+                      required: "Email is required",
+                      validate: (value) => {
+                        return (
+                          validateInputs(value, "email") || "email-invalid"
+                        );
+                      },
+                    }}
                     render={({ field }) => {
                       return (
                         <label className="flex flex-col items-start w-1/2 gap-2">
