@@ -85,17 +85,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === 'in_preview' ? false : true,
-      preview: status === 'in_preview' ? true : false,
-    });
     setTimeout(() => {
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
+
+      // SET ACTIVE TAB AND STEP
+      let active_tab = 'general_information';
+      let active_step = 'company_address';
+
+      if (status === 'in_preview') {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
+      }
+
       dispatch(
         setUserApplications({
           entry_id,
@@ -114,15 +114,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
         })
       );
 
-      // SET ACTIVE TAB AND STEP
-      let active_tab = 'general_information';
-      let active_step = 'company_address';
-
-      if (status === 'in_preview') {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
-      }
-
       // SET CURRENT STEP AS COMPLETED
       dispatch(setBusinessCompletedStep('company_details'));
 
@@ -131,6 +122,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
       // SET ACTIVE STEP
       dispatch(setBusinessActiveStep(active_step));
+
+      // RESET LOADING STATE
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
     }, 1000);
   };
 
@@ -417,15 +415,27 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             )}
             {status === 'in_preview' && (
               <Button
-              value={isLoading?.preview ? <Loader /> : 'Save & Complete Preview'}
-              primary={!searchCompany?.error}
-              disabled={
-                searchCompany?.error ||
-                disableForm ||
-                Object.keys(errors).length > 0
-              }
-              submit
-            />
+                value={
+                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                }
+                primary={!searchCompany?.error}
+                disabled={
+                  searchCompany?.error ||
+                  disableForm ||
+                  Object.keys(errors).length > 0
+                }
+                onClick={() => {
+                  setIsLoading({
+                    ...isLoading,
+                    submit: false,
+                    preview: true,
+                  });
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_preview' })
+                  );
+                }}
+                submit
+              />
             )}
             <Button
               value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
@@ -435,6 +445,16 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 disableForm ||
                 Object.keys(errors).length > 0
               }
+              onClick={() => {
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                });
+                dispatch(
+                  setUserApplications({ entry_id, status: 'in_progress' })
+                );
+              }}
               submit
             />
           </menu>
