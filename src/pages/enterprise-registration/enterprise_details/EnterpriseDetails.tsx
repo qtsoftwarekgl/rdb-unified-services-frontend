@@ -34,13 +34,14 @@ import {
 } from "../../../constants/Users";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import ViewDocument from "../../user-company-details/ViewDocument";
+import validateInputs from "../../../helpers/validations";
 
 type EnterpriseDetailsProps = {
   entry_id: string | null;
 };
 
 export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
-  const { enterprise_registration_active_step, usedIds } = useSelector(
+  const { enterprise_registration_active_step } = useSelector(
     (state: RootState) => state.enterpriseRegistration
   );
 
@@ -83,26 +84,38 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   } = useForm();
 
   useEffect(() => {
-    setValue("country", "");
-    setValue("phone", "");
-    setValue("street_name", "");
-    setValue("first_name", "");
-    setValue("middle_name", "");
-    setValue("last_name", "");
-    setValue("gender", "");
-    setValue("date_of_birth", "");
-    setValue("nationality", "");
-    setValue("province", "");
-    setValue("district", "");
-    setValue("sector", "");
-    setValue("cell", "");
-    setValue("village", "");
-    setValue("email", "");
-    setValue("pob", "");
-    setValue("passport_no", "");
-    setValue("passport_expiry_date", "");
-    setValue("id_no", "");
-    setUserDetails({});
+    if (company_details) {
+      setValue("name", company_details?.name);
+      setSearchEnterprise({
+        ...searchEnterprise,
+        name: company_details?.name,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (watch("document_type") === "passport") {
+      setValue("country", "");
+      setValue("phone", "");
+      setValue("street_name", "");
+      setValue("first_name", "");
+      setValue("middle_name", "");
+      setValue("last_name", "");
+      setValue("gender", "");
+      setValue("date_of_birth", "");
+      setValue("nationality", "");
+      setValue("province", "");
+      setValue("district", "");
+      setValue("sector", "");
+      setValue("cell", "");
+      setValue("village", "");
+      setValue("email", "");
+      setValue("pob", "");
+      setValue("passport_no", "");
+      setValue("passport_expiry_date", "");
+      setValue("id_no", "");
+      setUserDetails({});
+    }
   }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
@@ -112,6 +125,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
         setUserApplications({
           entry_id,
           company_details: {
+            ...company_details,
             ...data,
             step: {
               ...enterprise_registration_active_step,
@@ -148,21 +162,34 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
             <Controller
               name="name"
               control={control}
-              defaultValue={watch("name") || company_details?.name}
-              rules={{ required: "Enterprise name is required" }}
-              render={() => {
+              defaultValue={company_details?.name || watch("name")}
+              rules={{
+                required: "Enterprise name is required",
+                validate: () => {
+                  return !searchEnterprise?.success &&
+                    !company_details?.name_reserved
+                    ? "Check if company name is available before proceeding"
+                    : true;
+                },
+              }}
+              render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-1/2 gap-1">
                     <Input
                       label={`${
-                        company_details?.name ? "" : "Search"
+                        company_details?.name_reserved ? "" : "Search"
                       }  company name"`}
                       required
                       defaultValue={watch("name") || company_details?.name}
-                      readOnly={company_details?.name ? true : false}
-                      suffixIcon={!company_details?.name ? faSearch : undefined}
+                      suffixIcon={
+                        company_details?.name_reserved || isFormDisabled
+                          ? undefined
+                          : faSearch
+                      }
+                      readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
+                        field.onChange(e);
                         setSearchEnterprise({
                           ...searchEnterprise,
                           name: e.target.value,
@@ -204,6 +231,10 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                               loading: false,
                               success: true,
                               error: false,
+                            });
+                            setError("name", {
+                              type: "manual",
+                              message: "",
                             });
                           } else {
                             setSearchEnterprise({
@@ -264,200 +295,160 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               }}
             />
           </menu>
-          <menu className="flex flex-col gap-4">
-            <p>
-              Are you the owner? <span className="text-red-600">*</span>
-            </p>
+
+          <p>
+            Provide owner details <span className="text-red-600">*</span>
+          </p>
+
+          <menu className="flex items-start gap-6 max-sm:flex-col">
             <Controller
-              name="owner"
+              name="document_type"
               control={control}
+              defaultValue={
+                watch("document_type") || company_details?.document_type
+              }
+              rules={{ required: "Document type is required" }}
               render={({ field }) => {
                 return (
-                  <ul className="flex items-center gap-3">
-                    <Input
-                      type="radio"
-                      name={field?.name}
-                      checked={field?.value === "yes"}
-                      value={"yes"}
-                      label="Yes"
+                  <label className="flex flex-col items-start w-1/2 gap-2">
+                    <Select
+                      label="Document Type"
+                      required
+                      options={documentTypes}
                       onChange={(e) => {
-                        field.onChange(e.target.value);
-                        setValue("document_type", "");
+                        field.onChange(e);
+                        if (userDetails) {
+                          setUserDetails({
+                            ...userDetails,
+                            document_type: e?.value,
+                          });
+                        } else {
+                          setUserDetails({
+                            document_type: e?.value,
+                          });
+                        }
                       }}
+                      defaultValue={
+                        documentTypes.find(
+                          (type) =>
+                            type.value === company_details?.document_type
+                        )?.value
+                      }
                     />
-                    <Input
-                      type="radio"
-                      name={field?.name}
-                      checked={field?.value === "no"}
-                      value={"no"}
-                      label="No"
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                        setValue("document_type", "");
-                      }}
-                    />
-                  </ul>
+                    {errors?.document_type && (
+                      <p className="text-xs text-red-500">
+                        {String(errors?.document_type?.message)}
+                      </p>
+                    )}
+                  </label>
                 );
               }}
             />
-          </menu>
-          {watch("owner") === "no" && (
-            <p>
-              Provide owner details <span className="text-red-600">*</span>
-            </p>
-          )}
-          {watch("owner") === "no" && (
-            <menu className="flex items-start gap-6 max-sm:flex-col">
+            {watch("document_type") === "nid" && (
               <Controller
-                name="document_type"
                 control={control}
+                name="id_no"
                 defaultValue={
-                  watch("document_type") || company_details?.document_type
+                  watch("id_no") || company_details?.id_no || userDetails?.id_no
                 }
-                rules={{ required: "Document type is required" }}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col items-start w-1/2 gap-2">
-                      <Select
-                        label="Document Type"
-                        required
-                        options={documentTypes}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          if (userDetails) {
-                            setUserDetails({
-                              ...userDetails,
-                              document_type: e?.value,
-                            });
-                          } else {
-                            setUserDetails({
-                              document_type: e?.value,
-                            });
-                          }
-                        }}
-                        defaultValue={documentTypes.find(
-                          (type) =>
-                            type.value === company_details?.document_type
-                        )}
-                      />
-                      {errors?.document_type && (
-                        <p className="text-xs text-red-500">
-                          {String(errors?.document_type?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
+                rules={{
+                  required: "Document number is required",
+                  // validate: (value) => {
+                  //   if (usedIds?.includes(value)) {
+                  //     return "ID already used. Please use another ID";
+                  //   }
+                  //   return true;
+                  // },
                 }}
-              />
-              {watch("document_type") === "nid" && (
-                <Controller
-                  control={control}
-                  name="id_no"
-                  defaultValue={
-                    watch("id_no") ||
-                    company_details?.id_no ||
-                    userDetails?.id_no
-                  }
-                  rules={{
-                    required: "Document number is required",
-                    validate: (value) => {
-                      if (usedIds?.includes(value)) {
-                        return "ID already used. Please use another ID";
+                render={({ field }) => (
+                  <label className="flex flex-col items-start w-1/2 gap-2">
+                    <Input
+                      required
+                      label="ID Document No"
+                      placeholder="1 XXXX X XXXXXXX X XX"
+                      defaultValue={
+                        watch("id_no") ||
+                        company_details?.id_no ||
+                        userDetails?.id_no
                       }
-                      return true;
-                    },
-                  }}
-                  render={({ field }) => (
-                    <label className="flex flex-col items-start w-1/2 gap-2">
-                      <Input
-                        required
-                        label="ID Document No"
-                        placeholder="1 XXXX X XXXXXXX X XX"
-                        defaultValue={
-                          watch("id_no") ||
-                          company_details?.id_no ||
-                          userDetails?.id_no
-                        }
-                        suffixIconPrimary
-                        suffixIcon={isLoading ? faEllipsis : faSearch}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          field.onChange(e.target.value);
-                          if (
-                            e.target.value.length > 16 ||
-                            e.target.value.length < 16
-                          ) {
-                            setError("id_no", {
-                              type: "manual",
-                              message: "Invalid document number",
-                            });
-                            return;
-                          }
+                      suffixIconPrimary
+                      suffixIcon={isLoading ? faEllipsis : faSearch}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        field.onChange(e.target.value);
+                        if (
+                          e.target.value.length > 16 ||
+                          e.target.value.length < 16
+                        ) {
                           setError("id_no", {
                             type: "manual",
-                            message: "",
+                            message: "Invalid document number",
                           });
-                        }}
-                        suffixIconHandler={(e) => {
-                          e.preventDefault();
-                          if (watch("id_no").length !== 16) {
-                            setError("id_no", {
-                              type: "manual",
-                              message: "ID number must be 16 numbers",
-                            });
-                          } else {
-                            setIsNationalIdLoading(true);
-                            setTimeout(() => {
-                              setUserDetails(null);
-                              const index =
-                                field?.value.trim() === validNationalID
-                                  ? Math.floor(Math.random() * 10)
-                                  : Math.floor(Math.random() * 11) + 11;
+                          return;
+                        }
+                        setError("id_no", {
+                          type: "manual",
+                          message: "",
+                        });
+                      }}
+                      suffixIconHandler={(e) => {
+                        e.preventDefault();
+                        if (watch("id_no").length !== 16) {
+                          setError("id_no", {
+                            type: "manual",
+                            message: "ID number must be 16 numbers",
+                          });
+                        } else {
+                          setIsNationalIdLoading(true);
+                          setTimeout(() => {
+                            setUserDetails(null);
+                            const index =
+                              field?.value.trim() === validNationalID
+                                ? Math.floor(Math.random() * 10)
+                                : Math.floor(Math.random() * 11) + 11;
 
-                              const userDetails = userData[index];
-                              if (!userDetails) {
-                                setNationalIdError(true);
-                              } else {
-                                setNationalIdError(false);
-                                setUserDetails({
-                                  ...userDetails,
-                                  document_type: watch("document_type"),
-                                });
-                                setError("id_no", {
-                                  type: "manual",
-                                  message: "",
-                                });
-                              }
-                              setIsNationalIdLoading(false);
-                            }, 1000);
-                          }
-                        }}
-                      />
-                      {errors?.id_no && (
-                        <p className="text-xs text-red-500">
-                          {String(errors?.id_no?.message)}
+                            const userDetails = userData[index];
+                            if (!userDetails) {
+                              setNationalIdError(true);
+                            } else {
+                              setNationalIdError(false);
+                              setUserDetails({
+                                ...userDetails,
+                                document_type: watch("document_type"),
+                              });
+                              setError("id_no", {
+                                type: "manual",
+                                message: "",
+                              });
+                            }
+                            setIsNationalIdLoading(false);
+                          }, 1000);
+                        }
+                      }}
+                    />
+                    {errors?.id_no && (
+                      <p className="text-xs text-red-500">
+                        {String(errors?.id_no?.message)}
+                      </p>
+                    )}
+                    {isNationalIdLoading && (
+                      <span className="flex items-center gap-[2px] text-[13px]">
+                        <Loader size={4} /> Validating document
+                      </span>
+                    )}
+                    {nationalIdError && !isNationalIdLoading && (
+                      <menu className="flex flex-col w-full gap-1 px-2 mx-auto">
+                        <p className="text-red-600 text-[13px] text-center max-w-[80%] mx-auto">
+                          A person with the provided document number is not
+                          found. Double check the document number and try again.
                         </p>
-                      )}
-                      {isNationalIdLoading && (
-                        <span className="flex items-center gap-[2px] text-[13px]">
-                          <Loader size={4} /> Validating document
-                        </span>
-                      )}
-                      {nationalIdError && !isNationalIdLoading && (
-                        <menu className="flex flex-col w-full gap-1 px-2 mx-auto">
-                          <p className="text-red-600 text-[13px] text-center max-w-[80%] mx-auto">
-                            A person with the provided document number is not
-                            found. Double check the document number and try
-                            again.
-                          </p>
-                        </menu>
-                      )}
-                    </label>
-                  )}
-                />
-              )}
-            </menu>
-          )}
+                      </menu>
+                    )}
+                  </label>
+                )}
+              />
+            )}
+          </menu>
 
           {watch("document_type") === "nid" &&
             Object.keys(userDetails).length > 3 && (
@@ -928,7 +919,14 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                       company_details?.email ||
                       userDetails?.email
                     }
-                    rules={{ required: "Email is required" }}
+                    rules={{
+                      required: "Email is required",
+                      validate: (value) => {
+                        return (
+                          validateInputs(value, "email") || "email-invalid"
+                        );
+                      },
+                    }}
                     render={({ field }) => {
                       return (
                         <label className="flex flex-col items-start w-1/2 gap-2">

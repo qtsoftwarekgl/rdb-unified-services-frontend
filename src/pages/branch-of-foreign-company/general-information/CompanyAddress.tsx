@@ -73,7 +73,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     }, 1000);
   };
 
-
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -107,7 +106,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                               label: country.name,
                               value: country.code,
                             };
-                          })[0]
+                          })[0]?.value
                       }
                       label="Country of Incorporation"
                       options={countriesList.map((country) => {
@@ -295,9 +294,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(
-                  setForeignBusinessActiveStep("company_details")
-                );
+                dispatch(setForeignBusinessActiveStep("company_details"));
               }}
             />
             {isAmending && (

@@ -16,6 +16,7 @@ import Loader from "../../components/Loader";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
+import { business_registration_tabs_initial_state, setBusinessRegistrationTabs } from "../../states/features/businessRegistrationSlice";
 
 interface SelectReservedNameProps {
   path: string;

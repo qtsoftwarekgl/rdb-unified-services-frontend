@@ -45,14 +45,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchCompany, setSearchCompany] = useState({
     error: false,
-    success: company_details?.name ? true : false,
+    success: false,
     loading: false,
     name: "",
   });
 
   const { isAmending } = useSelector((state: RootState) => state.amendment);
-
   const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -64,6 +64,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
         setUserApplications({
           entry_id,
           company_details: {
+            ...company_details,
             name: data?.name,
             category: data?.category,
             type: data?.type,
@@ -86,6 +87,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   useEffect(() => {
     if (company_details) {
       setValue("name", company_details?.name);
+      setSearchCompany({
+        ...searchCompany,
+        name: company_details?.name,
+        success: true,
+        error: false,
+      });
       setValue("category", company_details?.category);
       setValue("type", company_details?.type);
       setValue("position", company_details?.position);
@@ -101,25 +108,38 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={RDBAdminEmailPattern.test(user?.email)}
+          disabled={isFormDisabled}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller
               name="name"
               control={control}
               defaultValue={watch("name") || company_details?.name}
-              rules={{ required: "Company name is required" }}
-              render={() => {
+              rules={{
+                required: "Company name is required",
+                validate: () => {
+                  return !searchCompany?.success &&
+                    !company_details?.name_reserved
+                    ? "Check if company name is available before proceeding"
+                    : true;
+                },
+              }}
+              render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       label="Search company name"
-                      readOnly={company_details?.name ? true : false}
                       required
                       defaultValue={watch("name") || company_details?.name}
-                      suffixIcon={!company_details?.name ? faSearch : undefined}
+                      suffixIcon={
+                        company_details?.name_reserved || isFormDisabled
+                          ? undefined
+                          : faSearch
+                      }
+                      readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
+                        field.onChange(e);
                         setSearchCompany({
                           ...searchCompany,
                           name: e.target.value,
@@ -161,6 +181,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                               loading: false,
                               success: true,
                               error: false,
+                            });
+                            setError("name", {
+                              type: "manual",
+                              message: "",
                             });
                           } else {
                             setSearchCompany({
@@ -222,16 +246,18 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="category"
-              defaultValue={watch("category") || company_details?.category}
+              defaultValue={watch("category")}
               rules={{ required: "Select company category" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyCategories?.find(
-                        (category) =>
-                          category?.value === company_details?.category
-                      )}
+                      defaultValue={
+                        companyCategories?.find(
+                          (category) =>
+                            category?.value === company_details?.category
+                        )?.value
+                      }
                       label="Company category"
                       required
                       options={companyCategories?.map((category) => {
@@ -259,15 +285,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="type"
-              defaultValue={watch("type") || company_details?.type}
+              defaultValue={watch("type")}
               rules={{ required: "Select company type" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyTypes?.find(
-                        (type) => type?.value === company_details?.type
-                      )}
+                      defaultValue={
+                        companyTypes?.find(
+                          (type) => type?.value === company_details?.type
+                        )?.value
+                      }
                       label="Company type"
                       required
                       options={companyTypes?.map((type) => {
@@ -293,16 +321,18 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="position"
-              defaultValue={watch("position") || company_details?.position}
+              defaultValue={watch("position")}
               rules={{ required: "Select your position" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyPositions?.find(
-                        (position) =>
-                          position?.value === company_details?.position
-                      )}
+                      defaultValue={
+                        companyPositions?.find(
+                          (position) =>
+                            position?.value === company_details?.position
+                        )?.value
+                      }
                       label="Your position"
                       required
                       options={companyPositions?.map((position) => {
@@ -393,7 +423,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary={!searchCompany?.error}
-              disabled={searchCompany?.error || !searchCompany?.success}
+              disabled={searchCompany?.error}
               submit
             />
           </menu>

@@ -2,17 +2,16 @@ import { Link } from "react-router-dom";
 import Input from "../../components/inputs/Input";
 import Navbar from "../../containers/Navbar";
 import BusinessRegistrationServices from "../business-registration/BusinessRegistrationServices";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MortgageRegistrationServices from "../business-registration/MortgageRegistrationServices";
-import { useSelector } from "react-redux";
-import { RootState } from "../../states/store";
-import HomeNav from "./HomeNav";
 import { defaultSections } from "../../constants/home";
+import { useDispatch } from "react-redux";
+import { setIsAmending } from "../../states/features/amendmentSlice";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState(1);
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const dispatch = useDispatch();
 
   const tabs = [
     {
@@ -24,6 +23,10 @@ const Home = () => {
       name: "Mortgage Registration Services",
     },
   ];
+
+  useEffect(() => {
+    dispatch(setIsAmending(false));
+  }, [dispatch]);
 
   const filteredSections = defaultSections.filter(
     (section) =>

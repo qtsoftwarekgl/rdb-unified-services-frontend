@@ -156,6 +156,16 @@ const EmploymentInfo = ({
             <Controller
               name="employees_no"
               defaultValue={foreign_employment_info?.employees_no || 0}
+              rules={{
+                required: "Number of employees is required",
+                validate: (value) => {
+                  if (watch("has_employees") === "yes") {
+                    if (!value) return "Number of employees is required";
+                    if (value < 1)
+                      return "Number of employees must be greater than 0";
+                  }
+                },
+              }}
               control={control}
               render={({ field }) => {
                 return (
@@ -165,6 +175,11 @@ const EmploymentInfo = ({
                       defaultValue={foreign_employment_info?.employees_no || 0}
                       {...field}
                     />
+                    {errors?.employees_no && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.employees_no?.message)}
+                      </p>
+                    )}
                   </label>
                 );
               }}

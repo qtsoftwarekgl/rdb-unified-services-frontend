@@ -90,8 +90,6 @@ const BusinessActivity = ({
     }
   }, [foreign_company_activities, dispatch, setValue]);
 
-
-  
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -103,10 +101,7 @@ const BusinessActivity = ({
             <Select
               label="Select sector"
               required
-              defaultValue={{
-                label: businessActivities[0]?.name,
-                value: businessActivities[0]?.id,
-              }}
+              defaultValue={businessActivities[0]?.id}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,

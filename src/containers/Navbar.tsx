@@ -12,7 +12,6 @@ import { AppDispatch, RootState } from "../states/store";
 import { FC, useState } from "react";
 import rdb_logo from "/rdb-logo.png";
 import { setLocale } from "../states/features/localeSlice";
-import { ReviewComment } from "../components/applications-review/AddReviewComments";
 
 interface Props {
   className?: string;
@@ -30,26 +29,25 @@ const Navbar = ({ className }: Props) => {
   const { application_review_comments } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
+  // const { user_applications } = useSelector(
+  //   (state: RootState) => state.userApplication
+  // );
 
-  const countCommentsForUsers = () => {
-    return application_review_comments.reduce(
-      (commentCounts: number, comment: ReviewComment) => {
-        // Find the user application corresponding to the comment entry ID
-        const userApp = user_applications.find(
-          (app) => app?.entry_id === comment?.entry_id && !comment?.checked
-        );
-        if (userApp?.owner === user.email) {
-          ++commentCounts;
-        }
-        return commentCounts;
-      },
-      0
-    );
-  };
-  const userCommentsCount = countCommentsForUsers();
+  // const countCommentsForUsers = useCallback(() => {
+  //   return application_review_comments.reduce(
+  //     (commentCounts: number, comment: ReviewComment) => {
+  //       // Find the user application corresponding to the comment entry ID
+  //       const userApp = user_applications.find(
+  //         (app) => app?.entry_id === comment?.entry_id && !comment?.checked
+  //       );
+  //       // if (userApp?.owner === user.email) {
+  //       ++commentCounts;
+  //       // }
+  //       return commentCounts;
+  //     },
+  //     0
+  //   );
+  // }, [application_review_comments, user_applications, user.email]);
 
   if (["auth/login", "auth/register"].includes(pathname)) {
     return null;
@@ -109,17 +107,18 @@ const Navbar = ({ className }: Props) => {
             Services
           </Link>
         )}
-        {userCommentsCount > 0 && !/info|admin/.test(user.email) && (
-          <Link to="/user-applications" className="relative">
-            <FontAwesomeIcon
-              className=" bg-tertiary p-2 h-4 text-white rounded-md cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-              icon={faBell}
-            />
-            <div className="absolute p-2 text-white text-[9px] flex justify-center items-center top-[-5px] cursor-pointer w-3 h-3 bg-red-500 rounded-full right-[-3px]">
-              {userCommentsCount}
-            </div>
-          </Link>
-        )}
+        {application_review_comments.length > 0 &&
+          !/info|admin/.test(user.email) && (
+            <Link to="/user-applications" className="relative">
+              <FontAwesomeIcon
+                className=" bg-tertiary p-2 h-4 text-white rounded-md cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
+                icon={faBell}
+              />
+              <div className="absolute p-2 text-white text-[9px] flex justify-center items-center top-[-5px] cursor-pointer w-3 h-3 bg-red-500 rounded-full right-[-3px]">
+                {application_review_comments.length}
+              </div>
+            </Link>
+          )}
         <Link to={"#"} className="px-4 max-[600px]:px-2">
           <menu
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"

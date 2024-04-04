@@ -1,11 +1,11 @@
-import { FC, LegacyRef, useEffect, useRef, useState } from 'react';
+import { FC, LegacyRef, useEffect, useRef, useState } from "react";
 import ReactSelect, {
   SingleValue,
   MultiValue,
   OptionsOrGroups,
   GroupBase,
   PropsValue,
-} from 'react-select';
+} from "react-select";
 
 interface Option {
   label?: string | number | undefined;
@@ -38,7 +38,7 @@ interface SelectProps {
 const Select: FC<SelectProps> = ({
   options = [],
   onChange,
-  className = '',
+  className = "",
   defaultValue = undefined,
   disabled = false,
   isSearchable = true,
@@ -68,7 +68,7 @@ const Select: FC<SelectProps> = ({
   > = options?.map((option: Option) => ({
     ...option,
     label: option?.text || option?.name || option?.title || option?.label,
-    value: option?.value || option?.id || '',
+    value: option?.value || option?.id || "",
     isDisabled: option?.disabled,
   }));
 
@@ -78,11 +78,11 @@ const Select: FC<SelectProps> = ({
     >
       <p
         className={`${
-          label ? 'flex items-center gap-1 text-[14px]' : 'hidden'
+          label ? "flex items-center gap-1 text-[14px]" : "hidden"
         }`}
       >
-        {label}{' '}
-        <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>
+        {label}{" "}
+        <span className={`${required ? "text-red-500" : "hidden"}`}>*</span>
       </p>
       <ReactSelect
         onChange={(e: SingleValue<Option> | MultiValue<Option>) => {
@@ -111,7 +111,7 @@ const Select: FC<SelectProps> = ({
         defaultValue={
           mappedOptions?.find(
             (option) =>
-              'value' in option && String(option.value) === String(defaultValue)
+              "value" in option && String(option.value) === String(defaultValue)
           ) as PropsValue<Option | MultiValue<Option>> | undefined
         }
         className={`${className}`}
