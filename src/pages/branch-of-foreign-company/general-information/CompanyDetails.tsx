@@ -45,7 +45,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchCompany, setSearchCompany] = useState({
     error: false,
-    success: company_details?.name ? true : false,
+    success: false,
     loading: false,
     name: "",
   });
@@ -108,16 +108,26 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               name="name"
               control={control}
               defaultValue={watch("name") || company_details?.name}
-              rules={{ required: "Company name is required" }}
+              rules={{
+                required: "Company name is required",
+                validate: () => {
+                  return !searchCompany?.success &&
+                    !company_details?.name_reserved
+                    ? "Please search for the company name"
+                    : true;
+                },
+              }}
               render={() => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       label="Search company name"
-                      readOnly={company_details?.name ? true : false}
                       required
                       defaultValue={watch("name") || company_details?.name}
-                      suffixIcon={!company_details?.name ? faSearch : undefined}
+                      suffixIcon={
+                        company_details?.name_reserved ? undefined : faSearch
+                      }
+                      readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
                         setSearchCompany({
@@ -399,7 +409,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Button
               value={isLoading ? <Loader /> : "Continue"}
               primary={!searchCompany?.error}
-              disabled={searchCompany?.error || !searchCompany?.success}
+              disabled={searchCompany?.error}
               submit
             />
           </menu>

@@ -151,7 +151,15 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               name="name"
               control={control}
               defaultValue={watch("name") || company_details?.name}
-              rules={{ required: "Enterprise name is required" }}
+              rules={{
+                required: "Enterprise name is required",
+                validate: () => {
+                  return !searchEnterprise?.success &&
+                    !company_details?.name_reserved
+                    ? "Please search for the company name"
+                    : true;
+                },
+              }}
               render={() => {
                 return (
                   <label className="flex flex-col items-start w-1/2 gap-1">
@@ -161,8 +169,10 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                       }  company name"`}
                       required
                       defaultValue={watch("name") || company_details?.name}
-                      readOnly={company_details?.name ? true : false}
-                      suffixIcon={!company_details?.name ? faSearch : undefined}
+                      suffixIcon={
+                        company_details?.name_reserved ? undefined : faSearch
+                      }
+                      readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
                         setSearchEnterprise({
@@ -324,12 +334,12 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                 }
                 rules={{
                   required: "Document number is required",
-                  validate: (value) => {
-                    if (usedIds?.includes(value)) {
-                      return "ID already used. Please use another ID";
-                    }
-                    return true;
-                  },
+                  // validate: (value) => {
+                  //   if (usedIds?.includes(value)) {
+                  //     return "ID already used. Please use another ID";
+                  //   }
+                  //   return true;
+                  // },
                 }}
                 render={({ field }) => (
                   <label className="flex flex-col items-start w-1/2 gap-2">

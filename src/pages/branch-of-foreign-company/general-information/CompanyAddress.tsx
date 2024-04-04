@@ -106,7 +106,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                               label: country.name,
                               value: country.code,
                             };
-                          })[0].value
+                          })[0]?.value
                       }
                       label="Country of Incorporation"
                       options={countriesList.map((country) => {
