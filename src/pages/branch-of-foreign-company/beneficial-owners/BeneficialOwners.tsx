@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Controller, FieldValues, set, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import {
   ownerRelationships,
@@ -7,7 +7,7 @@ import {
 } from "../../../constants/businessRegistration";
 import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData, workingIds } from "../../../constants/authentication";
+import { userData } from "../../../constants/authentication";
 import Loader from "../../../components/Loader";
 import validateInputs from "../../../helpers/validations";
 import { countriesList } from "../../../constants/countries";

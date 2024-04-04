@@ -50,6 +50,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     formState: { errors },
     setValue,
     watch,
+    setError,
+    clearErrors
   } = useForm();
 
   // STATE VARIABLES
@@ -137,7 +139,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="Search company name"
                       required
                       defaultValue={company_details?.name}
-                      suffixIcon={company_details?.name_reserved ? undefined : faSearch}
+                      suffixIcon={
+                        company_details?.name_reserved ? undefined : faSearch
+                      }
                       readOnly={company_details?.name_reserved ? true : false}
                       suffixIconPrimary
                       onChange={(e) => {
@@ -149,12 +153,18 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                           loading: false,
                         });
+                        setError('name', {
+                          type: 'manual',
+                          message:
+                            'Check if company name is available before proceeding',
+                        });
                       }}
                       suffixIconHandler={(e) => {
                         e.preventDefault();
                         if (!field?.value) {
                           return;
                         }
+                        clearErrors('name');
                         setSearchCompany({
                           ...searchCompany,
                           loading: true,
@@ -218,7 +228,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         </span>
                       </p>
                     </menu>
-                    {errors.name && !searchCompany?.name && (
+                    {errors.name && (
                       <p className="text-xs text-red-500">
                         {String(errors.name.message)}
                       </p>
@@ -230,25 +240,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="category"
-              defaultValue={
-                companyCategories?.find(
-                  (category) => category?.value === company_details?.category
-                ) ||
-                companyCategories?.[0]?.value ||
-                watch('category') ||
-                company_details?.category
-              }
+              defaultValue={company_details?.category}
               rules={{ required: 'Select company category' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={
-                        companyCategories?.find(
-                          (category) =>
-                            category?.value === company_details?.category
-                        ) || companyCategories?.[0]
-                      }
                       label="Company category"
                       required
                       options={companyCategories?.map((category) => {
@@ -258,6 +255,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: category?.label,
                         };
                       })}
+                      defaultValue={company_details?.category}
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -276,24 +274,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="type"
-              defaultValue={
-                companyTypesOptions?.find(
-                  (type) => type?.value === company_details?.type
-                ) ||
-                companyTypesOptions?.[0] ||
-                watch('type') ||
-                company_details?.type
-              }
+              defaultValue={company_details?.type}
               rules={{ required: 'Select company type' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={
-                        companyTypesOptions?.find(
-                          (type) => type?.value === company_details?.type
-                        ) || companyTypesOptions?.[0]
-                      }
+                      defaultValue={company_details?.type}
                       label="Company type"
                       required
                       options={companyTypesOptions?.map((type) => {
@@ -319,22 +306,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="position"
-              defaultValue={
-                companyPositions?.find(
-                  (position) => position?.value === company_details?.position
-                ) ||
-                company_details?.position ||
-                watch('position')
-              }
+              defaultValue={company_details?.position}
               rules={{ required: 'Select your position' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyPositions?.find(
-                        (position) =>
-                          position?.value === company_details?.position
-                      )}
+                      defaultValue={company_details?.position}
                       label="Your position"
                       required
                       options={companyPositions?.map((position) => {
@@ -370,22 +348,16 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Input
                       type="radio"
                       label="Yes"
-                      value={'yes'}
                       checked={watch('articles_of_association') === 'yes'}
-                      onChange={(e) => {
-                        field.onChange(e?.target?.value);
-                      }}
-                      name={field?.name}
+                      {...field}
+                      value={'yes'}
                     />
                     <Input
                       type="radio"
                       label="No"
-                      value={'no'}
                       checked={watch('articles_of_association') === 'no'}
-                      name={field?.name}
-                      onChange={(e) => {
-                        field.onChange(e?.target?.value);
-                      }}
+                      {...field}
+                      value={'no'}
                     />
                     {errors?.articles_of_association && (
                       <p className="text-xs text-red-500">
@@ -417,7 +389,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Button
               value={isLoading ? <Loader /> : 'Continue'}
               primary={!searchCompany?.error}
-              disabled={searchCompany?.error || disableForm}
+              disabled={
+                searchCompany?.error ||
+                disableForm ||
+                Object.keys(errors).length > 0
+              }
               submit
             />
           </menu>

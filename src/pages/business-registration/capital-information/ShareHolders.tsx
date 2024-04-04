@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import {
@@ -93,7 +93,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
   });
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
-  const shareholderTypeRef = useRef();
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -105,7 +104,11 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           shareholders: [
             {
               ...data,
-              attachment: attachmentFile?.name,
+              attachment: {
+                name: attachmentFile?.name,
+                size: attachmentFile?.size,
+                type: attachmentFile?.type,
+              },
               step: 'shareholders',
               no: shareholders?.length - 1,
               id: generateUUID(),
@@ -122,11 +125,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
         error: false,
         data: null,
       });
-      if (shareholderTypeRef?.current) {
-        shareholderTypeRef.current.clearValue();
-        setValue('shareholder_type', null);
-        setValue('document_type', null);
-      }
+      reset();
     }, 1000);
   };
 
@@ -323,14 +322,14 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               return (
                 <label className="flex flex-col gap-1 w-[49%]">
                   <Select
-                    ref={shareholderTypeRef}
                     label="Shareholder type"
-                    defaultValue={personnelTypes?.find(
-                      (person) => person?.value === watch('shareholder_type')
-                    )}
                     options={personnelTypes}
+                    {...field}
                     onChange={(e) => {
-                      field?.onChange(e);
+                      field.onChange(e);
+                      reset({
+                        shareholder_type: e,
+                      });
                     }}
                   />
                   {errors?.shareholder_type && (
@@ -363,6 +362,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         options={options}
                         label="Document Type"
                         required
+                        {...field}
                         onChange={(e) => {
                           field.onChange(e);
                         }}
@@ -395,8 +395,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                             <Input
                               type="radio"
                               label="Yes"
-                              value="yes"
                               checked={watch('rwandan_company') === 'yes'}
+                              {...field}
+                              value="yes"
                               onChange={(e) => {
                                 setSearchMember({
                                   ...searchMember,
@@ -404,18 +405,17 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                                 });
                                 field.onChange(e.target.value);
                               }}
-                              name={field?.name}
                             />
                             <Input
                               type="radio"
                               label="No"
-                              value={'no'}
                               checked={watch('rwandan_company') === 'no'}
+                              {...field}
                               onChange={(e) => {
                                 field.onChange(e.target.value);
-                                setValue('incorporation_country', null);
+                                setValue('incorporation_country', '');
                               }}
-                              name={field?.name}
+                              value={'no'}
                             />
                             {errors?.rwandan_company && (
                               <p className="text-[13px] text-red-500">
@@ -437,7 +437,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                             ? 'Company code is required'
                             : false,
                         validate: (value) => {
-                          if (watch('shareholder_type') === 'person')
+                          if (
+                            watch('shareholder_type') === 'person' ||
+                            watch('rwandan_company') === 'no'
+                          )
                             return true;
                           return (
                             validateInputs(value, 'tin') ||
@@ -785,11 +788,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                             watch('gender') === 'Male'
                           }
                           label="Male"
-                          name={field?.name}
+                          {...field}
                           value={'Male'}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                         <Input
                           type="radio"
@@ -798,11 +798,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                             watch('gender') === 'Female'
                           }
                           label="Female"
+                          {...field}
                           value={'Female'}
-                          name={field?.name}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                       </menu>
                     )}
@@ -826,9 +823,12 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   'Nationality is required',
               }}
               render={({ field }) => {
-                if (watch('document_type') === 'nid') return undefined;
                 return (
-                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <label
+                    className={`${
+                      watch('document_type') === 'nid' ? 'hidden' : 'flex'
+                    } w-[49%] flex-col gap-1 items-start`}
+                  >
                     <Select
                       isSearchable
                       required
@@ -842,9 +842,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                             value: country?.code,
                           };
                         })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.country && (
                       <p className="text-sm text-red-500">
@@ -855,7 +853,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 );
               }}
             />
-
             <Controller
               control={control}
               name="street_name"
@@ -879,7 +876,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   watch('shareholder_type') === 'person' &&
                   'Phone number is required',
               }}
-              defaultValue={userData?.[0]?.phone || searchMember?.data?.phone}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
@@ -887,7 +883,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                       <Input
                         label="Phone number"
                         required
-                        defaultValue={searchMember?.data?.phone}
                         type="tel"
                         {...field}
                       />
@@ -895,10 +890,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -906,9 +897,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                             value: user?.phone,
                           };
                         })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.phone && (
@@ -953,7 +942,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         }}
                       />
                       <ul className="flex flex-col items-center gap-3 w-full">
-                        {(attachmentFile) && (
+                        {attachmentFile && (
                           <Table
                             columns={attachmentColumns}
                             data={[attachmentFile]}
@@ -1066,9 +1055,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                               value: country.code,
                             };
                           })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.incorporation_country && (
@@ -1276,8 +1263,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('share_details'));
-                dispatch(setBusinessActiveTab('capital_information'));
+                console.log(errors);
+                // dispatch(setBusinessActiveStep('share_details'));
+                // dispatch(setBusinessActiveTab('capital_information'));
               }}
             />
             {isAmending && (
