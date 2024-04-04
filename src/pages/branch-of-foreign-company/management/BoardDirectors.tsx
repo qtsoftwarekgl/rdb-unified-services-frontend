@@ -539,7 +539,7 @@ const BoardDirectors = ({
                       />
                     ) : (
                       <Select
-                        label="Phone number bb"
+                        label="Phone number"
                         required
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {

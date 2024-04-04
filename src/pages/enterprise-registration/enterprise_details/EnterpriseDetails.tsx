@@ -125,6 +125,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
         setUserApplications({
           entry_id,
           company_details: {
+            ...company_details,
             ...data,
             step: {
               ...enterprise_registration_active_step,
@@ -234,7 +235,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                             setError("name", {
                               type: "manual",
                               message: "",
-                            })
+                            });
                           } else {
                             setSearchEnterprise({
                               ...searchEnterprise,

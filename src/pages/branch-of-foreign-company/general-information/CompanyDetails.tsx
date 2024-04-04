@@ -64,6 +64,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
         setUserApplications({
           entry_id,
           company_details: {
+            ...company_details,
             name: data?.name,
             category: data?.category,
             type: data?.type,
