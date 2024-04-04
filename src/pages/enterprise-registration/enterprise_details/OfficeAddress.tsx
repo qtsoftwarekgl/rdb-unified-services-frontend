@@ -90,6 +90,8 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
     }, 1000);
   };
 
+  console.log("enterprise_office_address>>>>>>>>>>>>", watch("province"));
+
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -105,6 +107,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                     <Select
                       required
                       label="Province"
+                      defaultValue={enterprise_office_address?.province}
                       options={provicesList?.map((province) => {
                         return {
                           label: province.name,
@@ -134,20 +137,18 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                     <Select
                       required
                       label="District"
-                      options={
-                        watch("province") &&
-                        districtsList
-                          ?.filter(
-                            (district) =>
-                              district?.province_code === watch("province")
-                          )
-                          ?.map((district) => {
-                            return {
-                              label: district.name,
-                              value: district.code,
-                            };
-                          })
-                      }
+                      defaultValue={enterprise_office_address?.district}
+                      options={districtsList
+                        ?.filter(
+                          (district) =>
+                            district?.province_code === watch("province")
+                        )
+                        ?.map((district) => {
+                          return {
+                            label: district.name,
+                            value: district.code,
+                          };
+                        })}
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -173,6 +174,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                     <Select
                       required
                       label="Sector"
+                      defaultValue={enterprise_office_address?.sector}
                       options={
                         watch("district") &&
                         sectorsList
@@ -210,6 +212,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                     <Select
                       required
                       label="Cell"
+                      defaultValue={enterprise_office_address?.cell}
                       options={
                         watch("sector") &&
                         cellsList
@@ -248,6 +251,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                     <Select
                       required
                       label="Village"
+                      defaultValue={enterprise_office_address?.village}
                       options={
                         watch("cell") &&
                         villagesList

@@ -6,7 +6,6 @@ import Input from "../../../components/inputs/Input";
 import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { userData } from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
-import validateInputs from "../../../helpers/validations";
 import Button from "../../../components/inputs/Button";
 import {
   setForeignBusinessActiveStep,
@@ -310,7 +309,6 @@ const SeniorManagement = ({
                                 );
                                 setValue("last_name", userDetails?.last_name);
                                 setValue("gender", userDetails?.gender);
-                                setValue("phone", userDetails?.phone);
                               }
                             }, 700);
                           }}

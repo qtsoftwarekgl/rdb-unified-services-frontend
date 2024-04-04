@@ -222,16 +222,18 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="category"
-              defaultValue={watch("category") || company_details?.category}
+              defaultValue={watch("category")}
               rules={{ required: "Select company category" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyCategories?.find(
-                        (category) =>
-                          category?.value === company_details?.category
-                      )}
+                      defaultValue={
+                        companyCategories?.find(
+                          (category) =>
+                            category?.value === company_details?.category
+                        )?.value
+                      }
                       label="Company category"
                       required
                       options={companyCategories?.map((category) => {
@@ -259,15 +261,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="type"
-              defaultValue={watch("type") || company_details?.type}
+              defaultValue={watch("type")}
               rules={{ required: "Select company type" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyTypes?.find(
-                        (type) => type?.value === company_details?.type
-                      )}
+                      defaultValue={
+                        companyTypes?.find(
+                          (type) => type?.value === company_details?.type
+                        )?.value
+                      }
                       label="Company type"
                       required
                       options={companyTypes?.map((type) => {
@@ -293,16 +297,18 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="position"
-              defaultValue={watch("position") || company_details?.position}
+              defaultValue={watch("position")}
               rules={{ required: "Select your position" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      defaultValue={companyPositions?.find(
-                        (position) =>
-                          position?.value === company_details?.position
-                      )}
+                      defaultValue={
+                        companyPositions?.find(
+                          (position) =>
+                            position?.value === company_details?.position
+                        )?.value
+                      }
                       label="Your position"
                       required
                       options={companyPositions?.map((position) => {

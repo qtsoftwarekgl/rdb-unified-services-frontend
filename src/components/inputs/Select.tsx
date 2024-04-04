@@ -19,7 +19,7 @@ interface Option {
 
 interface SelectProps {
   options?: Option[] | undefined;
-  onChange: ((e: SingleValue<Option> | MultiValue<Option>) => void);
+  onChange: (e: SingleValue<Option> | MultiValue<Option>) => void;
   className?: string;
   disabled?: boolean;
   defaultLabel?: string;
@@ -40,7 +40,7 @@ const Select: FC<SelectProps> = forwardRef(
     {
       options = [],
       onChange,
-      className = '',
+      className = "",
       defaultValue = undefined,
       disabled = false,
       isSearchable = true,
@@ -60,7 +60,7 @@ const Select: FC<SelectProps> = forwardRef(
     > = options?.map((option: Option) => ({
       ...option,
       label: option.text || option.name || option.title || option.label,
-      value: option.value || option.id || '',
+      value: option.value || option.id || "",
       isDisabled: option.disabled,
     }));
 
@@ -70,11 +70,11 @@ const Select: FC<SelectProps> = forwardRef(
       >
         <p
           className={`${
-            label ? 'flex items-center gap-1 text-[14px]' : 'hidden'
+            label ? "flex items-center gap-1 text-[14px]" : "hidden"
           }`}
         >
-          {label}{' '}
-          <span className={`${required ? 'text-red-500' : 'hidden'}`}>*</span>
+          {label}{" "}
+          <span className={`${required ? "text-red-500" : "hidden"}`}>*</span>
         </p>
         <ReactSelect
           onChange={(e: SingleValue<Option> | MultiValue<Option>) => {
@@ -92,7 +92,9 @@ const Select: FC<SelectProps> = forwardRef(
           unstyled={!styled}
           ref={ref}
           options={mappedOptions}
-          defaultValue={options?.find((option) => option.value === String(defaultValue))}
+          defaultValue={mappedOptions?.find(
+            (option) => String(option.value) === String(defaultValue)
+          )}
           className={`${className}`}
         />
       </label>
@@ -100,6 +102,6 @@ const Select: FC<SelectProps> = forwardRef(
   }
 );
 
-Select.displayName = 'Select'
+Select.displayName = "Select";
 
 export default Select;

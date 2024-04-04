@@ -83,17 +83,15 @@ const BoardDirectors = ({
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch("document_type") === "passport") {
-      setValue("country", "");
-      setValue("phone", "");
-      setValue("street_name", "");
-      setValue("first_name", "");
-      setValue("middle_name", "");
-      setValue("last_name", "");
-      setValue("document_no", "");
-      setValue("gender", "");
-      clearErrors();
-    }
+    setValue("country", "");
+    setValue("phone", "");
+    setValue("street_name", "");
+    setValue("first_name", "");
+    setValue("middle_name", "");
+    setValue("last_name", "");
+    setValue("document_no", "");
+    setValue("gender", "");
+    clearErrors();
   }, [setValue, watch("document_type")]);
 
   // HANDLE FORM SUBMIT
@@ -187,6 +185,7 @@ const BoardDirectors = ({
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
                       ref={positionRef}
+                      defaultValue={field?.value}
                       label="Select position"
                       required
                       options={[
@@ -345,7 +344,6 @@ const BoardDirectors = ({
                                 );
                                 setValue("last_name", userDetails?.last_name);
                                 setValue("gender", userDetails?.gender);
-                                setValue("phone", userDetails?.phone);
                               }
                             }, 700);
                           }}
@@ -526,9 +524,8 @@ const BoardDirectors = ({
             <Controller
               name="phone"
               control={control}
-              defaultValue={userData?.[0]?.phone}
               rules={{
-                required: "Phone number is required",
+                required: "Phone number is not required",
               }}
               render={({ field }) => {
                 return (
@@ -542,12 +539,8 @@ const BoardDirectors = ({
                       />
                     ) : (
                       <Select
-                        label="Phone number"
+                        label="Phone number bb"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,

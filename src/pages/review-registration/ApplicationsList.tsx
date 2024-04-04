@@ -1,4 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import Table from "../../components/table/Table";
 import { RootState } from "../../states/store";
@@ -8,20 +7,13 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from "../../states/features/businessRegistrationSlice";
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
-} from "../../states/features/enterpriseRegistrationSlice";
-import {
-  setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
-} from "../../states/features/foreignBranchRegistrationSlice";
+import Button from "../../components/inputs/Button";
 
 type Props = {
   title: string;
   description: string;
   notDataMessage: string;
-  actionIcon: IconDefinition;
+  actionIcon?: IconDefinition;
   handleClickAction: () => void;
   data: Array<object>;
 };
@@ -29,7 +21,6 @@ type Props = {
 const ApplicatinsList = ({
   title,
   description,
-  actionIcon,
   notDataMessage,
   data,
   handleClickAction,
@@ -63,13 +54,14 @@ const ApplicatinsList = ({
   const renderActionCell = ({ row }) => {
     return (
       <menu className="flex items-center gap-2">
-        <FontAwesomeIcon
+        <Button
           onClick={(e) => {
             handleEditClick(e, row);
             handleClickAction();
           }}
-          icon={actionIcon}
-          className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+          value="Review"
+          styled={false}
+          className="cursor-pointer bg-inherit text-primary"
         />
       </menu>
     );

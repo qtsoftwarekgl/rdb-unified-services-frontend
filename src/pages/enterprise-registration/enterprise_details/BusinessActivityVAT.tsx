@@ -88,17 +88,14 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
             <Select
               label="Select sector"
               required
-              defaultValue={{
-                label: businessActivities[0]?.name,
-                value: businessActivities[0]?.id,
-              }}
+              defaultValue={businessActivities[0]?.id}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
                   value: activity.id,
                 };
               })}
-              onChange={(e) => {
+              onChange={() => {
                 setRandomNumber(Math.floor(Math.random() * 10) + 1);
               }}
             />
@@ -317,9 +314,9 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
               </menu>
             )}
           />
-          {errors.business_lines && (
+          {errors?.business_lines && (
             <p className="text-[13px] text-red-500">
-              {String(errors.business_lines.message)}
+              {String(errors.business_lines?.message)}
             </p>
           )}
 

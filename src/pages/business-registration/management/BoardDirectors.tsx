@@ -1,32 +1,32 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { Controller, FieldValues,  useForm } from 'react-hook-form';
-import Select from '../../../components/inputs/Select';
-import Loader from '../../../components/Loader';
-import Input from '../../../components/inputs/Input';
-import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { previewUrl, userData } from '../../../constants/authentication';
-import { countriesList } from '../../../constants/countries';
-import Button from '../../../components/inputs/Button';
+import { FC, useEffect, useRef, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../components/inputs/Select";
+import Loader from "../../../components/Loader";
+import Input from "../../../components/inputs/Input";
+import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { previewUrl, userData } from "../../../constants/authentication";
+import { countriesList } from "../../../constants/countries";
+import Button from "../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from '../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../../components/table/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString, generateUUID } from '../../../helpers/strings';
-import { setUserApplications } from '../../../states/features/userApplicationSlice';
+} from "../../../states/features/businessRegistrationSlice";
+import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Table from "../../../components/table/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { capitalizeString, generateUUID } from "../../../helpers/strings";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
   validNationalID,
-} from '../../../constants/Users';
-import validateInputs from '../../../helpers/validations';
-import { attachmentFileColumns } from '../../../constants/businessRegistration';
-import Modal from '../../../components/Modal';
-import ViewDocument from '../../user-company-details/ViewDocument';
+} from "../../../constants/Users";
+import validateInputs from "../../../helpers/validations";
+import { attachmentFileColumns } from "../../../constants/businessRegistration";
+import Modal from "../../../components/Modal";
+import ViewDocument from "../../user-company-details/ViewDocument";
 
 export interface business_board_of_directors {
   first_name: string;
@@ -73,7 +73,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
     director: false,
     attachment: false,
   });
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -87,20 +87,20 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch('document_type') === 'passport') {
-      setValue('country', '');
-      setValue('phone', '');
-      setValue('street_name', '');
-      setValue('first_name', '');
-      setValue('middle_name', '');
-      setValue('last_name', '');
+    if (watch("document_type") === "passport") {
+      setValue("country", "");
+      setValue("phone", "");
+      setValue("street_name", "");
+      setValue("first_name", "");
+      setValue("middle_name", "");
+      setValue("last_name", "");
     }
-  }, [setValue, watch('document_type')]);
+  }, [setValue, watch("document_type")]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    clearErrors('position_conflict');
-    clearErrors('board_of_directors');
+    clearErrors("position_conflict");
+    clearErrors("board_of_directors");
 
     setIsLoading(true);
     setTimeout(() => {
@@ -108,13 +108,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          active_step: 'senior_management',
-          active_tab: 'management',
+          active_step: "senior_management",
+          active_tab: "management",
           board_of_directors: [
             {
               ...data,
               attachment: attachmentFile?.name,
-              step: 'board_of_directors',
+              step: "board_of_directors",
               id: generateUUID(),
             },
             ...board_of_directors,
@@ -130,8 +130,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       });
       if (positionRef?.current) {
         positionRef.current.clearValue();
-        setValue('position', '');
-        setValue('document_type', '');
+        setValue("position", "");
+        setValue("document_type", "");
       }
     }, 1000);
     return data;
@@ -140,16 +140,16 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Position',
-      accessorKey: 'position',
+      header: "Position",
+      accessorKey: "position",
     },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -163,8 +163,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             <FontAwesomeIcon
               className={`${
                 disableForm
-                  ? 'text-secondary cursor-default'
-                  : 'text-red-600 cursor-pointer'
+                  ? "text-secondary cursor-default"
+                  : "text-red-600 cursor-pointer"
               } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
@@ -189,9 +189,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             >
               <section className="flex flex-col gap-6">
                 <h1 className="font-medium text-center uppercase">
-                  Are you sure you want to delete{' '}
-                  {confirmDeleteModal?.first_name}{' '}
-                  {confirmDeleteModal?.last_name || ''}
+                  Are you sure you want to delete{" "}
+                  {confirmDeleteModal?.first_name}{" "}
+                  {confirmDeleteModal?.last_name || ""}
                 </h1>
                 <menu className="flex items-center justify-between gap-3">
                   <Button
@@ -222,8 +222,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       setConfirmDeleteModal({
                         ...confirmDeleteModal,
                         director: false,
-                        first_name: '',
-                        last_name: '',
+                        first_name: "",
+                        last_name: "",
                       });
                     }}
                   />
@@ -239,8 +239,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const attachmentColumns = [
     ...attachmentFileColumns,
     {
-      header: 'action',
-      accesorKey: 'action',
+      header: "action",
+      accesorKey: "action",
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-4">
@@ -273,10 +273,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               }}
             >
               <section className="flex flex-col gap-6">
-                <h1 className="font-medium uppercase text-center">
+                <h1 className="font-medium text-center uppercase">
                   Are you sure you want to delete {attachmentFile?.name}
                 </h1>
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
                     value="Cancel"
                     onClick={(e) => {
@@ -293,10 +293,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       setAttachmentFile(null);
-                      setValue('attachment', null);
-                      setError('attachment', {
-                        type: 'manual',
-                        message: 'Passport is required',
+                      setValue("attachment", null);
+                      setError("attachment", {
+                        type: "manual",
+                        message: "Passport is required",
                       });
                       setConfirmDeleteModal({
                         ...confirmDeleteModal,
@@ -334,35 +334,35 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       required
                       options={[
                         {
-                          value: 'chairman',
-                          label: 'Chairman',
+                          value: "chairman",
+                          label: "Chairman",
                         },
                         {
-                          value: 'member',
-                          label: 'Member',
+                          value: "member",
+                          label: "Member",
                         },
                       ]}
                       onChange={(e) => {
                         if (
-                          String(e) === 'chairman' &&
+                          String(e) === "chairman" &&
                           board_of_directors?.find(
-                            (director) => director?.position === 'chairman'
+                            (director) => director?.position === "chairman"
                           )
                         ) {
-                          setError('position_conflict', {
-                            type: 'manual',
+                          setError("position_conflict", {
+                            type: "manual",
                             message:
-                              'Cannot have more than one chairpeople in a company.',
+                              "Cannot have more than one chairpeople in a company.",
                           });
-                          setValue('position', '');
-                          setValue('document_type', '');
+                          setValue("position", "");
+                          setValue("document_type", "");
                           return;
                         }
                         if (
                           errors?.position_conflict &&
-                          String(e) !== 'chairman'
+                          String(e) !== "chairman"
                         ) {
-                          clearErrors('position_conflict');
+                          clearErrors("position_conflict");
                         }
                         field.onChange(e);
                       }}
@@ -378,22 +378,22 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             />
             <ul
               className={`${
-                watch('position') ? 'flex' : 'hidden'
+                watch("position") ? "flex" : "hidden"
               } items-start w-full gap-6`}
             >
               <Controller
                 name="document_type"
-                rules={{ required: 'Select document type' }}
+                rules={{ required: "Select document type" }}
                 control={control}
                 render={({ field }) => {
                   const options = [
-                    { value: 'nid', label: 'National ID' },
-                    { label: 'Passport', value: 'passport' },
+                    { value: "nid", label: "National ID" },
+                    { label: "Passport", value: "passport" },
                   ];
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
-                        watch('document_type') !== 'nid' && '!w-[49%]'
+                        watch("document_type") !== "nid" && "!w-[49%]"
                       }`}
                     >
                       <Select
@@ -408,18 +408,18 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   );
                 }}
               />
-              {watch('document_type') === 'nid' && (
+              {watch("document_type") === "nid" && (
                 <Controller
                   control={control}
                   name="document_no"
                   rules={{
-                    required: watch('document_type')
-                      ? 'Document number is required'
+                    required: watch("document_type")
+                      ? "Document number is required"
                       : false,
                     validate: (value) => {
                       return (
-                        validateInputs(value, 'nid') ||
-                        'National ID must be 16 characters long'
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
                       );
                     },
                   }}
@@ -432,9 +432,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError('document_no', {
-                                type: 'manual',
-                                message: 'Document number is required',
+                              setError("document_no", {
+                                type: "manual",
+                                message: "Document number is required",
                               });
                               return;
                             }
@@ -465,14 +465,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                                   loading: false,
                                   error: false,
                                 });
-                                setValue('first_name', userDetails?.first_name);
+                                setValue("first_name", userDetails?.first_name);
                                 setValue(
-                                  'middle_name',
+                                  "middle_name",
                                   userDetails?.middle_name
                                 );
-                                setValue('last_name', userDetails?.last_name);
-                                setValue('gender', userDetails?.data?.gender);
-                                setValue('phone', userDetails?.data?.phone);
+                                setValue("last_name", userDetails?.last_name);
+                                setValue("gender", userDetails?.data?.gender);
                               }
                             }, 700);
                           }}
@@ -481,7 +480,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           placeholder="1 XXXX X XXXXXXX X XX"
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger('document_no');
+                            await trigger("document_no");
                           }}
                         />
                         {searchMember?.loading &&
@@ -510,10 +509,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           </menu>
           <section
             className={`${
-              (watch('document_type') === 'nid' && searchMember?.data) ||
-              watch('document_type') === 'passport'
-                ? 'flex'
-                : 'hidden'
+              (watch("document_type") === "nid" && searchMember?.data) ||
+              watch("document_type") === "passport"
+                ? "flex"
+                : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -521,16 +520,16 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('document_type') === 'passport'
-                    ? 'Passport number is required'
+                  watch("document_type") === "passport"
+                    ? "Passport number is required"
                     : false,
                 validate: (value) => {
-                  if (watch('document_type') !== 'passport') {
+                  if (watch("document_type") !== "passport") {
                     return true;
                   }
                   return (
-                    validateInputs(value, 'passport') ||
-                    'Invalid passport number'
+                    validateInputs(value, "passport") ||
+                    "Invalid passport number"
                   );
                 },
               }}
@@ -538,7 +537,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 return (
                   <label
                     className={`${
-                      watch('document_type') === 'passport' ? 'flex' : 'hidden'
+                      watch("document_type") === "passport" ? "flex" : "hidden"
                     } w-[49%] flex flex-col gap-1 items-start`}
                   >
                     <Input
@@ -560,13 +559,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               name="first_name"
               control={control}
               defaultValue={searchMember?.data?.first_name}
-              rules={{ required: 'First name is required' }}
+              rules={{ required: "First name is required" }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
                       required
-                      readOnly={watch('document_type') === 'nid'}
+                      readOnly={watch("document_type") === "nid"}
                       defaultValue={searchMember?.data?.first_name}
                       placeholder="First name"
                       label="First name"
@@ -589,7 +588,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      readOnly={watch('document_type') === 'nid'}
+                      readOnly={watch("document_type") === "nid"}
                       defaultValue={searchMember?.data?.middle_name}
                       placeholder="Middle name"
                       label="Middle name"
@@ -607,7 +606,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      readOnly={watch('document_type') === 'nid'}
+                      readOnly={watch("document_type") === "nid"}
                       defaultValue={searchMember?.last_name}
                       placeholder="Last name"
                       label="Last name"
@@ -623,8 +622,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('document_type') === 'passport'
-                    ? 'Select gender'
+                  watch("document_type") === "passport"
+                    ? "Select gender"
                     : false,
               }}
               render={({ field }) => {
@@ -633,16 +632,16 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {watch('document_type') === 'nid' ? (
+                    {watch("document_type") === "nid" ? (
                       <p className="px-2 py-1 rounded-md bg-background">
-                        {searchMember?.data?.gender || watch('gender')}
+                        {searchMember?.data?.gender || watch("gender")}
                       </p>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
                         <Input
                           type="radio"
                           label="Male"
-                          value={'Male'}
+                          value={"Male"}
                           name={field?.name}
                           onChange={(e) => {
                             field.onChange(e.target.value);
@@ -652,7 +651,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           type="radio"
                           label="Female"
                           name={field?.name}
-                          value={'Female'}
+                          value={"Female"}
                           onChange={(e) => {
                             field.onChange(e.target.value);
                           }}
@@ -671,14 +670,13 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             <Controller
               name="phone"
               control={control}
-              defaultValue={userData?.[0]?.phone}
               rules={{
-                required: 'Phone number is required',
+                required: "Phone number is required",
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
-                    {watch('document_type') === 'passport' ? (
+                    {watch("document_type") === "passport" ? (
                       <Input
                         label="Phone number"
                         required
@@ -689,10 +687,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -714,11 +708,11 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 );
               }}
             />
-            {watch('document_type') !== 'nid' ? (
+            {watch("document_type") !== "nid" ? (
               <Controller
                 name="country"
                 control={control}
-                rules={{ required: 'Nationality is required' }}
+                rules={{ required: "Nationality is required" }}
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -726,7 +720,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         isSearchable
                         label="Country"
                         options={countriesList
-                          ?.filter((country) => country?.code !== 'RW')
+                          ?.filter((country) => country?.code !== "RW")
                           ?.map((country) => {
                             return {
                               ...country,
@@ -766,7 +760,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             )}
             <menu
               className={`${
-                watch('document_type') === 'passport' ? 'flex' : 'hidden'
+                watch("document_type") === "passport" ? "flex" : "hidden"
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
@@ -777,8 +771,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 name="attachment"
                 rules={{
                   required:
-                    watch('document_type') === 'passport'
-                      ? 'Passport is required'
+                    watch("document_type") === "passport"
+                      ? "Passport is required"
                       : false,
                 }}
                 control={control}
@@ -792,8 +786,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
-                          clearErrors('attachment');
-                          setValue('attachment', e?.target?.files?.[0]);
+                          clearErrors("attachment");
+                          setValue("attachment", e?.target?.files?.[0]);
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
@@ -828,7 +822,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           </article>
           <section className="flex items-center justify-end w-full">
             <Button
-              value={isLoading ? <Loader /> : 'Add board member'}
+              value={isLoading ? <Loader /> : "Add board member"}
               submit
               primary
               disabled={disableForm}
@@ -842,9 +836,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       return {
                         ...member,
                         no: index,
-                        name: `${member?.first_name || ''} ${
-                          member?.middle_name || ''
-                        } ${member?.last_name || ''}`,
+                        name: `${member?.first_name || ""} ${
+                          member?.middle_name || ""
+                        } ${member?.last_name || ""}`,
                         position:
                           member?.position &&
                           capitalizeString(member?.position),
@@ -871,16 +865,16 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('business_activity_vat'));
-                dispatch(setBusinessActiveTab('general_information'));
+                dispatch(setBusinessActiveStep("business_activity_vat"));
+                dispatch(setBusinessActiveTab("general_information"));
               }}
             />
             {isAmending && (
               <Button
-                value={'Complete Amendment'}
+                value={"Complete Amendment"}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
+                  dispatch(setBusinessActiveTab("preview_submission"));
                 }}
               />
             )}
@@ -891,17 +885,17 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 if (board_of_directors?.length <= 0) {
-                  setError('board_of_directors', {
-                    type: 'manual',
-                    message: 'Add at least one board member',
+                  setError("board_of_directors", {
+                    type: "manual",
+                    message: "Add at least one board member",
                   });
                   setTimeout(() => {
-                    clearErrors('board_of_directors');
+                    clearErrors("board_of_directors");
                   }, 4000);
                   return;
                 }
-                dispatch(setBusinessCompletedStep('board_of_directors'));
-                dispatch(setBusinessActiveStep('senior_management'));
+                dispatch(setBusinessCompletedStep("board_of_directors"));
+                dispatch(setBusinessActiveStep("senior_management"));
               }}
             />
           </menu>
