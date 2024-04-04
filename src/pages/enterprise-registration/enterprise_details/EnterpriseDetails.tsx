@@ -168,7 +168,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                 validate: () => {
                   return !searchEnterprise?.success &&
                     !company_details?.name_reserved
-                    ? "Please search for the company name"
+                    ? "Check if company name is available before proceeding"
                     : true;
                 },
               }}

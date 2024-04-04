@@ -120,7 +120,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 validate: () => {
                   return !searchCompany?.success &&
                     !company_details?.name_reserved
-                    ? "Please search for the company name"
+                    ? "Check if company name is available before proceeding"
                     : true;
                 },
               }}

@@ -90,7 +90,22 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
     }, 1000);
   };
 
-  console.log("enterprise_office_address>>>>>>>>>>>>", watch("province"));
+  // RESET COMPANY ADDRESS
+  const resetCompanyLocation = () => {
+    dispatch(
+      setUserApplications({
+        entry_id,
+        company_address: {
+          ...company_address,
+          province: "",
+          district: "",
+          sector: "",
+          cell: "",
+          village: "",
+        },
+      })
+    );
+  };
 
   return (
     <section className="flex flex-col w-full gap-6">
@@ -100,24 +115,56 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
             <Controller
               name="province"
               control={control}
+              defaultValue={enterprise_office_address?.province}
               rules={{ required: "Select province of residence" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    <Select
-                      required
-                      label="Province"
-                      defaultValue={enterprise_office_address?.province}
-                      options={provicesList?.map((province) => {
-                        return {
-                          label: province.name,
-                          value: province.code,
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
+                    {enterprise_office_address?.province ? (
+                      <menu className="flex flex-col gap-2">
+                        <p className="text-[15px]">
+                          Province <span className="text-red-600">*</span>
+                        </p>
+                        <ul className="flex items-center gap-4">
+                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
+                            {
+                              provicesList?.find(
+                                (province) =>
+                                  province.code === enterprise_office_address?.province
+                              )?.name
+                            }
+                          </p>
+                          <Button
+                            styled={false}
+                            value="Change"
+                            className="!text-[12px] hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              resetCompanyLocation();
+                            }}
+                          />
+                        </ul>
+                      </menu>
+                    ) : (
+                      <Select
+                        {...field}
+                        required
+                        label="Province"
+                        options={provicesList?.map((province) => {
+                          return {
+                            label: province.name,
+                            value: province.code,
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setValue("district", "");
+                          setValue("sector", "");
+                          setValue("cell", "");
+                          setValue("village", "");
+                        }}
+                      />
+                    )}
                     {errors?.province && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.province.message)}
@@ -134,25 +181,55 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    <Select
-                      required
-                      label="District"
-                      defaultValue={enterprise_office_address?.district}
-                      options={districtsList
-                        ?.filter(
-                          (district) =>
-                            district?.province_code === watch("province")
-                        )
-                        ?.map((district) => {
-                          return {
-                            label: district.name,
-                            value: district.code,
-                          };
-                        })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
+                    {enterprise_office_address?.district ? (
+                      <menu className="flex flex-col gap-2">
+                        <p className="text-[15px]">
+                          District <span className="text-red-600">*</span>
+                        </p>
+                        <ul className="flex items-center gap-4">
+                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
+                            {
+                              districtsList?.find(
+                                (district) =>
+                                  district?.code === enterprise_office_address?.district
+                              )?.name
+                            }
+                          </p>
+                          <Button
+                            styled={false}
+                            value="Change"
+                            className="!text-[12px] hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              resetCompanyLocation();
+                            }}
+                          />
+                        </ul>
+                      </menu>
+                    ) : (
+                      <Select
+                        required
+                        label="District"
+                        options={districtsList
+                          ?.filter(
+                            (district) =>
+                              district?.province_code === watch("province")
+                          )
+                          ?.map((district) => {
+                            return {
+                              label: district.name,
+                              value: district.code,
+                            };
+                          })}
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setValue("sector", "");
+                          setValue("cell", "");
+                          setValue("village", "");
+                        }}
+                      />
+                    )}
                     {errors?.district && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.district.message)}
@@ -171,13 +248,37 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    <Select
-                      required
-                      label="Sector"
-                      defaultValue={enterprise_office_address?.sector}
-                      options={
-                        watch("district") &&
-                        sectorsList
+                    {enterprise_office_address?.sector ? (
+                      <menu className="flex flex-col gap-2">
+                        <p className="text-[15px]">
+                          Sector <span className="text-red-600">*</span>
+                        </p>
+                        <ul className="flex items-center gap-4">
+                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
+                            {
+                              sectorsList?.find(
+                                (sector) =>
+                                  sector?.code === enterprise_office_address?.sector
+                              )?.name
+                            }
+                          </p>
+                          <Button
+                            styled={false}
+                            value="Change"
+                            className="!text-[12px] hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              resetCompanyLocation();
+                            }}
+                          />
+                        </ul>
+                      </menu>
+                    ) : (
+                      <Select
+                        {...field}
+                        required
+                        label="Sector"
+                        options={sectorsList
                           ?.filter(
                             (sector) =>
                               sector?.district_code === watch("district")
@@ -187,12 +288,14 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                               label: sector.name,
                               value: sector.code,
                             };
-                          })
-                      }
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
+                          })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setValue("cell", "");
+                          setValue("village", "");
+                        }}
+                      />
+                    )}
                     {errors?.sector && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.sector.message)}
@@ -209,13 +312,36 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    <Select
-                      required
-                      label="Cell"
-                      defaultValue={enterprise_office_address?.cell}
-                      options={
-                        watch("sector") &&
-                        cellsList
+                   {enterprise_office_address?.cell ? (
+                      <menu className="flex flex-col gap-2">
+                        <p className="text-[15px]">
+                          Cell <span className="text-red-600">*</span>
+                        </p>
+                        <ul className="flex items-center gap-4">
+                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
+                            {
+                              cellsList?.find(
+                                (cell) => cell?.code === enterprise_office_address?.cell
+                              )?.name
+                            }
+                          </p>
+                          <Button
+                            styled={false}
+                            value="Change"
+                            className="!text-[12px] hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              resetCompanyLocation();
+                            }}
+                          />
+                        </ul>
+                      </menu>
+                    ) : (
+                      <Select
+                        {...field}
+                        required
+                        label="Cell"
+                        options={cellsList
                           ?.filter(
                             (cell) => cell?.sector_code === watch("sector")
                           )
@@ -224,12 +350,13 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                               label: cell.name,
                               value: cell.code,
                             };
-                          })
-                      }
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
+                          })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setValue("village", "");
+                        }}
+                      />
+                    )}
                     {errors?.cell && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.cell.message)}
@@ -248,13 +375,37 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    <Select
-                      required
-                      label="Village"
-                      defaultValue={enterprise_office_address?.village}
-                      options={
-                        watch("cell") &&
-                        villagesList
+                    {enterprise_office_address?.village ? (
+                      <menu className="flex flex-col gap-2">
+                        <p className="text-[15px]">
+                          Village <span className="text-red-600">*</span>
+                        </p>
+                        <ul className="flex items-center gap-4">
+                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
+                            {
+                              villagesList?.find(
+                                (village) =>
+                                  village?.code === enterprise_office_address?.village
+                              )?.name
+                            }
+                          </p>
+                          <Button
+                            styled={false}
+                            value="Change"
+                            className="!text-[12px] hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              resetCompanyLocation();
+                            }}
+                          />
+                        </ul>
+                      </menu>
+                    ) : (
+                      <Select
+                        {...field}
+                        required
+                        label="Village"
+                        options={villagesList
                           ?.filter(
                             (village) => village?.cell_code === watch("cell")
                           )
@@ -263,12 +414,12 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                               label: village.name,
                               value: village.code,
                             };
-                          })
-                      }
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
+                          })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                    )}
                     {errors?.village && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.village.message)}

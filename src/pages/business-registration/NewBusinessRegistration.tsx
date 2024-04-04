@@ -1,21 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Button from '../../components/inputs/Button';
-import UserLayout from '../../containers/UserLayout';
-import { capitalizeString, generateUUID } from '../../helpers/strings';
-import { AppDispatch, RootState } from '../../states/store';
-import Table from '../../components/table/Table';
-import moment from 'moment';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faCircle } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import Button from "../../components/inputs/Button";
+import UserLayout from "../../containers/UserLayout";
+import { capitalizeString, generateUUID } from "../../helpers/strings";
+import { AppDispatch, RootState } from "../../states/store";
+import Table from "../../components/table/Table";
+import moment from "moment";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faCircle } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../states/features/businessRegistrationSlice';
-import SelectReservedName from './SelectReservedName';
-import { setSelectReservedNameModal } from '../../states/features/nameReservationSlice';
-import { deleteUserApplication } from '../../states/features/userApplicationSlice';
-import { UnknownAction } from '@reduxjs/toolkit';
+} from "../../states/features/businessRegistrationSlice";
+import SelectReservedName from "./SelectReservedName";
+import { setSelectReservedNameModal } from "../../states/features/nameReservationSlice";
+import { deleteUserApplication } from "../../states/features/userApplicationSlice";
+import { UnknownAction } from "@reduxjs/toolkit";
 
 interface NewRegistrationProps {
   description: string;
@@ -28,7 +28,7 @@ export const NewRegistration = ({
   description,
   path,
   setActiveStep,
-  setActiveTab
+  setActiveTab,
 }: NewRegistrationProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -46,14 +46,14 @@ export const NewRegistration = ({
   const applicationsInProgress = user_applications
     .filter(
       (app) =>
-        app.status === 'in_progress' &&
-        app?.type === 'business_registration' &&
+        app.status === "in_progress" &&
+        path.split("-")[0].includes(app.type.split("_")[0]) &&
         app?.company_details
     )
     .map((business) => {
       return {
         ...business,
-        submission_date: moment(business?.submission_date).format('DD/MM/YYYY'),
+        submission_date: moment(business?.submission_date).format("DD/MM/YYYY"),
         company_name: business?.company_details?.name,
         status: capitalizeString(business?.status),
         id:
@@ -61,7 +61,7 @@ export const NewRegistration = ({
           business?.entry_id ||
           Math.floor(Math.random() * 9000) + 1000,
         reg_number: `REG-${(
-          business?.entry_id?.split('-')[0] || ''
+          business?.entry_id?.split("-")[0] || ""
         ).toUpperCase()}`,
         service_name: capitalizeString(business?.type),
         path: business?.path,
@@ -102,12 +102,12 @@ export const NewRegistration = ({
   }
 
   const businessRegistrationApplicationColumns = [
-    { header: 'Registration Number', accessorKey: 'reg_number' },
-    { header: 'Company Name', accessorKey: 'company_name' },
-    { header: 'Service Name', accessorKey: 'service_name' },
+    { header: "Registration Number", accessorKey: "reg_number" },
+    { header: "Company Name", accessorKey: "company_name" },
+    { header: "Service Name", accessorKey: "service_name" },
     {
-      header: 'Progress',
-      accessorKey: 'active_tab',
+      header: "Progress",
+      accessorKey: "active_tab",
       cell: ({ row }) => {
         return (
           <p className="text-[14px]">
@@ -116,10 +116,10 @@ export const NewRegistration = ({
         );
       },
     },
-    { header: 'Submission Date', accessorKey: 'submission_date' },
+    { header: "Submission Date", accessorKey: "submission_date" },
     {
-      header: 'Action',
-      accessorKey: 'actions',
+      header: "Action",
+      accessorKey: "actions",
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -127,19 +127,19 @@ export const NewRegistration = ({
 
   const businessRegistrationAttachments = [
     {
-      name: 'Article of association',
+      name: "Article of association",
       required: true,
     },
     {
-      name: 'Resolution',
+      name: "Resolution",
       required: true,
     },
     {
-      name: 'Shareholder attachments',
+      name: "Shareholder attachments",
       required: false,
     },
     {
-      name: 'Others',
+      name: "Others",
       required: false,
     },
   ];
@@ -162,9 +162,9 @@ export const NewRegistration = ({
                   <li key={index} className="flex items-center gap-2 w-fit">
                     <FontAwesomeIcon icon={faCircle} className="w-1 h-1" />
                     <p className="text-[14px] font-normal flex items-center gap-1">
-                      {attachment.name}{' '}
+                      {attachment.name}{" "}
                       <span className="text-[14px]">
-                        {attachment.required ? '(Required)' : '(Optional)'}
+                        {attachment.required ? "(Required)" : "(Optional)"}
                       </span>
                     </p>
                   </li>
