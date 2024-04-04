@@ -514,7 +514,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             </h3>
             {business_application?.board_of_directors?.map(
               (director, index) => {
-                if (director?.attachment) {
+                if (director?.attachment?.name) {
                   return (
                     <p
                       key={index}
@@ -522,7 +522,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     >
                       {director?.first_name || ""} {director?.last_name || ""}:{" "}
                       <span className="font-semibold">
-                        {director?.attachment}
+                        {director?.attachment?.name}
                       </span>
                     </p>
                   );
@@ -535,14 +535,14 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               Senior management
             </h3>
             {business_application?.senior_management?.map((senior, index) => {
-              if (senior?.attachment) {
+              if (senior?.attachment?.name) {
                 return (
                   <p
                     key={index}
                     className="flex items-center justify-between w-full gap-6 font-normal"
                   >
                     {senior?.first_name || ""} {senior?.last_name || ""}:{" "}
-                    <span className="font-semibold">{senior?.attachment}</span>
+                    <span className="font-semibold">{senior?.attachment?.name}</span>
                   </p>
                 );
               }
@@ -551,7 +551,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           <menu className="flex flex-col gap-3">
             <h3 className="font-semibold uppercase text-md">Shareholders</h3>
             {business_application?.shareholders?.map((shareholder, index) => {
-              if (shareholder?.attachment) {
+              if (shareholder?.attachment?.name) {
                 if (shareholder?.shareholder_type === "person") {
                   return (
                     <p
@@ -561,7 +561,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       {shareholder?.first_name || ""}{" "}
                       {shareholder?.last_name || ""}:{" "}
                       <span className="font-semibold">
-                        {shareholder?.attachment}
+                        {shareholder?.attachment?.name}
                       </span>
                     </p>
                   );
@@ -573,7 +573,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     >
                       {shareholder?.company_name || ""}:{" "}
                       <span className="font-semibold">
-                        {shareholder?.attachment}
+                        {shareholder?.attachment?.name}
                       </span>
                     </p>
                   );
@@ -587,7 +587,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             </h3>
             {business_application?.beneficial_owners?.map(
               (beneficial_owner, index) => {
-                if (beneficial_owner?.attachment) {
+                if (beneficial_owner?.attachment?.name) {
                   if (beneficial_owner?.beneficial_type === "person") {
                     return (
                       <p
@@ -597,7 +597,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                         {beneficial_owner?.first_name || ""}{" "}
                         {beneficial_owner?.last_name || ""}:{" "}
                         <span className="font-semibold">
-                          {beneficial_owner?.attachment}
+                          {beneficial_owner?.attachment?.name}
                         </span>
                       </p>
                     );
@@ -609,7 +609,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       >
                         {beneficial_owner?.company_name || ""}:{" "}
                         <span className="font-semibold">
-                          {beneficial_owner?.attachment}
+                          {beneficial_owner?.attachment?.name}
                         </span>
                       </p>
                     );

@@ -5,7 +5,6 @@ import ProgressNavigation from "../../components/business-registration/ProgressN
 import { useLocation, useNavigate } from "react-router-dom";
 import Tab from "../../components/business-registration/Tab";
 import {
-  RegistrationTab,
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from "../../states/features/businessRegistrationSlice";

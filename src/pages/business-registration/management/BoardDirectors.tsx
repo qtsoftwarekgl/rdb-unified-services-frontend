@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Controller, FieldValues,  useForm } from 'react-hook-form';
 import Select from '../../../components/inputs/Select';
 import Loader from '../../../components/Loader';
@@ -82,19 +82,20 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   });
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
-  const positionRef = useRef();
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch('document_type') === 'passport') {
-      setValue('country', '');
-      setValue('phone', '');
-      setValue('street_name', '');
-      setValue('first_name', '');
-      setValue('middle_name', '');
-      setValue('last_name', '');
-    }
+    setValue('country', '');
+    setValue('phone', '');
+    setValue('street_name', '');
+    setValue('first_name', '');
+    setValue('middle_name', '');
+    setValue('last_name', '');
+    setSearchMember({
+      ...searchMember,
+      data: null,
+    });
   }, [setValue, watch('document_type')]);
 
   // HANDLE FORM SUBMIT
@@ -113,7 +114,11 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           board_of_directors: [
             {
               ...data,
-              attachment: attachmentFile?.name,
+              attachment: {
+                name: attachmentFile?.name,
+                size: attachmentFile?.size,
+                type: attachmentFile?.type,
+              },
               step: 'board_of_directors',
               id: generateUUID(),
             },
@@ -128,11 +133,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
         error: false,
         data: null,
       });
-      if (positionRef?.current) {
-        positionRef.current.clearValue();
-        setValue('position', '');
-        setValue('document_type', '');
-      }
+      reset();
     }, 1000);
     return data;
   };
@@ -329,7 +330,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
-                      ref={positionRef}
+                      {...field}
                       label="Select position"
                       required
                       options={[
@@ -400,9 +401,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         options={options}
                         label="Document Type"
                         required
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     </label>
                   );
@@ -642,20 +641,14 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         <Input
                           type="radio"
                           label="Male"
+                          {...field}
                           value={'Male'}
-                          name={field?.name}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                         <Input
                           type="radio"
                           label="Female"
-                          name={field?.name}
+                          {...field}
                           value={'Female'}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                       </menu>
                     )}
@@ -671,7 +664,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             <Controller
               name="phone"
               control={control}
-              defaultValue={userData?.[0]?.phone}
               rules={{
                 required: 'Phone number is required',
               }}
@@ -689,10 +681,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -700,9 +688,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                             value: user?.phone,
                           };
                         })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.phone && (
@@ -734,9 +720,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                               value: country?.code,
                             };
                           })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                       {errors?.country && (
                         <p className="text-sm text-red-500">
@@ -797,12 +781,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
-                        {(attachmentFile || board_of_directors?.attachment) && (
+                        {attachmentFile && (
                           <Table
                             columns={attachmentColumns}
-                            data={[
-                              attachmentFile || board_of_directors?.attachment,
-                            ]}
+                            data={[attachmentFile]}
                             showPagination={false}
                             showFilter={false}
                           />
