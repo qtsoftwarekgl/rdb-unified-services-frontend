@@ -1267,7 +1267,21 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
+
+                  // SET ACTIVE TAB AND STEP
+                  const active_tab = 'preview_submission';
+                  const active_step = 'preview_submission';
+
+                  dispatch(setBusinessCompletedStep('shareholders'));
+                  dispatch(setBusinessActiveStep(active_step));
+                  dispatch(setBusinessActiveTab(active_tab));
+                  dispatch(
+                    setUserApplications({
+                      entry_id,
+                      active_tab,
+                      active_step,
+                    })
+                  );
                 }}
               />
             )}
@@ -1280,13 +1294,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   e.preventDefault();
 
                   // SET ACTIVE TAB AND STEP
-                  let active_tab = 'capital_information';
-                  let active_step = 'capital_details';
-
-                  if (status === 'in_preview') {
-                    active_tab = 'preview_submission';
-                    active_step = 'preview_submission';
-                  }
+                  const active_tab = 'preview_submission';
+                  const active_step = 'preview_submission';
 
                   dispatch(setBusinessCompletedStep('shareholders'));
                   dispatch(setBusinessActiveStep(active_step));

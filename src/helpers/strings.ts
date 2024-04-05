@@ -36,8 +36,8 @@ export const formatCompanyData = (business) => {
     status: capitalizeString(business?.status),
     id:
       business?.id ||
-      business?.entry_id ||
       Math.floor(Math.random() * 9000) + 1000,
+      entry_id: business?.entry_id,
     reg_number: `REG-${(
       business?.entry_id?.split("-")[0] || ""
     ).toUpperCase()}`,

@@ -55,6 +55,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   const [isLoading, setIsLoading] = useState({
     preview: false,
     submit: false,
+    amend: false,
   });
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const { user } = useSelector((state: RootState) => state.user);
@@ -138,16 +139,11 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
-      setIsLoading({
-        preview: false,
-        submit: true,
-      });
-
       // SET ACTIVE TAB AND STEP
       let active_tab = 'capital_information';
       let active_step = 'shareholders';
 
-      if (status === 'in_preview') {
+      if (status === 'in_preview' || isLoading?.amend) {
         active_tab = 'preview_submission';
         active_step = 'preview_submission';
       }
@@ -174,6 +170,12 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
       dispatch(setBusinessCompletedStep('shareholders'));
+
+      setIsLoading({
+        preview: false,
+        submit: false,
+        amend: false,
+      });
     }, 1000);
   };
 
@@ -327,11 +329,16 @@ const ShareDetails: FC<ShareDetailsProps> = ({
           />
           {isAmending && (
             <Button
-              value={'Complete Amendment'}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveTab('preview_submission'));
+              value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+              disabled={disableForm || Object.keys(errors)?.length > 0}
+              onClick={() => {
+                setIsLoading({
+                  preview: false,
+                  amend: true,
+                  submit: false,
+                });
               }}
+              submit
             />
           )}
           {status === 'in_preview' && (
@@ -344,6 +351,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                 setIsLoading({
                   preview: true,
                   submit: false,
+                  amend: false,
                 });
               }}
               submit
@@ -357,6 +365,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               setIsLoading({
                 preview: false,
                 submit: true,
+                amend: false,
               });
               dispatch(
                 setUserApplications({ entry_id, status: 'in_progress' })

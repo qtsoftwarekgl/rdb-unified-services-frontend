@@ -854,18 +854,32 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             />
             {isAmending && (
               <Button
+                submit
                 value={'Complete Amendment'}
+                disabled={Object.keys(errors).length > 0 || disableForm}
                 onClick={(e) => {
                   e.preventDefault();
+                  if (board_of_directors?.length <= 0) {
+                    setError('board_of_directors', {
+                      type: 'manual',
+                      message: 'Add at least one board member',
+                    });
+                    setTimeout(() => {
+                      clearErrors('board_of_directors');
+                    }, 4000);
+                    return;
+                  }
+                  dispatch(setBusinessCompletedStep('board_of_directors'));
                   dispatch(setBusinessActiveTab('preview_submission'));
+                  dispatch(setBusinessActiveStep('preview_submission'));
                 }}
               />
-            )}
+            )} 
             {status === 'in_preview' && (
               <Button
                 value="Save & Complete Preview"
                 primary
-                disabled={disableForm}
+                disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
                   e.preventDefault();
                   if (board_of_directors?.length <= 0) {
@@ -887,7 +901,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             <Button
               value="Save & Continue"
               primary
-              disabled={disableForm}
+              disabled={disableForm || Object.keys(errors).length > 0}
               onClick={(e) => {
                 e.preventDefault();
                 if (board_of_directors?.length <= 0) {
@@ -900,7 +914,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   }, 4000);
                   return;
                 }
-                dispatch(setUserApplications({ entry_id, status: 'in_progress' }));
+                dispatch(
+                  setUserApplications({ entry_id, status: 'in_progress' })
+                );
                 dispatch(setBusinessCompletedStep('board_of_directors'));
                 dispatch(setBusinessActiveTab('management'));
                 dispatch(setBusinessActiveStep('senior_management'));

@@ -48,6 +48,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false
   });
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
@@ -66,11 +67,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -87,7 +83,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       let active_tab = 'capital_information';
       let active_step = 'share_details';
 
-      if (status === 'in_preview') {
+      if (status === 'in_preview' || isLoading?.amend) {
         active_tab = 'preview_submission';
         active_step = 'preview_submission';
       }
@@ -95,6 +91,13 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       dispatch(setBusinessCompletedStep('employment_info'));
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
+
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+        amend: false,
+      });
     }, 1000);
   };
 
@@ -187,7 +190,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               name="employees_no"
               defaultValue={employment_info?.employees_no}
               rules={{
-                required: 'Number of employees is required',
+                required:
+                  watch('has_employees') === 'yes'
+                    ? 'Number of employees is required'
+                    : false,
                 validate: (value) => {
                   if (watch('has_employees') === 'yes') {
                     if (!value) return 'Number of employees is required';
@@ -255,11 +261,16 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
             />
             {isAmending && (
               <Button
-                value={'Complete Amendment'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
+                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                onClick={() => {
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    submit: false,
+                    preview: false,
+                  });
                 }}
+                submit
               />
             )}
             {status === 'in_preview' && (
@@ -272,6 +283,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                     ...isLoading,
                     preview: true,
                     submit: false,
+                    amend: false,
                   });
                 }}
                 submit
@@ -286,8 +298,11 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                   ...isLoading,
                   submit: true,
                   preview: false,
+                  amend: false,
                 });
-                dispatch(setUserApplications({ entry_id, status: 'in_progress' }));
+                dispatch(
+                  setUserApplications({ entry_id, status: 'in_progress' })
+                );
               }}
               submit
               primary
