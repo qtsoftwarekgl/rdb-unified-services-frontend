@@ -23,9 +23,15 @@ import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface BusinessActivityProps {
   entry_id: string | null;
+  enterprise_business_lines: any;
+  status?: string;
 }
 
-const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
+const BusinessActivity = ({
+  entry_id,
+  enterprise_business_lines,
+  status,
+}: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -36,7 +42,10 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { enterprise_registration_active_step } = useSelector(
     (state: RootState) => state.enterpriseRegistration
@@ -45,17 +54,13 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
 
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-
-  const enterprise_business_lines =
-    user_applications.find((app) => app.entry_id === entry_id)?.business_lines
-      ?.enterprise_business_lines || [];
-
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -67,13 +72,21 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
         })
       );
 
+      if (status === "in_preview") {
+        dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
+      } else {
+        // SET THE NEXT STEP AS ACTIVE
+        dispatch(setEnterpriseActiveStep("office_address"));
+      }
+
       // SET CURRENT TAB AS COMPLETED
       dispatch(setEnterpriseCompletedStep("business_activity_vat"));
 
-      // SET THE NEXT STEP AS ACTIVE
-      dispatch(setEnterpriseActiveStep("office_address"));
-
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
     }, 1000);
   };
 
@@ -341,8 +354,18 @@ const BusinessActivity = ({ entry_id }: BusinessActivityProps) => {
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
+                submit
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               disabled={isFormDisabled}
               primary
               submit

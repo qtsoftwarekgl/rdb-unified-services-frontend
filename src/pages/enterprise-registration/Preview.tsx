@@ -46,6 +46,7 @@ const Preview = ({ entry_id }: Props) => {
   const handleEditButton = (step: Step) => {
     dispatch(setEnterpriseActiveTab(step.tab_name));
     dispatch(setEnterpriseActiveStep(step.name));
+    dispatch(setUserApplications({ entry_id, status: "in_preview" }));
   };
 
   const handleSubmit = () => {

@@ -20,6 +20,7 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 
 type AttachmentsProps = {
   entry_id: string | null;
+  enterprise_attachments: any;
 };
 
 type Attachment = {
@@ -27,7 +28,10 @@ type Attachment = {
   file: File | null;
 };
 
-const Attachments = ({ entry_id }: AttachmentsProps) => {
+const Attachments = ({
+  entry_id,
+  enterprise_attachments,
+}: AttachmentsProps) => {
   const {
     handleSubmit,
     control,
@@ -49,15 +53,7 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
 
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
-
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-  const enterprise_attachments = user_applications?.find(
-    (app) => app.entry_id === entry_id
-  )?.enterprise_attachments?.fileNames;
 
   const dispatch = useDispatch();
 
@@ -191,19 +187,8 @@ const Attachments = ({ entry_id }: AttachmentsProps) => {
                 dispatch(setEnterpriseActiveStep("office_address"));
               }}
             />
-            {isAmending && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setEnterpriseActiveTab("enterprise_preview_submission")
-                  );
-                }}
-              />
-            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading ? <Loader /> : "Save & Continue"}
               disabled={isFormDisabled}
               primary
               submit

@@ -30,11 +30,13 @@ import ViewDocument from "../../user-company-details/ViewDocument";
 interface BoardDirectorsProps {
   entry_id: string | null;
   foreign_board_of_directors: any;
+  status?: string;
 }
 
 const BoardDirectors = ({
   entry_id,
   foreign_board_of_directors,
+  status,
 }: BoardDirectorsProps) => {
   // REACT HOOK FORM
   const {
@@ -45,6 +47,7 @@ const BoardDirectors = ({
     setValue,
     clearErrors,
     reset,
+    trigger,
     formState: { isSubmitSuccessful, errors },
   } = useForm();
 
@@ -58,6 +61,7 @@ const BoardDirectors = ({
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState(false);
+
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
@@ -100,7 +104,6 @@ const BoardDirectors = ({
     clearErrors("position_conflict");
     clearErrors("board_of_directors");
     setTimeout(() => {
-      setIsLoading(false);
       dispatch(
         setUserApplications({
           entry_id,
@@ -114,7 +117,7 @@ const BoardDirectors = ({
           ],
         })
       );
-
+      setIsLoading(false);
       setValue("attachment", null);
       setSearchMember({
         loading: false,
@@ -125,7 +128,7 @@ const BoardDirectors = ({
     }, 1000);
     return data;
   };
-  console.log("BoardDirectors -> foreign_board_of_directors", errors);
+
   // TABLE COLUMNS
   const columns = [
     {
@@ -169,7 +172,10 @@ const BoardDirectors = ({
             <h3 className="font-medium uppercase text-md">Add members</h3>
             <Controller
               name="position"
-              rules={{ required: "Select member's position" }}
+              rules={{
+                required:
+                  status !== "in_preview" ? "Select member's position" : false,
+              }}
               control={control}
               render={({ field }) => {
                 return (
@@ -272,14 +278,9 @@ const BoardDirectors = ({
                         <Input
                           required
                           suffixIcon={faSearch}
-                          onChange={(e) => {
-                            e.preventDefault();
-                            field.onChange(e.target.value);
-                            setSearchMember({
-                              ...searchMember,
-                              loading: false,
-                              error: false,
-                            });
+                          onChange={async (e) => {
+                            field.onChange(e);
+                            await trigger("document_no");
                           }}
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
@@ -717,6 +718,35 @@ const BoardDirectors = ({
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={"Save & Complete Preview"}
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (foreign_board_of_directors?.length <= 0) {
+                    setError("board_of_directors", {
+                      type: "manual",
+                      message: "Add at least one board member",
+                    });
+                    setTimeout(() => {
+                      clearErrors("board_of_directors");
+                    }, 4000);
+                    return;
+                  }
+                  dispatch(
+                    setForeignBusinessCompletedStep(
+                      "foreign_board_of_directors"
+                    )
+                  );
+
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
               value="Save & Continue"
               primary
@@ -733,6 +763,9 @@ const BoardDirectors = ({
                   }, 4000);
                   return;
                 }
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
                 dispatch(
                   setForeignBusinessCompletedStep("foreign_board_of_directors")
                 );

@@ -25,11 +25,13 @@ import { RDBAdminEmailPattern } from "../../../constants/Users";
 interface BusinessActivityProps {
   entry_id: string | null;
   foreign_company_activities: any;
+  status?: string;
 }
 
 const BusinessActivity = ({
   entry_id,
   foreign_company_activities,
+  status,
 }: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
@@ -43,7 +45,10 @@ const BusinessActivity = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const [randomNumber, setRandomNumber] = useState<number>(5);
 
   const { user } = useSelector((state: RootState) => state.user);
@@ -52,7 +57,11 @@ const BusinessActivity = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
       // UPDATE COMPANY ACTIVITIES
       dispatch(
@@ -67,18 +76,26 @@ const BusinessActivity = ({
         })
       );
 
+      if (status === "in_preview")
+        dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
+      else {
+        // SET CURRENT TAB AS COMPLETED
+        dispatch(setForeignBusinessActiveTab("general_information"));
+
+        // SET THE NEXT TAB AS ACTIVE
+        dispatch(setForeignBusinessActiveTab("foreign_management"));
+      }
+
       // SET CURRENT STEP AS COMPLETED
       dispatch(
         setForeignBusinessCompletedStep("foreign_business_activity_vat")
       );
 
-      // SET CURRENT TAB AS COMPLETED
-      dispatch(setForeignBusinessActiveTab("general_information"));
-
-      // SET THE NEXT TAB AS ACTIVE
-      dispatch(setForeignBusinessActiveTab("foreign_management"));
-
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
     }, 1000);
   };
 
@@ -101,7 +118,6 @@ const BusinessActivity = ({
             <Select
               label="Select sector"
               required
-              defaultValue={businessActivities[0]?.id}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
@@ -353,11 +369,11 @@ const BusinessActivity = ({
                         <span className="text-red-600">*</span>
                       </p>
                       <menu className="flex items-center w-full gap-6">
-                      <Input
+                        <Input
                           type="radio"
                           label="Yes"
-                          checked={watch('vat') === 'yes'}
-                          value={'yes'}
+                          checked={watch("vat") === "yes"}
+                          value={"yes"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
                           }}
@@ -366,8 +382,8 @@ const BusinessActivity = ({
                         <Input
                           type="radio"
                           label="No"
-                          checked={watch('vat') === 'no'}
-                          value={'no'}
+                          checked={watch("vat") === "no"}
+                          value={"no"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
                           }}
@@ -445,9 +461,29 @@ const BusinessActivity = ({
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
+                onClick={() => {
+                  dispatch(
+                    setUserApplications({ entry_id, status: "in_preview" })
+                  );
+                }}
+                submit
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary
+              onClick={() => {
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               submit
             />
           </menu>

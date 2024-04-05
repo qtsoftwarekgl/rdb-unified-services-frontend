@@ -23,9 +23,15 @@ import { villagesList } from "../../../constants/villages";
 
 interface OfficeAddressProps {
   entry_id: string | null;
+  enterprise_office_address: any;
+  status?: string;
 }
 
-const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
+const OfficeAddress = ({
+  entry_id,
+  enterprise_office_address,
+  status,
+}: OfficeAddressProps) => {
   const {
     control,
     handleSubmit,
@@ -39,17 +45,13 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
   const { enterprise_registration_active_step } = useSelector(
     (state: RootState) => state?.enterpriseRegistration
   );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const { user_applications } = useSelector(
-    (state: RootState) => state?.userApplication
-  );
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
-  const enterprise_office_address =
-    user_applications?.find((app) => app?.entry_id === entry_id)
-      ?.office_address || null;
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -69,7 +71,11 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -83,10 +89,18 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
 
       dispatch(setEnterpriseCompletedStep("office_address"));
       dispatch(setEnterpriseCompletedTab("general_information"));
+      if (status === "in_preview") {
+        dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
+      } else {
+        dispatch(setEnterpriseActiveTab("attachments"));
+        dispatch(setEnterpriseActiveStep("attachments"));
+      }
 
-      dispatch(setEnterpriseActiveTab("attachments"));
-      dispatch(setEnterpriseActiveStep("attachments"));
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
     }, 1000);
   };
 
@@ -130,7 +144,8 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                             {
                               provicesList?.find(
                                 (province) =>
-                                  province.code === enterprise_office_address?.province
+                                  province.code ===
+                                  enterprise_office_address?.province
                               )?.name
                             }
                           </p>
@@ -191,7 +206,8 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                             {
                               districtsList?.find(
                                 (district) =>
-                                  district?.code === enterprise_office_address?.district
+                                  district?.code ===
+                                  enterprise_office_address?.district
                               )?.name
                             }
                           </p>
@@ -258,7 +274,8 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                             {
                               sectorsList?.find(
                                 (sector) =>
-                                  sector?.code === enterprise_office_address?.sector
+                                  sector?.code ===
+                                  enterprise_office_address?.sector
                               )?.name
                             }
                           </p>
@@ -312,7 +329,7 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                   {enterprise_office_address?.cell ? (
+                    {enterprise_office_address?.cell ? (
                       <menu className="flex flex-col gap-2">
                         <p className="text-[15px]">
                           Cell <span className="text-red-600">*</span>
@@ -321,7 +338,8 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                           <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
                             {
                               cellsList?.find(
-                                (cell) => cell?.code === enterprise_office_address?.cell
+                                (cell) =>
+                                  cell?.code === enterprise_office_address?.cell
                               )?.name
                             }
                           </p>
@@ -385,7 +403,8 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                             {
                               villagesList?.find(
                                 (village) =>
-                                  village?.code === enterprise_office_address?.village
+                                  village?.code ===
+                                  enterprise_office_address?.village
                               )?.name
                             }
                           </p>
@@ -583,8 +602,18 @@ const OfficeAddress = ({ entry_id }: OfficeAddressProps) => {
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
+                submit
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               disabled={isFormDisabled}
               primary
               submit

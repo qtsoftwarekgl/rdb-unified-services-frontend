@@ -24,7 +24,7 @@ const Profile = () => {
 
           <div className="flex flex-col justify-center">
             <h1 className="text-xl font-semibold text-secondary">
-              {user?.first_name || "Sandra"}
+              {user?.first_name || "Nishimwe"}
             </h1>
             <p className="text-lg font-light text-gray-500">
               {user?.role || user?.email.includes("verifier") ?  "Verifier" : user?.email.includes("approver") ? "Approver" : "Admin"}

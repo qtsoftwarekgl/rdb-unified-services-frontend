@@ -27,7 +27,7 @@ const UserProfile = () => {
 
             <div className="flex flex-col justify-center">
               <h1 className="text-xl font-semibold text-secondary">
-                Sandra Isheja
+                Nishimwe Christella
               </h1>
               <p className="text-base font-light text-gray-500">
                 {user?.email}

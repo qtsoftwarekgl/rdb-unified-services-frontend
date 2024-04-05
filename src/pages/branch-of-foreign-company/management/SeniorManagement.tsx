@@ -31,11 +31,13 @@ import validateInputs from "../../../helpers/validations";
 interface SeniorManagementProps {
   entry_id: string | null;
   foreign_senior_management: any;
+  status?: string;
 }
 
 const SeniorManagement = ({
   entry_id,
   foreign_senior_management,
+  status,
 }: SeniorManagementProps) => {
   // REACT HOOK FORM
   const {
@@ -691,8 +693,34 @@ const SeniorManagement = ({
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value="Save & Complete Preview"
+                primary
+                disabled={isAmending}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!foreign_senior_management?.length) {
+                    setError("board_of_directors", {
+                      type: "manual",
+                      message: "Add at least one board member",
+                    });
+                    setTimeout(() => {
+                      clearErrors("board_of_directors");
+                    }, 4000);
+                    return;
+                  }
+                  dispatch(
+                    setForeignBusinessCompletedStep("foreign_senior_management")
+                  );
+                  dispatch(
+                    setForeignBusinessActiveTab("foreign_preview_submission")
+                  );
+                }}
+              />
+            )}
             <Button
-              value="Continue"
+              value="Save & Continue"
               primary
               onClick={(e) => {
                 e.preventDefault();
@@ -706,6 +734,9 @@ const SeniorManagement = ({
                   }, 5000);
                   return;
                 }
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
                 dispatch(
                   setForeignBusinessCompletedStep("foreign_senior_management")
                 );
