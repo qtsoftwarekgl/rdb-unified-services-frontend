@@ -66,7 +66,6 @@ const BoardDirectors = ({
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
-  const positionRef = useRef();
 
   // CLEAR FORM
   useEffect(() => {
@@ -89,9 +88,10 @@ const BoardDirectors = ({
     setValue("first_name", "");
     setValue("middle_name", "");
     setValue("last_name", "");
-    setValue("document_no", "");
-    setValue("gender", "");
-    clearErrors();
+    setSearchMember({
+      ...searchMember,
+      data: null,
+    });
   }, [setValue, watch("document_type")]);
 
   // HANDLE FORM SUBMIT
@@ -116,25 +116,16 @@ const BoardDirectors = ({
       );
 
       setValue("attachment", null);
-      reset();
-      setValue("document_type", "");
-      setValue("position", "");
-      setValue("country", "");
-      setValue("phone", "");
-      if (positionRef?.current) {
-        positionRef.current.clearValue();
-        setValue("position", "");
-        setValue("document_type", "");
-      }
       setSearchMember({
         loading: false,
         error: false,
         data: null,
       });
+      reset();
     }, 1000);
     return data;
   };
-
+  console.log("BoardDirectors -> foreign_board_of_directors", errors);
   // TABLE COLUMNS
   const columns = [
     {
@@ -184,8 +175,7 @@ const BoardDirectors = ({
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
-                      ref={positionRef}
-                      defaultValue={field?.value}
+                      {...field}
                       label="Select position"
                       required
                       options={[
@@ -210,8 +200,6 @@ const BoardDirectors = ({
                             message:
                               "Cannot have more than one chairpeople in a company.",
                           });
-                          setValue("position", "");
-                          setValue("document_type", "");
                           return;
                         }
                         if (
@@ -220,6 +208,7 @@ const BoardDirectors = ({
                         ) {
                           clearErrors("position_conflict");
                         }
+                        setValue("document_type", "");
                         field.onChange(e);
                       }}
                     />
@@ -256,9 +245,7 @@ const BoardDirectors = ({
                         options={options}
                         label="Document Type"
                         required
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     </label>
                   );
@@ -272,6 +259,12 @@ const BoardDirectors = ({
                     required: watch("document_type")
                       ? "Document number is required"
                       : false,
+                    validate: (value) => {
+                      return (
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
+                      );
+                    },
                   }}
                   render={({ field }) => {
                     return (
@@ -287,20 +280,6 @@ const BoardDirectors = ({
                               loading: false,
                               error: false,
                             });
-                            if (
-                              e.target.value.length > 16 ||
-                              e.target.value.length < 16
-                            ) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "Invalid document number",
-                              });
-                            } else if (e.target.value.length === 16) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "",
-                              });
-                            }
                           }}
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
@@ -525,7 +504,11 @@ const BoardDirectors = ({
               name="phone"
               control={control}
               rules={{
-                required: "Phone number is not required",
+                required: watch("phone") ? "Phone number is required" : false,
+                pattern: {
+                  value: /^(?:[0-9] ?){6,14}[0-9]$/,
+                  message: "Invalid phone number",
+                },
               }}
               render={({ field }) => {
                 return (
@@ -548,9 +531,7 @@ const BoardDirectors = ({
                             value: user?.phone,
                           };
                         })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.phone && (

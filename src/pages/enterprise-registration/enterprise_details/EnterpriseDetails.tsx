@@ -80,6 +80,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
     formState: { errors },
     setValue,
     setError,
+    trigger,
     watch,
   } = useForm();
 
@@ -352,13 +353,15 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                   watch("id_no") || company_details?.id_no || userDetails?.id_no
                 }
                 rules={{
-                  required: "Document number is required",
-                  // validate: (value) => {
-                  //   if (usedIds?.includes(value)) {
-                  //     return "ID already used. Please use another ID";
-                  //   }
-                  //   return true;
-                  // },
+                  required: watch("document_type")
+                    ? "Document number is required"
+                    : false,
+                  validate: (value) => {
+                    return (
+                      validateInputs(value, "nid") ||
+                      "National ID must be 16 characters long"
+                    );
+                  },
                 }}
                 render={({ field }) => (
                   <label className="flex flex-col items-start w-1/2 gap-2">
@@ -373,23 +376,9 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                       }
                       suffixIconPrimary
                       suffixIcon={isLoading ? faEllipsis : faSearch}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        field.onChange(e.target.value);
-                        if (
-                          e.target.value.length > 16 ||
-                          e.target.value.length < 16
-                        ) {
-                          setError("id_no", {
-                            type: "manual",
-                            message: "Invalid document number",
-                          });
-                          return;
-                        }
-                        setError("id_no", {
-                          type: "manual",
-                          message: "",
-                        });
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger("id_no");
                       }}
                       suffixIconHandler={(e) => {
                         e.preventDefault();

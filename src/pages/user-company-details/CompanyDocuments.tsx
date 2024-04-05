@@ -46,7 +46,7 @@ const CompanyDocuments = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                setDocumentToView(row?.original?.documentUrl);
+                setDocumentToView(row?.original?.document_url);
               }}
               icon={faEye}
               className="text-primary"
@@ -54,7 +54,7 @@ const CompanyDocuments = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                window.open(row?.original?.documentUrl, "_blank");
+                window.open(row?.original?.document_url, "_blank");
               }}
               icon={faDownload}
               className="text-white bg-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full "

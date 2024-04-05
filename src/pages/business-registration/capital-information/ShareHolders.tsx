@@ -181,13 +181,13 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               }}
             >
               <section className="flex flex-col gap-6">
-                <h1 className="font-medium uppercase text-center">
+                <h1 className="font-medium text-center uppercase">
                   Are you sure you want to delete{' '}
                   {confirmDeleteModal?.first_name ||
                     confirmDeleteModal?.company_name}{' '}
                   {confirmDeleteModal?.last_name || ''}
                 </h1>
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
                     value="Cancel"
                     onClick={(e) => {
@@ -267,10 +267,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               }}
             >
               <section className="flex flex-col gap-6">
-                <h1 className="font-medium uppercase text-center">
+                <h1 className="font-medium text-center uppercase">
                   Are you sure you want to delete {attachmentFile?.name}
                 </h1>
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
                     value="Cancel"
                     onClick={(e) => {
@@ -379,7 +379,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             )}
             {watch('shareholder_type') &&
               watch('shareholder_type') !== 'person' && (
-                <menu className="flex flex-col gap-6 w-full">
+                <menu className="flex flex-col w-full gap-6">
                   <Controller
                     control={control}
                     name="rwandan_company"
@@ -941,7 +941,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                           setValue('attachment', e?.target?.files?.[0]);
                         }}
                       />
-                      <ul className="flex flex-col items-center gap-3 w-full">
+                      <ul className="flex flex-col items-center w-full gap-3">
                         {attachmentFile && (
                           <Table
                             columns={attachmentColumns}
@@ -1263,7 +1263,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                console.log(errors);
                 // dispatch(setBusinessActiveStep('share_details'));
                 // dispatch(setBusinessActiveTab('capital_information'));
               }}

@@ -5,7 +5,6 @@ import { RootState } from '../../states/store';
 const LandingPage = () => {
   const { isAuthenticated } = useSelector((state: RootState) => state.user);
 
-  console.log(isAuthenticated)
 
   if (isAuthenticated) {
     return <Navigate to="/services" />;
