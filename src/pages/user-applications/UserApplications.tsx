@@ -30,12 +30,7 @@ const UserApplications = () => {
 
   const registeredBusinesses = user_applications
     .map(formatCompanyData)
-    .sort(
-      (a, b) =>
-        new Date(b?.submissionDate).getTime() -
-        new Date(a?.submissionDate).getTime()
-    );
-
+    .reverse();
 
   const colors = (status: string) => {
     const colorMap = {
@@ -144,7 +139,6 @@ const UserApplications = () => {
         {user_applications?.length > 0 ? (
           <Table
             showFilter={false}
-            showPagination={false}
             columns={columns}
             data={registeredBusinesses}
             className="bg-white rounded-2xl"

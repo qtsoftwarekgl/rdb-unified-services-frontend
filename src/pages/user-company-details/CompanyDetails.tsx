@@ -17,6 +17,11 @@ import { countriesList } from "../../constants/countries";
 import Button from "../../components/inputs/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward } from "@fortawesome/free-solid-svg-icons";
+import { provicesList } from "../../constants/provinces";
+import { districtsList } from "../../constants/districts";
+import { sectorsList } from "../../constants/sectors";
+import { cellsList } from "../../constants/cells";
+import { villagesList } from "../../constants/villages";
 
 const CompanyDetails = () => {
   const { id } = useParams();
@@ -201,7 +206,23 @@ const CompanyDetails = () => {
                           {capitalizeString(key)}:
                         </span>{" "}
                         <span className="font-normal">
-                          {String(value ?? "")}
+                          {String(
+                            provicesList.find(
+                              (province) => province.code === value
+                            )?.name ||
+                              districtsList.find(
+                                (district) => district.code === value
+                              )?.name ||
+                              sectorsList.find(
+                                (sector) => sector.code === value
+                              )?.name ||
+                              cellsList.find((cell) => cell.code === value)
+                                ?.name ||
+                              villagesList.find(
+                                (village) => village.code === value
+                              )?.name ||
+                              value
+                          ) ?? ""}
                         </span>
                       </p>
                     );

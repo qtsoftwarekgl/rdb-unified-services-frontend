@@ -26,6 +26,7 @@ import {
 } from "../../../constants/Users";
 import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
 import ViewDocument from "../../user-company-details/ViewDocument";
+import validateInputs from "../../../helpers/validations";
 
 interface SeniorManagementProps {
   entry_id: string | null;
@@ -45,6 +46,7 @@ const SeniorManagement = ({
     setValue,
     clearErrors,
     reset,
+    trigger,
     formState: { errors, isSubmitSuccessful },
   } = useForm();
 
@@ -96,7 +98,15 @@ const SeniorManagement = ({
         setUserApplications({
           entry_id,
           foreign_senior_management: [
-            { ...data, step: "foreign_senior_management" },
+            {
+              ...data,
+              attachment: {
+                name: attachmentFile?.name,
+                size: attachmentFile?.size,
+                type: attachmentFile?.type,
+              },
+              step: "foreign_senior_management",
+            },
             ...foreign_senior_management,
           ],
         })
@@ -222,9 +232,7 @@ const SeniorManagement = ({
                         options={options}
                         label="Document Type"
                         required
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     </label>
                   );
@@ -238,6 +246,12 @@ const SeniorManagement = ({
                     required: watch("document_type")
                       ? "Document number is required"
                       : false,
+                    validate: (value) => {
+                      return (
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
+                      );
+                    },
                   }}
                   render={({ field }) => {
                     return (
@@ -245,29 +259,6 @@ const SeniorManagement = ({
                         <Input
                           required
                           suffixIcon={faSearch}
-                          onChange={(e) => {
-                            e.preventDefault();
-                            field.onChange(e.target.value);
-                            setSearchMember({
-                              ...searchMember,
-                              loading: false,
-                              error: false,
-                            });
-                            if (
-                              e.target.value.length > 16 ||
-                              e.target.value.length < 16
-                            ) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "Invalid document number",
-                              });
-                            } else if (e.target.value.length === 16) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "",
-                              });
-                            }
-                          }}
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
@@ -288,7 +279,10 @@ const SeniorManagement = ({
                                   ? Math.floor(Math.random() * 10)
                                   : Math.floor(Math.random() * 11) + 11;
                               const userDetails = userData[index];
-                              if (!userDetails) {
+
+                              if (
+                                String(field?.value) !== String(validNationalID)
+                              ) {
                                 setSearchMember({
                                   ...searchMember,
                                   data: null,
@@ -308,13 +302,17 @@ const SeniorManagement = ({
                                   userDetails?.middle_name
                                 );
                                 setValue("last_name", userDetails?.last_name);
-                                setValue("gender", userDetails?.gender);
+                                setValue("gender", userDetails?.data?.gender);
                               }
                             }, 700);
                           }}
                           label="ID Document No"
                           suffixIconPrimary
                           placeholder="1 XXXX X XXXXXXX X XX"
+                          onChange={async (e) => {
+                            field.onChange(e);
+                            await trigger("document_no");
+                          }}
                         />
                         {searchMember?.loading && (
                           <span className="flex items-center gap-[2px] text-[13px]">
@@ -442,12 +440,13 @@ const SeniorManagement = ({
             <Controller
               control={control}
               name="gender"
-              defaultValue={
-                watch("gender") ||
-                searchMember?.data?.gender ||
-                foreign_senior_management?.gender
-              }
-              rules={{ required: "Gender is required" }}
+              defaultValue={watch("gender") || searchMember?.data?.gender}
+              rules={{
+                required:
+                  watch("document_type") === "passport"
+                    ? "Select gender"
+                    : false,
+              }}
               render={({ field }) => {
                 return (
                   <label className="flex items-center w-full gap-2 py-4">
@@ -462,8 +461,18 @@ const SeniorManagement = ({
                       </menu>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
-                        <Input type="radio" label="Male" {...field} />
-                        <Input type="radio" label="Female" {...field} />
+                        <Input
+                          type="radio"
+                          label="Male"
+                          {...field}
+                          value={"Male"}
+                        />
+                        <Input
+                          type="radio"
+                          label="Female"
+                          {...field}
+                          value={"Female"}
+                        />
                       </menu>
                     )}
                     {errors?.gender && (
@@ -507,9 +516,7 @@ const SeniorManagement = ({
                             value: user?.phone,
                           };
                         })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.phone && (

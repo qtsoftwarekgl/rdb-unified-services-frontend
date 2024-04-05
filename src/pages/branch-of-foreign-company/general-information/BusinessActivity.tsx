@@ -343,7 +343,7 @@ const BusinessActivity = ({
             <menu className="w-[50%] flex flex-col gap-6">
               <Controller
                 name="vat"
-                rules={{ required: "Select choice" }}
+                rules={{ required: "This field is required" }}
                 control={control}
                 render={({ field }) => {
                   return (
@@ -353,25 +353,23 @@ const BusinessActivity = ({
                         <span className="text-red-600">*</span>
                       </p>
                       <menu className="flex items-center w-full gap-6">
-                        <Input
+                      <Input
                           type="radio"
                           label="Yes"
-                          checked={watch("vat") === "yes"}
+                          checked={watch('vat') === 'yes'}
+                          value={'yes'}
                           onChange={(e) => {
-                            if (e.target.checked) {
-                              setValue("vat", "yes");
-                            }
+                            field.onChange(e?.target.value);
                           }}
                           name={field?.name}
                         />
                         <Input
                           type="radio"
                           label="No"
-                          checked={watch("vat") === "no"}
+                          checked={watch('vat') === 'no'}
+                          value={'no'}
                           onChange={(e) => {
-                            if (e.target.checked) {
-                              setValue("vat", "no");
-                            }
+                            field.onChange(e?.target.value);
                           }}
                           name={field?.name}
                         />

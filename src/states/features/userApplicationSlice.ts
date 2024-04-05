@@ -67,7 +67,7 @@ export const userApplicationsSlice = createSlice({
         state.application_review_comments = updatedComments;
         localStorage.setItem(
           "application_review_comments",
-          JSON.stringify(state.application_review_comments)
+          JSON.stringify(updatedComments)
         );
       }
     },

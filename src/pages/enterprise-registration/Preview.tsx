@@ -13,6 +13,11 @@ import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import { setIsAmending } from "../../states/features/amendmentSlice";
 import { RDBAdminEmailPattern } from "../../constants/Users";
+import { provicesList } from "../../constants/provinces";
+import { districtsList } from "../../constants/districts";
+import { sectorsList } from "../../constants/sectors";
+import { cellsList } from "../../constants/cells";
+import { villagesList } from "../../constants/villages";
 
 type Props = {
   entry_id: string | null;
@@ -128,19 +133,31 @@ const Preview = ({ entry_id }: Props) => {
               <h1 className="text-base">
                 Province:
                 <span className="ml-2 text-base font-semibold">
-                  {enterprise_office_address?.province}
+                  {
+                    provicesList.find(
+                      (el) => el.code === enterprise_office_address?.province
+                    )?.name
+                  }
                 </span>
               </h1>
               <h1 className="text-base">
                 District:
                 <span className="ml-2 text-base font-semibold">
-                  {enterprise_office_address?.district}
+                  {
+                    districtsList.find(
+                      (el) => el.code === enterprise_office_address?.district
+                    )?.name
+                  }
                 </span>
               </h1>
               <h1 className="text-base">
                 Sector:
                 <span className="ml-2 text-base font-semibold">
-                  {enterprise_office_address?.sector}
+                  {
+                    sectorsList.find(
+                      (el) => el.code === enterprise_office_address?.sector
+                    )?.name
+                  }
                 </span>
               </h1>
             </div>
@@ -148,13 +165,21 @@ const Preview = ({ entry_id }: Props) => {
               <h1 className="text-base">
                 Cell:
                 <span className="ml-2 text-base font-semibold">
-                  {enterprise_office_address?.cell}
+                  {
+                    cellsList.find(
+                      (el) => el.code === enterprise_office_address?.cell
+                    )?.name
+                  }
                 </span>
               </h1>
               <h1 className="text-base">
                 Village:
                 <span className="ml-2 text-base font-semibold">
-                  {enterprise_office_address?.village}
+                  {
+                    villagesList.find(
+                      (el) => el.code === enterprise_office_address?.village
+                    )?.name
+                  }
                 </span>
               </h1>
               <h1 className="text-base">

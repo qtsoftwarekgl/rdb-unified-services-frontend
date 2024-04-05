@@ -26,6 +26,11 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../../../components/Loader";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
+import { provicesList } from "../../../constants/provinces";
+import { districtsList } from "../../../constants/districts";
+import { sectorsList } from "../../../constants/sectors";
+import { cellsList } from "../../../constants/cells";
+import { villagesList } from "../../../constants/villages";
 
 interface PreviewSubmissionProps {
   entry_id: string | null;
@@ -76,7 +81,6 @@ const PreviewSubmission = ({
     },
   ];
 
-
   const beneficialOwnersColumns = [
     {
       header: "Name",
@@ -121,7 +125,6 @@ const PreviewSubmission = ({
             })}
         </PreviewCard>
       )}
-
       {/* COMPANY ADDRESS */}
       {foreign_company_address && (
         <PreviewCard
@@ -139,14 +142,24 @@ const PreviewSubmission = ({
                   <span className="font-semibold">
                     {capitalizeString(key)}:
                   </span>{" "}
-                  {String(value)}
+                  {String(
+                    provicesList.find((province) => province.code === value)
+                      ?.name ||
+                      districtsList.find((district) => district.code === value)
+                        ?.name ||
+                      sectorsList.find((sector) => sector.code === value)
+                        ?.name ||
+                      cellsList.find((cell) => cell.code === value)?.name ||
+                      villagesList.find((village) => village.code === value)
+                        ?.name ||
+                      value
+                  ) ?? ""}
                 </p>
               );
             })}
         </PreviewCard>
       )}
-
-      {/* COMPANY ACTIVITIES */}
+      COMPANY ACTIVITIES
       <PreviewCard
         header="Business Activities & VAT"
         tabName="general_information"
@@ -182,7 +195,6 @@ const PreviewSubmission = ({
           </ul>
         </menu>
       </PreviewCard>
-
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
         header="Board of Directors"
@@ -210,7 +222,6 @@ const PreviewSubmission = ({
           })}
         />
       </PreviewCard>
-
       {/* SENIOR MANAGEMENT */}
       <PreviewCard
         header="Senior Management"
@@ -238,7 +249,6 @@ const PreviewSubmission = ({
           })}
         />
       </PreviewCard>
-
       {/* EMPLOYMENT INFO */}
       <PreviewCard
         header="Employment Information"
@@ -258,7 +268,7 @@ const PreviewSubmission = ({
           <p className="font-semibold">
             Number of employees:{" "}
             <span className="font-normal">
-              {foreign_employment_info?.number_of_employees}
+              {foreign_employment_info?.employees_no}
             </span>
           </p>
         )}
@@ -271,9 +281,8 @@ const PreviewSubmission = ({
           </span>
         </p>
       </PreviewCard>
-
       {/* BENEFICIAL OWNERS */}
-      {/* <PreviewCard
+      <PreviewCard
         header="Beneficial Owners"
         tabName="foreign_beneficial_owners"
         stepName="foreign_beneficial_owners"
@@ -286,7 +295,7 @@ const PreviewSubmission = ({
               ...owner,
               name: owner?.company_name
                 ? owner?.company_name
-                : `${owner?.first_name} ${owner?.last_name}`,
+                : `${owner?.first_name ?? ""}  ${owner?.last_name ?? ""}`,
               phone: owner?.phone || owner?.company_phone,
               control_type: capitalizeString(owner?.control_type),
               ownership_type: capitalizeString(owner?.ownership_type),
@@ -297,8 +306,7 @@ const PreviewSubmission = ({
           showFilter={false}
           showPagination={false}
         />
-      </PreviewCard> */}
-
+      </PreviewCard>
       {/* ATTACHMENTS */}
       <PreviewCard
         header="Attachments"
@@ -313,7 +321,10 @@ const PreviewSubmission = ({
               Board of directors
             </h3>
             {foreign_board_of_directors?.map((director, index) => {
-              if (director?.attachment) {
+              if (
+                director?.attachment &&
+                Object.keys(director?.attachment).length
+              ) {
                 return (
                   <p
                     key={index}
@@ -333,14 +344,19 @@ const PreviewSubmission = ({
               Senior management
             </h3>
             {foreign_senior_management?.map((senior, index) => {
-              if (senior?.attachment) {
+              if (
+                senior?.attachment &&
+                Object.keys(senior?.attachment).length
+              ) {
                 return (
                   <p
                     key={index}
                     className="flex items-center justify-between w-full gap-6 font-normal"
                   >
                     {senior?.first_name || ""} {senior?.last_name || ""}:{" "}
-                    <span className="font-semibold">{senior?.attachment}</span>
+                    <span className="font-semibold">
+                      {senior?.attachment.name}
+                    </span>
                   </p>
                 );
               }
@@ -351,7 +367,10 @@ const PreviewSubmission = ({
               Beneficial owners
             </h3>
             {foreign_beneficial_owners?.map((beneficial_owner, index) => {
-              if (beneficial_owner?.attachment) {
+              if (
+                beneficial_owner?.attachment &&
+                Object.keys(beneficial_owner?.attachment).length
+              ) {
                 if (beneficial_owner?.beneficial_type === "person") {
                   return (
                     <p
@@ -361,7 +380,7 @@ const PreviewSubmission = ({
                       {beneficial_owner?.first_name || ""}{" "}
                       {beneficial_owner?.last_name || ""}:{" "}
                       <span className="font-semibold">
-                        {beneficial_owner?.attachment}
+                        {beneficial_owner?.attachment?.name}
                       </span>
                     </p>
                   );
@@ -373,7 +392,7 @@ const PreviewSubmission = ({
                     >
                       {beneficial_owner?.company_name || ""}:{" "}
                       <span className="font-semibold">
-                        {beneficial_owner?.attachment}
+                        {beneficial_owner?.attachment?.name}
                       </span>
                     </p>
                   );
@@ -420,9 +439,7 @@ const PreviewSubmission = ({
               dispatch(
                 setForeignBusinessCompletedStep("foreign_preview_submission")
               );
-              dispatch(
-                setForeignBusinessActiveTab("general_information")
-              );
+              dispatch(setForeignBusinessActiveTab("general_information"));
               dispatch(setForeignBusinessActiveStep("company_details"));
               dispatch(setForeignCompanySubActivities([]));
               dispatch(
