@@ -4,6 +4,7 @@ import { FC, ReactNode } from "react";
 import { AppDispatch } from "../../states/store";
 import { useDispatch } from "react-redux";
 import { UnknownAction } from "@reduxjs/toolkit";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
 
 interface PreviewCardProps {
   header: string;
@@ -12,6 +13,7 @@ interface PreviewCardProps {
   children: ReactNode;
   stepName: string;
   tabName: string;
+  entry_id?: string;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
@@ -21,6 +23,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   setActiveStep,
   stepName,
   tabName,
+  entry_id,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -37,6 +40,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
             e.preventDefault();
             dispatch(setActiveStep(stepName));
             dispatch(setActiveTab(tabName));
+            dispatch(setUserApplications({ entry_id, status: 'in_preview' }));
           }}
           className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
         />

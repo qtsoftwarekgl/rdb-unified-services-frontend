@@ -85,7 +85,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
     shareholder: false,
     attachment: false,
   });
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
+  const [attachmentPreview, setAttachmentPreview] = useState<string>('');
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
@@ -145,13 +145,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
             <FontAwesomeIcon
               className={`${
                 disableForm
@@ -1263,8 +1256,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                // dispatch(setBusinessActiveStep('share_details'));
-                // dispatch(setBusinessActiveTab('capital_information'));
+                dispatch(setBusinessActiveStep('share_details'));
+                dispatch(setBusinessActiveTab('capital_information'));
               }}
             />
             {isAmending && (

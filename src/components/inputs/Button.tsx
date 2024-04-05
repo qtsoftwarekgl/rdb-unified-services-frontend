@@ -30,6 +30,7 @@ const Button: FC<ButtonProps> = ({
     return (
       <button
         type={type || 'submit'}
+        onClick={onClick as MouseEventHandler<HTMLButtonElement> | undefined}
         className={`py-2 flex items-center justify-center text-center border-[1px] border-primary px-6 rounded-md text-[14px] text-primary bg-white hover:bg-primary hover:text-white cursor-pointer ease-in-out duration-400 hover:scale-[1.005] max-[800px]:!text-lg max-md:!py-2 ${
           !styled &&
           'bg-transparent !shadow-none !text-primary hover:!scale-[1.005] !py-0 !px-0 !border-none hover:!bg-transparent hover:!text-primary'

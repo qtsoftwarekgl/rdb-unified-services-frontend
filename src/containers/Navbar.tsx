@@ -140,7 +140,7 @@ const Navbar = ({ className }: Props) => {
 
             <article>
               <h1 className="text-[15px] font-semibold max-[600px]:text-[14px]">
-                Christella
+                Nishimwe Christella
               </h1>
               <p className="text-[12px] text-gray-500">
                 {user?.email?.toLowerCase() || "christella@qtglobal.rw"}
