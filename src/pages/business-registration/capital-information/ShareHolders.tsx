@@ -48,12 +48,14 @@ interface ShareHoldersProps {
   isOpen: boolean;
   shareholders: business_shareholders[];
   entry_id: string | null;
+  status: string;
 }
 
 const ShareHolders: FC<ShareHoldersProps> = ({
   isOpen,
   shareholders = [],
   entry_id,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -1269,19 +1271,52 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 }}
               />
             )}
+            {status === 'in_preview' && (
+              <Button
+                value="Save & Complete Preview"
+                primary
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  // SET ACTIVE TAB AND STEP
+                  let active_tab = 'capital_information';
+                  let active_step = 'capital_details';
+
+                  if (status === 'in_preview') {
+                    active_tab = 'preview_submission';
+                    active_step = 'preview_submission';
+                  }
+
+                  dispatch(setBusinessCompletedStep('shareholders'));
+                  dispatch(setBusinessActiveStep(active_step));
+                  dispatch(setBusinessActiveTab(active_tab));
+                  dispatch(
+                    setUserApplications({
+                      entry_id,
+                      active_tab,
+                      active_step,
+                    })
+                  );
+                }}
+              />
+            )}
             <Button
-              value="Continue"
+              value="Save & Continue"
               primary
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
+
                 dispatch(setBusinessCompletedStep('shareholders'));
                 dispatch(setBusinessActiveStep('capital_details'));
+                dispatch(setBusinessActiveTab('capital_information'));
                 dispatch(
                   setUserApplications({
                     entry_id,
                     active_tab: 'capital_information',
                     active_step: 'capital_details',
+                    status: 'in_progress',
                   })
                 );
               }}

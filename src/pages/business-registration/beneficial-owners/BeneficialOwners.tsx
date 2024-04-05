@@ -51,12 +51,14 @@ interface BeneficialOwnersProps {
   isOpen: boolean;
   beneficial_owners: business_beneficial_owners[];
   entry_id: string | null;
+  status: string
 }
 
 const BeneficialOwners: FC<BeneficialOwnersProps> = ({
   isOpen,
   beneficial_owners = [],
   entry_id,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -429,11 +431,15 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                             <Input
                               type="radio"
                               label="No"
+                              {...field}
                               value={'no'}
-                              checked={watch('rwandan_company') === 'no'}
                               onChange={(e) => {
                                 field.onChange(e.target.value);
-                                setValue('incorporation_country', null);
+                                setSearchMember({
+                                  ...searchMember,
+                                  data: null,
+                                });
+                                setValue('incorporation_country', '');
                               }}
                               name={field?.name}
                             />
@@ -520,15 +526,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                                     });
                                     setValue(
                                       'company_name',
-                                      searchMember?.data?.company_name
+                                      userDetails?.company_name
                                     );
-                                    setValue(
-                                      'email',
-                                      searchMember?.data?.email
-                                    );
+                                    setValue('email', userDetails?.email);
                                     setValue(
                                       'company_phone',
-                                      searchMember?.data?.phone
+                                      userDetails?.phone
                                     );
                                     setValue('incorporation_country', 'RW');
                                     setValue(
@@ -627,7 +630,6 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                                 );
                                 setValue('last_name', userDetails?.last_name);
                                 setValue('gender', userDetails?.data?.gender);
-                                setValue('phone', userDetails?.data?.phone);
                               }
                             }, 700);
                           }}
@@ -815,11 +817,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                             watch('gender') === 'Male'
                           }
                           label="Male"
-                          name={field?.name}
+                          {...field}
                           value={'Male'}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                         <Input
                           type="radio"
@@ -828,11 +827,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                             watch('gender') === 'Female'
                           }
                           label="Female"
+                          {...field}
                           value={'Female'}
-                          name={field?.name}
-                          onChange={(e) => {
-                            field.onChange(e.target.value);
-                          }}
                         />
                       </menu>
                     )}
@@ -858,7 +854,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               render={({ field }) => {
                 if (watch('document_type') === 'nid') return undefined;
                 return (
-                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                  <label
+                    className={`${
+                      watch('document_type') === 'nid' ? 'hidden' : 'flex'
+                    } w-[49%] flex flex-col gap-1 items-start`}
+                  >
                     <Select
                       isSearchable
                       required
@@ -1002,6 +1002,148 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 }}
               />
             </menu>
+          </section>
+          {watch('beneficial_type') === 'person' &&
+            (watch('document_type') === 'passport' ||
+              (watch('document_type') === 'nid' && !!searchMember?.data)) && (
+              <article className="flex flex-col gap-3">
+                <h1>
+                  Is the professional address same as the residential address?{' '}
+                  <span className="text-red-600">*</span>
+                </h1>
+                <Controller
+                  name="address"
+                  control={control}
+                  rules={{ required: 'Select an option' }}
+                  render={({ field }) => {
+                    return (
+                      <ul className="flex items-center gap-6">
+                        <Input
+                          type="radio"
+                          label="Yes"
+                          name={field?.name}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              field.onChange(e.target.value);
+                              setValue('address', 'yes');
+                              clearErrors('address');
+                            }
+                          }}
+                        />
+                        <Input
+                          type="radio"
+                          label="No"
+                          name={field?.name}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              field.onChange(e.target.value);
+                              setValue('address', 'no');
+                              clearErrors('address');
+                            }
+                          }}
+                        />
+                        {errors?.address && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.address?.message)}
+                          </p>
+                        )}
+                      </ul>
+                    );
+                  }}
+                />
+              </article>
+            )}
+          <section
+            className={`${
+              watch('address') === 'no' ? 'flex' : 'hidden'
+            } flex-wrap gap-4 items-start justify-between w-full`}
+          >
+            <Controller
+              name="residential_country"
+              control={control}
+              rules={{
+                required:
+                  watch('address') === 'no' &&
+                  watch('beneficial_type') === 'person' &&
+                  watch('document_type') === 'passport' &&
+                  'Nationality is required',
+              }}
+              render={({ field }) => {
+                if (watch('document_type') === 'nid') return undefined;
+                return (
+                  <label className="w-[49%] flex flex-col gap-1 items-start">
+                    <Select
+                      isSearchable
+                      label="Country"
+                      options={countriesList?.map((country) => {
+                        return {
+                          ...country,
+                          label: country.name,
+                          value: country?.code,
+                        };
+                      })}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                    {errors?.residential_country && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.residential_country?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+
+            <Controller
+              control={control}
+              name="residential_street_name"
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Input
+                      label="Street Name"
+                      placeholder="Street name"
+                      {...field}
+                    />
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="residential_phone"
+              control={control}
+              defaultValue={searchMember?.data?.phone}
+              rules={{
+                required:
+                  watch('address') === 'no' &&
+                  watch('beneficial_type') === 'person'
+                    ? 'Phone number is required'
+                    : false,
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col gap-1 w-[49%]">
+                    <Input
+                      label="Phone number"
+                      placeholder="07XX XXX XXX"
+                      required
+                      type={
+                        watch('document_type') === 'passport' ? 'tel' : 'text'
+                      }
+                      defaultValue={searchMember?.data?.phone}
+                      {...field}
+                    />
+                    {errors?.residential_phone && (
+                      <p className="text-sm text-red-500">
+                        {String(errors?.residential_phone?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
           </section>
           <section
             className={`${
@@ -1202,11 +1344,15 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch('beneficial_type') !== 'person'
+                  watch('beneficial_type') !== 'person' &&
+                  watch('rwandan_company') === 'no'
                     ? 'Company phone number is required'
                     : false,
                 validate: (value) => {
-                  if (watch('rwandan_company') === 'yes') {
+                  if (
+                    watch('rwandan_company') === 'yes' &&
+                    watch('beneficial_type') !== 'person'
+                  ) {
                     return (
                       validateInputs(value, 'tel') || 'Invalid phone number'
                     );
@@ -1220,6 +1366,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       label="Phone number"
                       required
                       prefixText={watch('rwandan_company') === 'yes' && '+250'}
+                      type={watch('rwandan_company') === 'yes' ? 'text' : 'tel'}
+                      readOnly={watch('rwandan_company') === 'yes'}
+                      {...field}
                       value={
                         watch('rwandan_company') === 'yes'
                           ? searchMember?.data?.phone || watch('company_phone')
@@ -1379,12 +1528,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     <label className="w-[49%] flex flex-col gap-1">
                       <Select
                         required
-                        ref={ownershipTypeRef}
                         label="Nature and extent of ownership"
                         options={[{ value: 'shares', label: 'Shares' }]}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                       {errors?.ownership_type && (
                         <p className="text-red-600 text-[13px]">
@@ -1432,7 +1578,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       ...beneficial_owner,
                       no: index,
                       name: beneficial_owner?.first_name
-                        ? `${beneficial_owner?.first_name} ${beneficial_owner?.last_name}`
+                        ? `${beneficial_owner?.first_name} ${
+                            beneficial_owner?.last_name || ''
+                          }`
                         : beneficial_owner?.company_name,
                       type: capitalizeString(beneficial_owner?.beneficial_type),
                       control_type: capitalizeString(
@@ -1460,8 +1608,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           disabled={disableForm}
           onClick={(e) => {
             e.preventDefault();
-            // dispatch(setBusinessActiveStep('capital_details'));
-            // dispatch(setBusinessActiveTab('capital_information'));
+            dispatch(setBusinessActiveStep('capital_details'));
+            dispatch(setBusinessActiveTab('capital_information'));
           }}
         />
         {isAmending && (
@@ -1473,8 +1621,28 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             }}
           />
         )}
+        {status === 'in_preview' && (
+          <Button
+            value="Save & Complete Preview"
+            disabled={disableForm}
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessCompletedStep('beneficial_owners'));
+              dispatch(setBusinessActiveStep('preview_submission'));
+              dispatch(setBusinessActiveTab('preview_submission'));
+              dispatch(
+                setUserApplications({
+                  entry_id,
+                  active_tab: 'preview_submission',
+                  active_step: 'preview_submission',
+                })
+              );
+            }}
+          />
+        )}
         <Button
-          value="Continue"
+          value="Save & Continue"
           disabled={disableForm}
           primary
           onClick={(e) => {
@@ -1485,8 +1653,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             dispatch(
               setUserApplications({
                 entry_id,
-                active_tab: 'capital_information',
-                active_step: 'capital_details',
+                active_tab: 'attachments',
+                active_step: 'attachments',
+                status: 'in_progress',
               })
             );
           }}

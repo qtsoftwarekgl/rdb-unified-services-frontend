@@ -430,9 +430,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     submit: false,
                     preview: true,
                   });
-                  dispatch(
-                    setUserApplications({ entry_id, status: 'in_preview' })
-                  );
                 }}
                 submit
               />

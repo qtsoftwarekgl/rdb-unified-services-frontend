@@ -42,6 +42,7 @@ interface CapitalDetailsProps {
   entry_id: string | null;
   share_details: business_share_details;
   shareholders: business_shareholders[];
+  status: string;
 }
 
 const CapitalDetails: FC<CapitalDetailsProps> = ({
@@ -50,6 +51,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   entry_id,
   share_details,
   shareholders = [],
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -60,7 +62,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    preview: false,
+    submit: false
+  });
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
   const [assignedShares, setAssignedShares] = useState<object>({
     number: 0,
@@ -338,8 +343,65 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             }}
           />
         )}
+        {status === 'in_preview' && (
+          <Button
+          value={isLoading?.preview ? <Loader /> : 'Save & Complete Preview'}
+          primary
+          disabled={disableForm}
+          onClick={(e) => {
+            e.preventDefault();
+
+            // SET ACTIVE TAB AND STEP
+            let active_tab = 'beneficial_owners';
+            let active_step = 'beneficial_owners';
+
+            if (status === 'in_preview') {
+              active_tab = 'preview_submission';
+              active_step = 'preview_submission';
+            }
+
+            // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+            if (
+              capital_details?.filter(
+                (shareholder) => shareholder?.shares?.total_shares === 0
+              )?.length > 0
+            ) {
+              setError('total_shares', {
+                type: 'manual',
+                message:
+                  'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+              });
+              return;
+            }
+            setIsLoading({
+              ...isLoading,
+              submit: false,
+              preview: true,
+            });
+
+            setTimeout(() => {
+              setIsLoading({
+                ...isLoading,
+                submit: false,
+                preview: false,
+              });
+              clearErrors('total_shares');
+              dispatch(setBusinessCompletedStep('capital_details'));
+              dispatch(setBusinessActiveStep(active_step));
+              dispatch(setBusinessActiveTab(active_tab));
+              dispatch(
+                setUserApplications({
+                  entry_id,
+                  active_step,
+                  active_tab,
+                })
+              );
+            }, 1000);
+          }}
+        />
+        )}
         <Button
-          value={isLoading ? <Loader /> : 'Continue'}
+          value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
           primary
           disabled={disableForm}
           onClick={(e) => {
@@ -357,10 +419,18 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               });
               return;
             }
-            setIsLoading(true);
+            setIsLoading({
+              ...isLoading,
+              submit: true,
+              preview: false,
+            });
 
             setTimeout(() => {
-              setIsLoading(false);
+              setIsLoading({
+                ...isLoading,
+                submit: false,
+                preview: false,
+              });
               clearErrors('total_shares');
               dispatch(setBusinessCompletedStep('capital_details'));
               dispatch(setBusinessActiveStep('beneficial_owners'));

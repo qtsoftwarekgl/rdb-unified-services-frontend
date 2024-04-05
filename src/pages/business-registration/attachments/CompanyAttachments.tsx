@@ -34,6 +34,7 @@ interface CompanyAttachmentsProps {
   company_attachments: business_company_attachments[];
   entry_id: string | null;
   company_details: business_company_details;
+  status: string;
 }
 
 const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
@@ -521,8 +522,16 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : 'Continue'}
+              value={isLoading ? <Loader /> : 'Save & Continue'}
               primary
+              onClick={() => {
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    status: 'in_progress',
+                  })
+                );
+              }}
               submit
               disabled={disableForm || Object.keys(errors).length > 0}
             />
