@@ -2,10 +2,10 @@
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
-import { Controller, FieldValues, set, useForm } from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -21,6 +21,7 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import ViewDocument from "../../user-company-details/ViewDocument";
 import { previewUrl } from "../../../constants/authentication";
 import { capitalizeString } from "../../../helpers/strings";
+import Modal from "../../../components/Modal";
 
 export interface business_company_attachments {
   name: string;
@@ -48,6 +49,9 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     formState: { errors },
     setValue,
     watch,
+    setError,
+    trigger,
+    clearErrors
   } = useForm();
 
   // STATE VARIABLES
@@ -60,6 +64,15 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   >([]);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
+    attachment: boolean;
+    first_name?: string;
+    last_name?: string;
+    row_name: string
+  }>({
+    attachment: false,
+    row_name: '',
+  });
 
   // SET DEFAULT ATTACHMENTS
   useEffect(() => {
@@ -80,8 +93,13 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   }, [company_attachments]);
 
   // HANDLE FORM SUBMIT
-  const onSubmit = (data: FieldValues) => {
+  const onSubmit = async (data: FieldValues) => {
     setIsLoading(true);
+    await trigger();
+    if (Object.keys(errors).length > 0) {
+      setIsLoading(false);
+      return;
+    }
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
@@ -147,27 +165,99 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.02] font-bold text-[16px]"
               onClick={(e) => {
                 e.preventDefault();
-                setAttachmentPreview(previewUrl)
+                setAttachmentPreview(previewUrl);
               }}
             />
             <FontAwesomeIcon
-              className={`${
-                disableForm
-                  ? "text-secondary cursor-default"
-                  : "text-red-600 cursor-pointer"
-              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
+              className="cursor-pointer text-white bg-red-600 p-2 w-[13px] h-[13px] text-[16px] rounded-full font-bold ease-in-out duration-300 hover:scale-[1.02]"
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                if (disableForm) return;
-                setAttachmentFiles(attachmentFiles?.filter((file: File) => file?.file?.name !== row?.original?.name));
-              }}
+                setConfirmDeleteModal({
+                  ...confirmDeleteModal,
+                  attachment: true,
+                  row_name: row?.original?.name,
+                });
+              }} 
             />
+            <Modal
+              isOpen={
+                confirmDeleteModal?.attachment &&
+                confirmDeleteModal?.row_name === row?.original?.name
+              }
+              onClose={() => {
+                setConfirmDeleteModal({
+                  ...confirmDeleteModal,
+                  attachment: false,
+                });
+              }}
+            >
+              <section className="flex flex-col gap-6">
+                <h1 className="font-medium uppercase text-center">
+                  Are you sure you want to delete {row?.original?.name}
+                </h1>
+                <menu className="flex items-center gap-3 justify-between">
+                  <Button
+                    value="Cancel"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setConfirmDeleteModal({
+                        ...confirmDeleteModal,
+                        attachment: false,
+                      });
+                    }}
+                  />
+                  <Button
+                    value="Delete"
+                    danger
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setAttachmentFiles(
+                        Array.from(attachmentFiles as FileList)?.filter(
+                          (
+                            file:
+                              | File
+                              | {
+                                  name: string;
+                                  file: {
+                                    name: string;
+                                    size: number;
+                                    type: string;
+                                  };
+                                  source: string;
+                                }
+                          ) =>
+                            (file?.name || file?.file?.name) !==
+                            row?.original?.name
+                        )
+                      );
+                      if (row?.original?.source === 'Articles Of Association') {
+                        setError('articles_of_association', {
+                          type: 'manual',
+                          message: 'Upload company articles of association',
+                        });
+                      }
+                      if (row?.original?.source === 'Resolution') {
+                        setError('resolution', {
+                          type: 'manual',
+                          message: 'Resolution is required',
+                        });
+                      }
+                      setConfirmDeleteModal({
+                        ...confirmDeleteModal,
+                        attachment: false,
+                      });
+                    }}
+                  />
+                </menu>
+              </section>
+            </Modal>
           </menu>
         );
       },
     },
   ];
+
 
   if (!isOpen) return null;
 
@@ -218,6 +308,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                               type: e?.target?.files[0]?.type,
                             }
                           );
+                          clearErrors('articles_of_association');
                           setAttachmentFiles([
                             {
                               file: e?.target?.files[0],
@@ -272,6 +363,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                               type: e?.target?.files[0]?.type,
                             }
                           );
+                          clearErrors('resolution');
                           setAttachmentFiles([
                             {
                               file: e?.target?.files[0],
@@ -310,15 +402,20 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                         onChange={(e) => {
                           field.onChange(e);
                           if (!e?.target?.files?.length) return;
-                          const files = Array.from(e.target.files)?.map((file: File) => {
-                            return {
-                              name: file?.name,
-                              size: file?.size,
-                              type: file?.type,
-                              source: 'shareholder_attachments',
-                            };
-                          });
-                          setValue('shareholder_attachments', JSON.stringify(files));
+                          const files = Array.from(e.target.files)?.map(
+                            (file: File) => {
+                              return {
+                                name: file?.name,
+                                size: file?.size,
+                                type: file?.type,
+                                source: 'shareholder_attachments',
+                              };
+                            }
+                          );
+                          setValue(
+                            'shareholder_attachments',
+                            JSON.stringify(files)
+                          );
                           setAttachmentFiles([
                             ...Array.from(e.target.files).map((file: File) => {
                               return {
@@ -351,14 +448,15 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                         onChange={(e) => {
                           field.onChange(e);
                           if (!e?.target?.files?.length) return;
-                          const files = Array.from(e.target.files)?.map((file: File) => {
-                            return {
-                              name: file?.name,
-                              size: file?.size,
-                              type: file?.type,
-                              source: 'others',
-                            };
-                          }
+                          const files = Array.from(e.target.files)?.map(
+                            (file: File) => {
+                              return {
+                                name: file?.name,
+                                size: file?.size,
+                                type: file?.type,
+                                source: 'others',
+                              };
+                            }
                           );
                           setValue('attachments', JSON.stringify(files));
                           setAttachmentFiles([
@@ -381,16 +479,16 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
             />
           </section>
           <menu className="flex items-center w-full gap-6">
-            {(attachmentFiles?.length > 0) && (
+            {attachmentFiles?.length > 0 && (
               <Table
                 data={
                   attachmentFiles?.length > 0
-                    ? attachmentFiles?.map(({ file, source }) => {
+                    ? attachmentFiles?.map((file) => {
                         return {
-                          name: file?.name,
-                          type: file?.type,
-                          size: file?.size,
-                          source: capitalizeString(source),
+                          name: file?.name || file?.file?.name,
+                          type: file?.type || file?.file?.type,
+                          size: file?.size || file?.file?.size,
+                          source: capitalizeString(file?.source),
                         };
                       })
                     : company_attachments

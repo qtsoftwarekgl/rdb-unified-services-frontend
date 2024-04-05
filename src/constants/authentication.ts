@@ -18,7 +18,7 @@ export const languages = [
 
 export const workingIds = ['1199980040660153', '1199980040660151'];
 export const availableNames = ['Inyambo', 'xyz', 'umurava'];
-export const previewUrl = '/public/passport.pdf';
+export const previewUrl = '/passport.pdf';
 export const validTinNumber = '111111111';
 
 export const userData = [

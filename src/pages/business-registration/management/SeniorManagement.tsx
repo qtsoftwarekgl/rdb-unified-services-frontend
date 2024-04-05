@@ -36,12 +36,14 @@ interface SeniorManagementProps {
   isOpen: boolean;
   senior_management: business_senior_management[];
   entry_id: string | null;
+  status: string,
 }
 
 const SeniorManagement: FC<SeniorManagementProps> = ({
   isOpen,
   senior_management = [],
   entry_id,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -121,7 +123,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           ],
         })
       );
-      setSearchMember({
+    setSearchMember({
         ...searchMember,
         data: null,
         loading: false,
@@ -149,13 +151,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
             <FontAwesomeIcon
               className={`${
                 disableForm
@@ -772,12 +767,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         }}
                       />
                       <ul className="flex flex-col items-center gap-3 w-full">
-                        {(attachmentFile) && (
+                        {attachmentFile && (
                           <Table
                             columns={attachmentColumns}
-                            data={[
-                              attachmentFile,
-                            ]}
+                            data={[attachmentFile]}
                             showPagination={false}
                             showFilter={false}
                           />
@@ -851,6 +844,29 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 }}
               />
             )}
+            {status === 'in_preview' && (
+              <Button
+                value="Save & Complete Preview"
+                primary
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!senior_management?.length) {
+                    setError('submit', {
+                      type: 'manual',
+                      message: 'Add at least one member',
+                    });
+                    setTimeout(() => {
+                      clearErrors('submit');
+                    }, 5000);
+                    return;
+                  }
+                  dispatch(setBusinessCompletedStep('senior_management'));
+                  dispatch(setBusinessActiveTab('preview_submission'));
+                  dispatch(setBusinessActiveStep('preview_submission'));
+                }}
+              />
+            )}
             <Button
               value="Save & Continue"
               primary
@@ -867,6 +883,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   }, 5000);
                   return;
                 }
+                dispatch(setUserApplications({ entry_id, status: 'in_progress' }));
                 dispatch(setBusinessCompletedStep('senior_management'));
                 dispatch(setBusinessActiveStep('employment_info'));
               }}

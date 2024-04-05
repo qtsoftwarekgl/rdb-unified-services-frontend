@@ -32,12 +32,14 @@ interface BusinessActivityProps {
   isOpen: boolean;
   company_activities: business_company_activities;
   entry_id: string | null;
+  status: string;
 }
 
 const BusinessActivity: FC<BusinessActivityProps> = ({
   isOpen,
   company_activities,
   entry_id,
+  status
 }) => {
   // REACT HOOK FORM
   const {
@@ -52,7 +54,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
@@ -62,7 +67,11 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   const onSubmit = (data: FieldValues) => {
     // CHECK IF BUSINESS LINES ARE SELECTED
     if (company_activities?.business_lines?.length <= 0) {
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
       setError('business_lines', {
         type: 'manual',
         message: 'Select at least one business line',
@@ -74,14 +83,17 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         (activity: object) => activity?.main === true
       ) === undefined
     ) {
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
       setError('business_lines', {
         type: 'manual',
         message: 'Select a main business line',
       });
       return;
     }
-    setIsLoading(true);
     clearErrors('business_lines');
 
     setTimeout(() => {
@@ -101,16 +113,29 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         })
       );
 
+      // SET ACTIVE TAB AND STEP
+      let active_tab = 'management';
+      let active_step = 'board_of_directors';
+
+      if (status === 'in_preview') {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
+      }
+
       // SET CURRENT STEP AS COMPLETED
       dispatch(setBusinessCompletedStep('business_activity_vat'));
 
-      // SET CURRENT TAB AS COMPLETED
-      dispatch(setBusinessActiveTab('general_information'));
+      // SET NEXT TAB AS ACTIVE
+      dispatch(setBusinessActiveTab(active_tab));
 
-      // SET THE NEXT TAB AS ACTIVE
-      dispatch(setBusinessActiveTab('management'));
+      // SET THE NEXT STEP AS ACTIVE
+      dispatch(setBusinessActiveStep(active_step));
 
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
     }, 1000);
   };
 
@@ -459,8 +484,38 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                 }}
               />
             )}
+            {status === 'in_preview' && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                }
+                onClick={() => {
+                  setIsLoading({
+                    ...isLoading,
+                    submit: false,
+                    preview: true,
+                  });
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_preview' })
+                  );
+                }}
+                submit
+                primary
+                disabled={disableForm}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : 'Save & Continue'}
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+              onClick={() => {
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                });
+                dispatch(
+                  setUserApplications({ entry_id, status: 'in_progress' })
+                );
+              }}
               submit
               primary
               disabled={disableForm}

@@ -25,12 +25,14 @@ interface EmploymentInfoProps {
   isOpen: boolean;
   employment_info: business_employment_info;
   entry_id: string | null;
+  status: string
 }
 
 const EmploymentInfo: FC<EmploymentInfoProps> = ({
   isOpen,
   employment_info,
   entry_id,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -43,7 +45,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email)
@@ -60,9 +65,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -74,9 +82,19 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
           },
         })
       );
+
+      // SET ACTIVE TAB AND STEP
+      let active_tab = 'capital_information';
+      let active_step = 'share_details';
+
+      if (status === 'in_preview') {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
+      }
+
       dispatch(setBusinessCompletedStep('employment_info'));
-      dispatch(setBusinessActiveStep('share_details'));
-      dispatch(setBusinessActiveTab('capital_information'));
+      dispatch(setBusinessActiveStep(active_step));
+      dispatch(setBusinessActiveTab(active_tab));
     }, 1000);
   };
 
@@ -244,8 +262,34 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 }}
               />
             )}
+            {status === 'in_preview' && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                }
+                onClick={() => {
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                  });
+                  dispatch(setUserApplications({ entry_id, status: 'in_preview' }));
+                }}
+                submit
+                primary
+                disabled={disableForm}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : 'Save & Continue'}
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+              onClick={() => {
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                });
+                dispatch(setUserApplications({ entry_id, status: 'in_progress' }));
+              }}
               submit
               primary
               disabled={disableForm}

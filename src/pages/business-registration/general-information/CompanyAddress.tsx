@@ -1,25 +1,25 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
-import Input from "../../../components/inputs/Input";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/validations";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
+import Input from '../../../components/inputs/Input';
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
+import validateInputs from '../../../helpers/validations';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
-import { provicesList } from "../../../constants/provinces";
-import { districtsList } from "../../../constants/districts";
-import { sectorsList } from "../../../constants/sectors";
-import { cellsList } from "../../../constants/cells";
-import { villagesList } from "../../../constants/villages";
+} from '../../../states/features/businessRegistrationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
+import { provicesList } from '../../../constants/provinces';
+import { districtsList } from '../../../constants/districts';
+import { sectorsList } from '../../../constants/sectors';
+import { cellsList } from '../../../constants/cells';
+import { villagesList } from '../../../constants/villages';
 
 export interface business_company_address {
   province: string;
@@ -38,12 +38,14 @@ interface CompanyAddressProps {
   isOpen: boolean;
   company_address: business_company_address | null;
   entry_id: string | null;
+  status?: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
   isOpen,
   company_address,
   entry_id,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -56,7 +58,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
@@ -68,11 +73,11 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
         entry_id,
         company_address: {
           ...company_address,
-          province: "",
-          district: "",
-          sector: "",
-          cell: "",
-          village: "",
+          province: '',
+          district: '',
+          sector: '',
+          cell: '',
+          village: '',
         },
       })
     );
@@ -81,40 +86,59 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   // SET DEFAULT VALUES
   useEffect(() => {
     if (company_address) {
-      setValue("province", company_address?.province);
-      setValue("district", company_address?.district);
-      setValue("sector", company_address?.sector);
-      setValue("cell", company_address?.cell);
-      setValue("village", company_address?.village);
-      setValue("street_name", company_address?.street_name);
-      setValue("po_box", company_address?.po_box);
-      setValue("fax", company_address?.fax);
-      setValue("email", company_address?.email);
-      setValue("phone", company_address?.phone);
+      setValue('province', company_address?.province);
+      setValue('district', company_address?.district);
+      setValue('sector', company_address?.sector);
+      setValue('cell', company_address?.cell);
+      setValue('village', company_address?.village);
+      setValue('street_name', company_address?.street_name);
+      setValue('po_box', company_address?.po_box);
+      setValue('fax', company_address?.fax);
+      setValue('email', company_address?.email);
+      setValue('phone', company_address?.phone);
     } else {
-      dispatch(removeBusinessCompletedStep("company_address"));
+      dispatch(removeBusinessCompletedStep('company_address'));
     }
   }, [company_address, dispatch, setValue]);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === 'in_preview' ? false : true,
+      preview: status === 'in_preview' ? true : false,
+    });
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
       dispatch(
         setUserApplications({
           entry_id,
-          status: "in_progress",
-          active_tab: "general_information",
-          active_step: "business_activity_vat",
+          status: 'in_progress',
+          active_tab: 'general_information',
+          active_step: 'business_activity_vat',
           company_address: {
             ...data,
-            step: "company_address",
+            step: 'company_address',
           },
         })
       );
-      dispatch(setBusinessActiveStep("business_activity_vat"));
-      dispatch(setBusinessCompletedStep("company_address"));
+
+      // SET ACTIVE TAB AND STEP
+      let active_tab = 'general_information';
+      let active_step = 'business_activity_vat';
+
+      if (status === 'in_preview') {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
+      }
+
+      dispatch(setBusinessActiveStep(active_step));
+      dispatch(setBusinessActiveTab(active_tab));
+      dispatch(setBusinessCompletedStep('company_address'));
     }, 1000);
   };
 
@@ -129,7 +153,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="province"
               defaultValue={company_address?.province}
               control={control}
-              rules={{ required: "Select province of residence" }}
+              rules={{ required: 'Select province of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -171,10 +195,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         })}
                         onChange={(e) => {
                           field.onChange(e);
-                          setValue("district", "");
-                          setValue("sector", "");
-                          setValue("cell", "");
-                          setValue("village", "");
+                          setValue('district', '');
+                          setValue('sector', '');
+                          setValue('cell', '');
+                          setValue('village', '');
                         }}
                       />
                     )}
@@ -191,7 +215,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="district"
               control={control}
               defaultValue={company_address?.district}
-              rules={{ required: "Select district of residence" }}
+              rules={{ required: 'Select district of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -227,7 +251,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         options={districtsList
                           ?.filter(
                             (district) =>
-                              district?.province_code === watch("province")
+                              district?.province_code === watch('province')
                           )
                           ?.map((district) => {
                             return {
@@ -238,9 +262,9 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          setValue("sector", "");
-                          setValue("cell", "");
-                          setValue("village", "");
+                          setValue('sector', '');
+                          setValue('cell', '');
+                          setValue('village', '');
                         }}
                       />
                     )}
@@ -263,7 +287,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   (sector) => sector?.code === company_address?.sector
                 )?.code
               }
-              rules={{ required: "Select sector of residence" }}
+              rules={{ required: 'Select sector of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -300,7 +324,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         options={sectorsList
                           ?.filter(
                             (sector) =>
-                              sector?.district_code === watch("district")
+                              sector?.district_code === watch('district')
                           )
                           ?.map((sector) => {
                             return {
@@ -310,8 +334,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                           })}
                         onChange={(e) => {
                           field.onChange(e);
-                          setValue("cell", "");
-                          setValue("village", "");
+                          setValue('cell', '');
+                          setValue('village', '');
                         }}
                       />
                     )}
@@ -327,7 +351,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="cell"
               control={control}
-              rules={{ required: "Select cell of residence" }}
+              rules={{ required: 'Select cell of residence' }}
               defaultValue={
                 cellsList?.find((cell) => cell?.code === company_address?.cell)
                   ?.code
@@ -366,7 +390,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         label="Cell"
                         options={cellsList
                           ?.filter(
-                            (cell) => cell?.sector_code === watch("sector")
+                            (cell) => cell?.sector_code === watch('sector')
                           )
                           ?.map((cell) => {
                             return {
@@ -376,7 +400,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                           })}
                         onChange={(e) => {
                           field.onChange(e);
-                          setValue("village", "");
+                          setValue('village', '');
                         }}
                       />
                     )}
@@ -394,7 +418,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="village"
               control={control}
-              rules={{ required: "Select village of residence" }}
+              rules={{ required: 'Select village of residence' }}
               defaultValue={
                 villagesList?.find(
                   (village) => village?.code === company_address?.village
@@ -435,7 +459,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         label="Village"
                         options={villagesList
                           ?.filter(
-                            (village) => village?.cell_code === watch("cell")
+                            (village) => village?.cell_code === watch('cell')
                           )
                           ?.map((village) => {
                             return {
@@ -461,14 +485,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               control={control}
               name="street_name"
               defaultValue={
-                watch("street_name") || company_address?.street_name
+                watch('street_name') || company_address?.street_name
               }
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       defaultValue={
-                        watch("street_name") || company_address?.street_name
+                        watch('street_name') || company_address?.street_name
                       }
                       label="Street Name"
                       placeholder="Street name"
@@ -482,7 +506,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           <menu className="flex items-start w-full gap-6">
             <Controller
               control={control}
-              defaultValue={watch("po_box") || company_address?.po_box}
+              defaultValue={watch('po_box') || company_address?.po_box}
               name="po_box"
               render={({ field }) => {
                 return (
@@ -490,7 +514,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       label="P.O Box"
                       placeholder="Postal code"
-                      defaultValue={watch("po_box") || company_address?.po_box}
+                      defaultValue={watch('po_box') || company_address?.po_box}
                       {...field}
                     />
                   </label>
@@ -500,13 +524,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               control={control}
               name="fax"
-              defaultValue={watch("fax") || company_address?.fax}
+              defaultValue={watch('fax') || company_address?.fax}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       label="Fax"
-                      defaultValue={watch("fax") || company_address?.fax}
+                      defaultValue={watch('fax') || company_address?.fax}
                       placeholder="Fax"
                       {...field}
                     />
@@ -519,13 +543,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="email"
               control={control}
-              defaultValue={watch("email") || company_address?.email}
+              defaultValue={watch('email') || company_address?.email}
               rules={{
-                required: "Email address is required",
+                required: 'Email address is required',
                 validate: (value) => {
                   return (
-                    validateInputs(String(value), "email") ||
-                    "Invalid email address"
+                    validateInputs(String(value), 'email') ||
+                    'Invalid email address'
                   );
                 },
               }}
@@ -535,7 +559,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       required
                       label="Email"
-                      defaultValue={watch("email") || company_address?.email}
+                      defaultValue={watch('email') || company_address?.email}
                       placeholder="name@domain.com"
                       {...field}
                     />
@@ -550,15 +574,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             />
             <Controller
               name="phone"
-              defaultValue={watch("phone") || company_address?.phone}
+              defaultValue={watch('phone') || company_address?.phone}
               rules={{
-                required: "Phone number is required",
+                required: 'Phone number is required',
                 validate: (value) => {
                   return (
                     validateInputs(
                       value?.length < 10 ? `0${value}` : String(value),
-                      "tel"
-                    ) || "Invalid phone number"
+                      'tel'
+                    ) || 'Invalid phone number'
                   );
                 },
               }}
@@ -568,7 +592,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       required
-                      defaultValue={watch("phone") || company_address?.phone}
+                      defaultValue={watch('phone') || company_address?.phone}
                       label="Phone"
                       prefixText="+250"
                       placeholder="Phone number"
@@ -592,20 +616,51 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep("company_details"));
+                dispatch(setBusinessActiveStep('company_details'));
               }}
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveTab("preview_submission"));
+                  dispatch(setBusinessActiveTab('preview_submission'));
                 }}
               />
             )}
+            {status === 'in_preview' && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                }
+                primary
+                onClick={() => {
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_preview' })
+                  );
+
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                  });
+                }}
+                submit
+                disabled={disableForm}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Save & Continue"}
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+              onClick={() => {
+                setIsLoading({
+                  ...isLoading,
+                  preview: false,
+                  submit: true,
+                });
+                dispatch(
+                  setUserApplications({ entry_id, status: 'in_progress' })
+                );
+              }}
               primary
               submit
               disabled={disableForm}
