@@ -34,11 +34,13 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 interface BeneficialOwnersProps {
   entry_id: string | null;
   foreign_beneficial_owners: any;
+  status?: string;
 }
 
 const BeneficialOwners = ({
   entry_id,
   foreign_beneficial_owners,
+  status,
 }: BeneficialOwnersProps) => {
   // REACT HOOK FORM
   const {
@@ -1359,8 +1361,24 @@ const BeneficialOwners = ({
             }}
           />
         )}
+        {status === "in_preview" && (
+          <Button
+            value={"Save & Complete Preview"}
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(
+                setForeignBusinessCompletedStep("foreign_beneficial_owners")
+              );
+              dispatch(
+                setForeignBusinessActiveTab("foreign_preview_submission")
+              );
+            }}
+            disabled={isFormDisabled}
+          />
+        )}
         <Button
-          value="Continue"
+          value="Save & Continue"
           primary
           disabled={isFormDisabled}
           onClick={(e) => {
@@ -1368,6 +1386,7 @@ const BeneficialOwners = ({
             dispatch(
               setForeignBusinessCompletedStep("foreign_beneficial_owners")
             );
+            dispatch(setUserApplications({ entry_id, status: "in_progress" }));
             dispatch(setForeignBusinessActiveStep("foreign_attachments"));
             dispatch(setForeignBusinessActiveTab("foreign_attachments"));
           }}

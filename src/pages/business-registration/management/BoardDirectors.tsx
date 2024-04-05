@@ -155,7 +155,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       accessorKey: "action",
       cell: ({ row }) => {
         return (
-          <menu className="flex items-center gap-6 w-fit justify-center">
+          <menu className="flex items-center justify-center gap-6 w-fit">
             <FontAwesomeIcon
               className={`${
                 disableForm

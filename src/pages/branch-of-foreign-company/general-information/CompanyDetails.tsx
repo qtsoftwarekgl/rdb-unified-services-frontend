@@ -24,11 +24,13 @@ import { RDBAdminEmailPattern } from "../../../constants/Users";
 interface CompanyDetailsProps {
   entry_id: string | null;
   company_details: any;
+  status?: string;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
   entry_id,
   company_details,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -42,7 +44,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const [searchCompany, setSearchCompany] = useState({
     error: false,
     success: false,
@@ -56,10 +61,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
-      setIsLoading(false);
-
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -75,11 +87,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
         })
       );
 
+      if (status === "in_preview")
+        dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
+      else {
+        // SET ACTIVE STEP
+        dispatch(setForeignBusinessActiveStep("foreign_company_address"));
+      }
       // SET CURRENT STEP AS COMPLETED
       dispatch(setForeignBusinessCompletedStep("company_details"));
-
-      // SET ACTIVE STEP
-      dispatch(setForeignBusinessActiveStep("foreign_company_address"));
     }, 1000);
   };
 
@@ -368,6 +383,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Input
                       type="radio"
                       label="Yes"
+                      value={"yes"}
                       checked={
                         watch("articles_of_association") === "yes" ||
                         company_details?.articles_of_association === "yes"
@@ -383,6 +399,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Input
                       type="radio"
                       label="No"
+                      value={"no"}
                       checked={
                         watch("articles_of_association") === "no" ||
                         company_details?.articles_of_association === "no"
@@ -420,10 +437,29 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary={!searchCompany?.error}
+                disabled={
+                  searchCompany?.error ||
+                  isFormDisabled ||
+                  Object.keys(errors).length > 0
+                }
+                submit
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary={!searchCompany?.error}
               disabled={searchCompany?.error}
+              onClick={() => {
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               submit
             />
           </menu>

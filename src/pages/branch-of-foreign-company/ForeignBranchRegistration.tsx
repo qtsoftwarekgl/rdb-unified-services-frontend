@@ -43,16 +43,29 @@ const ForeignBranchRegistration = () => {
   );
   const { user } = useSelector((state: RootState) => state.user);
   const current_application = user_applications?.find(
-    (app) => app.entry_id === entry_id
+    (app:{
+      entry_id: string;
+      status: string;
+      path: string;
+      type: string;
+      owner: string;
+    }) => app.entry_id === entry_id
   );
+
+  // APPLICATION STATUS
+  let status = "in_progress";
+  if (current_application) {
+    status = current_application.status;
+  }
+  if (RDBAdminEmailPattern.test(user?.email)) {
+    status = "in_review";
+  }
 
   useEffect(() => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: RDBAdminEmailPattern.test(user?.email)
-          ? "in_review"
-          : "in_progress",
+        status,
         type: "foreign_branch",
         path: `/foreign-branch-registration?entry_id=${entry_id}`,
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
@@ -88,6 +101,7 @@ const ForeignBranchRegistration = () => {
                         <CompanyDetails
                           entry_id={entry_id}
                           company_details={current_application?.company_details}
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_company_address" && (
@@ -96,6 +110,7 @@ const ForeignBranchRegistration = () => {
                           foreign_company_address={
                             current_application?.foreign_company_address
                           }
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_business_activity_vat" && (
@@ -104,6 +119,7 @@ const ForeignBranchRegistration = () => {
                           foreign_company_activities={
                             current_application?.foreign_company_activities
                           }
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_board_of_directors" && (
@@ -113,6 +129,7 @@ const ForeignBranchRegistration = () => {
                             current_application?.foreign_board_of_directors ||
                             []
                           }
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_senior_management" && (
@@ -121,6 +138,7 @@ const ForeignBranchRegistration = () => {
                           foreign_senior_management={
                             current_application?.foreign_senior_management || []
                           }
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_employment_info" && (
@@ -129,6 +147,7 @@ const ForeignBranchRegistration = () => {
                           foreign_employment_info={
                             current_application?.foreign_employment_info
                           }
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_beneficial_owners" && (
@@ -137,6 +156,7 @@ const ForeignBranchRegistration = () => {
                           foreign_beneficial_owners={
                             current_application?.foreign_beneficial_owners || []
                           }
+                          status={status}
                         />
                       )}
                       {activeStepName === "foreign_attachments" && (

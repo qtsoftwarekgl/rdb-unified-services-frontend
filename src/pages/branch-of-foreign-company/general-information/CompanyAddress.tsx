@@ -20,11 +20,13 @@ import { RDBAdminEmailPattern } from "../../../constants/Users";
 interface CompanyAddressProps {
   entry_id: string | null;
   foreign_company_address: any;
+  status?: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
   entry_id,
   foreign_company_address,
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -37,8 +39,12 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
 
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -56,9 +62,17 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -68,8 +82,12 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           },
         })
       );
-      dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
-      dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
+      if (status === "in_preview")
+        dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
+      else {
+        dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
+        dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
+      }
     }, 1000);
   };
 
@@ -78,7 +96,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
-          disabled={RDBAdminEmailPattern.test(user?.email)}
+          disabled={isFormDisabled}
         >
           <menu className="flex items-start w-full gap-6">
             <Controller
@@ -308,9 +326,29 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
+                onClick={() => {
+                  dispatch(
+                    setUserApplications({ entry_id, status: "in_preview" })
+                  );
+                }}
+                submit
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary
+              onClick={() => {
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               submit
             />
           </menu>

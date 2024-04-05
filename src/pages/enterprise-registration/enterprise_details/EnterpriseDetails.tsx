@@ -38,22 +38,24 @@ import validateInputs from "../../../helpers/validations";
 
 type EnterpriseDetailsProps = {
   entry_id: string | null;
+  company_details: any;
+  status?: string;
 };
 
-export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
+export const EnterpriseDetails = ({
+  entry_id,
+  company_details,
+  status,
+}: EnterpriseDetailsProps) => {
   const { enterprise_registration_active_step } = useSelector(
     (state: RootState) => state.enterpriseRegistration
   );
 
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-  const company_details = user_applications?.find(
-    (app) => app.entry_id === entry_id
-  )?.company_details;
-
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
   const [isNationalIdLoading, setIsNationalIdLoading] =
     useState<boolean>(false);
   const [nationalIdError, setNationalIdError] = useState<boolean>(false);
@@ -120,7 +122,11 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
   }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -135,13 +141,20 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
         })
       );
       dispatch(setUsedIds(data?.id_no));
-      setIsLoading(false);
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
 
+      if (status === "in_preview") {
+        dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
+      } else {
+        // SET ACTIVE STEP
+        dispatch(setEnterpriseActiveStep("business_activity_vat"));
+      }
       // SET CURRENT STEP AS COMPLETED
       dispatch(setEnterpriseCompletedStep("company_details"));
-
-      // SET ACTIVE STEP
-      dispatch(setEnterpriseActiveStep("business_activity_vat"));
     }, 1000);
   };
 
@@ -166,12 +179,6 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
               defaultValue={company_details?.name || watch("name")}
               rules={{
                 required: "Enterprise name is required",
-                validate: () => {
-                  return !searchEnterprise?.success &&
-                    !company_details?.name_reserved
-                    ? "Check if company name is available before proceeding"
-                    : true;
-                },
               }}
               render={({ field }) => {
                 return (
@@ -200,7 +207,8 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                         });
                         setError("name", {
                           type: "manual",
-                          message: "",
+                          message:
+                            "Check if company name is available before proceeding",
                         });
                       }}
                       suffixIconHandler={(e) => {
@@ -375,7 +383,7 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                         userDetails?.id_no
                       }
                       suffixIconPrimary
-                      suffixIcon={isLoading ? faEllipsis : faSearch}
+                      suffixIcon={isNationalIdLoading ? faEllipsis : faSearch}
                       onChange={async (e) => {
                         field.onChange(e);
                         await trigger("id_no");
@@ -1460,10 +1468,25 @@ export const EnterpriseDetails = ({ entry_id }: EnterpriseDetailsProps) => {
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
+                submit
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary={!company_details?.error}
               disabled={isFormDisabled}
+              onClick={() => {
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               submit
             />
           </menu>

@@ -37,12 +37,33 @@ const EnterpriseRegistration = () => {
   const queryParams = new URLSearchParams(search);
   const entry_id = queryParams.get("entry_id");
   const dispatch = useDispatch();
+  const { user_applications } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+  const current_application = user_applications?.find(
+    (app: {
+      entry_id: string;
+      status: string;
+      path: string;
+      type: string;
+      owner: string;
+    }) => app.entry_id === entry_id
+  );
+
+  // APPLICATION STATUS
+  let status = "in_progress";
+  if (current_application) {
+    status = current_application.status;
+  }
+  if (RDBAdminEmailPattern.test(user?.email)) {
+    status = "in_review";
+  }
 
   useEffect(() => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: RDBAdminEmailPattern.test(user?.email) ? "in_review" : "in_progress",
+        status,
         created_at: moment(Date.now()).format("DD/MM/YYYY"),
         path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
@@ -74,16 +95,40 @@ const EnterpriseRegistration = () => {
                 {isActiveTab && (
                   <>
                     {activeStepName === "company_details" && (
-                      <EnterpriseDetails entry_id={entry_id} />
+                      <EnterpriseDetails
+                        entry_id={entry_id}
+                        company_details={
+                          current_application?.company_details || {}
+                        }
+                        status={status}
+                      />
                     )}
                     {activeStepName === "business_activity_vat" && (
-                      <BusinessActivity entry_id={entry_id} />
+                      <BusinessActivity
+                        entry_id={entry_id}
+                        enterprise_business_lines={
+                          current_application?.business_lines
+                            ?.enterprise_business_lines || []
+                        }
+                        status={status}
+                      />
                     )}
                     {activeStepName === "office_address" && (
-                      <OfficeAddress entry_id={entry_id} />
+                      <OfficeAddress
+                        entry_id={entry_id}
+                        enterprise_office_address={
+                          current_application?.office_address || {}
+                        }
+                        status={status}
+                      />
                     )}
                     {activeStepName === "attachments" && (
-                      <Attachments entry_id={entry_id} />
+                      <Attachments
+                        entry_id={entry_id}
+                        enterprise_attachments={
+                          current_application?.enterprise_attachments?.fileNames
+                        }
+                      />
                     )}
                     {activeStepName === "enterprise_preview_submission" && (
                       <Preview entry_id={entry_id} />

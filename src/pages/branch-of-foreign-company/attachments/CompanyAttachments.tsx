@@ -282,7 +282,7 @@ const CompanyAttachments = ({
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading ? <Loader /> : "Save & Continue"}
               primary
               submit
               disabled={isFormDisabled}

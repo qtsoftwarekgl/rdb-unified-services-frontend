@@ -16,11 +16,13 @@ import { RDBAdminEmailPattern } from "../../../constants/Users";
 interface EmploymentInfoProps {
   entry_id: string | null;
   foreign_employment_info: any;
+  status?: string;
 }
 
 const EmploymentInfo = ({
   entry_id,
   foreign_employment_info,
+  status,
 }: EmploymentInfoProps) => {
   // REACT HOOK FORM
   const {
@@ -33,7 +35,11 @@ const EmploymentInfo = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    preview: false,
+  });
+
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
@@ -49,9 +55,12 @@ const EmploymentInfo = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading({
+      ...isLoading,
+      submit: status === "in_preview" ? false : true,
+      preview: status === "in_preview" ? true : false,
+    });
     setTimeout(() => {
-      setIsLoading(false);
       dispatch(
         setUserApplications({
           entry_id,
@@ -61,9 +70,18 @@ const EmploymentInfo = ({
           },
         })
       );
-      dispatch(setForeignBusinessCompletedStep("foreign_employment_info"));
-      dispatch(setForeignBusinessActiveStep("foreign_beneficial_owners"));
-      dispatch(setForeignBusinessActiveTab("foreign_beneficial_owners"));
+      if (status === "in_preview") {
+        dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
+      } else {
+        dispatch(setForeignBusinessCompletedStep("foreign_employment_info"));
+        dispatch(setForeignBusinessActiveStep("foreign_beneficial_owners"));
+        dispatch(setForeignBusinessActiveTab("foreign_beneficial_owners"));
+      }
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+      });
     }, 1000);
   };
 
@@ -223,10 +241,25 @@ const EmploymentInfo = ({
                 }}
               />
             )}
+            {status === "in_preview" && (
+              <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
+                submit
+                disabled={isFormDisabled}
+              />
+            )}
             <Button
-              value={isLoading ? <Loader /> : "Continue"}
+              value={isLoading.submit ? <Loader /> : "Save & Continue"}
               submit
               disabled={isFormDisabled}
+              onClick={() => {
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               primary
             />
           </menu>
