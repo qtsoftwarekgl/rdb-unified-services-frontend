@@ -273,7 +273,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                     preview: true,
                     submit: false,
                   });
-                  dispatch(setUserApplications({ entry_id, status: 'in_preview' }));
                 }}
                 submit
                 primary
