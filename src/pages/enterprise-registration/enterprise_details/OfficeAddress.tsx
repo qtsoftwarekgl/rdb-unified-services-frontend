@@ -35,6 +35,7 @@ const OfficeAddress = ({
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
     watch,
     setValue,
@@ -48,6 +49,7 @@ const OfficeAddress = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
@@ -89,7 +91,7 @@ const OfficeAddress = ({
 
       dispatch(setEnterpriseCompletedStep("office_address"));
       dispatch(setEnterpriseCompletedTab("general_information"));
-      if (status === "in_preview") {
+      if (status === "in_preview" || isLoading.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         dispatch(setEnterpriseActiveTab("attachments"));
@@ -593,28 +595,67 @@ const OfficeAddress = ({
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setEnterpriseActiveTab("enterprise_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    preview: false,
+                    submit: false,
+                  });
                 }}
+                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
+                }}
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary
                 submit
-                disabled={isFormDisabled}
+                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
               />
             )}
             <Button
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
               disabled={isFormDisabled}
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               primary
               submit
             />
