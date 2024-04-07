@@ -55,6 +55,7 @@ export const EnterpriseDetails = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const [isNationalIdLoading, setIsNationalIdLoading] =
     useState<boolean>(false);
@@ -82,6 +83,7 @@ export const EnterpriseDetails = ({
     formState: { errors },
     setValue,
     setError,
+    clearErrors,
     trigger,
     watch,
   } = useForm();
@@ -122,11 +124,6 @@ export const EnterpriseDetails = ({
   }, [setValue, watch("document_type")]);
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -141,13 +138,8 @@ export const EnterpriseDetails = ({
         })
       );
       dispatch(setUsedIds(data?.id_no));
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
 
-      if (status === "in_preview") {
+      if (status === "in_preview" || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET ACTIVE STEP
@@ -155,6 +147,13 @@ export const EnterpriseDetails = ({
       }
       // SET CURRENT STEP AS COMPLETED
       dispatch(setEnterpriseCompletedStep("company_details"));
+
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+        amend: false,
+      });
     }, 1000);
   };
 
@@ -413,10 +412,7 @@ export const EnterpriseDetails = ({
                                 ...userDetails,
                                 document_type: watch("document_type"),
                               });
-                              setError("id_no", {
-                                type: "manual",
-                                message: "",
-                              });
+                              clearErrors("id_no");
                             }
                             setIsNationalIdLoading(false);
                           }, 1000);
@@ -1459,30 +1455,64 @@ export const EnterpriseDetails = ({
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setEnterpriseActiveTab("enterprise_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    preview: false,
+                    submit: false,
+                  });
                 }}
+                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
+                }}
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary
                 submit
-                disabled={isFormDisabled}
+                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
               />
             )}
             <Button
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary={!company_details?.error}
               disabled={isFormDisabled}
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
                 dispatch(
                   setUserApplications({ entry_id, status: "in_progress" })
                 );
