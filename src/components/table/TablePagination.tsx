@@ -58,8 +58,8 @@ const TablePagination = () => {
         <Link
           to={"#"}
           key={index}
-          className={`border-none shadwow-md p-[2.5px] px-[9px] text-[13px] shadow-sm rounded-md ${
-            page === page && "bg-background"
+          className={`border-none bg-background shadwow-md p-[2.5px] px-[9px] text-[13px] shadow-sm rounded-md hover:bg-primary hover:text-white ${
+            currentPage - 1 === index && "bg-primary text-white"
           }`}
           onClick={(e) => {
             e.preventDefault();

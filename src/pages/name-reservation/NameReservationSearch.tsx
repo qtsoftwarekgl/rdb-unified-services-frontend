@@ -16,6 +16,8 @@ import {
   setReservedNames,
 } from "../../states/features/nameReservationSlice";
 import { generateUUID } from "../../helpers/strings";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
+import moment from "moment";
 
 type Props = {
   isOpen: boolean;
@@ -49,6 +51,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
+    const entry_id = generateUUID();
     setIsLoading({
       search: false,
       submit: true,
@@ -63,15 +66,30 @@ const NameReservationSearch = ({ isOpen }: Props) => {
       dispatch(setNameReservationOwnerDetails(null));
       dispatch(setNameReservation(null));
       dispatch(
+        setUserApplications({
+          entry_id,
+          type: 'name_reservation',
+          status: 'submitted',
+          registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
+          created_at: moment().format(),
+          name: data.name,
+          path: `/name-reservation?entry_id=${entry_id}`,
+          active_tab: 'name_reservation',
+          active_step: 'name_reservation',
+        })
+      );
+      dispatch(
         setReservedNames({
           name: data.name,
-          status: "Approved",
+          status: 'Approved',
           created_at: Date.now(),
-          id: generateUUID(),
+          id: entry_id,
           registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
         })
       );
-      navigate("/services");
+      dispatch(setNameReservationActiveStep('owner_details'));
+      dispatch(setNameReservationActiveTab('owner_details'));
+      navigate('/services');
     }, 1000);
     return data;
   };
