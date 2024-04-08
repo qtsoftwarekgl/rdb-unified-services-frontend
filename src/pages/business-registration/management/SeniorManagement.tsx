@@ -344,10 +344,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       options={options}
                       {...field}
                       onChange={(e) => {
-                        field.onChange(e);
-                        clearErrors('position');
                         trigger('position');
                         setValue('document_type', '');
+                        field.onChange(e);
+                        clearErrors('position');
                       }}
                     />
                     {errors?.position && (
@@ -838,9 +838,22 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             {isAmending && (
               <Button
                 value={'Complete Amendment'}
+                disabled={Object.keys(errors).length > 0 || disableForm}
                 onClick={(e) => {
                   e.preventDefault();
+                  if (!senior_management?.length) {
+                    setError('submit', {
+                      type: 'manual',
+                      message: 'Add at least one member',
+                    });
+                    setTimeout(() => {
+                      clearErrors('submit');
+                    }, 5000);
+                    return;
+                  }
+                  dispatch(setBusinessCompletedStep('senior_management'));
                   dispatch(setBusinessActiveTab('preview_submission'));
+                  dispatch(setBusinessActiveStep('preview_submission'));
                 }}
               />
             )}
@@ -848,7 +861,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               <Button
                 value="Save & Complete Preview"
                 primary
-                disabled={disableForm}
+                disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
                   e.preventDefault();
                   if (!senior_management?.length) {
@@ -870,7 +883,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             <Button
               value="Save & Continue"
               primary
-              disabled={disableForm}
+              disabled={disableForm || Object.keys(errors).length > 0}
               onClick={(e) => {
                 e.preventDefault();
                 if (!senior_management?.length) {

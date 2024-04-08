@@ -54,7 +54,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     setValue,
     watch,
     setError,
-    clearErrors
+    clearErrors,
+    trigger
   } = useForm();
 
   // STATE VARIABLES
@@ -62,6 +63,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false
   });
   const [searchCompany, setSearchCompany] = useState({
     error: false,
@@ -407,9 +409,14 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             {isAmending && (
               <Button
                 value={'Complete Amendment'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
+                submit
+                onClick={() => {
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
                 }}
               />
             )}
@@ -418,20 +425,25 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 value={
                   isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
                 }
+                submit
                 primary={!searchCompany?.error}
                 disabled={
                   searchCompany?.error ||
                   disableForm ||
                   Object.keys(errors).length > 0
                 }
-                onClick={() => {
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
                   setIsLoading({
                     ...isLoading,
-                    submit: false,
                     preview: true,
+                    submit: false,
+                    amend: false,
                   });
                 }}
-                submit
               />
             )}
             <Button

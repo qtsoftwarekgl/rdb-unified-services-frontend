@@ -49,6 +49,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
     setValue,
     setError,
     clearErrors,
+    trigger,
     formState: { errors },
   } = useForm();
 
@@ -57,6 +58,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { user } = useSelector((state: RootState) => state.user);
@@ -71,6 +73,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
       setError('business_lines', {
         type: 'manual',
@@ -87,6 +90,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false
       });
       setError('business_lines', {
         type: 'manual',
@@ -117,7 +121,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       let active_tab = 'management';
       let active_step = 'board_of_directors';
 
-      if (status === 'in_preview') {
+      if (status === 'in_preview' || isLoading?.amend) {
         active_tab = 'preview_submission';
         active_step = 'preview_submission';
       }
@@ -135,6 +139,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
     }, 1000);
   };
@@ -477,10 +482,18 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             />
             {isAmending && (
               <Button
-                value={'Complete Amendment'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
+                submit
+                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                disabled={Object.keys(errors).length > 0 || disableForm}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors).length > 0) return;
+                  setIsLoading({
+                    ...isLoading,
+                    preview: false,
+                    submit: false,
+                    amend: true,
+                  });
                 }}
               />
             )}
@@ -501,7 +514,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                 }}
                 submit
                 primary
-                disabled={disableForm}
+                disabled={disableForm || Object.keys(errors).length > 0}
               />
             )}
             <Button
@@ -518,7 +531,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               }}
               submit
               primary
-              disabled={disableForm}
+              disabled={disableForm || Object.keys(errors).length > 0}
             />
           </menu>
         </fieldset>

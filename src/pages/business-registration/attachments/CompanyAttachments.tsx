@@ -52,14 +52,18 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     watch,
     setError,
     trigger,
-    clearErrors
+    clearErrors,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState({
+    submit: false,
+    amend: false,
+    isSubmitting: false,
+  });
   const [attachmentFiles, setAttachmentFiles] = useState<
     FileList | Array<File> | unknown
   >([]);
@@ -69,7 +73,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     attachment: boolean;
     first_name?: string;
     last_name?: string;
-    row_name: string
+    row_name: string;
   }>({
     attachment: false,
     row_name: '',
@@ -79,30 +83,51 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   useEffect(() => {
     if (Object?.keys(company_attachments).length) {
       if (Object.keys(company_attachments?.articles_of_association)?.length) {
-        setAttachmentFiles([...attachmentFiles, company_attachments?.articles_of_association]);
+        setAttachmentFiles([
+          ...attachmentFiles,
+          company_attachments?.articles_of_association,
+        ]);
       }
       if (Object.keys(company_attachments?.resolution)?.length) {
-        setAttachmentFiles([...attachmentFiles, company_attachments?.resolution]);
+        setAttachmentFiles([
+          ...attachmentFiles,
+          company_attachments?.resolution,
+        ]);
       }
       if (company_attachments?.shareholder_attachments?.length) {
-        setAttachmentFiles([...attachmentFiles, ...company_attachments?.shareholder_attachments]);
+        setAttachmentFiles([
+          ...attachmentFiles,
+          ...company_attachments?.shareholder_attachments,
+        ]);
       }
       if (company_attachments?.others?.length) {
-        setAttachmentFiles([...attachmentFiles, ...company_attachments?.others]);
+        setAttachmentFiles([
+          ...attachmentFiles,
+          ...company_attachments?.others,
+        ]);
       }
     }
   }, [company_attachments]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = async (data: FieldValues) => {
-    setIsLoading(true);
     await trigger();
     if (Object.keys(errors).length > 0) {
-      setIsLoading(false);
+      setIsLoading({
+        submit: false,
+        amend: false,
+        isSubmitting: false,
+      });
       return;
     }
+
+    setIsLoading({
+      submit: isLoading?.isSubmitting ? true : false,
+      amend: (isAmending && !isLoading?.isSubmitting) ? true : false,
+      isSubmitting: false,
+    });
+
     setTimeout(() => {
-      setIsLoading(false);
       dispatch(
         setUserApplications({
           entry_id,
@@ -131,8 +156,12 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
         })
       );
       dispatch(setBusinessCompletedStep('attachments'));
-      dispatch(setBusinessActiveStep("preview_submission"));
-      dispatch(setBusinessActiveTab("preview_submission"));
+      dispatch(setBusinessActiveStep('preview_submission'));
+      dispatch(setBusinessActiveTab('preview_submission'));
+      setIsLoading({
+        submit: false,
+        amend: false,
+      });
     }, 1000);
     return data;
   };
@@ -140,24 +169,24 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: "File name",
-      accessorKey: "name",
+      header: 'File name',
+      accessorKey: 'name',
     },
     {
-      header: "File size",
-      accessorKey: "size",
+      header: 'File size',
+      accessorKey: 'size',
     },
     {
-      header: "File type",
-      accessorKey: "type",
+      header: 'File type',
+      accessorKey: 'type',
     },
     {
-      header: "File source",
-      accessorKey: "source",
+      header: 'File source',
+      accessorKey: 'source',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -179,7 +208,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                   attachment: true,
                   row_name: row?.original?.name,
                 });
-              }} 
+              }}
             />
             <Modal
               isOpen={
@@ -258,7 +287,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
       },
     },
   ];
-
 
   if (!isOpen) return null;
 
@@ -514,25 +542,21 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
             />
             {isAmending && (
               <Button
-                value={'Complete Amendment'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                }}
+                disabled={disableForm || Object.keys(errors).length > 0}
+                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                submit
               />
             )}
             <Button
-              value={isLoading ? <Loader /> : 'Save & Continue'}
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
               primary
-              onClick={() => {
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    status: 'in_progress',
-                  })
-                );
-              }}
               submit
+              onClick={() => {
+                setIsLoading({
+                  ...isLoading,
+                  isSubmitting: true,
+                });
+              }}
               disabled={disableForm || Object.keys(errors).length > 0}
             />
           </menu>

@@ -61,7 +61,7 @@ const ApplicatinsList = ({
           }}
           value="Review"
           styled={false}
-          className="cursor-pointer bg-inherit text-primary"
+          className="cursor-pointer text-primary"
         />
       </menu>
     );

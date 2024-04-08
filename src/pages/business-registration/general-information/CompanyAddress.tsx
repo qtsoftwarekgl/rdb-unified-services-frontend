@@ -54,6 +54,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     formState: { errors },
     watch,
     setValue,
+    trigger
   } = useForm();
 
   // STATE VARIABLES
@@ -61,6 +62,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const { user } = useSelector((state: RootState) => state.user);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
@@ -103,17 +105,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -136,9 +128,21 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
         active_step = "preview_submission";
       }
 
+      if (isLoading?.amend) {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
+      }
+
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
-      dispatch(setBusinessCompletedStep("company_address"));
+      dispatch(setBusinessCompletedStep('company_address'));
+
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+        amend: false
+      });
     }, 1000);
   };
 
@@ -621,10 +625,17 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             />
             {isAmending && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveTab("preview_submission"));
+                submit
+                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors).length > 0) return;
+                  setIsLoading({
+                    ...isLoading,
+                    preview: false,
+                    submit: false,
+                    amend: true,
+                  });
                 }}
               />
             )}
@@ -643,6 +654,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     ...isLoading,
                     preview: true,
                     submit: false,
+                    amend: false,
                   });
                 }}
                 submit
@@ -656,6 +668,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   ...isLoading,
                   preview: false,
                   submit: true,
+                  amend: false,
                 });
                 dispatch(
                   setUserApplications({ entry_id, status: "in_progress" })

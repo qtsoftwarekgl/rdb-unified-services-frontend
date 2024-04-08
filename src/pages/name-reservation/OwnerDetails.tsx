@@ -17,6 +17,8 @@ import {
   setNameReservationCompletedStep,
   setNameReservationOwnerDetails,
 } from '../../states/features/nameReservationSlice';
+import { validNationalID } from '../../constants/Users';
+import validateInputs from '../../helpers/validations';
 
 type Props = {
   isOpen: boolean;
@@ -67,7 +69,6 @@ const OwnerDetails = ({ isOpen }: Props) => {
         ...searchMember,
         data: null,
       });
-      reset();
       dispatch(setNameReservationActiveTab('name_reservation'));
       dispatch(setNameReservationActiveStep('name_reservation'));
       dispatch(setNameReservationCompletedStep('owner_details'));
@@ -87,6 +88,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
       setValue('country', owner_details?.country);
       setValue('date_of_birth', owner_details?.date_of_birth);
       setValue('phone', owner_details?.phone);
+      setValue('name_owner', owner_details?.name_owner || 'owner');
 
       if (owner_details?.document_type === 'nid') {
         setValue('street_name', owner_details?.street_name);
@@ -117,22 +119,17 @@ const OwnerDetails = ({ isOpen }: Props) => {
               <ul className="flex items-center gap-3">
                 <Input
                   type="radio"
-                  name={field?.name}
-                  checked={!field?.value || field?.value === 'owner'}
-                  value={'owner'}
                   label="Myself"
-                  onChange={(e) => {
-                    field.onChange(e.target.value);
-                  }}
+                  checked={watch('name_owner') === 'owner'}
+                  {...field}
+                  value={'owner'}
                 />
                 <Input
                   type="radio"
-                  name={field?.name}
-                  value={'other'}
                   label="Someone else"
-                  onChange={(e) => {
-                    field.onChange(e.target.value);
-                  }}
+                  checked={watch('name_owner') === 'other'}
+                  {...field}
+                  value={'other'}
                 />
               </ul>
             );
@@ -162,22 +159,24 @@ const OwnerDetails = ({ isOpen }: Props) => {
                     <Select
                       options={options}
                       label="Document Type"
-                      defaultValue={
-                        options?.find(
-                          (document) =>
-                            document?.value === owner_details?.document_type
-                        ) || options[0]
-                      }
+                      defaultValue={owner_details?.document_type}
                       required
                       onChange={(e) => {
+                        reset({
+                          document_type: e,
+                          document_no: '',
+                          first_name: '',
+                          middle_name: '',
+                          last_name: '',
+                          name_owner: watch('name_owner'),
+                          phone: '',
+                          gender: '',
+                        });
                         field.onChange(e);
-                        if (e?.value === 'passport') {
-                          setValue('document_no', '');
                           setSearchMember({
                             ...searchMember,
                             data: null,
                           });
-                        }
                       }}
                     />
                   </label>
@@ -195,13 +194,10 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       ? 'Document number is required'
                       : false,
                   validate: (value) => {
-                    if (
-                      watch('document_type') === 'nid' &&
-                      value?.length !== 16
-                    ) {
-                      return 'Document number is invalid';
-                    }
-                    return true;
+                    return (
+                      validateInputs(value, 'nid') ||
+                      'Document number must be 16 characters'
+                    );
                   },
                 }}
                 render={({ field }) => {
@@ -213,41 +209,29 @@ const OwnerDetails = ({ isOpen }: Props) => {
                         defaultValue={owner_details?.document_no}
                         suffixIconHandler={async (e) => {
                           e.preventDefault();
-                          if (!field.value) {
-                            setError('document_no', {
-                              type: 'manual',
-                              message: 'Document number is required',
-                            });
-                            return;
-                          }
-                          if (field.value?.length !== 16) {
-                            clearErrors('document_no');
-                            setError('document_no', {
-                              type: 'manual',
-                              message: 'Document number must be 16 characters',
-                            });
-                            return;
-                          }
                           setSearchMember({
                             ...searchMember,
+                            data: null,
                             loading: true,
                             error: false,
                           });
                           setTimeout(() => {
-                            const randomNumber = Math.floor(Math.random() * 16);
+                            const randomNumber = Math.floor(Math.random() * 10);
                             const userDetails = userData[randomNumber];
 
-                            if (!userDetails) {
+                            if (field?.value !== String(validNationalID)) {
                               setSearchMember({
                                 ...searchMember,
                                 data: null,
                                 loading: false,
                                 error: true,
                               });
-                            }
-
-                            if (userDetails) {
-                              clearErrors();
+                              setError('document_no', {
+                                type: 'manual',
+                                message: 'Document number not found',
+                              });
+                            } else {
+                              clearErrors('document_no');
                               setSearchMember({
                                 ...searchMember,
                                 data: userDetails,
@@ -258,37 +242,26 @@ const OwnerDetails = ({ isOpen }: Props) => {
                               setValue('middle_name', userDetails?.middle_name);
                               setValue('last_name', userDetails?.last_name);
                               setValue('gender', userDetails?.data?.gender);
-                              setValue('phone', userDetails?.data?.phone);
                             }
                           }, 700);
                         }}
                         label="ID Document No"
                         suffixIconPrimary
                         placeholder="1 XXXX X XXXXXXX X XX"
+                        {...field}
                         onChange={async (e) => {
                           field.onChange(e);
-                          if (e?.target?.value?.length !== 16) {
-                            setError('document_no', {
-                              type: 'manual',
-                              message: 'Document number must be 16 characters',
-                            });
-                          } else {
-                            clearErrors('document_no');
-                            await trigger('document_no');
-                          }
+                          setSearchMember({
+                            ...searchMember,
+                            data: null,
+                          });
+                          await trigger('document_no');
                         }}
                       />
-                      {searchMember?.loading &&
-                        !errors?.document_no &&
-                        !searchMember?.error && (
-                          <span className="flex items-center gap-[2px] text-[13px]">
-                            <Loader size={4} /> Validating document
-                          </span>
-                        )}
-                      {searchMember?.error && !searchMember?.loading && (
-                        <span className="text-red-600 text-[13px]">
-                          Invalid document number
-                        </span>
+                      {searchMember?.loading && (
+                        <p className="text-[13px] flex items-center gap-1">
+                          <Loader size={4} /> Searching...
+                        </p>
                       )}
                       {errors?.document_no && (
                         <p className="text-red-500 text-[13px]">
@@ -450,94 +423,89 @@ const OwnerDetails = ({ isOpen }: Props) => {
                 );
               }}
             />
-            <Controller
-              name="country"
-              control={control}
-              defaultValue={owner_details?.country}
-              rules={{
-                required:
-                  watch('document_type') === 'passport'
-                    ? 'Nationality is required'
-                    : false,
-              }}
-              render={({ field }) => {
-                if (watch('document_type') === 'nid') return undefined;
-                return (
-                  <label className="w-[49%] flex flex-col gap-1 items-start">
-                    <Select
-                      isSearchable
-                      required
-                      label="Country"
-                      defaultValue={countriesList
-                        ?.filter(
-                          (country) => country?.code === owner_details?.country
-                        )
-                        .map((country) => {
-                          return {
-                            ...country,
-                            label: country.name,
-                            value: country?.code,
-                          };
-                        })}
-                      options={countriesList?.map((country) => {
-                        return {
-                          ...country,
-                          label: country.name,
-                          value: country?.code,
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
-                    {errors?.country && (
-                      <p className="text-red-500 text-sm">
-                        {String(errors?.country?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="date_of_birth"
-              control={control}
-              defaultValue={owner_details?.date_of_birth}
-              rules={{
-                required: 'Select date of birth',
-                validate: (value) => {
-                  if (moment(value).format() > moment(new Date()).format()) {
-                    return 'Select a valid date of birth';
-                  }
-                  return true;
-                },
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col items-start w-[49%] gap-1">
-                    <Input
-                      required
-                      defaultValue={owner_details?.date_of_birth}
-                      type="date"
-                      label="Date of birth"
-                      {...field}
-                    />
-                    {errors?.date_of_birth && (
-                      <p className="text-sm text-red-500">
-                        {String(errors?.date_of_birth?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
+            {watch('document_type') === 'passport' && (
+              <Controller
+                name="country"
+                control={control}
+                rules={{
+                  required:
+                    watch('document_type') === 'passport'
+                      ? 'Nationality is required'
+                      : false,
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="w-[49%] flex flex-col gap-1 items-start">
+                      <Select
+                        isSearchable
+                        required
+                        label="Country"
+                        options={countriesList
+                          ?.filter((country) => country?.code != 'RW')
+                          ?.map((country) => {
+                            return {
+                              ...country,
+                              label: country.name,
+                              value: country?.code,
+                            };
+                          })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                      {errors?.country && (
+                        <p className="text-red-500 text-sm">
+                          {String(errors?.country?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
+            {watch('document_type') === 'passport' && (
+              <Controller
+                name="date_of_birth"
+                control={control}
+                defaultValue={owner_details?.date_of_birth}
+                rules={{
+                  required:
+                    watch('document_type') === 'passport'
+                      ? 'Select date of birth'
+                      : false,
+                  validate: (value) => {
+                    if (moment(value).format() > moment(new Date()).format()) {
+                      return 'Select a valid date of birth';
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-[49%] gap-1">
+                      <Input
+                        required
+                        defaultValue={owner_details?.date_of_birth}
+                        type="date"
+                        label="Date of birth"
+                        {...field}
+                      />
+                      {errors?.date_of_birth && (
+                        <p className="text-sm text-red-500">
+                          {String(errors?.date_of_birth?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
             <Controller
               name="phone"
               control={control}
               rules={{
                 required: 'Phone number is required',
               }}
-              defaultValue={owner_details?.phone}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
@@ -553,10 +521,6 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -564,9 +528,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                             value: user?.phone,
                           };
                         })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
+                        {...field}
                       />
                     )}
                     {errors?.phone && (
@@ -640,6 +602,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
         <Button
           primary
           value={isLoading ? <Loader /> : 'Submit'}
+          disabled={searchMember?.loading || Object.keys(errors).length > 0}
           onClick={(e) => {
             e.preventDefault();
             dispatch(setNameReservationActiveTab('name_reservation'));

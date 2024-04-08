@@ -222,7 +222,6 @@ const BusinessRegistration = () => {
                   <PreviewSubmission
                     isOpen={business_active_step?.name === "preview_submission"}
                     business_application={businessApplication}
-                    status={status}
                   />
                 )}
               </Tab>

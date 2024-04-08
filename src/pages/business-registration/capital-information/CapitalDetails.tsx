@@ -64,7 +64,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState({
     preview: false,
-    submit: false
+    submit: false,
+    amend: false,
   });
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
   const [assignedShares, setAssignedShares] = useState<object>({
@@ -336,69 +337,110 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         />
         {isAmending && (
           <Button
-            value={'Complete Amendment'}
+            disabled={disableForm}
+            value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveTab('preview_submission'));
+
+              // SET ACTIVE TAB AND STEP
+              const active_tab = 'preview_submission';
+              const active_step = 'preview_submission';
+
+              // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+              if (
+                capital_details?.filter(
+                  (shareholder) => shareholder?.shares?.total_shares === 0
+                )?.length > 0
+              ) {
+                setError('total_shares', {
+                  type: 'manual',
+                  message:
+                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+                });
+                return;
+              }
+              setIsLoading({
+                ...isLoading,
+                submit: false,
+                preview: false,
+                amend: true,
+              });
+
+              setTimeout(() => {
+                setIsLoading({
+                  ...isLoading,
+                  submit: false,
+                  preview: false,
+                  amend: false,
+                });
+                clearErrors('total_shares');
+                dispatch(setBusinessCompletedStep('capital_details'));
+                dispatch(setBusinessActiveStep(active_step));
+                dispatch(setBusinessActiveTab(active_tab));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_step,
+                    active_tab,
+                  })
+                );
+              }, 1000);
             }}
           />
         )}
         {status === 'in_preview' && (
           <Button
-          value={isLoading?.preview ? <Loader /> : 'Save & Complete Preview'}
-          primary
-          disabled={disableForm}
-          onClick={(e) => {
-            e.preventDefault();
+            value={isLoading?.preview ? <Loader /> : 'Save & Complete Preview'}
+            primary
+            disabled={disableForm}
+            onClick={(e) => {
+              e.preventDefault();
 
-            // SET ACTIVE TAB AND STEP
-            let active_tab = 'beneficial_owners';
-            let active_step = 'beneficial_owners';
+              // SET ACTIVE TAB AND STEP
+              const active_tab = 'preview_submission';
+              const active_step = 'preview_submission';
 
-            if (status === 'in_preview') {
-              active_tab = 'preview_submission';
-              active_step = 'preview_submission';
-            }
-
-            // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-            if (
-              capital_details?.filter(
-                (shareholder) => shareholder?.shares?.total_shares === 0
-              )?.length > 0
-            ) {
-              setError('total_shares', {
-                type: 'manual',
-                message:
-                  'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-              });
-              return;
-            }
-            setIsLoading({
-              ...isLoading,
-              submit: false,
-              preview: true,
-            });
-
-            setTimeout(() => {
+              // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+              if (
+                capital_details?.filter(
+                  (shareholder) => shareholder?.shares?.total_shares === 0
+                )?.length > 0
+              ) {
+                setError('total_shares', {
+                  type: 'manual',
+                  message:
+                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+                });
+                return;
+              }
               setIsLoading({
                 ...isLoading,
+                amend: false,
                 submit: false,
-                preview: false,
+                preview: true,
               });
-              clearErrors('total_shares');
-              dispatch(setBusinessCompletedStep('capital_details'));
-              dispatch(setBusinessActiveStep(active_step));
-              dispatch(setBusinessActiveTab(active_tab));
-              dispatch(
-                setUserApplications({
-                  entry_id,
-                  active_step,
-                  active_tab,
-                })
-              );
-            }, 1000);
-          }}
-        />
+
+              setTimeout(() => {
+                setIsLoading({
+                  ...isLoading,
+                  submit: false,
+                  preview: false,
+                  amend: false,
+                });
+                clearErrors('total_shares');
+                dispatch(setBusinessCompletedStep('capital_details'));
+                dispatch(setBusinessActiveStep(active_step));
+                dispatch(setBusinessActiveTab(active_tab));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_step,
+                    active_tab,
+                  })
+                );
+              }, 1000);
+            }}
+          />
         )}
         <Button
           value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
@@ -421,6 +463,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             }
             setIsLoading({
               ...isLoading,
+              amend: false,
               submit: true,
               preview: false,
             });

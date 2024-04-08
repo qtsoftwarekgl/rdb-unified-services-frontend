@@ -29,20 +29,41 @@ export const generateUUID = () => {
 };
 
 export const formatCompanyData = (business) => {
+
+  if (business?.type === 'name_reservation') {
+    return {
+      ...business,
+      company_name: business?.name || 'N/A',
+      status: capitalizeString(business?.status),
+      id:
+        business?.id ||
+        Math.floor(Math.random() * 9000) + 1000,
+      entry_id: business?.entry_id,
+      reg_number: `REG-${(
+        business?.entry_id?.split("-")[0] || ""
+      ).toUpperCase()}`,
+      service_name: capitalizeString(business?.type),
+      submission_date: moment(business?.created_at).format("DD/MM/YYYY"),
+      path: business?.path,
+      active_tab: business?.active_tab,
+      active_step: business?.active_step,
+    };
+  }
+
   const company = business?.company_details;
   return {
     ...company,
-    company_name: company?.name,
+    company_name: company?.name || "N/A",
     status: capitalizeString(business?.status),
     id:
       business?.id ||
-      business?.entry_id ||
       Math.floor(Math.random() * 9000) + 1000,
+      entry_id: business?.entry_id,
     reg_number: `REG-${(
       business?.entry_id?.split("-")[0] || ""
     ).toUpperCase()}`,
     service_name: capitalizeString(business?.type),
-    submission_date: business?.created_at,
+    submission_date: moment(business?.created_at).format("DD/MM/YYYY"),
     path: business?.path,
     active_tab: business?.active_tab,
     active_step: business?.active_step,

@@ -67,6 +67,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
+  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [attachmentPreview, setAttachmentPreview] = useState<string>("");
 
   // NAVIGATION
@@ -830,7 +831,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               dispatch(
                 setUserApplications({
                   entry_id,
-                  type: "business_registration",
+                  type: 'business_registration',
                   company_details: business_application?.company_details,
                   company_address: business_application?.company_address,
                   company_activities: business_application?.company_activities,
@@ -844,8 +845,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   company_attachments:
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
-                  status: "submitted",
-                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
+                  status: isAmending ? 're_submitted' : 'submitted',
+                  created_at: moment(Date.now()).format('DD/MM/YYYY'),
                 })
               );
               dispatch(setBusinessCompletedStep("preview_submission"));
