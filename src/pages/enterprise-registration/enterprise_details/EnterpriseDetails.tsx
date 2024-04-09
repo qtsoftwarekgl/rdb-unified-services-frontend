@@ -82,16 +82,6 @@ export const EnterpriseDetails = ({
   } = useForm();
 
   useEffect(() => {
-    if (company_details) {
-      setValue("name", company_details?.name);
-      setSearchEnterprise({
-        ...searchEnterprise,
-        name: company_details?.name,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
     if (company_details?.owner_details) {
       setValue("document_type", company_details?.owner_details?.document_type);
       setValue("document_no", company_details?.owner_details?.document_no);
@@ -103,6 +93,11 @@ export const EnterpriseDetails = ({
       setValue("date_of_birth", company_details?.owner_details?.date_of_birth);
       setValue("phone", company_details?.owner_details?.phone);
       setValue("passport_no", company_details?.owner_details?.passport_no);
+      setValue("name", company_details?.name);
+      setSearchEnterprise({
+        ...searchEnterprise,
+        name: company_details?.name,
+      });
       setValue(
         "passport_expiry_date",
         company_details?.owner_details?.passport_expiry_date
@@ -119,12 +114,6 @@ export const EnterpriseDetails = ({
       }
     }
   }, [company_details?.owner_details, setValue]);
-
-  console.log(
-    ">>>>>>>>>>>>>>>>>>>>>>>",
-    company_details,
-    watch("document_type")
-  );
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
     setTimeout(() => {
@@ -185,7 +174,6 @@ export const EnterpriseDetails = ({
             <Controller
               name="name"
               control={control}
-              defaultValue={company_details?.name || watch("name")}
               rules={{
                 required: "Enterprise name is required",
               }}
@@ -349,9 +337,9 @@ export const EnterpriseDetails = ({
                             first_name: "",
                             middle_name: "",
                             last_name: "",
-                            name_owner: watch("name_owner"),
                             phone: "",
                             gender: "",
+                            name: watch("name"),
                           });
                           field.onChange(e);
                           setSearchMember({

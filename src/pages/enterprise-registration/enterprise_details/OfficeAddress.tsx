@@ -649,9 +649,10 @@ const OfficeAddress = ({
                   submit: true,
                   amend: false,
                 });
-                dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
-                );
+                if (status === "in_preview")
+                  dispatch(
+                    setUserApplications({ entry_id, status: "in_progress" })
+                  );
               }}
               primary
               submit

@@ -39,6 +39,7 @@ const BusinessActivity = ({
     setError,
     trigger,
     formState: { errors },
+    watch,
     clearErrors,
   } = useForm();
 
@@ -56,6 +57,9 @@ const BusinessActivity = ({
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const mainExists = enterprise_business_lines?.find(
+    (activity: object) => activity?.main === true
+  );
 
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
@@ -100,7 +104,6 @@ const BusinessActivity = ({
             <Select
               label="Select sector"
               required
-              defaultValue={businessActivities[0]?.id}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
@@ -122,12 +125,10 @@ const BusinessActivity = ({
             rules={{
               validate: () => {
                 // check if business lines have main business line
-                const mainExists = enterprise_business_lines?.find(
-                  (activity: object) => activity?.main === true
-                );
                 if (!mainExists) {
                   return "Please select a main business line";
                 }
+                return true;
               },
             }}
             control={control}
@@ -200,9 +201,6 @@ const BusinessActivity = ({
                   <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                     {enterprise_business_lines?.map(
                       (business_line: unknown, index: number) => {
-                        const mainExists = enterprise_business_lines?.find(
-                          (activity: object) => activity?.main === true
-                        );
                         const mainBusinessLine =
                           mainExists?.id === business_line?.id;
                         return (
@@ -386,7 +384,7 @@ const BusinessActivity = ({
               disabled={isFormDisabled}
               onClick={async () => {
                 await trigger();
-                if (Object.keys(errors)?.length) {
+                if (!mainExists) {
                   return;
                 }
                 setIsLoading({

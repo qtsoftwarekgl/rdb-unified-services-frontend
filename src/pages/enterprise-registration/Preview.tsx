@@ -7,7 +7,6 @@ import {
   resetToInitialState,
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-  setEnterpriseCompletedStep,
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";

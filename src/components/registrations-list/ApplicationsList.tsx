@@ -54,7 +54,6 @@ const ApplicatinsList = ({
         <FontAwesomeIcon
           onClick={(e) => {
             e.preventDefault();
-            console.log(row?.original);
             handleEditClick(row);
             handleClickAction();
           }}
