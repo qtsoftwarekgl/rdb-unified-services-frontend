@@ -147,34 +147,6 @@ export const foreignBranchRegistrationSlice = createSlice({
       label: "General Information",
       name: "general_information",
     },
-    foreign_company_details:
-      JSON.parse(String(localStorage.getItem("company_details"))) ||
-      null,
-    foreign_company_address:
-      JSON.parse(String(localStorage.getItem("foreign_company_address"))) ||
-      null,
-    foreign_company_activities:
-      JSON.parse(String(localStorage.getItem("foreign_company_activities"))) ||
-      null,
-    foreign_company_business_lines:
-      JSON.parse(
-        String(localStorage.getItem("foreign_company_business_lines"))
-      ) || [],
-    foreign_board_of_directors:
-      JSON.parse(String(localStorage.getItem("foreign_board_of_directors"))) ||
-      [],
-    foreign_senior_management:
-      JSON.parse(String(localStorage.getItem("foreign_senior_management"))) ||
-      [],
-    foreign_employment_info:
-      JSON.parse(String(localStorage.getItem("foreign_employment_info"))) ||
-      null,
-    foreign_beneficial_owners:
-      JSON.parse(String(localStorage.getItem("foreign_beneficial_owners"))) ||
-      [],
-    foreign_company_attachments:
-      JSON.parse(String(localStorage.getItem("foreign_company_attachments"))) ||
-      [],
   },
   reducers: {
     // SET REGISTRATION TABS
@@ -366,87 +338,6 @@ export const foreignBranchRegistrationSlice = createSlice({
         JSON.stringify(updatedRegistrationTabs)
       );
     },
-
-    // SET COMPANY DETAILS
-    setForeignCompanyDetails: (state, action) => {
-      state.foreign_company_details = action.payload;
-      localStorage.setItem(
-        "company_details",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET COMPANY ADDRESS
-    setForeignCompanyAddress: (state, action) => {
-      state.foreign_company_address = action.payload;
-      localStorage.setItem(
-        "foreign_company_address",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET COMPANY ACTIVITY
-    setForeignCompanyActivities: (state, action) => {
-      state.foreign_company_activities = action.payload;
-      localStorage.setItem(
-        "foreign_company_activities",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET COMPANY SUB ACTIVITIES
-    setForeignCompanySubActivities: (state, action) => {
-      state.foreign_company_business_lines = action.payload;
-      localStorage.setItem(
-        "foreign_company_business_lines",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET BOARD OF DIRECTORS
-    setForeignBoardDirectors: (state, action) => {
-      state.foreign_board_of_directors = action.payload;
-      localStorage.setItem(
-        "foreign_board_of_directors",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET SENIOR MANAGEMENT
-    setForeignSeniorManagement: (state, action) => {
-      state.foreign_senior_management = action.payload;
-      localStorage.setItem(
-        "foreign_senior_management",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET EMPLOYMENT INFO
-    setForeignEmploymentInfo: (state, action) => {
-      state.foreign_employment_info = action.payload;
-      localStorage.setItem(
-        "foreign_employment_info",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET BENEFICIAL OWNERS
-    setForeignBeneficialOwners: (state, action) => {
-      state.foreign_beneficial_owners = action.payload;
-      localStorage.setItem(
-        "foreign_beneficial_owners",
-        JSON.stringify(action.payload)
-      );
-    },
-
-    // SET COMPANY ATTACHMENTS
-    setForeignCompanyAttachments: (state, action) => {
-      state.foreign_company_attachments = action.payload;
-      localStorage.setItem(
-        "foreign_company_attachments",
-        JSON.stringify(action.payload)
-      );
-    },
   },
 });
 
@@ -456,15 +347,6 @@ export const {
   setForeignBusinessActiveTab,
   setForeignBusinessActiveStep,
   setForeignBusinessCompletedStep,
-  setForeignCompanyDetails,
-  setForeignCompanyAddress,
-  setForeignCompanyActivities,
-  setForeignCompanySubActivities,
   removeForeignBusinessCompletedStep,
-  setForeignBoardDirectors,
-  setForeignSeniorManagement,
-  setForeignEmploymentInfo,
-  setForeignBeneficialOwners,
-  setForeignCompanyAttachments,
   setForeignBusinessRegistrationTabs,
 } = foreignBranchRegistrationSlice.actions;

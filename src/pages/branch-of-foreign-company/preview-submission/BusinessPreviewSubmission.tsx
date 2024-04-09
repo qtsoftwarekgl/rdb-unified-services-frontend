@@ -3,18 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import PreviewCard from "../../../components/business-registration/PreviewCard";
 import {
-  setForeignBeneficialOwners,
-  setForeignBoardDirectors,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-  setForeignCompanyActivities,
-  setForeignCompanyAddress,
-  setForeignCompanyAttachments,
-  setForeignCompanyDetails,
-  setForeignCompanySubActivities,
-  setForeignEmploymentInfo,
-  setForeignSeniorManagement,
   setForeignBusinessRegistrationTabs,
   foreign_business_registration_tabs_initial_state,
 } from "../../../states/features/foreignBranchRegistrationSlice";
@@ -111,16 +102,19 @@ const PreviewSubmission = ({
         setActiveTab={setForeignBusinessActiveTab}
         entry_id={entry_id}
       >
-        {foreign_company_details && Object?.entries(foreign_company_details)
-          ?.filter(([key]) => key !== "step")
-          ?.map(([key, value], index: number) => {
-            return (
-              <p key={index} className="flex items-center gap-1">
-                <span className="font-semibold">{capitalizeString(key)}:</span>{" "}
-                {String(value) && capitalizeString(String(value))}
-              </p>
-            );
-          })}
+        {foreign_company_details &&
+          Object?.entries(foreign_company_details)
+            ?.filter(([key]) => key !== "step")
+            ?.map(([key, value], index: number) => {
+              return (
+                <p key={index} className="flex items-center gap-1">
+                  <span className="font-semibold">
+                    {capitalizeString(key)}:
+                  </span>{" "}
+                  {String(value) && capitalizeString(String(value))}
+                </p>
+              );
+            })}
       </PreviewCard>
       {/* COMPANY ADDRESS */}
       {foreign_company_address && (
@@ -432,20 +426,11 @@ const PreviewSubmission = ({
                   status: "pending_approval",
                 })
               );
-              dispatch(setForeignCompanyDetails(null));
-              dispatch(setForeignCompanyAddress(null));
-              dispatch(setForeignCompanyActivities(null));
-              dispatch(setForeignBoardDirectors([]));
-              dispatch(setForeignSeniorManagement([]));
-              dispatch(setForeignEmploymentInfo(null));
-              dispatch(setForeignBeneficialOwners([]));
-              dispatch(setForeignCompanyAttachments([]));
               dispatch(
                 setForeignBusinessCompletedStep("foreign_preview_submission")
               );
               dispatch(setForeignBusinessActiveTab("general_information"));
               dispatch(setForeignBusinessActiveStep("company_details"));
-              dispatch(setForeignCompanySubActivities([]));
               dispatch(
                 setForeignBusinessRegistrationTabs(
                   foreign_business_registration_tabs_initial_state
