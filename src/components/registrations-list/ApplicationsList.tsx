@@ -1,12 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition } from '@fortawesome/free-regular-svg-icons';
-import Table from '../../components/table/Table';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
+import Table from "../../components/table/Table";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../states/features/businessRegistrationSlice';
+} from "../../states/features/businessRegistrationSlice";
 
 type Props = {
   title: string;
@@ -31,13 +31,13 @@ const ApplicatinsList = ({
   // Render status cell
   const renderStatusCell = ({ row }) => {
     const statusColors = {
-      Verified: 'bg-[#82ffa3] text-[#0d7b3e]',
-      Rejected: 'bg-[#eac3c3] text-red-500',
-      approved: 'bg-[#e8ffef] text-[#409261]',
-      'Action Required': 'bg-[#e4e4e4] text-[#6b6b6b]',
-      Submitted: 'bg-[#e8ffef] text-black',
+      Verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      Rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#e8ffef] text-[#409261]",
+      "Action Required": "bg-[#e4e4e4] text-[#6b6b6b]",
+      Submitted: "bg-[#e8ffef] text-black",
     };
-    const statusColor = statusColors[row?.original?.status] || '';
+    const statusColor = statusColors[row?.original?.status] || "";
     return (
       <span
         className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
@@ -54,7 +54,7 @@ const ApplicatinsList = ({
         <FontAwesomeIcon
           onClick={(e) => {
             e.preventDefault();
-            console.log(row?.original)
+            console.log(row?.original);
             handleEditClick(row);
             handleClickAction();
           }}
@@ -66,26 +66,31 @@ const ApplicatinsList = ({
   };
 
   const columns = [
-    { header: 'Company Code', accessorKey: 'reg_number' },
-    { header: 'Company/Enterprise Name', accessorKey: 'company_name' },
-    { header: 'Company/Enterprise Type', accessorKey: 'service_name' },
+    { header: "Company Code", accessorKey: "reg_number" },
+    { header: "Company/Enterprise Name", accessorKey: "company_name" },
     {
-      header: 'Application Status',
-      accessorKey: 'status',
-      cell: renderStatusCell,
+      header: "Company/Enterprise Type",
+      accessorKey: "service_name",
+      filter: true,
     },
-    { header: 'Registration Date', accessorKey: 'submission_date' },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Application Status",
+      accessorKey: "status",
+      cell: renderStatusCell,
+      filter: true,
+    },
+    { header: "Registration Date", accessorKey: "submission_date" },
+    {
+      header: "Action",
+      accessorKey: "action",
       enableSorting: false,
       cell: renderActionCell,
     },
   ];
 
   const handleEditClick = (row) => {
-    dispatch(setBusinessActiveTab('general_information'));
-    dispatch(setBusinessActiveStep('company_details'));
+    dispatch(setBusinessActiveTab("general_information"));
+    dispatch(setBusinessActiveStep("company_details"));
 
     navigate(row.original?.path);
   };
@@ -102,7 +107,6 @@ const ApplicatinsList = ({
             columns={columns}
             data={data}
             className="bg-white rounded-xl"
-            showFilter={false}
           />
         ) : (
           <span className="flex items-center justify-start w-full">

@@ -57,8 +57,6 @@ const BusinessActivity = ({
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const { isAmending } = useSelector((state: RootState) => state.amendment);
 
-  console.log("enterprise_business_lines.......", errors);
-
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
     setTimeout(() => {

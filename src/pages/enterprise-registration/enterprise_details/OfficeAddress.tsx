@@ -73,11 +73,6 @@ const OfficeAddress = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -89,19 +84,25 @@ const OfficeAddress = ({
         })
       );
 
-      dispatch(setEnterpriseCompletedStep("office_address"));
-      dispatch(setEnterpriseCompletedTab("general_information"));
-      if (status === "in_preview" || isLoading.amend) {
+      if (status === "in_preview" || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
+        // SET ACTIVE STEP
         dispatch(setEnterpriseActiveTab("attachments"));
         dispatch(setEnterpriseActiveStep("attachments"));
       }
+      // SET CURRENT STEP AS COMPLETED
+      dispatch(setEnterpriseCompletedStep("office_address"));
+      dispatch(setEnterpriseCompletedTab("general_information"));
+
+      dispatch(setEnterpriseCompletedStep("office_address"));
+      dispatch(setEnterpriseCompletedTab("general_information"));
 
       setIsLoading({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
     }, 1000);
   };
@@ -111,8 +112,8 @@ const OfficeAddress = ({
     dispatch(
       setUserApplications({
         entry_id,
-        company_address: {
-          ...company_address,
+        office_address: {
+          ...enterprise_office_address,
           province: "",
           district: "",
           sector: "",
@@ -599,26 +600,31 @@ const OfficeAddress = ({
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
                 onClick={async () => {
                   await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
+                  if (Object.keys(errors).length > 0) return;
                   setIsLoading({
                     ...isLoading,
-                    amend: true,
                     preview: false,
                     submit: false,
+                    amend: true,
                   });
                 }}
-                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
+                value={
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                }
+                primary
                 onClick={async () => {
                   await trigger();
                   if (Object.keys(errors)?.length) {
                     return;
                   }
+                  dispatch(
+                    setUserApplications({ entry_id, status: "in_preview" })
+                  );
+
                   setIsLoading({
                     ...isLoading,
                     preview: true,
@@ -626,21 +632,12 @@ const OfficeAddress = ({
                     amend: false,
                   });
                 }}
-                value={
-                  isLoading?.preview && !Object.keys(errors)?.length ? (
-                    <Loader />
-                  ) : (
-                    "Save & Complete Preview"
-                  )
-                }
-                primary
                 submit
-                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
+                disabled={isFormDisabled}
               />
             )}
             <Button
-              value={isLoading.submit ? <Loader /> : "Save & Continue"}
-              disabled={isFormDisabled}
+              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
               onClick={async () => {
                 await trigger();
                 if (Object.keys(errors)?.length) {
@@ -648,8 +645,8 @@ const OfficeAddress = ({
                 }
                 setIsLoading({
                   ...isLoading,
-                  submit: true,
                   preview: false,
+                  submit: true,
                   amend: false,
                 });
                 dispatch(
@@ -658,6 +655,7 @@ const OfficeAddress = ({
               }}
               primary
               submit
+              disabled={isFormDisabled}
             />
           </menu>
         </fieldset>
