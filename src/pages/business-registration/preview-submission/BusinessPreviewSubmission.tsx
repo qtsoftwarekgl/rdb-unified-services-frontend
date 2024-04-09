@@ -37,6 +37,7 @@ import ViewDocument from "../../user-company-details/ViewDocument";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { previewUrl } from "../../../constants/authentication";
+import { setIsAmending } from "../../../states/features/amendmentSlice";
 
 interface business_application {
   entry_id: string;
@@ -857,6 +858,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   business_registration_tabs_initial_state
                 )
               );
+              dispatch(setIsAmending(false));
               navigate("/success", {
                 state: { redirectUrl: "/user-applications" },
               });

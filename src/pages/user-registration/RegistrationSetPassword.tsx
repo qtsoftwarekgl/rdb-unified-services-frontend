@@ -9,7 +9,7 @@ import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
-import validateInputs from '../../helpers/validations';
+import { validatePassword } from '../../helpers/strings';
 
 const RegistrationSetPassword = () => {
 
@@ -22,10 +22,14 @@ const RegistrationSetPassword = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    trigger
   } = useForm();
 
   // NAVIGATE
   const navigate = useNavigate();
+
+  // PASSWORD ERRORS
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
 
   // STATE VARIABLES
   const [isLoading, setIsLoading] = useState(false);
@@ -69,10 +73,13 @@ const RegistrationSetPassword = () => {
               rules={{
                 required: `${t('password-required')}`,
                 validate: (value) => {
-                  return (
-                    validateInputs(value, 'password') ||
-                    'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character.'
-                  );
+                  if (validatePassword(value).length > 0) {
+                    setPasswordErrors(validatePassword(value));
+                    return false;
+                  } else {
+                    setPasswordErrors([]);
+                    return true;
+                  }
                 },
               }}
               render={({ field }) => {
@@ -91,11 +98,28 @@ const RegistrationSetPassword = () => {
                         });
                       }}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger('password');
+                      }}
                     />
                     {errors.password && (
-                      <span className="text-[13px] text-red-500">
-                        {String(errors?.password?.message)}
-                      </span>
+                      <menu className="flex flex-col gap-1">
+                        <p className="text-[13px] text-red-500">
+                          {String(errors?.password?.message)}
+                        </p>
+                        {passwordErrors?.length > 0 && (
+                          <ul className="text-[13px] text-red-500">
+                            {passwordErrors?.map((error, index) => {
+                              return (
+                                <li key={index} className="list-disc ml-4 text-[12px]">
+                                  {error}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </menu>
                     )}
                   </label>
                 );

@@ -69,3 +69,22 @@ export const formatCompanyData = (business) => {
     active_step: business?.active_step,
   };
 };
+
+export const validatePassword = (password: string) => {
+  const missingCharacters = [];
+
+  if (!/(?=.*[A-Z])/.test(password)) {
+    missingCharacters.push('No uppercase letter');
+  }
+  if (!/(?=.*[a-z])/.test(password)) {
+    missingCharacters.push('No lowercase letter');
+  }
+  if (!/(?=.*\d)/.test(password)) {
+    missingCharacters.push('No number');
+  }
+  if (!/(?=.*[^\w\s])/.test(password)) {
+    missingCharacters.push('No special character');
+  }
+
+  return missingCharacters;
+}
