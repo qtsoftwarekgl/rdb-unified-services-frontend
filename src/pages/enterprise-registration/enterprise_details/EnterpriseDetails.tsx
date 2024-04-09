@@ -2,12 +2,7 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../states/store";
 import Input from "../../../components/inputs/Input";
-import {
-  faCheck,
-  faEllipsis,
-  faSearch,
-  faX,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSearch, faX } from "@fortawesome/free-solid-svg-icons";
 import Loader from "../../../components/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -19,10 +14,6 @@ import {
 } from "../../../states/features/enterpriseRegistrationSlice";
 import Button from "../../../components/inputs/Button";
 import Select from "../../../components/inputs/Select";
-import {
-  documentTypes,
-  dummyPhones,
-} from "../../../constants/businessRegistration";
 import { userData } from "../../../constants/authentication";
 import { countriesList } from "../../../constants/countries";
 import moment from "moment";
@@ -57,8 +48,6 @@ export const EnterpriseDetails = ({
     preview: false,
     amend: false,
   });
-  const [isNationalIdLoading, setIsNationalIdLoading] =
-    useState<boolean>(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
@@ -130,6 +119,12 @@ export const EnterpriseDetails = ({
       }
     }
   }, [company_details?.owner_details, setValue]);
+
+  console.log(
+    ">>>>>>>>>>>>>>>>>>>>>>>",
+    company_details,
+    watch("document_type")
+  );
 
   const onSubmitEnterpriseDetails = (data: FieldValues) => {
     setTimeout(() => {
@@ -329,9 +324,7 @@ export const EnterpriseDetails = ({
               <Controller
                 name="document_type"
                 rules={{ required: "Select document type" }}
-                defaultValue={
-                  company_details?.owner_details?.document_type || "nid"
-                }
+                defaultValue={company_details?.owner_details?.document_type}
                 control={control}
                 render={({ field }) => {
                   const options = [
@@ -659,6 +652,7 @@ export const EnterpriseDetails = ({
                               watch("gender") === "Male"
                             }
                             label="Male"
+                            value="Male"
                             name={field?.name}
                             onChange={(e) => {
                               field.onChange(e.target.value);
@@ -669,6 +663,7 @@ export const EnterpriseDetails = ({
                           />
                           <Input
                             type="radio"
+                            value={"Female"}
                             checked={
                               searchMember?.data?.gender === "Female" ||
                               watch("gender") === "Female"
@@ -849,7 +844,7 @@ export const EnterpriseDetails = ({
                 }}
               />
             </section>
-            {watch("document_type") !== "nid" && (
+            {watch("document_type") && watch("document_type") !== "nid" && (
               <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
                 <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
                   Passport copy <span className="text-red-600">*</span>
