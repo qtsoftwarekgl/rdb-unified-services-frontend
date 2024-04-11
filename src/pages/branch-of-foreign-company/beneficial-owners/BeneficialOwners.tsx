@@ -1335,7 +1335,7 @@ const BeneficialOwners = ({
           columns={columns}
           showFilter={false}
           showPagination={false}
-          tableTitle="Beneficial owners"
+          header="Beneficial owners"
         />
       </section>
       <menu

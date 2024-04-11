@@ -22,6 +22,7 @@ import { setFilterModal } from '../../states/features/tableSlice';
 import TablePagination from './TablePagination';
 import { setTotalPages } from '../../states/features/paginationSlice';
 import exportPDF from './Export';
+import DateRangePicker from '../inputs/DateRangePicker';
 
 interface Column extends ColumnDef<unknown> {
   header: string;
@@ -36,7 +37,7 @@ interface TableProps {
   pageSize?: number;
   showFilter?: boolean;
   className?: string;
-  tableTitle?: string;
+  header?: string;
   headerClassName?: string;
   columnsToExport?: Array<string>;
   exportOptions?: {
@@ -55,7 +56,7 @@ const Table: FC<TableProps> = ({
   pageSize,
   showFilter = true,
   className,
-  tableTitle,
+  header,
   headerClassName,
   showExport = false,
   exportFIleName,
@@ -132,6 +133,7 @@ const Table: FC<TableProps> = ({
             className="!w-full !min-w-[15vw]"
             placeholder="Search all columns..."
           />
+          <DateRangePicker setDate />
           {showExport && <Button
             className="!py-[5px] !my-auto"
             value={
@@ -216,14 +218,14 @@ const Table: FC<TableProps> = ({
               className={`flex border-[1.5px] border-background flex-col gap-4 overflow-hidden ${className}`}
             >
               <table className="">
-                {tableTitle && (
+                {header && (
                   <thead>
                     <tr>
                       <th
                         className="p-4 bg-[#5c7285] border-background uppercase font-semibold text-left text-white"
                         colSpan={columns.length}
                       >
-                        {tableTitle}
+                        {header}
                       </th>
                     </tr>
                   </thead>

@@ -831,7 +831,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              tableTitle="Board members"
+              header="Board members"
             />
           </section>
           {errors?.board_of_directors && (

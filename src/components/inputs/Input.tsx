@@ -38,6 +38,7 @@ interface InputProps {
   readOnly?: boolean;
   multiple?: boolean;
   labelClassName?: string;
+  range?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -150,7 +151,7 @@ const Input: FC<InputProps> = ({
 
   if (['date'].includes(type)) {
     return (
-      <label className="flex flex-col gap-[5px] w-full">
+      <label className={`flex flex-col gap-[5px] w-full ${labelClassName}`}>
         <p
           className={`${
             label ? 'flex items-center gap-[5px] text-[14px]' : 'hidden'
@@ -161,11 +162,7 @@ const Input: FC<InputProps> = ({
             *
           </span>
         </p>
-        <DatePicker
-          ref={ref}
-          placeholder={placeholder}
-          onChange={onChange || (() => {})}
-        />
+        <DatePicker onChange={onChange} value={value} />
       </label>
     );
   }

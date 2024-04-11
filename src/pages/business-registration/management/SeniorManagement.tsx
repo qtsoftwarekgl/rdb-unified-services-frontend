@@ -818,7 +818,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              tableTitle="Management members"
+              header="Management members"
             />
             {errors?.submit && (
               <p className="text-red-500 text-[13px] text-center my-2">

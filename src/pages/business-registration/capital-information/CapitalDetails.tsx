@@ -222,7 +222,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       <menu className="flex flex-col w-full gap-2">
         {shareholders?.length > 0 ? (
           <Table
-            tableTitle="Shareholders"
+            header="Shareholders"
             data={
               capital_details?.length > 0
                 ? capital_details?.map(

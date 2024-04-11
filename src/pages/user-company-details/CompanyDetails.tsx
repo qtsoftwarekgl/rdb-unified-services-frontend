@@ -298,7 +298,7 @@ const CompanyDetails = () => {
                     };
                   })}
                   className="bg-white"
-                  tableTitle="Management Members"
+                  header="Management Members"
                 />
               </AccordionContent>
             </AccordionItem>
@@ -411,7 +411,7 @@ const CompanyDetails = () => {
                     };
                   })}
                   className="bg-white"
-                  tableTitle="shareholders"
+                  header="shareholders"
                 />
               </AccordionContent>
             </AccordionItem>
@@ -435,7 +435,7 @@ const CompanyDetails = () => {
                     };
                   })}
                   className="bg-white"
-                  tableTitle="Management Members"
+                  header="Management Members"
                 />
               </AccordionContent>
             </AccordionItem>
@@ -466,7 +466,7 @@ const CompanyDetails = () => {
                     };
                   })}
                   className="bg-white"
-                  tableTitle="Beneficial Owners"
+                  header="Beneficial Owners"
                 />
               </AccordionContent>
             </AccordionItem>

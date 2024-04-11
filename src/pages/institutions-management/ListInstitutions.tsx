@@ -8,7 +8,12 @@ import { institutions } from '../../constants/dashboard';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
-import { setAddInstitutionModal, setEditInstitutionModal, setInstitution, setInstitutionsList } from '../../states/features/institutionSlice';
+import {
+  setAddInstitutionModal,
+  setEditInstitutionModal,
+  setInstitution,
+  setInstitutionsList,
+} from '../../states/features/institutionSlice';
 import AddInstitution from './AddInstitution';
 import { useEffect } from 'react';
 import EditInstitution from './EditInstitution';
