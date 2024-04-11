@@ -86,22 +86,24 @@ const UserApplications = () => {
   function renderActionCell({ row }) {
     return (
       <menu className="flex items-center gap-2 cursor-pointer">
-        <FontAwesomeIcon
+        <Button
           onClick={(e) => {
             e.preventDefault();
-            navigate(`/company-details/${row?.original?.id}`);
+            navigate(`/company-details/${row?.original?.entry_id}`);
           }}
-          icon={faEye}
-          className="text-primary"
+          value="View"
+          styled={false}
+          className="cursor-pointer hover:underline text-primary"
         />
-        {hasComments(row?.original?.id) && (
-          <FontAwesomeIcon
+        {hasComments(row?.original?.entry_id) && (
+          <Button
             onClick={(e) => {
               e.preventDefault();
               handleEditClick(row);
             }}
-            icon={faEdit}
-            className="text-red-500 cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+            value="Resolve Comments"
+            styled={false}
+            className="!text-red-500  !truncate hover:underline cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
           />
         )}
       </menu>
