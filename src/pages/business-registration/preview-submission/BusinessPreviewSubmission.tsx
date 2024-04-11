@@ -283,7 +283,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Table
           showFilter={false}
           showPagination={false}
-          tableTitle="Board of directors"
+          header="Board of directors"
           columns={managementColumns}
           data={
             business_application?.board_of_directors?.length > 0
@@ -319,7 +319,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Table
           showFilter={false}
           showPagination={false}
-          tableTitle="Senior Management"
+          header="Senior Management"
           columns={managementColumns}
           data={
             business_application?.senior_management?.length > 0
@@ -451,7 +451,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               : []
           }
           columns={shareholdersColumns}
-          tableTitle="Shareholders"
+          header="Shareholders"
           showFilter={false}
           showPagination={false}
         />
@@ -467,7 +467,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         setActiveTab={setBusinessActiveTab}
       >
         <Table
-          tableTitle="Capital Details"
+          header="Capital Details"
           data={
             business_application?.capital_details?.length > 0
               ? business_application?.capital_details?.map((shareholder) => {
@@ -526,7 +526,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               : []
           }
           columns={beneficialOwnersColumns}
-          tableTitle="Beneficial owners"
+          header="Beneficial owners"
           showFilter={false}
           showPagination={false}
         />

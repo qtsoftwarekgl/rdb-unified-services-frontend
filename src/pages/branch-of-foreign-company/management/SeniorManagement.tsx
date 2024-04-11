@@ -662,7 +662,7 @@ const SeniorManagement = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              tableTitle="Management members"
+              header="Management members"
             />
             {errors?.submit && (
               <p className="text-red-500 text-[15px] text-center">

@@ -129,7 +129,13 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             render={({ field }) => {
               return (
                 <label className="flex flex-col w-full gap-1">
-                  <Input label="Expiry Date" type="date" required {...field} />
+                  <Input
+                    range
+                    label="Expiry Date"
+                    type="date"
+                    required
+                    {...field}
+                  />
                   {errors?.expiryDate && (
                     <p className="text-[13px] text-red-500">
                       {String(errors?.expiryDate?.message)}

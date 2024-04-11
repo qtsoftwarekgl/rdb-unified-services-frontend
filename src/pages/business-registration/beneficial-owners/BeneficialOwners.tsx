@@ -1551,7 +1551,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           columns={columns}
           showFilter={false}
           showPagination={false}
-          tableTitle="Beneficial owners"
+          header="Beneficial owners"
         />
       </section>
       <menu
