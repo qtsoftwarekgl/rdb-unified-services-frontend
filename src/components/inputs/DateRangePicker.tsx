@@ -1,5 +1,3 @@
-import * as React from "react"
-import { CalendarIcon } from "@radix-ui/react-icons"
 import { addDays, format } from "date-fns"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
@@ -10,11 +8,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCalendarWeek } from "@fortawesome/free-solid-svg-icons"
+import { HTMLAttributes, useState } from "react"
 
 const DateRangePicker = ({
   className,
-}: React.HTMLAttributes<HTMLDivElement>) => {
-  const [date, setDate] = React.useState<DateRange | undefined>({
+}: HTMLAttributes<HTMLDivElement>) => {
+  const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
   })
@@ -27,11 +28,11 @@ const DateRangePicker = ({
             id="date"
             variant={'outline'}
             className={cn(
-              'w-full justify-start text-left font-normal h-full',
+              'w-full justify-start text-left font-normal',
               !date && 'text-muted-foreground'
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <FontAwesomeIcon icon={faCalendarWeek} className="mr-2 h-4 w-4 text-primary" />
             {date?.from ? (
               date.to ? (
                 <>

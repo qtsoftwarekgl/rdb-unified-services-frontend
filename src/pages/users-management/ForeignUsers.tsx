@@ -24,7 +24,6 @@ const ForeignUsers = () => {
     {
       header: "Application Status",
       accessorKey: "application_status",
-      filter: true,
       cell: ({ row }) => {
         return (
           <span

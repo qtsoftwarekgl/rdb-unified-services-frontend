@@ -41,7 +41,6 @@ const ListRoles = () => {
     {
       header: 'Role',
       accessorKey: 'name',
-      filter: true,
     },
     {
       header: 'Description',
@@ -68,7 +67,6 @@ const ListRoles = () => {
     {
       header: 'Status',
       accessorKey: 'status',
-      filter: true,
       cell: ({ row }) => {
         const status = row?.original?.status;
         return (
@@ -89,7 +87,6 @@ const ListRoles = () => {
     {
       header: 'Added By',
       accessorKey: 'user_name',
-      filter: true,
     },
     {
       header: 'Date Added',

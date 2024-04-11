@@ -77,7 +77,6 @@ const ApplicatinsList = ({
     {
       header: "Application Status",
       accessorKey: "status",
-      filter: true,
       cell: renderStatusCell,
     },
     { header: "Registration Date", accessorKey: "submission_date" },

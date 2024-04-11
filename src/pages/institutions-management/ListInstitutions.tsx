@@ -47,7 +47,6 @@ const ListInstitutions = () => {
     {
       header: 'Type',
       accessorKey: 'type',
-      filter: true,
     },
     {
       header: 'Date Added',
