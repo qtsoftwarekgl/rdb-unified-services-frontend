@@ -1,11 +1,11 @@
-import { faEdit } from '@fortawesome/free-regular-svg-icons';
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
-import ApplicatinsList from '../../components/registrations-list/ApplicationsList';
-import UserLayout from '../../containers/UserLayout';
-import { setIsAmending } from '../../states/features/amendmentSlice';
-import { capitalizeString, formatCompanyData } from '../../helpers/strings';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../states/store';
+import ApplicatinsList from "../../components/registrations-list/ApplicationsList";
+import UserLayout from "../../containers/UserLayout";
+import { setIsAmending } from "../../states/features/amendmentSlice";
+import { capitalizeString, formatCompanyData } from "../../helpers/strings";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../states/store";
 
 const AmendCompanyDetails = () => {
   const { user_applications } = useSelector(
@@ -22,7 +22,7 @@ const AmendCompanyDetails = () => {
 
   const companies = user_applications
     .map(formatCompanyData)
-    .filter((company) => !(capitalizeString(company.status) === 'In Review'))
+    .filter((company) => capitalizeString(company.status) === "Approved")
     .sort((a, b) => sortBySubmissionDate(a, b));
 
   const handleClickAction = () => {
