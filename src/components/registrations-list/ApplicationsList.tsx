@@ -66,13 +66,11 @@ const ApplicatinsList = ({
     {
       header: "Company/Enterprise Type",
       accessorKey: "service_name",
-      filter: true,
     },
     {
       header: "Application Status",
       accessorKey: "status",
       cell: renderStatusCell,
-      filter: true,
     },
     { header: "Registration Date", accessorKey: "submission_date" },
     {

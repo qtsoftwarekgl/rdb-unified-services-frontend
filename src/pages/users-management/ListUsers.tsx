@@ -9,6 +9,8 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import AddUser from "./AddUser";
 import ViewUser from "./ViewUser";
+import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
+import { Row } from "@tanstack/react-table";
 
 const ListUsers = () => {
   // COLUMNS
@@ -17,14 +19,34 @@ const ListUsers = () => {
 
   const columns = [
     {
-      header: "No",
-      id: "no",
-      accessorKey: "no",
+      header: 'No',
+      id: 'no',
+      accessorKey: 'no',
+      header: ({ table }) => {
+        return <RowSelectionCheckbox isHeader table={table} />;
+      },
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          name: string;
+          image: string;
+        }>;
+      }) => {
+        return <RowSelectionCheckbox row={row} />;
+      },
     },
     {
-      header: "Name",
-      accessorKey: "name",
-      cell: ({ row }: { row: unknown }) => {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          name: string;
+          image: string;
+        }>;
+      }) => {
         return (
           <menu className="flex items-center justify-start gap-3">
             <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
@@ -39,27 +61,61 @@ const ListUsers = () => {
       },
     },
     {
-      header: "Email",
-      accessorKey: "email",
-      filter: true,
+      id: 'email',
+      header: 'Email',
+      accessorKey: 'email',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
     },
     {
-      header: "Role",
-      accessorKey: "role",
-      filter: true,
+      header: 'Role',
+      accessorKey: 'role',
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: {
+            role: string;
+          };
+        };
+      }) => {
+        return (
+          <p className={`px-2 py-1 text-[13px]`}>
+            {capitalizeString(row?.original?.role)}
+          </p>
+        );
+      },
     },
     {
-      header: "Status",
-      accessorKey: "status",
-      filter: true,
+      header: 'Status',
+      accessorKey: 'status',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: {
+            status: string;
+          };
+        };
+      }) => {
+        return (
+          <p className={`px-2 py-1 text-[13px]`}>
+            {capitalizeString(row?.original?.status)}
+          </p>
+        );
+      },
     },
     {
-      header: "Date Added",
-      accessorKey: "created_at",
+      header: 'Date Added',
+      accessorKey: 'created_at',
     },
     {
-      header: "",
-      accessorKey: "actions",
+      header: '',
+      accessorKey: 'actions',
       cell: ({ row }: { row: unknown }) => {
         return (
           <menu
@@ -101,8 +157,6 @@ const ListUsers = () => {
                 ...user,
                 no: index + 1,
                 name: `${user?.first_name} ${user?.last_name}`,
-                role: capitalizeString(user?.role),
-                status: capitalizeString(user?.status),
                 created_at: formatDate(user?.created_at),
               };
             })}

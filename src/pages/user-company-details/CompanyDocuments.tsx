@@ -26,7 +26,6 @@ const CompanyDocuments = () => {
     {
       header: "Document Type",
       accessorKey: "documentType",
-      filter: true,
     },
     {
       header: "Document Name",

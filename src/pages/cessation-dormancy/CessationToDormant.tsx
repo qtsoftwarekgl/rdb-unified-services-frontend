@@ -5,7 +5,7 @@ import { cessationCompanies } from "../../constants/businessRegistration";
 import Input from "../../components/inputs/Input";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/inputs/Button";
 import Table from "../../components/table/Table";
 import { useNavigate } from "react-router-dom";
