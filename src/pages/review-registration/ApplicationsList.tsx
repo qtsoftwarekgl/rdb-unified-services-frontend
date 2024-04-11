@@ -92,8 +92,9 @@ const ApplicatinsList = ({
   const handleEditClick = (e, row) => {
     e.preventDefault();
     const company = user_applications?.find(
-      (application) => application.entry_id === row?.original?.id
+      (application) => application.entry_id === row?.original?.entry_id
     );
+
     if (!company) return;
 
     dispatch(setBusinessActiveTab("general_information"));

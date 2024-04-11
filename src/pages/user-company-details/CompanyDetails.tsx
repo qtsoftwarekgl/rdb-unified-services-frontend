@@ -31,6 +31,7 @@ const CompanyDetails = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
+
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
