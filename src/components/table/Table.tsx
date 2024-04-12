@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,7 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from '@tanstack/react-table';
 
 import {
   Table as DataTable,
@@ -21,27 +21,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 
-import { DataTablePagination } from "./TablePagination"
-import { DataTableToolbar } from "./TableToolbar"
+import { DataTablePagination } from './TablePagination';
+import TableToolbar from './TableToolbar';
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  rowClickHandler: undefined | ((row: TData) => void);
 }
 
 export default function Table<TData, TValue>({
   columns,
   data,
+  rowClickHandler = undefined,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({})
+  const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+    React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -63,20 +65,20 @@ export default function Table<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-  })
+  });
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <TableToolbar table={table} columns={columns} />
       <div className="rounded-md border">
         <DataTable>
-          <TableHeader>
+          <TableHeader className="px-0">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
-                      className="text-[14px]"
+                      className="text-[14px] text-black px-0"
                       key={header.id}
                       colSpan={header.colSpan}
                     >
@@ -98,9 +100,27 @@ export default function Table<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className={`px-0 py-2 ${
+                    rowClickHandler ? 'cursor-pointer' : ''
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    rowClickHandler &&
+                      row?.id !== 'no' &&
+                      rowClickHandler(row.original);
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell className="text-[13px]" key={cell.id}>
+                    <TableCell
+                      className="text-[13px] px-0 py-2"
+                      key={cell.id}
+                      onClick={(e) => {
+                        if (cell.column.id === 'no') {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

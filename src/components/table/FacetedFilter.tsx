@@ -22,6 +22,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFilter } from "@fortawesome/free-solid-svg-icons"
+import { capitalizeString } from "@/helpers/strings"
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -44,8 +45,15 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="shadow-none text-[13px] font-normal flex items-center gap-2">
-          <FontAwesomeIcon icon={faFilter} className="text-primary text-opacity-90" />
+        <Button
+          variant="outline"
+          size="sm"
+          className="shadow-none text-[13px] font-normal flex items-center gap-2"
+        >
+          <FontAwesomeIcon
+            icon={faFilter}
+            className="text-primary text-opacity-90"
+          />
           <p className="text-[13px]">{title}</p>
           {selectedValues?.size > 0 && (
             <>
@@ -89,49 +97,51 @@ export function DataTableFacetedFilter<TData, TValue>({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selectedValues.has(option.value)
+                const isSelected = selectedValues.has(option.value);
                 return (
                   <CommandItem
-                  className="flex items-center w-full"
+                    className="flex items-center w-full"
                     key={option.value}
                     onClick={(e) => {
-                      console.log(e)
+                      console.log(e);
                     }}
                     onSelect={() => {
                       if (isSelected) {
-                        selectedValues.delete(option.value)
+                        selectedValues.delete(option.value);
                       } else {
-                        selectedValues.add(option.value)
+                        selectedValues.add(option.value?.split(',')[0]);
                       }
-                      const filterValues = Array.from(selectedValues)
+                      const filterValues = Array.from(selectedValues);
                       column?.setFilterValue(
                         filterValues.length ? filterValues : undefined
-                      )
+                      );
                     }}
                   >
                     <figure
                       className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary cursor-pointer',
                         isSelected
-                          ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible"
+                          ? 'bg-primary text-primary-foreground'
+                          : 'opacity-100 [&_svg]:invisible'
                       )}
                     >
-                      <CheckIcon className={cn("h-4 w-4 rounded-md cursor-pointer")} onClick={(e) => {
-                        console.log(e)
-                      }} />
+                      <CheckIcon
+                        className={cn('h-4 w-4 rounded-md cursor-pointer')}
+                      />
                     </figure>
                     {option.icon && (
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <p className="text-[13px]">{option.label}</p>
+                    <p className="text-[13px] text-black">
+                      {capitalizeString(option.label)}
+                    </p>
                     {facets?.get(option.value) && (
-                      <p className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
+                      <p className="flex h-4 w-4 items-center justify-center font-mono text-xs">
                         {facets.get(option.value)}
                       </p>
                     )}
                   </CommandItem>
-                )
+                );
               })}
             </CommandGroup>
             {selectedValues.size > 0 && (
@@ -151,5 +161,5 @@ export function DataTableFacetedFilter<TData, TValue>({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

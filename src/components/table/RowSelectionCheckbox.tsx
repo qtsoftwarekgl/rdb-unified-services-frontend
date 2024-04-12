@@ -28,7 +28,11 @@ const RowSelectionCheckbox: FC<RowSelectionCheckboxProps> = ({
 
   if (isHeader) {
     return (
-      <Checkbox
+      <figure className='px-2' onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}>
+        <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
@@ -36,14 +40,17 @@ const RowSelectionCheckbox: FC<RowSelectionCheckboxProps> = ({
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
+      </figure>
     );
   } else {
     return (
-      <Checkbox
+      <figure className='px-2'>
+        <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
+      </figure>
     );
   }
 };

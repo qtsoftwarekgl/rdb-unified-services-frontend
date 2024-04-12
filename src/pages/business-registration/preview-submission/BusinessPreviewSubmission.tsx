@@ -53,6 +53,7 @@ interface business_application {
   capital_details: business_capital_details[];
   beneficial_owners: business_beneficial_owners[];
   company_attachments: business_company_attachments;
+  status: string
 }
 
 interface PreviewSubmissionProps {
@@ -68,7 +69,6 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [attachmentPreview, setAttachmentPreview] = useState<string>("");
 
   // NAVIGATION
@@ -846,7 +846,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   company_attachments:
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
-                  status: isAmending ? 're_submitted' : 'submitted',
+                  status:
+                    business_application?.status === 'action_required'
+                      ? 're_submitted'
+                      : 'submitted',
                   created_at: moment(Date.now()).format('DD/MM/YYYY'),
                 })
               );
