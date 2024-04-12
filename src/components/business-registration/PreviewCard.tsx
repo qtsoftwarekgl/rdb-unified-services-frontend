@@ -13,7 +13,7 @@ interface PreviewCardProps {
   children: ReactNode;
   stepName: string;
   tabName: string;
-  entry_id?: string;
+  entry_id?: string | null;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
@@ -40,7 +40,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
             e.preventDefault();
             dispatch(setActiveStep(stepName));
             dispatch(setActiveTab(tabName));
-            dispatch(setUserApplications({ entry_id, status: 'in_preview' }));
+            dispatch(setUserApplications({ entry_id, status: "in_preview" }));
           }}
           className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
         />
