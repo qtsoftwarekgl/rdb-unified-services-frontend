@@ -849,10 +849,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
                   status:
-                    business_application?.status === 'action_required'
-                      ? 're_submitted'
-                      : 'submitted',
-                  created_at: moment(Date.now()).format('DD/MM/YYYY'),
+                    status === "is_Amending" ? "re_submitted" : "submitted",
+                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
                 })
               );
               dispatch(setBusinessCompletedStep("preview_submission"));
