@@ -54,7 +54,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     formState: { errors },
     watch,
     setValue,
-    trigger
+    trigger,
   } = useForm();
 
   // STATE VARIABLES
@@ -65,7 +65,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     amend: false,
   });
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // RESET COMPANY ADDRESS
@@ -129,19 +128,19 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       }
 
       if (isLoading?.amend) {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
+        active_tab = "preview_submission";
+        active_step = "preview_submission";
       }
 
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
-      dispatch(setBusinessCompletedStep('company_address'));
+      dispatch(setBusinessCompletedStep("company_address"));
 
       setIsLoading({
         ...isLoading,
         submit: false,
         preview: false,
-        amend: false
+        amend: false,
       });
     }, 1000);
   };
@@ -623,10 +622,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 dispatch(setBusinessActiveStep("company_details"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
                 onClick={async () => {
                   await trigger();
                   if (Object.keys(errors).length > 0) return;

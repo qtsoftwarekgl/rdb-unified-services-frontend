@@ -21,18 +21,50 @@ const Home = () => {
     },
   ];
 
-  const filteredSections = defaultSections.filter(
-    (section) =>
-      section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      section.links
-        .flat()
-        .some((link) =>
-          link.label.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-  );
+  function searchInSectionData(query: string) {
+    const matches = [];
+    const queryLowerCase = query.toLowerCase();
+
+    for (let i = 0; i < defaultSections.length; i++) {
+      const section = defaultSections[i];
+      const sectionMatches = {
+        title: section.title,
+        links: [],
+      };
+
+      if (section.title.toLowerCase().includes(queryLowerCase)) {
+        matches.push(sectionMatches);
+      }
+
+      const linkMatches = [];
+      for (let j = 0; j < section.links.length; j++) {
+        const links = section.links[j];
+        for (let k = 0; k < links.length; k++) {
+          const link = links[k];
+          if (link.label.toLowerCase().includes(queryLowerCase)) {
+            linkMatches.push(link);
+          }
+        }
+      }
+
+      if (linkMatches.length > 0) {
+        sectionMatches.links.push(linkMatches);
+        if (!section.title.toLowerCase().includes(queryLowerCase)) {
+          matches.push(sectionMatches);
+        }
+      }
+    }
+
+    return matches.length > 0 ? matches : [];
+  }
+
+  const filteredSections =
+    (searchQuery && searchInSectionData(searchQuery)) || defaultSections;
 
   const registrationServices = [
-    { component: <BusinessRegistrationServices sections={filteredSections} /> },
+    {
+      component: <BusinessRegistrationServices sections={filteredSections} />,
+    },
     { component: <MortgageRegistrationServices /> },
   ];
 

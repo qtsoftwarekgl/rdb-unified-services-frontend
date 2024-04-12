@@ -24,13 +24,15 @@ import { cellsList } from "../../../constants/cells";
 import { villagesList } from "../../../constants/villages";
 
 interface PreviewSubmissionProps {
-  entry_id: string | undefined;
+  entry_id: string | null;
   current_application: any;
+  status: string;
 }
 
 const PreviewSubmission = ({
   entry_id,
   current_application,
+  status,
 }: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -423,7 +425,8 @@ const PreviewSubmission = ({
               dispatch(
                 setUserApplications({
                   entry_id,
-                  status: "pending_approval",
+                  status:
+                    status === "action_required" ? "re_submitted" : "submitted",
                 })
               );
               dispatch(

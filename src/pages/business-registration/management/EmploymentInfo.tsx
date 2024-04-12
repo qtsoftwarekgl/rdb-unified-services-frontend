@@ -25,7 +25,7 @@ interface EmploymentInfoProps {
   isOpen: boolean;
   employment_info: business_employment_info;
   entry_id: string | null;
-  status: string
+  status: string;
 }
 
 const EmploymentInfo: FC<EmploymentInfoProps> = ({
@@ -48,19 +48,18 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
-    amend: false
+    amend: false,
   });
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
-  const disableForm = RDBAdminEmailPattern.test(user?.email)
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // SET DEFAULT VALUES
   useEffect(() => {
     if (employment_info) {
-      setValue('has_employees', employment_info?.has_employees);
-      setValue('hiring_date', employment_info?.hiring_date);
-      setValue('employees_no', employment_info?.employees_no);
-      setValue('reference_date', employment_info?.reference_date);
+      setValue("has_employees", employment_info?.has_employees);
+      setValue("hiring_date", employment_info?.hiring_date);
+      setValue("employees_no", employment_info?.employees_no);
+      setValue("reference_date", employment_info?.reference_date);
     }
   }, [employment_info, setValue]);
 
@@ -70,25 +69,25 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: 'capital_information',
-          active_step: 'share_details',
+          active_tab: "capital_information",
+          active_step: "share_details",
           employment_info: {
             ...data,
-            step: 'employment_info',
+            step: "employment_info",
           },
         })
       );
 
       // SET ACTIVE TAB AND STEP
-      let active_tab = 'capital_information';
-      let active_step = 'share_details';
+      let active_tab = "capital_information";
+      let active_step = "share_details";
 
-      if (status === 'in_preview' || isLoading?.amend) {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
+      if (status === "in_preview" || isLoading?.amend) {
+        active_tab = "preview_submission";
+        active_step = "preview_submission";
       }
 
-      dispatch(setBusinessCompletedStep('employment_info'));
+      dispatch(setBusinessCompletedStep("employment_info"));
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
 
@@ -111,23 +110,23 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
             name="has_employees"
             control={control}
             defaultValue={employment_info?.has_employees}
-            rules={{ required: 'Select a choice' }}
+            rules={{ required: "Select a choice" }}
             render={({ field }) => {
               return (
                 <menu className="flex flex-col w-full gap-3">
                   <h4 className="flex items-center gap-1 text-[15px]">
-                    Does the company have employees?{' '}
+                    Does the company have employees?{" "}
                     <span className="text-red-600">*</span>
                   </h4>
                   <ul className="flex items-center gap-6">
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch('has_employees') === 'yes'}
+                      checked={watch("has_employees") === "yes"}
                       name={field?.name}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setValue(field?.name, 'yes');
+                          setValue(field?.name, "yes");
                         }
                       }}
                     />
@@ -135,10 +134,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                       type="radio"
                       label="No"
                       name={field?.name}
-                      checked={watch('has_employees') === 'no'}
+                      checked={watch("has_employees") === "no"}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setValue(field?.name, 'no');
+                          setValue(field?.name, "no");
                         }
                       }}
                     />
@@ -154,7 +153,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
           />
           <menu
             className={`${
-              watch('has_employees') === 'yes' ? 'flex' : 'hidden'
+              watch("has_employees") === "yes" ? "flex" : "hidden"
             } w-full items-start gap-5 flex-wrap`}
           >
             <Controller
@@ -163,8 +162,8 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               defaultValue={employment_info?.hiring_date}
               rules={{
                 required:
-                  watch('has_employees') === 'yes'
-                    ? 'Hiring date is required'
+                  watch("has_employees") === "yes"
+                    ? "Hiring date is required"
                     : false,
               }}
               render={({ field }) => {
@@ -191,14 +190,14 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               defaultValue={employment_info?.employees_no}
               rules={{
                 required:
-                  watch('has_employees') === 'yes'
-                    ? 'Number of employees is required'
+                  watch("has_employees") === "yes"
+                    ? "Number of employees is required"
                     : false,
                 validate: (value) => {
-                  if (watch('has_employees') === 'yes') {
-                    if (!value) return 'Number of employees is required';
+                  if (watch("has_employees") === "yes") {
+                    if (!value) return "Number of employees is required";
                     if (value < 1)
-                      return 'Number of employees must be greater than 0';
+                      return "Number of employees must be greater than 0";
                   }
                 },
               }}
@@ -225,8 +224,8 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('has_employees') === 'yes'
-                    ? 'Account reference date is required'
+                  watch("has_employees") === "yes"
+                    ? "Account reference date is required"
                     : false,
               }}
               render={({ field }) => {
@@ -256,12 +255,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('senior_management'));
+                dispatch(setBusinessActiveStep("senior_management"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
                 onClick={() => {
                   setIsLoading({
                     ...isLoading,
@@ -273,10 +272,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 submit
               />
             )}
-            {status === 'in_preview' && (
+            {status === "in_preview" && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
                 }
                 onClick={() => {
                   setIsLoading({
@@ -292,7 +291,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               />
             )}
             <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
               onClick={() => {
                 setIsLoading({
                   ...isLoading,
@@ -301,7 +300,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entry_id, status: "in_progress" })
                 );
               }}
               submit

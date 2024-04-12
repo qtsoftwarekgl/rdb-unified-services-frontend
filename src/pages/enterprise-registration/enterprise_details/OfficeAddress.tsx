@@ -53,7 +53,6 @@ const OfficeAddress = ({
   });
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -594,7 +593,7 @@ const OfficeAddress = ({
                 dispatch(setEnterpriseActiveStep("business_activity_vat"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

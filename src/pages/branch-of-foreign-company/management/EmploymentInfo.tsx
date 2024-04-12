@@ -43,7 +43,6 @@ const EmploymentInfo = ({
   });
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -228,7 +227,7 @@ const EmploymentInfo = ({
                 );
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 value={"Complete Amendment"}
                 onClick={(e) => {
