@@ -53,6 +53,7 @@ interface business_application {
   capital_details: business_capital_details[];
   beneficial_owners: business_beneficial_owners[];
   company_attachments: business_company_attachments;
+  status: string
 }
 
 interface PreviewSubmissionProps {
@@ -848,8 +849,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
                   status:
-                    status === "is_Amending" ? "re_submitted" : "submitted",
-                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
+                    business_application?.status === 'action_required'
+                      ? 're_submitted'
+                      : 'submitted',
+                  created_at: moment(Date.now()).format('DD/MM/YYYY'),
                 })
               );
               dispatch(setBusinessCompletedStep("preview_submission"));

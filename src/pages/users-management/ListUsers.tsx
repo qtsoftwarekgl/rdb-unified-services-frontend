@@ -1,16 +1,17 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../components/inputs/Button";
-import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
-import AdminLayout from "../../containers/AdminLayout";
-import Table from "../../components/table/Table";
-import { users } from "../../constants/Users";
-import { capitalizeString, formatDate } from "../../helpers/strings";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { useState } from "react";
-import AddUser from "./AddUser";
-import ViewUser from "./ViewUser";
-import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
-import { Row } from "@tanstack/react-table";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../components/inputs/Button';
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import AdminLayout from '../../containers/AdminLayout';
+import Table from '../../components/table/Table';
+import { users } from '../../constants/Users';
+import { capitalizeString, formatDate } from '../../helpers/strings';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { useState } from 'react';
+import AddUser from './AddUser';
+import ViewUser from './ViewUser';
+import RowSelectionCheckbox from '@/components/table/RowSelectionCheckbox';
+import { Row } from '@tanstack/react-table';
+import { DataTableColumnHeader } from '@/components/table/ColumnHeader';
 
 const ListUsers = () => {
   // COLUMNS
@@ -19,7 +20,6 @@ const ListUsers = () => {
 
   const columns = [
     {
-      header: 'No',
       id: 'no',
       accessorKey: 'no',
       header: ({ table }) => {
@@ -49,7 +49,7 @@ const ListUsers = () => {
       }) => {
         return (
           <menu className="flex items-center justify-start gap-3">
-            <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
+            <figure className="overflow-hidden inline w-[2.5rem] h-[2.5rem] relative rounded-full">
               <img
                 src={row?.original?.image}
                 className="object-cover w-full h-full"
@@ -62,11 +62,14 @@ const ListUsers = () => {
     },
     {
       id: 'email',
-      header: 'Email',
       accessorKey: 'email',
+      header: ({ column }) => {
+        return <DataTableColumnHeader column={column} title={'Email'} />;
+      },
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
+      enableSorting: true,
     },
     {
       header: 'Role',
@@ -81,13 +84,14 @@ const ListUsers = () => {
         };
       }) => {
         return (
-          <p className={`px-2 py-1 text-[13px]`}>
+          <p className={`py-1 text-[13px]`}>
             {capitalizeString(row?.original?.role)}
           </p>
         );
       },
     },
     {
+      id: 'status',
       header: 'Status',
       accessorKey: 'status',
       filterFn: (row: Row<unknown>, id: string, value: string) => {
@@ -103,20 +107,30 @@ const ListUsers = () => {
         };
       }) => {
         return (
-          <p className={`px-2 py-1 text-[13px]`}>
+          <p className={`py-1 text-[13px]`}>
             {capitalizeString(row?.original?.status)}
           </p>
         );
       },
     },
     {
+      id: 'date',
       header: 'Date Added',
       accessorKey: 'created_at',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
     },
     {
       header: '',
       accessorKey: 'actions',
-      cell: ({ row }: { row: unknown }) => {
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: null;
+        };
+      }) => {
         return (
           <menu
             className="flex items-center gap-4"
@@ -152,6 +166,9 @@ const ListUsers = () => {
         </menu>
         <section className="p-2">
           <Table
+            rowClickHandler={(row) => {
+              setUserToView(row);
+            }}
             data={users?.map((user, index) => {
               return {
                 ...user,

@@ -1,28 +1,57 @@
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { Table } from '@tanstack/react-table';
+import { ColumnDef, Table } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 
-import { users } from '@/constants/Users';
 import { DataTableFacetedFilter } from './FacetedFilter';
 import { useState } from 'react';
 import Input from '../inputs/Input';
-import DateRangePicker from '../inputs/DateRangePicker';
 import { DataTableViewOptions } from './TableViewOptions';
+import { capitalizeString } from '@/helpers/strings';
+import DateRangePicker from '../inputs/DateRangePicker';
+import { DateRange } from 'react-day-picker';
+import moment from 'moment';
 
-interface DataTableToolbarProps<TData> {
+interface TableToolbarProps<TData, TValue> {
   table: Table<TData>;
+  columns: ColumnDef<TData, TValue>[];
 }
 
-export function DataTableToolbar<TData>({
+export default function TableToolbar<TData>({
   table,
-}: DataTableToolbarProps<TData>) {
-
+  columns,
+}: TableToolbarProps<TData, TValue>) {
   // STATE VARIABLES
   const isFiltered = table.getState().columnFilters.length > 0;
   const [searchValue, setSearchValue] = useState<string>(
     (table.getColumn('name')?.getFilterValue() as string) ?? ''
   );
+
+  // HANDLE DATE RANGE SELECTOR
+  const [dateRange, setDateRange] = useState<
+    | DateRange
+    | undefined
+    | string
+    | {
+        from: string | undefined;
+        to: string | undefined;
+      }
+  >(() => {
+    return {
+      from: undefined,
+      to: undefined,
+    };
+  });
+
+  const handleDateRangeChange = (dateRange: DateRange | undefined) => {
+    const column = table.getColumn('date');
+    const selectedDate = {
+      from: dateRange?.from && moment(dateRange?.from).format('YYYY-MM-DD'),
+      to: dateRange?.to && moment(dateRange?.to).format('YYYY-MM-DD'),
+    };
+    setDateRange(selectedDate);
+    column?.setFilterValue(selectedDate?.from);
+  };
 
   return (
     <section className="flex items-center justify-between gap-4">
@@ -36,37 +65,45 @@ export function DataTableToolbar<TData>({
           }}
           className="py-2 w-full max-w-[30%]"
         />
-        {table.getColumn('status') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('status')}
-            title="Status"
-            options={users?.map((user) => {
-              return {
-                label: user?.status,
-                value: user?.status,
-              };
-            })}
-          />
-        )}
-        {table.getColumn('email') && (
-          <DataTableFacetedFilter
-            column={table.getColumn('email')}
-            title="Email"
-            options={Array.from(
-              table.getColumn('email')?.getFacetedUniqueValues() || []
-            )?.map((email) => {
-              return {
-                label: String(email),
-                value: String(email),
-              };
-            })}
-          />
-        )}
-        <DateRangePicker />
+        {Array.from(columns)
+          ?.filter((column) => column?.filterFn)
+          ?.map((column) => {
+            if (column.id === 'date') {
+              return (
+                <DateRangePicker
+                  key={column?.accessorKey}
+                  value={dateRange}
+                  onChange={handleDateRangeChange}
+                />
+              );
+            }
+            return (
+              <DataTableFacetedFilter
+                key={column?.accessorKey}
+                column={table.getColumn(column?.accessorKey)}
+                title={capitalizeString(column?.accessorKey)}
+                options={Array.from(
+                  table
+                    .getColumn(column?.accessorKey)
+                    ?.getFacetedUniqueValues() || []
+                )?.map((column) => {
+                  const splitColumn = String(column)?.split(',')[0];
+                  return {
+                    label: String(splitColumn),
+                    value: String(splitColumn),
+                  };
+                })}
+              />
+            );
+          })}
+
         {isFiltered && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              table.resetColumnFilters()
+              setDateRange(undefined);
+            }}
             className="h-8 px-2 lg:px-3"
           >
             Reset

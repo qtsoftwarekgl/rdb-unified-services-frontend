@@ -1,24 +1,30 @@
-import { addDays, format } from "date-fns"
-import { DateRange } from "react-day-picker"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { format } from 'date-fns';
+import { DateRange } from 'react-day-picker';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCalendarWeek } from "@fortawesome/free-solid-svg-icons"
-import { HTMLAttributes, useState } from "react"
+} from '@/components/ui/popover';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarWeek } from '@fortawesome/free-solid-svg-icons';
+
+interface DateRangePickerProps {
+  value: DateRange | undefined;
+  onChange: (value: DateRange | undefined) => void;
+  className?: string;
+}
 
 const DateRangePicker = ({
+  value,
+  onChange,
   className,
-}: HTMLAttributes<HTMLDivElement>) => {
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  })
+}: DateRangePickerProps) => {
+  const handleDateChange = (dateRange: DateRange) => {
+    onChange(dateRange);
+  };
 
   return (
     <div className={cn('grid gap-2', className)}>
@@ -28,19 +34,22 @@ const DateRangePicker = ({
             id="date"
             variant={'outline'}
             className={cn(
-              'w-full justify-start text-left font-normal',
-              !date && 'text-muted-foreground'
+              'w-full justify-start text-left font-normal items-center',
+              !value && 'text-muted-foreground'
             )}
           >
-            <FontAwesomeIcon icon={faCalendarWeek} className="mr-2 h-4 w-4 text-primary" />
-            {date?.from ? (
-              date.to ? (
+            <FontAwesomeIcon
+              icon={faCalendarWeek}
+              className="mr-2 h-4 w-4 text-primary"
+            />
+            {value?.from ? (
+              value.to ? (
                 <>
-                  {format(date.from, 'LLL dd, y')} -{' '}
-                  {format(date.to, 'LLL dd, y')}
+                  {format(value.from, 'LLL dd, y')} -{' '}
+                  {format(value.to, 'LLL dd, y')}
                 </>
               ) : (
-                format(date.from, 'LLL dd, y')
+                format(value.from, 'LLL dd, y')
               )
             ) : (
               <p className="text-[13px]">Select date</p>
@@ -51,15 +60,14 @@ const DateRangePicker = ({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
+            selected={value}
+            onSelect={handleDateChange}
             numberOfMonths={2}
           />
         </PopoverContent>
       </Popover>
     </div>
   );
-}
+};
 
 export default DateRangePicker;

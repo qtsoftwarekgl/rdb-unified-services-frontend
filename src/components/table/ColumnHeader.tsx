@@ -29,25 +29,25 @@ import { HTMLAttributes } from "react"
     className,
   }: DataTableColumnHeaderProps<TData, TValue>) {
     if (!column.getCanSort()) {
-      return <div className={cn(className)}>{title}</div>
+      return <section className={cn(className)}>{title}</section>
     }
   
     return (
-      <div className={cn("flex items-center space-x-2", className)}>
+      <nav className={cn("flex items-center", className)}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="sm"
-              className="-ml-3 h-8 data-[state=open]:bg-accent"
+              className="flex items-center gap-1 text-black font-normal text-[14px] justify-start text-start px-0"
             >
-              <span>{title}</span>
+              <p className="text-[14px]">{title}</p>
               {column.getIsSorted() === "desc" ? (
-                <ArrowDownIcon className="ml-2 h-4 w-4" />
+                <ArrowDownIcon className="h-4 w-4" />
               ) : column.getIsSorted() === "asc" ? (
-                <ArrowUpIcon className="ml-2 h-4 w-4" />
+                <ArrowUpIcon className="h-4 w-4" />
               ) : (
-                <CaretSortIcon className="ml-2 h-4 w-4" />
+                <CaretSortIcon className="h-4 w-4" />
               )}
             </Button>
           </DropdownMenuTrigger>
@@ -67,6 +67,6 @@ import { HTMLAttributes } from "react"
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
+      </nav>
     )
   }
