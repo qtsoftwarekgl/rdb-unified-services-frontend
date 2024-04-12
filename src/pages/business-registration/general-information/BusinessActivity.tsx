@@ -517,10 +517,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               />
             )}
             <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors).length > 0) return;
+              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
+              onClick={() => {
                 setIsLoading({
                   ...isLoading,
                   submit: true,
