@@ -35,6 +35,7 @@ const OfficeAddress = ({
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
     watch,
     setValue,
@@ -48,10 +49,10 @@ const OfficeAddress = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -71,11 +72,6 @@ const OfficeAddress = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -87,19 +83,25 @@ const OfficeAddress = ({
         })
       );
 
-      dispatch(setEnterpriseCompletedStep("office_address"));
-      dispatch(setEnterpriseCompletedTab("general_information"));
-      if (status === "in_preview") {
+      if (status === "in_preview" || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
+        // SET ACTIVE STEP
         dispatch(setEnterpriseActiveTab("attachments"));
         dispatch(setEnterpriseActiveStep("attachments"));
       }
+      // SET CURRENT STEP AS COMPLETED
+      dispatch(setEnterpriseCompletedStep("office_address"));
+      dispatch(setEnterpriseCompletedTab("general_information"));
+
+      dispatch(setEnterpriseCompletedStep("office_address"));
+      dispatch(setEnterpriseCompletedTab("general_information"));
 
       setIsLoading({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
     }, 1000);
   };
@@ -109,8 +111,8 @@ const OfficeAddress = ({
     dispatch(
       setUserApplications({
         entry_id,
-        company_address: {
-          ...company_address,
+        office_address: {
+          ...enterprise_office_address,
           province: "",
           district: "",
           sector: "",
@@ -591,14 +593,19 @@ const OfficeAddress = ({
                 dispatch(setEnterpriseActiveStep("business_activity_vat"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setEnterpriseActiveTab("enterprise_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors).length > 0) return;
+                  setIsLoading({
+                    ...isLoading,
+                    preview: false,
+                    submit: false,
+                    amend: true,
+                  });
                 }}
               />
             )}
@@ -608,15 +615,47 @@ const OfficeAddress = ({
                   isLoading?.preview ? <Loader /> : "Save & Complete Preview"
                 }
                 primary
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  dispatch(
+                    setUserApplications({ entry_id, status: "in_preview" })
+                  );
+
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
+                }}
                 submit
                 disabled={isFormDisabled}
               />
             )}
             <Button
-              value={isLoading.submit ? <Loader /> : "Save & Continue"}
-              disabled={isFormDisabled}
+              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  preview: false,
+                  submit: true,
+                  amend: false,
+                });
+                if (status === "in_preview")
+                  dispatch(
+                    setUserApplications({ entry_id, status: "in_progress" })
+                  );
+              }}
               primary
               submit
+              disabled={isFormDisabled}
             />
           </menu>
         </fieldset>

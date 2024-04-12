@@ -39,7 +39,8 @@ const BusinessActivity = ({
     control,
     watch,
     setValue,
-    setError,
+    trigger,
+    clearErrors,
     formState: { errors },
   } = useForm();
 
@@ -48,20 +49,15 @@ const BusinessActivity = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const [randomNumber, setRandomNumber] = useState<number>(5);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
       // UPDATE COMPANY ACTIVITIES
       dispatch(
@@ -76,12 +72,9 @@ const BusinessActivity = ({
         })
       );
 
-      if (status === "in_preview")
+      if (status === "in_preview" || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
-        // SET CURRENT TAB AS COMPLETED
-        dispatch(setForeignBusinessActiveTab("general_information"));
-
         // SET THE NEXT TAB AS ACTIVE
         dispatch(setForeignBusinessActiveTab("foreign_management"));
       }
@@ -95,6 +88,7 @@ const BusinessActivity = ({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
     }, 1000);
   };
@@ -303,10 +297,7 @@ const BusinessActivity = ({
                                         entry_id,
                                       })
                                     );
-                                    setError("business_lines", {
-                                      type: "manual",
-                                      message: "",
-                                    });
+                                    clearErrors("business_lines");
                                   }}
                                 >
                                   Set main
@@ -450,36 +441,66 @@ const BusinessActivity = ({
                 );
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    preview: false,
+                    submit: false,
+                  });
                 }}
+                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary
-                onClick={() => {
-                  dispatch(
-                    setUserApplications({ entry_id, status: "in_preview" })
-                  );
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
                 }}
                 submit
-                disabled={isFormDisabled}
+                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
               />
             )}
             <Button
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
+              disabled={isFormDisabled}
               primary
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
                 dispatch(
                   setUserApplications({ entry_id, status: "in_progress" })
                 );

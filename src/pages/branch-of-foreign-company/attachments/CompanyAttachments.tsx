@@ -44,7 +44,6 @@ const CompanyAttachments = ({
   >([]);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   const onSubmit = (data: FieldValues) => {
@@ -270,17 +269,6 @@ const CompanyAttachments = ({
                 );
               }}
             />
-            {isAmending && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
-                }}
-              />
-            )}
             <Button
               value={isLoading ? <Loader /> : "Save & Continue"}
               primary

@@ -1,29 +1,32 @@
-import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../components/inputs/Select';
-import Loader from '../../../components/Loader';
-import Input from '../../../components/inputs/Input';
-import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { previewUrl, userData } from '../../../constants/authentication';
-import { countriesList } from '../../../constants/countries';
-import Button from '../../../components/inputs/Button';
+import { FC, useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../components/inputs/Select";
+import Loader from "../../../components/Loader";
+import Input from "../../../components/inputs/Input";
+import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { previewUrl, userData } from "../../../constants/authentication";
+import { countriesList } from "../../../constants/countries";
+import Button from "../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from '../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../../components/table/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString } from '../../../helpers/strings';
-import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { RDBAdminEmailPattern, validNationalID } from '../../../constants/Users';
-import Modal from '../../../components/Modal';
-import validateInputs from '../../../helpers/validations';
-import { attachmentFileColumns } from '../../../constants/businessRegistration';
-import ViewDocument from '../../user-company-details/ViewDocument';
+} from "../../../states/features/businessRegistrationSlice";
+import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Table from "../../../components/table/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { capitalizeString } from "../../../helpers/strings";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import {
+  RDBAdminEmailPattern,
+  validNationalID,
+} from "../../../constants/Users";
+import Modal from "../../../components/Modal";
+import validateInputs from "../../../helpers/validations";
+import { attachmentFileColumns } from "../../../constants/businessRegistration";
+import ViewDocument from "../../user-company-details/ViewDocument";
 
 export interface business_senior_management {
   first_name: string;
@@ -36,7 +39,7 @@ interface SeniorManagementProps {
   isOpen: boolean;
   senior_management: business_senior_management[];
   entry_id: string | null;
-  status: string,
+  status: string;
 }
 
 const SeniorManagement: FC<SeniorManagementProps> = ({
@@ -70,8 +73,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     error: false,
     data: null,
   });
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
-  const disableForm = RDBAdminEmailPattern.test(user?.email)
+  const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
     manager: boolean;
     attachment: boolean;
@@ -81,35 +83,35 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
     manager: false,
     attachment: false,
   });
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
-  
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
+
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-      setValue('country', '');
-      setValue('phone', '');
-      setValue('street_name', '');
-      setValue('first_name', '');
-      setValue('middle_name', '');
-      setValue('last_name', '');
-      setSearchMember({
-        ...searchMember,
-        data: null,
-        loading: false,
-        error: false,
-      });
-  }, [setValue, watch('document_type')]);
+    setValue("country", "");
+    setValue("phone", "");
+    setValue("street_name", "");
+    setValue("first_name", "");
+    setValue("middle_name", "");
+    setValue("last_name", "");
+    setSearchMember({
+      ...searchMember,
+      data: null,
+      loading: false,
+      error: false,
+    });
+  }, [setValue, watch("document_type")]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      clearErrors('submit');
+      clearErrors("submit");
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: 'management',
-          active_step: 'employment_info',
+          active_tab: "management",
+          active_step: "employment_info",
           senior_management: [
             {
               ...data,
@@ -123,13 +125,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           ],
         })
       );
-    setSearchMember({
+      setSearchMember({
         ...searchMember,
         data: null,
         loading: false,
         error: false,
       });
-      setValue('attachment', null);
+      setValue("attachment", null);
       reset();
     }, 1000);
     return data;
@@ -138,24 +140,24 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Position',
-      accessorKey: 'position',
+      header: "Position",
+      accessorKey: "position",
     },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
             <FontAwesomeIcon
               className={`${
                 disableForm
-                  ? 'text-secondary cursor-default'
-                  : 'text-red-600 cursor-pointer'
+                  ? "text-secondary cursor-default"
+                  : "text-red-600 cursor-pointer"
               } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
@@ -179,12 +181,12 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               }}
             >
               <section className="flex flex-col gap-6">
-                <h1 className="font-medium uppercase text-center">
-                  Are you sure you want to delete{' '}
-                  {confirmDeleteModal?.first_name}{' '}
-                  {confirmDeleteModal?.last_name || ''}
+                <h1 className="font-medium text-center uppercase">
+                  Are you sure you want to delete{" "}
+                  {confirmDeleteModal?.first_name}{" "}
+                  {confirmDeleteModal?.last_name || ""}
                 </h1>
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
                     value="Cancel"
                     onClick={(e) => {
@@ -213,8 +215,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       setConfirmDeleteModal({
                         ...confirmDeleteModal,
                         manager: false,
-                        first_name: '',
-                        last_name: '',
+                        first_name: "",
+                        last_name: "",
                       });
                     }}
                   />
@@ -231,8 +233,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
   const attachmentColumns = [
     ...attachmentFileColumns,
     {
-      header: 'action',
-      accesorKey: 'action',
+      header: "action",
+      accesorKey: "action",
       cell: () => {
         return (
           <menu className="flex items-center gap-4">
@@ -265,10 +267,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               }}
             >
               <section className="flex flex-col gap-6">
-                <h1 className="font-medium uppercase text-center">
+                <h1 className="font-medium text-center uppercase">
                   Are you sure you want to delete {attachmentFile?.name}
                 </h1>
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
                     value="Cancel"
                     onClick={(e) => {
@@ -285,10 +287,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       setAttachmentFile(null);
-                      setValue('attachment', null);
-                      setError('attachment', {
-                        type: 'manual',
-                        message: 'Passport is required',
+                      setValue("attachment", null);
+                      setError("attachment", {
+                        type: "manual",
+                        message: "Passport is required",
                       });
                       setConfirmDeleteModal({
                         ...confirmDeleteModal,
@@ -320,20 +322,20 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               render={({ field }) => {
                 const options = [
                   {
-                    value: 'md/gm',
-                    label: 'MD / GM',
+                    value: "md/gm",
+                    label: "MD / GM",
                   },
                   {
-                    value: 'secretary',
-                    label: 'Secretary',
+                    value: "secretary",
+                    label: "Secretary",
                   },
                   {
-                    value: 'accountant',
-                    label: 'Accountant',
+                    value: "accountant",
+                    label: "Accountant",
                   },
                   {
-                    value: 'auditor',
-                    label: 'Auditor',
+                    value: "auditor",
+                    label: "Auditor",
                   },
                 ];
                 return (
@@ -344,10 +346,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       options={options}
                       {...field}
                       onChange={(e) => {
+                        trigger("position");
+                        setValue("document_type", "");
                         field.onChange(e);
-                        clearErrors('position');
-                        trigger('position');
-                        setValue('document_type', '');
+                        clearErrors("position");
                       }}
                     />
                     {errors?.position && (
@@ -361,22 +363,22 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             />
             <ul
               className={`${
-                watch('position') ? 'flex' : 'hidden'
+                watch("position") ? "flex" : "hidden"
               } items-start w-full gap-6`}
             >
               <Controller
                 name="document_type"
-                rules={{ required: 'Select document type' }}
+                rules={{ required: "Select document type" }}
                 control={control}
                 render={({ field }) => {
                   const options = [
-                    { value: 'nid', label: 'National ID' },
-                    { label: 'Passport', value: 'passport' },
+                    { value: "nid", label: "National ID" },
+                    { label: "Passport", value: "passport" },
                   ];
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
-                        watch('document_type') !== 'nid' && '!w-[49%]'
+                        watch("document_type") !== "nid" && "!w-[49%]"
                       }`}
                     >
                       <Select
@@ -389,21 +391,21 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   );
                 }}
               />
-              {watch('document_type') === 'nid' && (
+              {watch("document_type") === "nid" && (
                 <Controller
                   control={control}
                   name="document_no"
                   rules={{
-                    required: watch('document_type')
-                      ? 'Document number is required'
+                    required: watch("document_type")
+                      ? "Document number is required"
                       : false,
                     validate: (value) => {
-                      if (watch('document_type') !== 'nid') {
+                      if (watch("document_type") !== "nid") {
                         return true;
                       }
                       return (
-                        validateInputs(value, 'nid') ||
-                        'National ID must be 16 characters long'
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
                       );
                     },
                   }}
@@ -416,9 +418,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError('document_no', {
-                                type: 'manual',
-                                message: 'Document number is required',
+                              setError("document_no", {
+                                type: "manual",
+                                message: "Document number is required",
                               });
                               return;
                             }
@@ -449,14 +451,14 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                                   loading: false,
                                   error: false,
                                 });
-                                setValue('first_name', userDetails?.first_name);
+                                setValue("first_name", userDetails?.first_name);
                                 setValue(
-                                  'middle_name',
+                                  "middle_name",
                                   userDetails?.middle_name
                                 );
-                                setValue('last_name', userDetails?.last_name);
-                                setValue('gender', userDetails?.data?.gender);
-                                setValue('phone', userDetails?.data?.phone);
+                                setValue("last_name", userDetails?.last_name);
+                                setValue("gender", userDetails?.data?.gender);
+                                setValue("phone", userDetails?.data?.phone);
                               }
                             }, 700);
                           }}
@@ -465,8 +467,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                           placeholder="1 XXXX X XXXXXXX X XX"
                           onChange={async (e) => {
                             field.onChange(e);
-                            clearErrors('document_no');
-                            await trigger('document_no');
+                            clearErrors("document_no");
+                            await trigger("document_no");
                           }}
                         />
                         {searchMember?.loading &&
@@ -495,10 +497,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           </menu>
           <section
             className={`${
-              (watch('document_type') === 'nid' && searchMember?.data) ||
-              watch('document_type') === 'passport'
-                ? 'flex'
-                : 'hidden'
+              (watch("document_type") === "nid" && searchMember?.data) ||
+              watch("document_type") === "passport"
+                ? "flex"
+                : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -506,16 +508,16 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('document_type') === 'passport'
-                    ? 'Passport number is required'
+                  watch("document_type") === "passport"
+                    ? "Passport number is required"
                     : false,
                 validate: (value) => {
-                  if (watch('document_type') !== 'passport') {
+                  if (watch("document_type") !== "passport") {
                     return true;
                   }
                   return (
-                    validateInputs(value, 'passport') ||
-                    'Invalid passport number'
+                    validateInputs(value, "passport") ||
+                    "Invalid passport number"
                   );
                 },
               }}
@@ -523,7 +525,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 return (
                   <label
                     className={`${
-                      watch('document_type') === 'passport' ? 'flex' : 'hidden'
+                      watch("document_type") === "passport" ? "flex" : "hidden"
                     } w-[49%] flex flex-col gap-1 items-start`}
                   >
                     <Input
@@ -545,13 +547,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               name="first_name"
               control={control}
               defaultValue={searchMember?.data?.first_name}
-              rules={{ required: 'First name is required' }}
+              rules={{ required: "First name is required" }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
                       required
-                      readOnly={watch('document_type') === 'nid'}
+                      readOnly={watch("document_type") === "nid"}
                       defaultValue={searchMember?.data?.first_name}
                       placeholder="First name"
                       label="First name"
@@ -574,7 +576,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      readOnly={watch('document_type') === 'nid'}
+                      readOnly={watch("document_type") === "nid"}
                       defaultValue={searchMember?.data?.middle_name}
                       placeholder="Middle name"
                       label="Middle name"
@@ -592,7 +594,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      readOnly={watch('document_type') === 'nid'}
+                      readOnly={watch("document_type") === "nid"}
                       defaultValue={searchMember?.last_name}
                       placeholder="Last name"
                       label="Last name"
@@ -608,8 +610,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('document_type') === 'passport'
-                    ? 'Select gender'
+                  watch("document_type") === "passport"
+                    ? "Select gender"
                     : false,
               }}
               render={({ field }) => {
@@ -618,9 +620,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {watch('document_type') === 'nid' ? (
+                    {watch("document_type") === "nid" ? (
                       <p className="px-2 py-1 rounded-md bg-background">
-                        {searchMember?.data?.gender || watch('gender')}
+                        {searchMember?.data?.gender || watch("gender")}
                       </p>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
@@ -628,13 +630,13 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                           type="radio"
                           label="Male"
                           {...field}
-                          value={'Male'}
+                          value={"Male"}
                         />
                         <Input
                           type="radio"
                           label="Female"
                           {...field}
-                          value={'Female'}
+                          value={"Female"}
                         />
                       </menu>
                     )}
@@ -652,12 +654,12 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               name="phone"
               control={control}
               rules={{
-                required: 'Phone number is required',
+                required: "Phone number is required",
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
-                    {watch('document_type') === 'passport' ? (
+                    {watch("document_type") === "passport" ? (
                       <Input
                         label="Phone number"
                         required
@@ -687,11 +689,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 );
               }}
             />
-            {watch('document_type') !== 'nid' ? (
+            {watch("document_type") !== "nid" ? (
               <Controller
                 name="country"
                 control={control}
-                rules={{ required: 'Nationality is required' }}
+                rules={{ required: "Nationality is required" }}
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -699,7 +701,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         isSearchable
                         label="Country"
                         options={countriesList
-                          ?.filter((country) => country?.code !== 'RW')
+                          ?.filter((country) => country?.code !== "RW")
                           ?.map((country) => {
                             return {
                               ...country,
@@ -737,7 +739,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             )}
             <menu
               className={`${
-                watch('document_type') === 'passport' ? 'flex' : 'hidden'
+                watch("document_type") === "passport" ? "flex" : "hidden"
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
@@ -747,8 +749,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 name="attachment"
                 rules={{
                   required:
-                    watch('document_type') === 'passport'
-                      ? 'Passport is required'
+                    watch("document_type") === "passport"
+                      ? "Passport is required"
                       : false,
                 }}
                 control={control}
@@ -762,11 +764,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
-                          clearErrors('attachment');
-                          setValue('attachment', e?.target?.files?.[0]);
+                          clearErrors("attachment");
+                          setValue("attachment", e?.target?.files?.[0]);
                         }}
                       />
-                      <ul className="flex flex-col items-center gap-3 w-full">
+                      <ul className="flex flex-col items-center w-full gap-3">
                         {attachmentFile && (
                           <Table
                             columns={attachmentColumns}
@@ -789,7 +791,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
-              value={isLoading ? <Loader /> : 'Add position'}
+              value={isLoading ? <Loader /> : "Add position"}
               submit
               primary
               disabled={disableForm}
@@ -803,9 +805,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       return {
                         ...member,
                         no: index + 1,
-                        name: `${member?.first_name || ''} ${
-                          member?.middle_name || ''
-                        } ${member?.last_name || ''}`,
+                        name: `${member?.first_name || ""} ${
+                          member?.middle_name || ""
+                        } ${member?.last_name || ""}`,
                         position:
                           member?.position &&
                           capitalizeString(member?.position),
@@ -832,60 +834,75 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('board_of_directors'));
+                dispatch(setBusinessActiveStep("board_of_directors"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={'Complete Amendment'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                }}
-              />
-            )}
-            {status === 'in_preview' && (
-              <Button
-                value="Save & Complete Preview"
-                primary
-                disabled={disableForm}
+                value={"Complete Amendment"}
+                disabled={Object.keys(errors).length > 0 || disableForm}
                 onClick={(e) => {
                   e.preventDefault();
                   if (!senior_management?.length) {
-                    setError('submit', {
-                      type: 'manual',
-                      message: 'Add at least one member',
+                    setError("submit", {
+                      type: "manual",
+                      message: "Add at least one member",
                     });
                     setTimeout(() => {
-                      clearErrors('submit');
+                      clearErrors("submit");
                     }, 5000);
                     return;
                   }
-                  dispatch(setBusinessCompletedStep('senior_management'));
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                  dispatch(setBusinessActiveStep('preview_submission'));
+                  dispatch(setBusinessCompletedStep("senior_management"));
+                  dispatch(setBusinessActiveTab("preview_submission"));
+                  dispatch(setBusinessActiveStep("preview_submission"));
+                }}
+              />
+            )}
+            {status === "in_preview" && (
+              <Button
+                value="Save & Complete Preview"
+                primary
+                disabled={disableForm || Object.keys(errors).length > 0}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!senior_management?.length) {
+                    setError("submit", {
+                      type: "manual",
+                      message: "Add at least one member",
+                    });
+                    setTimeout(() => {
+                      clearErrors("submit");
+                    }, 5000);
+                    return;
+                  }
+                  dispatch(setBusinessCompletedStep("senior_management"));
+                  dispatch(setBusinessActiveTab("preview_submission"));
+                  dispatch(setBusinessActiveStep("preview_submission"));
                 }}
               />
             )}
             <Button
               value="Save & Continue"
               primary
-              disabled={disableForm}
+              disabled={disableForm || Object.keys(errors).length > 0}
               onClick={(e) => {
                 e.preventDefault();
                 if (!senior_management?.length) {
-                  setError('submit', {
-                    type: 'manual',
-                    message: 'Add at least one member',
+                  setError("submit", {
+                    type: "manual",
+                    message: "Add at least one member",
                   });
                   setTimeout(() => {
-                    clearErrors('submit');
+                    clearErrors("submit");
                   }, 5000);
                   return;
                 }
-                dispatch(setUserApplications({ entry_id, status: 'in_progress' }));
-                dispatch(setBusinessCompletedStep('senior_management'));
-                dispatch(setBusinessActiveStep('employment_info'));
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+                dispatch(setBusinessCompletedStep("senior_management"));
+                dispatch(setBusinessActiveStep("employment_info"));
               }}
             />
           </menu>

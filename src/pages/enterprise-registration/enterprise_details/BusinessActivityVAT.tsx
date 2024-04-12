@@ -37,7 +37,10 @@ const BusinessActivity = ({
     handleSubmit,
     control,
     setError,
+    trigger,
     formState: { errors },
+    watch,
+    clearErrors,
   } = useForm();
 
   // STATE VARIABLES
@@ -45,6 +48,7 @@ const BusinessActivity = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { enterprise_registration_active_step } = useSelector(
@@ -52,15 +56,12 @@ const BusinessActivity = ({
   );
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
+  const mainExists = enterprise_business_lines?.find(
+    (activity: object) => activity?.main === true
+  );
 
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -72,7 +73,7 @@ const BusinessActivity = ({
         })
       );
 
-      if (status === "in_preview") {
+      if (status === "in_preview" || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET THE NEXT STEP AS ACTIVE
@@ -86,6 +87,7 @@ const BusinessActivity = ({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
     }, 1000);
   };
@@ -101,7 +103,6 @@ const BusinessActivity = ({
             <Select
               label="Select sector"
               required
-              defaultValue={businessActivities[0]?.id}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
@@ -123,12 +124,10 @@ const BusinessActivity = ({
             rules={{
               validate: () => {
                 // check if business lines have main business line
-                const mainExists = enterprise_business_lines?.find(
-                  (activity: object) => activity?.main === true
-                );
                 if (!mainExists) {
                   return "Please select a main business line";
                 }
+                return true;
               },
             }}
             control={control}
@@ -164,12 +163,12 @@ const BusinessActivity = ({
                                       message:
                                         "You can only select a maximum of 3 business lines",
                                     });
+                                    setTimeout(() => {
+                                      clearErrors("business_lines");
+                                    }, 3000);
                                     return;
                                   }
-                                  setError("business_lines", {
-                                    type: "manual",
-                                    message: "",
-                                  });
+                                  clearErrors("business_lines");
                                   dispatch(
                                     setUserApplications({
                                       business_lines: {
@@ -201,9 +200,6 @@ const BusinessActivity = ({
                   <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                     {enterprise_business_lines?.map(
                       (business_line: unknown, index: number) => {
-                        const mainExists = enterprise_business_lines?.find(
-                          (activity: object) => activity?.main === true
-                        );
                         const mainBusinessLine =
                           mainExists?.id === business_line?.id;
                         return (
@@ -279,10 +275,7 @@ const BusinessActivity = ({
                                         entry_id,
                                       })
                                     );
-                                    setError("business_lines", {
-                                      type: "manual",
-                                      message: "",
-                                    });
+                                    clearErrors("business_lines");
                                   }}
                                 >
                                   Set main
@@ -312,10 +305,7 @@ const BusinessActivity = ({
                                     entry_id,
                                   })
                                 );
-                                setError("business_lines", {
-                                  type: "manual",
-                                  message: "",
-                                });
+                                clearErrors("business_lines");
                               }}
                             />
                           </li>
@@ -343,30 +333,69 @@ const BusinessActivity = ({
                 dispatch(setEnterpriseActiveStep("company_details"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setEnterpriseActiveTab("enterprise_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    preview: false,
+                    submit: false,
+                  });
                 }}
+                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
+                }}
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary
                 submit
-                disabled={isFormDisabled}
+                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
               />
             )}
             <Button
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
               disabled={isFormDisabled}
+              onClick={async () => {
+                await trigger();
+                if (!mainExists) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
+                dispatch(
+                  setUserApplications({ entry_id, status: "in_progress" })
+                );
+              }}
               primary
               submit
             />

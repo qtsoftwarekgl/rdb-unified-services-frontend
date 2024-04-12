@@ -30,6 +30,7 @@ const EmploymentInfo = ({
     control,
     formState: { errors },
     setValue,
+    trigger,
     watch,
   } = useForm();
 
@@ -38,10 +39,10 @@ const EmploymentInfo = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -55,11 +56,6 @@ const EmploymentInfo = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
       dispatch(
         setUserApplications({
@@ -70,17 +66,18 @@ const EmploymentInfo = ({
           },
         })
       );
-      if (status === "in_preview") {
+      if (status === "in_preview" || isLoading.amend) {
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       } else {
-        dispatch(setForeignBusinessCompletedStep("foreign_employment_info"));
         dispatch(setForeignBusinessActiveStep("foreign_beneficial_owners"));
         dispatch(setForeignBusinessActiveTab("foreign_beneficial_owners"));
       }
+      dispatch(setForeignBusinessCompletedStep("foreign_employment_info"));
       setIsLoading({
         ...isLoading,
         submit: false,
         preview: false,
+        amend: false,
       });
     }, 1000);
   };
@@ -230,7 +227,7 @@ const EmploymentInfo = ({
                 );
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 value={"Complete Amendment"}
                 onClick={(e) => {
@@ -244,18 +241,44 @@ const EmploymentInfo = ({
             {status === "in_preview" && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary
                 submit
                 disabled={isFormDisabled}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
+                }}
               />
             )}
             <Button
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
               submit
               disabled={isFormDisabled}
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
                 dispatch(
                   setUserApplications({ entry_id, status: "in_progress" })
                 );

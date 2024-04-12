@@ -2,16 +2,13 @@ import { Link } from "react-router-dom";
 import Input from "../../components/inputs/Input";
 import Navbar from "../../containers/Navbar";
 import BusinessRegistrationServices from "../business-registration/BusinessRegistrationServices";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MortgageRegistrationServices from "../business-registration/MortgageRegistrationServices";
 import { defaultSections } from "../../constants/home";
-import { useDispatch } from "react-redux";
-import { setIsAmending } from "../../states/features/amendmentSlice";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const dispatch = useDispatch();
 
   const tabs = [
     {
@@ -24,22 +21,50 @@ const Home = () => {
     },
   ];
 
-  useEffect(() => {
-    dispatch(setIsAmending(false));
-  }, [dispatch]);
+  function searchInSectionData(query: string) {
+    const matches = [];
+    const queryLowerCase = query.toLowerCase();
 
-  const filteredSections = defaultSections.filter(
-    (section) =>
-      section.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      section.links
-        .flat()
-        .some((link) =>
-          link.label.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-  );
+    for (let i = 0; i < defaultSections.length; i++) {
+      const section = defaultSections[i];
+      const sectionMatches = {
+        title: section.title,
+        links: [],
+      };
+
+      if (section.title.toLowerCase().includes(queryLowerCase)) {
+        matches.push(sectionMatches);
+      }
+
+      const linkMatches = [];
+      for (let j = 0; j < section.links.length; j++) {
+        const links = section.links[j];
+        for (let k = 0; k < links.length; k++) {
+          const link = links[k];
+          if (link.label.toLowerCase().includes(queryLowerCase)) {
+            linkMatches.push(link);
+          }
+        }
+      }
+
+      if (linkMatches.length > 0) {
+        sectionMatches.links.push(linkMatches);
+        if (!section.title.toLowerCase().includes(queryLowerCase)) {
+          matches.push(sectionMatches);
+        }
+      }
+    }
+
+    return matches.length > 0 ? matches : [];
+  }
+
+  const filteredSections =
+    (searchQuery && searchInSectionData(searchQuery)) || defaultSections;
 
   const registrationServices = [
-    { component: <BusinessRegistrationServices sections={filteredSections} /> },
+    {
+      component: <BusinessRegistrationServices sections={filteredSections} />,
+    },
     { component: <MortgageRegistrationServices /> },
   ];
 

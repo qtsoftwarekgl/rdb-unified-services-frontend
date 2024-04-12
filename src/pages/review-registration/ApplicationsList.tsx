@@ -61,7 +61,7 @@ const ApplicatinsList = ({
           }}
           value="Review"
           styled={false}
-          className="cursor-pointer bg-inherit text-primary"
+          className="cursor-pointer text-primary"
         />
       </menu>
     );
@@ -92,8 +92,9 @@ const ApplicatinsList = ({
   const handleEditClick = (e, row) => {
     e.preventDefault();
     const company = user_applications?.find(
-      (application) => application.entry_id === row?.original?.id
+      (application) => application.entry_id === row?.original?.entry_id
     );
+
     if (!company) return;
 
     dispatch(setBusinessActiveTab("general_information"));

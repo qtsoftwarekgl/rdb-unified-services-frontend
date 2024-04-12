@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../../components/inputs/Input';
-import Button from '../../../components/inputs/Button';
-import Loader from '../../../components/Loader';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { FC, useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../../components/inputs/Input";
+import Button from "../../../components/inputs/Button";
+import Loader from "../../../components/Loader";
+import { AppDispatch, RootState } from "../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from '../../../states/features/businessRegistrationSlice';
-import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { RDBAdminEmailPattern } from '../../../constants/Users';
+} from "../../../states/features/businessRegistrationSlice";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_share_details {
   company_capital: number;
@@ -55,78 +55,78 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   const [isLoading, setIsLoading] = useState({
     preview: false,
     submit: false,
+    amend: false,
   });
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // TABLE HEADERS
   const tableHeaders = [
-    'Share type',
-    'Number of shares',
-    'Per Value',
-    'Total Value',
+    "Share type",
+    "Number of shares",
+    "Per Value",
+    "Total Value",
   ];
 
   // TABLE ROWS
   const tableRows = [
-    { name: 'ordinary_share', label: 'Ordinary Share' },
-    { name: 'preference_share', label: 'Preference Share' },
-    { name: 'non_voting_share', label: 'Non-voting Share' },
-    { name: 'redeemable_share', label: 'Redeemable Share' },
-    { name: 'irredeemable_share', label: 'Irredeemable Share' },
+    { name: "ordinary_share", label: "Ordinary Share" },
+    { name: "preference_share", label: "Preference Share" },
+    { name: "non_voting_share", label: "Non-voting Share" },
+    { name: "redeemable_share", label: "Redeemable Share" },
+    { name: "irredeemable_share", label: "Irredeemable Share" },
   ];
 
   // HANDLE CAPITAL SHARES OVERFLOW
   useEffect(() => {
     setValue(
-      'total_shares',
+      "total_shares",
       tableRows
         ?.map((row) => watch(`${row.name}_no_shares`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
   }, [
-    watch('ordinary_share_no_shares'),
-    watch('preference_share_no_shares'),
-    watch('non_voting_share_no_shares'),
-    watch('redeemable_share_no_shares'),
-    watch('redeemable_share_no_shares'),
-    watch('irredeemable_share_no_shares'),
+    watch("ordinary_share_no_shares"),
+    watch("preference_share_no_shares"),
+    watch("non_voting_share_no_shares"),
+    watch("redeemable_share_no_shares"),
+    watch("redeemable_share_no_shares"),
+    watch("irredeemable_share_no_shares"),
   ]);
 
   // HANDLE CAPITAL TOTAL OVERFLOW
   useEffect(() => {
     setValue(
-      'total_value',
+      "total_value",
       tableRows
         ?.map((row) => watch(`${row.name}_total_value`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
-    if (Number(watch('total_value')) > Number(watch('company_capital'))) {
-      setError('total_value', {
-        type: 'manual',
-        message: 'Share values cannot exceed total company capital',
+    if (Number(watch("total_value")) > Number(watch("company_capital"))) {
+      setError("total_value", {
+        type: "manual",
+        message: "Share values cannot exceed total company capital",
       });
     } else {
-      clearErrors('total_value');
+      clearErrors("total_value");
     }
   }, [
-    watch('ordinary_share_total_value'),
-    watch('preference_share_total_value'),
-    watch('non_voting_share_total_value'),
-    watch('redeemable_share_total_value'),
-    watch('irredeemable_share_total_value'),
-    watch('company_capital'),
+    watch("ordinary_share_total_value"),
+    watch("preference_share_total_value"),
+    watch("non_voting_share_total_value"),
+    watch("redeemable_share_total_value"),
+    watch("irredeemable_share_total_value"),
+    watch("company_capital"),
   ]);
 
   // SET DEFAULT VALUES
   useEffect(() => {
     if (share_details && Object.keys(share_details)?.length > 1) {
-      setValue('company_capital', share_details?.company_capital);
-      setValue('total_value', share_details?.total_value);
-      setValue('total_shares', share_details?.total_shares);
+      setValue("company_capital", share_details?.company_capital);
+      setValue("total_value", share_details?.total_value);
+      setValue("total_shares", share_details?.total_shares);
       share_details?.shares?.forEach((row: unknown) => {
         setValue(`${row?.name}_no_shares`, row?.no_shares);
         setValue(`${row?.name}_share_value`, row?.share_value);
@@ -138,18 +138,13 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
-      setIsLoading({
-        preview: false,
-        submit: true,
-      });
-
       // SET ACTIVE TAB AND STEP
-      let active_tab = 'capital_information';
-      let active_step = 'shareholders';
+      let active_tab = "capital_information";
+      let active_step = "shareholders";
 
-      if (status === 'in_preview') {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
+      if (status === "in_preview" || isLoading?.amend) {
+        active_tab = "preview_submission";
+        active_step = "preview_submission";
       }
 
       dispatch(
@@ -173,7 +168,13 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       );
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
-      dispatch(setBusinessCompletedStep('shareholders'));
+      dispatch(setBusinessCompletedStep("shareholders"));
+
+      setIsLoading({
+        preview: false,
+        submit: false,
+        amend: false,
+      });
     }, 1000);
   };
 
@@ -187,7 +188,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
             name="company_capital"
             control={control}
             defaultValue={share_details?.company_capital}
-            rules={{ required: 'Total company capital is required' }}
+            rules={{ required: "Total company capital is required" }}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1">
@@ -292,7 +293,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               <tr className="flex flex-row items-center justify-between w-full gap-3 p-3">
                 <h2 className="w-full font-semibold uppercase">Total</h2>
                 <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch('total_shares')} />
+                  <Input required readOnly value={watch("total_shares")} />
                 </td>
                 <span className="w-full"></span>
 
@@ -301,7 +302,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                     required
                     readOnly
                     defaultValue={share_details?.total_value}
-                    value={watch('total_value')}
+                    value={watch("total_value")}
                   />
                 </td>
               </tr>
@@ -321,29 +322,35 @@ const ShareDetails: FC<ShareDetailsProps> = ({
             disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('employment_info'));
-              dispatch(setBusinessActiveTab('management'));
+              dispatch(setBusinessActiveStep("employment_info"));
+              dispatch(setBusinessActiveTab("management"));
             }}
           />
-          {isAmending && (
+          {status === "is_Amending" && (
             <Button
-              value={'Complete Amendment'}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveTab('preview_submission'));
+              value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+              disabled={disableForm || Object.keys(errors)?.length > 0}
+              onClick={() => {
+                setIsLoading({
+                  preview: false,
+                  amend: true,
+                  submit: false,
+                });
               }}
+              submit
             />
           )}
-          {status === 'in_preview' && (
+          {status === "in_preview" && (
             <Button
               value={
-                isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                isLoading?.preview ? <Loader /> : "Save & Complete Preview"
               }
               primary
               onClick={() => {
                 setIsLoading({
                   preview: true,
                   submit: false,
+                  amend: false,
                 });
               }}
               submit
@@ -351,15 +358,16 @@ const ShareDetails: FC<ShareDetailsProps> = ({
             />
           )}
           <Button
-            value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+            value={isLoading?.submit ? <Loader /> : "Save & Continue"}
             primary
             onClick={() => {
               setIsLoading({
                 preview: false,
                 submit: true,
+                amend: false,
               });
               dispatch(
-                setUserApplications({ entry_id, status: 'in_progress' })
+                setUserApplications({ entry_id, status: "in_progress" })
               );
             }}
             submit

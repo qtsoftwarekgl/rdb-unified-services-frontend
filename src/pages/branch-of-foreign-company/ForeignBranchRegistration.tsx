@@ -43,7 +43,7 @@ const ForeignBranchRegistration = () => {
   );
   const { user } = useSelector((state: RootState) => state.user);
   const current_application = user_applications?.find(
-    (app:{
+    (app: {
       entry_id: string;
       status: string;
       path: string;
@@ -174,6 +174,7 @@ const ForeignBranchRegistration = () => {
                         <PreviewSubmission
                           entry_id={entry_id}
                           current_application={current_application}
+                          status={status}
                         />
                       )}
                     </>

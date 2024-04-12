@@ -57,11 +57,13 @@ interface business_application {
 interface PreviewSubmissionProps {
   isOpen: boolean;
   business_application: business_application;
+  status: string;
 }
 
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   isOpen,
   business_application,
+  status,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -844,7 +846,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   company_attachments:
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
-                  status: "submitted",
+                  status:
+                    status === "is_Amending" ? "re_submitted" : "submitted",
                   created_at: moment(Date.now()).format("DD/MM/YYYY"),
                 })
               );

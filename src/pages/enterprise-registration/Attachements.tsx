@@ -182,7 +182,8 @@ const Attachments = ({
           >
             <Button
               value="Back"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 dispatch(setEnterpriseActiveTab("general_information"));
                 dispatch(setEnterpriseActiveStep("office_address"));
               }}

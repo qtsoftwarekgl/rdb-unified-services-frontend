@@ -35,6 +35,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     formState: { errors },
     watch,
     setValue,
+    trigger,
   } = useForm();
 
   const dispatch: AppDispatch = useDispatch();
@@ -42,8 +43,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // SET DEFAULT VALUES
@@ -62,17 +63,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -82,12 +73,19 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           },
         })
       );
-      if (status === "in_preview")
+      if (status === "in_preview" || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
-        dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
       }
+      // SET CURRENT STEP AS COMPLETED
+      dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+        amend: false,
+      });
     }, 1000);
   };
 
@@ -224,7 +222,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               control={control}
               defaultValue={watch("email") || foreign_company_address?.email}
               rules={{
-                required: "Email address is required",
+                required: watch("email") ? "Email address is required" : false,
                 validate: (value) => {
                   return (
                     validateInputs(String(value), "email") ||
@@ -315,36 +313,65 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 dispatch(setForeignBusinessActiveStep("company_details"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    preview: false,
+                    submit: false,
+                  });
                 }}
+                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary
-                onClick={() => {
-                  dispatch(
-                    setUserApplications({ entry_id, status: "in_preview" })
-                  );
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
                 }}
                 submit
-                disabled={isFormDisabled}
+                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
               />
             )}
             <Button
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
                 dispatch(
                   setUserApplications({ entry_id, status: "in_progress" })
                 );

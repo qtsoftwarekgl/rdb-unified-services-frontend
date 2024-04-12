@@ -59,7 +59,6 @@ const SeniorManagement = ({
   );
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmModalData, setConfirmModalData] = useState({});
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
@@ -148,7 +147,7 @@ const SeniorManagement = ({
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                if (isAmending) return;
+                if (status === "is_Amending") return;
                 setConfirmModalData(row?.original);
                 setConfirmModal(true);
               }}
@@ -682,7 +681,7 @@ const SeniorManagement = ({
                 );
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 value={"Complete Amendment"}
                 onClick={(e) => {
@@ -697,7 +696,6 @@ const SeniorManagement = ({
               <Button
                 value="Save & Complete Preview"
                 primary
-                disabled={isAmending}
                 onClick={(e) => {
                   e.preventDefault();
                   if (!foreign_senior_management?.length) {

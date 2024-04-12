@@ -38,6 +38,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     control,
     formState: { errors },
     setValue,
+    trigger,
     setError,
     watch,
   } = useForm();
@@ -47,6 +48,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
+    amend: false,
   });
   const [searchCompany, setSearchCompany] = useState({
     error: false,
@@ -55,23 +57,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     name: "",
   });
 
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setIsLoading({
-      ...isLoading,
-      submit: status === "in_preview" ? false : true,
-      preview: status === "in_preview" ? true : false,
-    });
     setTimeout(() => {
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
       dispatch(
         setUserApplications({
           entry_id,
@@ -87,7 +78,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
         })
       );
 
-      if (status === "in_preview")
+      if (status === "in_preview" || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         // SET ACTIVE STEP
@@ -95,6 +86,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       }
       // SET CURRENT STEP AS COMPLETED
       dispatch(setForeignBusinessCompletedStep("company_details"));
+      setIsLoading({
+        ...isLoading,
+        submit: false,
+        preview: false,
+        amend: false,
+      });
     }, 1000);
   };
 
@@ -426,21 +423,45 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button value="Back" route="/business-registration/new" />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
+                submit
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    amend: true,
+                    preview: false,
+                    submit: false,
+                  });
                 }}
+                disabled={Object.keys(errors)?.length > 0}
               />
             )}
             {status === "in_preview" && (
               <Button
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors)?.length) {
+                    return;
+                  }
+                  setIsLoading({
+                    ...isLoading,
+                    preview: true,
+                    submit: false,
+                    amend: false,
+                  });
+                }}
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                    <Loader />
+                  ) : (
+                    "Save & Complete Preview"
+                  )
                 }
                 primary={!searchCompany?.error}
                 disabled={
@@ -455,7 +476,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               value={isLoading.submit ? <Loader /> : "Save & Continue"}
               primary={!searchCompany?.error}
               disabled={searchCompany?.error}
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  submit: true,
+                  preview: false,
+                  amend: false,
+                });
                 dispatch(
                   setUserApplications({ entry_id, status: "in_progress" })
                 );
