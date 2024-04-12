@@ -1,14 +1,17 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../components/inputs/Button";
-import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
-import AdminLayout from "../../containers/AdminLayout";
-import Table from "../../components/table/Table";
-import { users } from "../../constants/Users";
-import { capitalizeString, formatDate } from "../../helpers/strings";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { useState } from "react";
-import AddUser from "./AddUser";
-import ViewUser from "./ViewUser";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../components/inputs/Button';
+import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import AdminLayout from '../../containers/AdminLayout';
+import Table from '../../components/table/Table';
+import { users } from '../../constants/Users';
+import { capitalizeString, formatDate } from '../../helpers/strings';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { useState } from 'react';
+import AddUser from './AddUser';
+import ViewUser from './ViewUser';
+import RowSelectionCheckbox from '@/components/table/RowSelectionCheckbox';
+import { Row } from '@tanstack/react-table';
+import { DataTableColumnHeader } from '@/components/table/ColumnHeader';
 
 const ListUsers = () => {
   // COLUMNS
@@ -17,17 +20,36 @@ const ListUsers = () => {
 
   const columns = [
     {
-      header: "No",
-      id: "no",
-      accessorKey: "no",
+      id: 'no',
+      accessorKey: 'no',
+      header: ({ table }) => {
+        return <RowSelectionCheckbox isHeader table={table} />;
+      },
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          name: string;
+          image: string;
+        }>;
+      }) => {
+        return <RowSelectionCheckbox row={row} />;
+      },
     },
     {
-      header: "Name",
-      accessorKey: "name",
-      cell: ({ row }: { row: unknown }) => {
+      header: 'Name',
+      accessorKey: 'name',
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          name: string;
+          image: string;
+        }>;
+      }) => {
         return (
           <menu className="flex items-center justify-start gap-3">
-            <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
+            <figure className="overflow-hidden inline w-[2.5rem] h-[2.5rem] relative rounded-full">
               <img
                 src={row?.original?.image}
                 className="object-cover w-full h-full"
@@ -39,28 +61,76 @@ const ListUsers = () => {
       },
     },
     {
-      header: "Email",
-      accessorKey: "email",
-      filter: true,
+      id: 'email',
+      accessorKey: 'email',
+      header: ({ column }) => {
+        return <DataTableColumnHeader column={column} title={'Email'} />;
+      },
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+      enableSorting: true,
     },
     {
-      header: "Role",
-      accessorKey: "role",
-      filter: true,
+      header: 'Role',
+      accessorKey: 'role',
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: {
+            role: string;
+          };
+        };
+      }) => {
+        return (
+          <p className={`py-1 text-[13px]`}>
+            {capitalizeString(row?.original?.role)}
+          </p>
+        );
+      },
     },
     {
-      header: "Status",
-      accessorKey: "status",
-      filter: true,
+      id: 'status',
+      header: 'Status',
+      accessorKey: 'status',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: {
+            status: string;
+          };
+        };
+      }) => {
+        return (
+          <p className={`py-1 text-[13px]`}>
+            {capitalizeString(row?.original?.status)}
+          </p>
+        );
+      },
     },
     {
-      header: "Date Added",
-      accessorKey: "created_at",
+      id: 'date',
+      header: 'Date Added',
+      accessorKey: 'created_at',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
     },
     {
-      header: "",
-      accessorKey: "actions",
-      cell: ({ row }: { row: unknown }) => {
+      header: '',
+      accessorKey: 'actions',
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: null;
+        };
+      }) => {
         return (
           <menu
             className="flex items-center gap-4"
@@ -96,13 +166,14 @@ const ListUsers = () => {
         </menu>
         <section className="p-2">
           <Table
+            rowClickHandler={(row) => {
+              setUserToView(row);
+            }}
             data={users?.map((user, index) => {
               return {
                 ...user,
                 no: index + 1,
                 name: `${user?.first_name} ${user?.last_name}`,
-                role: capitalizeString(user?.role),
-                status: capitalizeString(user?.status),
                 created_at: formatDate(user?.created_at),
               };
             })}

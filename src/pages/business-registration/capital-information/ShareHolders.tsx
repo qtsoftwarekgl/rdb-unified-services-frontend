@@ -1247,7 +1247,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              tableTitle="Shareholders"
+              header="Shareholders"
             />
           </section>
           <menu

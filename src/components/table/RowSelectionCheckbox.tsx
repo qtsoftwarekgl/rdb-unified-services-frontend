@@ -1,14 +1,19 @@
 import { useEffect, useRef, FC } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface RowSelectionCheckboxProps {
   indeterminate?: boolean;
-  label?: string;
+  table?: unknown;
   checked?: boolean;
+  isHeader?: boolean;
+  row?: unknown;
 }
 
 const RowSelectionCheckbox: FC<RowSelectionCheckboxProps> = ({
   indeterminate,
-  label = null,
+  table,
+  row,
+  isHeader = false,
   ...rest
 }) => {
   const ref = useRef<HTMLInputElement>(null);
@@ -21,17 +26,33 @@ const RowSelectionCheckbox: FC<RowSelectionCheckboxProps> = ({
     }
   }, [indeterminate, rest.checked]);
 
-  return (
-    <label className="flex items-center gap-[6px]">
-      <input
-        className="w-4 h-8 rounded-xl checked:bg-whiteTheme-primaryColor cursor-pointer shadow-sm hover:ring-whiteTheme-primaryColor"
-        type="checkbox"
-        ref={ref}
-        {...rest}
+  if (isHeader) {
+    return (
+      <figure className='px-2' onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}>
+        <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
       />
-      {label && label}
-    </label>
-  );
+      </figure>
+    );
+  } else {
+    return (
+      <figure className='px-2'>
+        <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+      </figure>
+    );
+  }
 };
 
 export default RowSelectionCheckbox;

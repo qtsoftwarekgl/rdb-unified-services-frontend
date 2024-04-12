@@ -36,7 +36,6 @@ const CompanyHistory = () => {
     {
       header: "Transaction Type",
       accessorKey: "transactionType",
-      filter: true,
     },
     {
       header: "Transaction Number",

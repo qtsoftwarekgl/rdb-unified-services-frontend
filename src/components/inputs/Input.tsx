@@ -38,6 +38,7 @@ interface InputProps {
   readOnly?: boolean;
   multiple?: boolean;
   labelClassName?: string;
+  range?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -138,7 +139,7 @@ const Input: FC<InputProps> = ({
           <input
             name={name}
             onChange={onChange}
-            className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
+            className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
             type="text"
             value={value}
             ref={ref}
@@ -150,7 +151,7 @@ const Input: FC<InputProps> = ({
 
   if (['date'].includes(type)) {
     return (
-      <label className="flex flex-col gap-[5px] w-full">
+      <label className={`flex flex-col gap-[5px] w-full ${labelClassName}`}>
         <p
           className={`${
             label ? 'flex items-center gap-[5px] text-[14px]' : 'hidden'
@@ -161,11 +162,7 @@ const Input: FC<InputProps> = ({
             *
           </span>
         </p>
-        <DatePicker
-          ref={ref}
-          placeholder={placeholder}
-          onChange={onChange || (() => {})}
-        />
+        <DatePicker onChange={onChange} value={value} />
       </label>
     );
   }
@@ -193,7 +190,7 @@ const Input: FC<InputProps> = ({
           ref={ref}
           onChange={onChange}
           placeholder={readOnly ? '' : placeholder}
-          className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+          className={`py-[8px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
             readOnly &&
             '!border-[.1px] !border-background hover:cursor-default focus:!border-background'
           }`}
@@ -218,7 +215,7 @@ const Input: FC<InputProps> = ({
               name={name}
               onChange={onChange}
               placeholder={readOnly ? '' : placeholder}
-              className={`py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
+              className={`py-[8px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
               ${prefixIcon ? 'ps-10' : ''} ${prefixText ? 'ps-[3.6rem]' : ''} ${
                 readOnly &&
                 '!border-[.1px] !border-background hover:cursor-default focus:!border-background'
@@ -251,7 +248,7 @@ const Input: FC<InputProps> = ({
               placeholder={readOnly ? '' : placeholder}
               className={`${
                 prefixText && '!ml-16 !w-[85%]'
-              } py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+              } py-[8px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
                 prefixIcon &&
                 '!ml-[45px] !w-[90%] !border-l-none !rounded-l-none !ps-3.5'
               } ${

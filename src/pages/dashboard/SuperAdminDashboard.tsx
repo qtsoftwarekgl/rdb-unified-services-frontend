@@ -37,7 +37,6 @@ const SuperAdminDashboard = () => {
     {
       header: 'Type',
       accessorKey: 'type',
-      filter: true,
     },
     {
       header: 'Date Added',

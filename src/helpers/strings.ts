@@ -14,7 +14,7 @@ export const formatDate = (date: string | Date) => {
 export const capitalizeString = (string: string) => {
   if (!string) return "";
   const words = string.split("_");
-  const capitalizedWords = words.map(
+  const capitalizedWords = words && words.map(
     (word) => word.charAt(0).toUpperCase() + word.slice(1)
   );
   return capitalizedWords.join(" ");
@@ -69,3 +69,22 @@ export const formatCompanyData = (business) => {
     active_step: business?.active_step,
   };
 };
+
+export const validatePassword = (password: string) => {
+  const missingCharacters = [];
+
+  if (!/(?=.*[A-Z])/.test(password)) {
+    missingCharacters.push('No uppercase letter');
+  }
+  if (!/(?=.*[a-z])/.test(password)) {
+    missingCharacters.push('No lowercase letter');
+  }
+  if (!/(?=.*\d)/.test(password)) {
+    missingCharacters.push('No number');
+  }
+  if (!/(?=.*[^\w\s])/.test(password)) {
+    missingCharacters.push('No special character');
+  }
+
+  return missingCharacters;
+}

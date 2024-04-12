@@ -37,6 +37,7 @@ import ViewDocument from "../../user-company-details/ViewDocument";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { previewUrl } from "../../../constants/authentication";
+import { setIsAmending } from "../../../states/features/amendmentSlice";
 
 interface business_application {
   entry_id: string;
@@ -52,6 +53,7 @@ interface business_application {
   capital_details: business_capital_details[];
   beneficial_owners: business_beneficial_owners[];
   company_attachments: business_company_attachments;
+  status: string
 }
 
 interface PreviewSubmissionProps {
@@ -67,7 +69,6 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [attachmentPreview, setAttachmentPreview] = useState<string>("");
 
   // NAVIGATION
@@ -282,7 +283,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Table
           showFilter={false}
           showPagination={false}
-          tableTitle="Board of directors"
+          header="Board of directors"
           columns={managementColumns}
           data={
             business_application?.board_of_directors?.length > 0
@@ -318,7 +319,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Table
           showFilter={false}
           showPagination={false}
-          tableTitle="Senior Management"
+          header="Senior Management"
           columns={managementColumns}
           data={
             business_application?.senior_management?.length > 0
@@ -450,7 +451,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               : []
           }
           columns={shareholdersColumns}
-          tableTitle="Shareholders"
+          header="Shareholders"
           showFilter={false}
           showPagination={false}
         />
@@ -466,7 +467,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         setActiveTab={setBusinessActiveTab}
       >
         <Table
-          tableTitle="Capital Details"
+          header="Capital Details"
           data={
             business_application?.capital_details?.length > 0
               ? business_application?.capital_details?.map((shareholder) => {
@@ -525,7 +526,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               : []
           }
           columns={beneficialOwnersColumns}
-          tableTitle="Beneficial owners"
+          header="Beneficial owners"
           showFilter={false}
           showPagination={false}
         />
@@ -845,7 +846,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   company_attachments:
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
-                  status: isAmending ? 're_submitted' : 'submitted',
+                  status:
+                    business_application?.status === 'action_required'
+                      ? 're_submitted'
+                      : 'submitted',
                   created_at: moment(Date.now()).format('DD/MM/YYYY'),
                 })
               );
@@ -857,6 +861,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   business_registration_tabs_initial_state
                 )
               );
+              dispatch(setIsAmending(false));
               navigate("/success", {
                 state: { redirectUrl: "/user-applications" },
               });

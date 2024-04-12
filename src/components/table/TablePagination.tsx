@@ -1,166 +1,97 @@
-import { Link } from "react-router-dom";
-import Input from "../inputs/Input";
-import { useDispatch, useSelector } from "react-redux";
 import {
-  setCurrentPage,
-  setPage,
-  setSize,
-} from "../../states/features/paginationSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DoubleArrowLeftIcon,
+  DoubleArrowRightIcon,
+} from "@radix-ui/react-icons"
+import { Table } from "@tanstack/react-table"
+
+import { Button } from "@/components/ui/button"
 import {
-  faAngleDoubleLeft,
-  faAngleDoubleRight,
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import { AppDispatch, RootState } from "../../states/store";
-import { ReactNode } from "react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-const TablePagination = () => {
-  // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
-  const { size, totalPages, page, currentPage } = useSelector(
-    (state: RootState) => state.pagination
-  );
+interface DataTablePaginationProps<TData> {
+  table: Table<TData>
+}
 
-  const renderPageNumbers = () => {
-    const displayPages = [];
-    const maxVisiblePages = 3;
-
-    for (let i = 1; i <= totalPages; i++) {
-      if (
-        i === 1 ||
-        i === totalPages ||
-        (i >= page - Math.floor(maxVisiblePages / 2) &&
-          i <= page + Math.floor(maxVisiblePages / 2))
-      ) {
-        displayPages.push(i);
-      }
-    }
-
-    const pages: Array<unknown> = [];
-    let lastPage: null | number = null;
-
-    displayPages.forEach((page: number) => {
-      if (lastPage !== null && page - lastPage !== 1) {
-        pages.push("...");
-      }
-      pages.push(page);
-      lastPage = page;
-    });
-
-    return pages.map((page: ReactNode | unknown, index: number) => {
-      return page === "..." ? (
-        <span key={`ellipsis${index}`} className="mx-2">
-          ...
-        </span>
-      ) : (
-        <Link
-          to={"#"}
-          key={index}
-          className={`border-none bg-background shadwow-md p-[2.5px] px-[9px] text-[13px] shadow-sm rounded-md hover:bg-primary hover:text-white ${
-            currentPage - 1 === index && "bg-primary text-white"
-          }`}
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(setPage(Number(page) - 1));
-            dispatch(setCurrentPage(page));
-          }}
-        >
-          {String(page)}
-        </Link>
-      );
-    });
-  };
-
+export function DataTablePagination<TData>({
+  table,
+}: DataTablePaginationProps<TData>) {
   return (
-    <nav className="flex items-center gap-2 justify-between max-[700px]:flex-col">
-      <menu className="flex items-center w-full max-w-[50%] gap-3 max-[1000px]:max-w-[30%] max-[900px]:flex-col max-[900px]:items-start">
-        <article className="flex items-center w-full gap-2">
-          <p className="flex items-center gap-1 !text-[14px]">
-            Page {currentPage} of {totalPages}
-          </p>
-        </article>
-        <label className="flex items-center gap-1">
-          <p className="w-fit text-[14px] min-w-[45px]">Go to:</p>
-          <Input
-            placeholder="..."
-            type="number"
-            className="!w-fit !max-w-[60px] !py-1 !px-1 !text-[13px]"
-            min={1}
-            onChange={(e) => {
-              setTimeout(() => {
-                if (Number(e.target.value) > Number(totalPages)) return;
-                if (Number(e.target.value) < 1) return;
-                dispatch(setPage(Number(e.target.value) - 1));
-                dispatch(setCurrentPage(Number(e.target.value)));
-              }, 1000);
+    <div className="flex items-center justify-between px-2">
+      <div className="flex-1 text-sm text-muted-foreground">
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
+        {table.getFilteredRowModel().rows.length} row(s) selected.
+      </div>
+      <div className="flex items-center space-x-6 lg:space-x-8">
+        <div className="flex items-center space-x-2">
+          <p className="text-sm font-medium">Rows per page</p>
+          <Select
+            value={`${table.getState().pagination.pageSize}`}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value))
             }}
-          />
-        </label>
-      </menu>
-      <menu className="flex items-center gap-3 max-[500px]:flex-col">
-        <ul className="flex items-center gap-3">
-          <FontAwesomeIcon
-            className="p-[8px] px-[8px] text-[10px] rounded-md shadow-sm bg-background cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setPage(0));
-              dispatch(setCurrentPage(1));
-            }}
-            icon={faAngleDoubleLeft}
-          />
-          <FontAwesomeIcon
-            className="p-[6px] px-[8px] text-[12px] rounded-md shadow-sm bg-background cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              if (Number(currentPage) > 1) {
-                dispatch(setPage(page - 1));
-                dispatch(setCurrentPage(currentPage - 1));
-              }
-            }}
-            icon={faChevronLeft}
-          />
-          <span className="flex items-center gap-2">{renderPageNumbers()}</span>
-          <FontAwesomeIcon
-            className="p-[6px] px-[8px] text-[12px] rounded-md shadow-sm bg-background cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              if (Number(page) < Number(totalPages - 1)) {
-                dispatch(setPage(Number(page) + 1));
-                dispatch(setCurrentPage(Number(currentPage) + 1));
-              }
-            }}
-            icon={faChevronRight}
-          />
-          <FontAwesomeIcon
-            className="p-[8px] px-[8px] text-[10px] rounded-md shadow-sm bg-background cursor-pointer"
-            onClick={(e) => {
-              e.preventDefault();
-              if (Number(page) < Number(totalPages)) {
-                dispatch(setPage(totalPages - 1));
-                dispatch(setCurrentPage(totalPages - 1));
-              }
-            }}
-            icon={faAngleDoubleRight}
-          />
-        </ul>
-        <select
-          value={size}
-          onChange={(e) => {
-            dispatch(setSize(Number(e.target.value)));
-          }}
-          className="max-[500px]:block"
-        >
-          {[5, 10, 25, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </menu>
-    </nav>
-  );
-};
-
-export default TablePagination;
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={table.getState().pagination.pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {table.getPageCount()}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to first page</span>
+            <DoubleArrowLeftIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to previous page</span>
+            <ChevronLeftIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to next page</span>
+            <ChevronRightIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to last page</span>
+            <DoubleArrowRightIcon className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

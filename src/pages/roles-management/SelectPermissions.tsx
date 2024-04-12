@@ -39,7 +39,6 @@ const SelectPermissions = () => {
     {
       header: 'Added By',
       accessorKey: 'user_name',
-      filter: true,
     },
     {
       header: 'Date Added',

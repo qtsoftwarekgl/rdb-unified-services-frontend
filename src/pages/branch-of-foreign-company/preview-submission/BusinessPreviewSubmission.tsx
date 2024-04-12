@@ -200,7 +200,7 @@ const PreviewSubmission = ({
         <Table
           showFilter={false}
           showPagination={false}
-          tableTitle="Board of directors"
+          header="Board of directors"
           columns={managementColumns}
           data={foreign_board_of_directors?.map((director) => {
             return {
@@ -228,7 +228,7 @@ const PreviewSubmission = ({
         <Table
           showFilter={false}
           showPagination={false}
-          tableTitle="Senior Management"
+          header="Senior Management"
           columns={managementColumns}
           data={foreign_senior_management?.map((director) => {
             return {
@@ -299,7 +299,7 @@ const PreviewSubmission = ({
             };
           })}
           columns={beneficialOwnersColumns}
-          tableTitle="Beneficial owners"
+          header="Beneficial owners"
           showFilter={false}
           showPagination={false}
         />
