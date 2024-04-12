@@ -62,7 +62,6 @@ export const EnterpriseDetails = ({
 
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const [searchEnterprise, setSearchEnterprise] = useState({
     error: false,
     success: false,
@@ -911,7 +910,7 @@ export const EnterpriseDetails = ({
                 navigate("/enterprise-registration/new");
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

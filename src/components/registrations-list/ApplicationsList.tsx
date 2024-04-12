@@ -1,5 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
 import Table from "../../components/table/Table";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -7,23 +5,21 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from "../../states/features/businessRegistrationSlice";
+import { setUserApplications } from "../../states/features/userApplicationSlice";
+import Button from "../inputs/Button";
 
 type Props = {
   title: string;
   description: string;
   notDataMessage: string;
-  actionIcon: IconDefinition;
-  handleClickAction: () => void;
   data: Array<object>;
 };
 
 const ApplicatinsList = ({
   title,
   description,
-  actionIcon,
   notDataMessage,
   data,
-  handleClickAction,
 }: Props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,14 +47,14 @@ const ApplicatinsList = ({
   const renderActionCell = ({ row }) => {
     return (
       <menu className="flex items-center gap-2">
-        <FontAwesomeIcon
+        <Button
           onClick={(e) => {
             e.preventDefault();
             handleEditClick(row);
-            handleClickAction();
           }}
-          icon={actionIcon}
-          className="text-primary cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+          value="Amend"
+          styled={false}
+          className="text-primary hover:underline cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
         />
       </menu>
     );
@@ -88,7 +84,12 @@ const ApplicatinsList = ({
   const handleEditClick = (row) => {
     dispatch(setBusinessActiveTab("general_information"));
     dispatch(setBusinessActiveStep("company_details"));
-
+    dispatch(
+      setUserApplications({
+        entry_id: row?.original?.entry_id,
+        status: "is_Amending",
+      })
+    );
     navigate(row.original?.path);
   };
 

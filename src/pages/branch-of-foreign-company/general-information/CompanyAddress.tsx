@@ -45,7 +45,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     preview: false,
     amend: false,
   });
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // SET DEFAULT VALUES
@@ -314,7 +313,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 dispatch(setForeignBusinessActiveStep("company_details"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

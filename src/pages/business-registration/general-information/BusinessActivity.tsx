@@ -1,26 +1,26 @@
-import { FC, useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../components/inputs/Select';
+import { FC, useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../components/inputs/Select";
 import {
   businessActivities,
   businessSubActivities,
-} from '../../../constants/businessRegistration';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../states/store';
+} from "../../../constants/businessRegistration";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../states/store";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from '../../../states/features/businessRegistrationSlice';
-import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import { Link } from 'react-router-dom';
-import Input from '../../../components/inputs/Input';
-import Button from '../../../components/inputs/Button';
-import Loader from '../../../components/Loader';
-import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { RDBAdminEmailPattern } from '../../../constants/Users';
+} from "../../../states/features/businessRegistrationSlice";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import { Link } from "react-router-dom";
+import Input from "../../../components/inputs/Input";
+import Button from "../../../components/inputs/Button";
+import Loader from "../../../components/Loader";
+import { setUserApplications } from "../../../states/features/userApplicationSlice";
+import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 export interface business_company_activities {
   vat: string;
@@ -39,7 +39,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   isOpen,
   company_activities,
   entry_id,
-  status
+  status,
 }) => {
   // REACT HOOK FORM
   const {
@@ -62,7 +62,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   });
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMISSION
@@ -75,9 +74,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         preview: false,
         amend: false,
       });
-      setError('business_lines', {
-        type: 'manual',
-        message: 'Select at least one business line',
+      setError("business_lines", {
+        type: "manual",
+        message: "Select at least one business line",
       });
       return;
     }
@@ -90,44 +89,44 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         ...isLoading,
         submit: false,
         preview: false,
-        amend: false
+        amend: false,
       });
-      setError('business_lines', {
-        type: 'manual',
-        message: 'Select a main business line',
+      setError("business_lines", {
+        type: "manual",
+        message: "Select a main business line",
       });
       return;
     }
-    clearErrors('business_lines');
+    clearErrors("business_lines");
 
     setTimeout(() => {
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: 'management',
-          active_step: 'board_of_directors',
+          active_tab: "management",
+          active_step: "board_of_directors",
           company_activities: {
             ...company_activities,
             vat: data?.vat,
             turnover: data?.turnover,
             business_lines: company_activities?.business_lines,
-            step: 'business_activity_vat',
+            step: "business_activity_vat",
           },
         })
       );
 
       // SET ACTIVE TAB AND STEP
-      let active_tab = 'management';
-      let active_step = 'board_of_directors';
+      let active_tab = "management";
+      let active_step = "board_of_directors";
 
-      if (status === 'in_preview' || isLoading?.amend) {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
+      if (status === "in_preview" || isLoading?.amend) {
+        active_tab = "preview_submission";
+        active_step = "preview_submission";
       }
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep('business_activity_vat'));
+      dispatch(setBusinessCompletedStep("business_activity_vat"));
 
       // SET NEXT TAB AS ACTIVE
       dispatch(setBusinessActiveTab(active_tab));
@@ -147,8 +146,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   // SET DEFAULT VALUES
   useEffect(() => {
     if (company_activities) {
-      setValue('vat', company_activities?.vat);
-      setValue('turnover', company_activities?.turnover);
+      setValue("vat", company_activities?.vat);
+      setValue("turnover", company_activities?.turnover);
     }
   }, [company_activities, dispatch, setValue]);
 
@@ -235,7 +234,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                                   })
                                 );
                               }
-                              clearErrors('business_lines');
+                              clearErrors("business_lines");
                             }}
                           />
                         ) : (
@@ -270,7 +269,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           <p className="text-start">{business_line?.name}</p>
                           {mainExists && mainBusinessLine && (
                             <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
-                              Main{' '}
+                              Main{" "}
                               <FontAwesomeIcon
                                 icon={faMinus}
                                 className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
@@ -333,7 +332,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                                     },
                                   })
                                 );
-                                clearErrors('business_lines');
+                                clearErrors("business_lines");
                               }}
                             >
                               Set main
@@ -364,9 +363,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                             if (
                               company_activities?.business_lines?.length <= 1
                             ) {
-                              setError('business_lines', {
-                                type: 'manual',
-                                message: 'Select at least one business line',
+                              setError("business_lines", {
+                                type: "manual",
+                                message: "Select at least one business line",
                               });
                             }
                           }}
@@ -390,21 +389,21 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             <menu className="w-[50%] flex flex-col gap-6">
               <Controller
                 name="vat"
-                rules={{ required: 'Select choice' }}
+                rules={{ required: "Select choice" }}
                 control={control}
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-2">
                       <p className="flex items-center gap-2 text-[15px]">
-                        Would you like to register for VAT Certificate{' '}
+                        Would you like to register for VAT Certificate{" "}
                         <span className="text-red-600">*</span>
                       </p>
                       <menu className="flex items-center w-full gap-6">
                         <Input
                           type="radio"
                           label="Yes"
-                          checked={watch('vat') === 'yes'}
-                          value={'yes'}
+                          checked={watch("vat") === "yes"}
+                          value={"yes"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
                           }}
@@ -413,8 +412,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                         <Input
                           type="radio"
                           label="No"
-                          checked={watch('vat') === 'no'}
-                          value={'no'}
+                          checked={watch("vat") === "no"}
+                          value={"no"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
                           }}
@@ -430,18 +429,18 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                   );
                 }}
               />
-              {watch('vat') === 'yes' && (
+              {watch("vat") === "yes" && (
                 <Controller
                   name="turnover"
                   defaultValue={
-                    company_activities?.turnover || watch('turnover')
+                    company_activities?.turnover || watch("turnover")
                   }
                   rules={{
                     required:
-                      watch('vat') === 'yes' ? 'Turnover is required' : false,
+                      watch("vat") === "yes" ? "Turnover is required" : false,
                     validate: (value) => {
-                      if (watch('vat') === 'yes' && value <= 0) {
-                        return 'Turnover must be greater than 0';
+                      if (watch("vat") === "yes" && value <= 0) {
+                        return "Turnover must be greater than 0";
                       } else {
                         return true;
                       }
@@ -452,7 +451,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                     return (
                       <label className="flex flex-col gap-1 w-[60%]">
                         <Input
-                          defaultValue={watch('turnover')}
+                          defaultValue={watch("turnover")}
                           label="Enter expected turnover"
                           required
                           {...field}
@@ -477,13 +476,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('company_address'));
+                dispatch(setBusinessActiveStep("company_address"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
                 disabled={Object.keys(errors).length > 0 || disableForm}
                 onClick={async () => {
                   await trigger();
@@ -497,10 +496,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                 }}
               />
             )}
-            {status === 'in_preview' && (
+            {status === "in_preview" && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
                 }
                 onClick={() => {
                   setIsLoading({
@@ -509,7 +508,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                     preview: true,
                   });
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_preview' })
+                    setUserApplications({ entry_id, status: "in_preview" })
                   );
                 }}
                 submit
@@ -518,17 +517,15 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               />
             )}
             <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors).length > 0) return;
+              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
+              onClick={() => {
                 setIsLoading({
                   ...isLoading,
                   submit: true,
                   preview: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entry_id, status: "in_progress" })
                 );
               }}
               submit

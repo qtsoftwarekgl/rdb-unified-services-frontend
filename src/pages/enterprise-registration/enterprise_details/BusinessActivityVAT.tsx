@@ -56,7 +56,6 @@ const BusinessActivity = ({
   );
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const mainExists = enterprise_business_lines?.find(
     (activity: object) => activity?.main === true
   );
@@ -334,7 +333,7 @@ const BusinessActivity = ({
                 dispatch(setEnterpriseActiveStep("company_details"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

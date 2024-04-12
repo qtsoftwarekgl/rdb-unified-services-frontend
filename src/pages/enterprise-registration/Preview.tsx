@@ -10,9 +10,9 @@ import {
 } from "../../states/features/enterpriseRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
-import { setIsAmending } from "../../states/features/amendmentSlice";
 import { RDBAdminEmailPattern } from "../../constants/Users";
 import { provicesList } from "../../constants/provinces";
+
 import { districtsList } from "../../constants/districts";
 import { sectorsList } from "../../constants/sectors";
 import { cellsList } from "../../constants/cells";
@@ -20,9 +20,10 @@ import { villagesList } from "../../constants/villages";
 
 type Props = {
   entry_id: string | null;
+  status: string;
 };
 
-const Preview = ({ entry_id }: Props) => {
+const Preview = ({ entry_id, status }: Props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -53,10 +54,9 @@ const Preview = ({ entry_id }: Props) => {
     dispatch(
       setUserApplications({
         entry_id,
-        status: "pending_approval",
+        status: status === "action_required" ? "re_submitted" : "submitted",
       })
     );
-    dispatch(setIsAmending(false));
     dispatch(resetToInitialState());
     dispatch(setEnterpriseActiveStep("company_details"));
     dispatch(setEnterpriseActiveTab("general_information"));

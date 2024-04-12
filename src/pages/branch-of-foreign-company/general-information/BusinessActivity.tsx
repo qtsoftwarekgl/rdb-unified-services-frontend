@@ -54,7 +54,6 @@ const BusinessActivity = ({
   const [randomNumber, setRandomNumber] = useState<number>(5);
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
   // HANDLE FORM SUBMISSION
@@ -442,7 +441,7 @@ const BusinessActivity = ({
                 );
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

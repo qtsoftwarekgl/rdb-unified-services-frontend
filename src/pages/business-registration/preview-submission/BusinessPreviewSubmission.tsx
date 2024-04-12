@@ -59,11 +59,13 @@ interface business_application {
 interface PreviewSubmissionProps {
   isOpen: boolean;
   business_application: business_application;
+  status: string;
 }
 
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   isOpen,
   business_application,
+  status,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -832,7 +834,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               dispatch(
                 setUserApplications({
                   entry_id,
-                  type: 'business_registration',
+                  type: "business_registration",
                   company_details: business_application?.company_details,
                   company_address: business_application?.company_address,
                   company_activities: business_application?.company_activities,
@@ -847,10 +849,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
                   status:
-                    business_application?.status === 'action_required'
-                      ? 're_submitted'
-                      : 'submitted',
-                  created_at: moment(Date.now()).format('DD/MM/YYYY'),
+                    status === "is_Amending" ? "re_submitted" : "submitted",
+                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
                 })
               );
               dispatch(setBusinessCompletedStep("preview_submission"));

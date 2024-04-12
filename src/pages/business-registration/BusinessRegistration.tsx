@@ -54,18 +54,18 @@ const BusinessRegistration = () => {
       type: string;
       owner: string;
     }) => app?.entry_id === entry_id
-  )
+  );
 
   // NAVIGATION
   const navigate = useNavigate();
 
   // APPLICATION STATUS
-  let status = 'in_progress';
+  let status = "in_progress";
   if (businessApplication) {
     status = businessApplication.status;
   }
   if (RDBAdminEmailPattern.test(user?.email)) {
-    status = 'in_review';
+    status = "in_review";
   }
 
   useEffect(() => {
@@ -75,12 +75,12 @@ const BusinessRegistration = () => {
           entry_id,
           status,
           path: `/business-registration?entry_id=${entry_id}`,
-          type: 'business_registration',
+          type: "business_registration",
           owner: user?.email,
         })
       );
     } else {
-      navigate('/business-registration/new');
+      navigate("/business-registration/new");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, entry_id, navigate]);
@@ -222,6 +222,7 @@ const BusinessRegistration = () => {
                   <PreviewSubmission
                     isOpen={business_active_step?.name === "preview_submission"}
                     business_application={businessApplication}
+                    status={status}
                   />
                 )}
               </Tab>

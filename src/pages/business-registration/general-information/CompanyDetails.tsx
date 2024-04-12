@@ -43,9 +43,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   isOpen,
   entry_id,
   company_details,
-  status
+  status,
 }) => {
-
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -55,55 +54,53 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     watch,
     setError,
     clearErrors,
-    trigger
+    trigger,
   } = useForm();
-
+  console.log("******************", status);
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState({
     submit: false,
     preview: false,
-    amend: false
+    amend: false,
   });
   const [searchCompany, setSearchCompany] = useState({
     error: false,
     success: false,
     loading: false,
-    name: '',
+    name: "",
   });
   const [companyTypesOptions, setCompanyTypesOptions] = useState(companyTypes);
   const { user } = useSelector((state: RootState) => state.user);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   useEffect(() => {
-    if (watch('category') === 'public') {
+    if (watch("category") === "public") {
       setCompanyTypesOptions(companyTypes);
-    } else if (watch('category') === 'private') {
+    } else if (watch("category") === "private") {
       setCompanyTypesOptions(privateCompanyTypes);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('category')]);
+  }, [watch("category")]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
-
       // SET ACTIVE TAB AND STEP
-      let active_tab = 'general_information';
-      let active_step = 'company_address';
+      let active_tab = "general_information";
+      let active_step = "company_address";
 
-      if (status === 'in_preview') {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
+      if (status === "in_preview") {
+        active_tab = "preview_submission";
+        active_step = "preview_submission";
       }
 
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: 'general_information',
-          active_step: 'company_address',
-          status: 'in_progress',
+          active_tab: "general_information",
+          active_step: "company_address",
+          status: "in_progress",
           company_details: {
             ...company_details,
             name: data?.name,
@@ -111,13 +108,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             type: data?.type,
             position: data?.position,
             articles_of_association: data?.articles_of_association,
-            step: 'company_details',
+            step: "company_details",
           },
         })
       );
 
       // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep('company_details'));
+      dispatch(setBusinessCompletedStep("company_details"));
 
       // SET ACTIVE TAB
       dispatch(setBusinessActiveTab(active_tab));
@@ -148,7 +145,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     }
   }, [company_details, setValue]);
 
-
   if (!isOpen) return null;
 
   return (
@@ -159,8 +155,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               name="name"
               control={control}
-              defaultValue={company_details?.name || watch('name')}
-              rules={{ required: 'Company name is required' }}
+              defaultValue={company_details?.name || watch("name")}
+              rules={{ required: "Company name is required" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
@@ -182,10 +178,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                           loading: false,
                         });
-                        setError('name', {
-                          type: 'manual',
+                        setError("name", {
+                          type: "manual",
                           message:
-                            'Check if company name is available before proceeding',
+                            "Check if company name is available before proceeding",
                         });
                       }}
                       suffixIconHandler={(e) => {
@@ -193,7 +189,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         if (!field?.value) {
                           return;
                         }
-                        clearErrors('name');
+                        clearErrors("name");
                         setSearchCompany({
                           ...searchCompany,
                           loading: true,
@@ -201,8 +197,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                         });
                         setTimeout(() => {
-                          if (field?.value?.toLowerCase() === 'xyz') {
-                            setValue('name', searchCompany.name);
+                          if (field?.value?.toLowerCase() === "xyz") {
+                            setValue("name", searchCompany.name);
                             setSearchCompany({
                               ...searchCompany,
                               loading: false,
@@ -222,12 +218,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     />
                     <menu
                       className={`flex flex-col gap-1 w-full my-1 ${
-                        !Object.values(searchCompany).includes(true) && 'hidden'
+                        !Object.values(searchCompany).includes(true) && "hidden"
                       }`}
                     >
                       <article
                         className={`${
-                          searchCompany.loading ? 'flex' : 'hidden'
+                          searchCompany.loading ? "flex" : "hidden"
                         } text-[12px] items-center`}
                       >
                         <Loader size={4} /> Checking if "{searchCompany.name}"
@@ -236,8 +232,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       <p
                         className={`${
                           searchCompany.error && searchCompany?.name
-                            ? 'flex'
-                            : 'hidden'
+                            ? "flex"
+                            : "hidden"
                         } text-[12px] items-center text-red-500 gap-2`}
                       >
                         {searchCompany.name} is already taken. Please try
@@ -245,10 +241,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       </p>
                       <p
                         className={`${
-                          searchCompany.success ? 'flex' : 'hidden'
+                          searchCompany.success ? "flex" : "hidden"
                         } text-[12px] items-center gap-2 text-green-600`}
                       >
-                        {searchCompany.name} is available{' '}
+                        {searchCompany.name} is available{" "}
                         <span className="w-fit">
                           <FontAwesomeIcon
                             icon={faCheck}
@@ -270,7 +266,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               control={control}
               name="category"
               defaultValue={company_details?.category}
-              rules={{ required: 'Select company category' }}
+              rules={{ required: "Select company category" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -304,7 +300,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               control={control}
               name="type"
               defaultValue={company_details?.type}
-              rules={{ required: 'Select company type' }}
+              rules={{ required: "Select company type" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -336,7 +332,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               control={control}
               name="position"
               defaultValue={company_details?.position}
-              rules={{ required: 'Select your position' }}
+              rules={{ required: "Select your position" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -370,23 +366,23 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="articles_of_association"
-              rules={{ required: 'Select one of the choices provided' }}
+              rules={{ required: "Select one of the choices provided" }}
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch('articles_of_association') === 'yes'}
+                      checked={watch("articles_of_association") === "yes"}
                       {...field}
-                      value={'yes'}
+                      value={"yes"}
                     />
                     <Input
                       type="radio"
                       label="No"
-                      checked={watch('articles_of_association') === 'no'}
+                      checked={watch("articles_of_association") === "no"}
                       {...field}
-                      value={'no'}
+                      value={"no"}
                     />
                     {errors?.articles_of_association && (
                       <p className="text-xs text-red-500">
@@ -406,9 +402,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               value="Back"
               route="/business-registration/new"
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
-                value={'Complete Amendment'}
+                value={"Complete Amendment"}
                 submit
                 onClick={() => {
                   setIsLoading({
@@ -420,10 +416,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 }}
               />
             )}
-            {status === 'in_preview' && (
+            {status === "in_preview" && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
                 }
                 submit
                 primary={!searchCompany?.error}
@@ -447,7 +443,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               />
             )}
             <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
               primary={!searchCompany?.error}
               disabled={
                 searchCompany?.error ||
@@ -461,7 +457,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   preview: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entry_id, status: "in_progress" })
                 );
               }}
               submit

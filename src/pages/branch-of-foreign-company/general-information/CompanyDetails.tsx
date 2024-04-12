@@ -57,7 +57,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     name: "",
   });
 
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
 
@@ -424,7 +423,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button value="Back" route="/business-registration/new" />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

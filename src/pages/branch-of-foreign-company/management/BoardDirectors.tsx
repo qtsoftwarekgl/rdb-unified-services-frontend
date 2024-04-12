@@ -69,7 +69,6 @@ const BoardDirectors = ({
   });
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const { isAmending } = useSelector((state: RootState) => state.amendment);
 
   // CLEAR FORM
   useEffect(() => {
@@ -707,7 +706,7 @@ const BoardDirectors = ({
                 dispatch(setForeignBusinessActiveTab("general_information"));
               }}
             />
-            {isAmending && (
+            {status === "is_Amending" && (
               <Button
                 value={"Complete Amendment"}
                 onClick={(e) => {

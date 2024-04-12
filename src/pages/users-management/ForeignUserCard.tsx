@@ -44,7 +44,7 @@ const UserCard = ({ user, setUserToView }: Props) => {
             <Button
               value="Preview"
               styled={false}
-              className="!bg-transparent"
+              className="!bg-transparent hover:underline"
               onClick={() => {
                 setAttachmentPreview(row?.original?.document_url);
               }}
@@ -59,7 +59,7 @@ const UserCard = ({ user, setUserToView }: Props) => {
     <Modal
       isOpen={user !== null}
       onClose={() => setUserToView(null)}
-      className="!w-full"
+      className="!w-full !bg-[#f7f7f7]"
     >
       <main className="flex flex-col w-full gap-6 p-4 ">
         <h1 className="pb-2 text-2xl font-medium text-secondary w-fit">
@@ -128,12 +128,13 @@ const UserCard = ({ user, setUserToView }: Props) => {
             </div>
           </div>
         </div>
-        <label className="flex flex-col gap-4">Attachments</label>
+        <label className="flex flex-col text-tertiary w-fit">Attachments</label>
         <Table
           columns={attachmentColumns}
           data={user?.attachments}
           showFilter={false}
           showPagination={false}
+          className="!bg-white rounded-md"
         />
         {attachmentPreview && (
           <ViewDocument

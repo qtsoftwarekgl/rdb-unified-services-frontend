@@ -131,7 +131,7 @@ const EnterpriseRegistration = () => {
                       />
                     )}
                     {activeStepName === "enterprise_preview_submission" && (
-                      <Preview entry_id={entry_id} />
+                      <Preview entry_id={entry_id} status={status} />
                     )}
                   </>
                 )}
