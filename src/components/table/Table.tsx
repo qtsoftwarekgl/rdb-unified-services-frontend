@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,7 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
 import {
   Table as DataTable,
@@ -21,15 +21,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import { DataTablePagination } from './TablePagination';
-import TableToolbar from './TableToolbar';
+import { DataTablePagination } from "./TablePagination";
+import TableToolbar from "./TableToolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowClickHandler: undefined | ((row: TData) => void);
+  rowClickHandler?: undefined | ((row: TData) => void);
 }
 
 export default function Table<TData, TValue>({
@@ -70,7 +70,7 @@ export default function Table<TData, TValue>({
   return (
     <div className="space-y-4">
       <TableToolbar table={table} columns={columns} />
-      <div className="rounded-md border">
+      <div className="border rounded-md">
         <DataTable>
           <TableHeader className="px-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -78,7 +78,7 @@ export default function Table<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
-                      className="text-[14px] text-black px-0"
+                      className="text-[14px] text-black px-2"
                       key={header.id}
                       colSpan={header.colSpan}
                     >
@@ -99,23 +99,21 @@ export default function Table<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className={`px-0 py-2 ${
-                    rowClickHandler ? 'cursor-pointer' : ''
-                  }`}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={`px-2 ${rowClickHandler ? "cursor-pointer" : ""}`}
                   onClick={(e) => {
                     e.preventDefault();
                     rowClickHandler &&
-                      row?.id !== 'no' &&
+                      row?.id !== "no" &&
                       rowClickHandler(row.original);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
-                      className="text-[13px] px-0 py-2"
+                      className="text-[13px] p-2"
                       key={cell.id}
                       onClick={(e) => {
-                        if (cell.column.id === 'no') {
+                        if (cell.column.id === "no") {
                           e.preventDefault();
                           e.stopPropagation();
                         }
