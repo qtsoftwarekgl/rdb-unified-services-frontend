@@ -52,13 +52,12 @@ const DateRangePicker = ({
                 format(value.from, 'LLL dd, y')
               )
             ) : (
-              <p className="text-[13px]">Select date</p>
+              <p className="text-[13px]">Select range</p>
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            initialFocus
             mode="range"
             selected={value}
             onSelect={handleDateChange}
