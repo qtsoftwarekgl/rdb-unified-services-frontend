@@ -56,7 +56,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     clearErrors,
     trigger,
   } = useForm();
-  console.log("******************", status);
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState({

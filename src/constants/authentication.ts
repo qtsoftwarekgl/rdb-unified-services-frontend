@@ -21,6 +21,97 @@ export const availableNames = ["Inyambo", "xyz", "umurava"];
 export const previewUrl = "/passport.pdf";
 export const validTinNumber = "111111111";
 
+export const propertyData = [
+  {
+    property_location: "Kigali",
+    property_owner: "Kamana Jean",
+    property_nature: "Land",
+    property_description: "Land in Kigali",
+    property_value: "100000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+  {
+    property_location: "Kigali",
+    property_owner: "Kabago David",
+    property_nature: "Land",
+    property_description: "Land in Kigali",
+    property_value: "2020000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+  {
+    property_location: "Kigali",
+    property_owner: "Muhire Jean",
+    property_nature: "Land",
+    property_description: "Land in Kigali",
+    property_value: "16000000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+  {
+    property_location: "Kigali",
+    property_owner: "Ndahiro Jean",
+    property_nature: "Land",
+    property_description: "Land in Kigali",
+    property_value: "10231000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+];
+
 export const userData = [
   {
     id: 1,
@@ -35,6 +126,7 @@ export const userData = [
     district: "Woolly Cottonflower",
     cell: "Stork, black-necked",
     village: "Buena Vista",
+    marital_status: "Single",
   },
   {
     id: 2,
@@ -49,6 +141,11 @@ export const userData = [
     district: "Grayleaf Draba",
     cell: "Lechwe, kafue flats",
     village: "Bartillon",
+    marital_status: "Married",
+    spouse_name: "Kathleen S. Mccarthy",
+    spouse_phone: "0784567890",
+    spouse_id_number: "1199980040660153",
+    spouse_date_of_birth: "2/3/2024",
   },
   {
     id: 3,
@@ -64,6 +161,7 @@ export const userData = [
     district: "Arctic Woodrush",
     cell: "Yellow-billed stork",
     village: "Hanover",
+    marital_status: "Single",
   },
   {
     id: 4,
@@ -79,6 +177,7 @@ export const userData = [
     district: "Wrinkled Spineflower",
     cell: "Jacana, african",
     village: "Elka",
+    marital_status: "Single",
   },
   {
     id: 5,
@@ -94,6 +193,11 @@ export const userData = [
     district: "Pick Me Nots",
     cell: "Indian leopard",
     village: "Service",
+    marital_status: "Married",
+    spouse_name: "Cathrine S. Mccarthy",
+    spouse_phone: "0784567890",
+    spouse_id_number: "1199980040660151",
+    spouse_date_of_birth: "2/3/1999",
   },
   {
     id: 6,
@@ -108,6 +212,11 @@ export const userData = [
     district: "Horsehair Lichen",
     cell: "Bear, grizzly",
     village: "Sundown",
+    marital_status: "Married",
+    spouse_name: "Cathrine S. Mccarthy",
+    spouse_phone: "0784567890",
+    spouse_id_number: "1199980040660151",
+    spouse_date_of_birth: "2/3/1999",
   },
   {
     id: 7,
@@ -123,6 +232,11 @@ export const userData = [
     district: "Fecund Schadonia Lichen",
     cell: "Long-crested hawk eagle",
     village: "Clyde Gallagher",
+    marital_status: "Married",
+    spouse_name: "Cathrine S. Mccarthy",
+    spouse_phone: "0784567890",
+    spouse_id_number: "1199980040660151",
+    spouse_date_of_birth: "2/3/1999",
   },
   {
     id: 8,
@@ -137,6 +251,11 @@ export const userData = [
     district: "La Cruz Manzanita",
     cell: "King cormorant",
     village: "Annamark",
+    marital_status: "Married",
+    spouse_name: "Cathrine S. Mccarthy",
+    spouse_phone: "0784567890",
+    spouse_id_number: "1199980040660151",
+    spouse_date_of_birth: "2/3/1999",
   },
   {
     id: 9,
@@ -151,6 +270,7 @@ export const userData = [
     district: "Hollyleaf Gilia",
     cell: "Malleefowl",
     village: "Eagan",
+    marital_status: "Single",
   },
   {
     id: 10,
@@ -165,5 +285,6 @@ export const userData = [
     district: "Allegheny Serviceberry",
     cell: "Sarus crane",
     village: "Toban",
+    marital_status: "Single",
   },
 ];

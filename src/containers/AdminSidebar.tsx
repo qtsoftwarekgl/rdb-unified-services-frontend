@@ -4,6 +4,7 @@ import {
   faBook,
   faH,
   faHouse,
+  faHouseChimney,
   faMagnifyingGlassDollar,
   faPen,
   faRightFromBracket,
@@ -81,6 +82,11 @@ const AdminSidebar = () => {
       title: "Applications",
       path: "/admin/review-applications",
       icon: faMagnifyingGlassDollar,
+    },
+    {
+      title: "Collaterals",
+      path: "/admin/collaterals",
+      icon: faHouseChimney,
     },
     {
       title: "My Profile",

@@ -105,14 +105,8 @@ const Login = () => {
   useEffect(() => {
     if (isLoginSuccess) {
       toast.success("Login successful. Redirecting to Dashboard");
-      dispatch(setUser(loginData?.data?.user || ""));
-      dispatch(setToken(loginData?.data?.token) || "");
-    } else if (isLoginError) {
-      if (loginError?.status === 500) {
-        toast.error("Server error. Please try again later");
-      } else {
-        toast.error(loginError?.data?.message);
-      }
+      dispatch(setUser(loginData?.response?.user || ""));
+      dispatch(setToken(loginData?.response?.token) || "");
     }
   }, [isLoginSuccess, isLoginError, loginData, dispatch, navigate]);
 

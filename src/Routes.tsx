@@ -53,6 +53,8 @@ import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
 import ReviewRegistration from "./pages/review-registration/ReviewRegistration";
 import LandingPage from "./pages/home/LandingPage";
 import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
+import CollateralList from "./pages/collateral/CollateralList";
+import NewCollateral from "./pages/collateral/NewCollateral";
 
 const Routes = () => {
   return (
@@ -186,6 +188,8 @@ const Routes = () => {
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/roles" element={<ListRoles />} />
           <Route path="/admin/foreign-applicants" element={<ForeignUsers />} />
+          <Route path="/admin/collaterals" element={<CollateralList />} />
+          <Route path="/admin/collateral" element={<NewCollateral />} />
           <Route
             path="/back-office/dashboard"
             element={<BackOfficeDashboard />}
