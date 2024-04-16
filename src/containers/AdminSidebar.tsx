@@ -2,7 +2,6 @@ import {
   faBagShopping,
   faBars,
   faBook,
-  faH,
   faHouse,
   faMagnifyingGlassDollar,
   faPen,
@@ -47,44 +46,42 @@ const AdminSidebar = () => {
 
   // SIDEBAR NAV
   const sidebarNav = [
-    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Dashboard",
-      path: "/admin/dashboard",
-      icon: faHouse,
-    },
-    RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Dashboard",
-      path: "/back-office/dashboard",
+    {
+      title: 'Dashboard',
+      path: RDBVerifierAndApproverEmailPattern.test(user?.email)
+        ? '/back-office/dashboard'
+        : '/admin/dashboard',
       icon: faHouse,
     },
     !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Users",
-      path: "/admin/users",
+      title: 'Users',
+      path: '/admin/users',
       icon: faPen,
     },
     !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Staff",
-      path: "/admin/staff",
+      title: 'Staff',
+      path: '/admin/staff',
       icon: faPen,
     },
     !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Roles",
-      path: "/admin/roles",
+      title: 'Roles',
+      path: '/admin/roles',
       icon: faBagShopping,
     },
+    RDBAdminEmailPattern.test(user?.email) &&
+      user?.email.includes('info@rdb') && {
+        title: 'Foreign Accounts',
+        path: '/admin/foreign-applicants',
+        icon: faUser,
+      },
     RDBAdminEmailPattern.test(user?.email) && {
-      title: "Foreign Accounts",
-      path: "/admin/foreign-applicants",
-      icon: faUser,
-    },
-    RDBAdminEmailPattern.test(user?.email) && {
-      title: "Applications",
-      path: "/admin/review-applications",
+      title: 'Applications',
+      path: '/admin/review-applications',
       icon: faMagnifyingGlassDollar,
     },
     {
-      title: "My Profile",
-      path: "/admin/profile",
+      title: 'My Profile',
+      path: '/admin/profile',
       icon: faBook,
     },
   ].filter(Boolean);
