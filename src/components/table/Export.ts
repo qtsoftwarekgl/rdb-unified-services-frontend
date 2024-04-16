@@ -15,11 +15,11 @@ export const convertBlobToBase64 = (blob) => {
 
 const exportPDF = async ({
   table,
-  fileName,
+  fileName = 'Export',
   columns = [],
   options = {
     orientation: 'landscape',
-    format: 'a1',
+    format: 'a4',
   },
 }) => {
   const doc = new jsPDF(options);
@@ -39,24 +39,16 @@ const exportPDF = async ({
     doc.setTextColor(0);
     doc.setFontSize(10);
 
-    const noValues = Array.from(
-      { length: table?.options?.data.length },
-      (_, index) => index + 1
-    );
-
-    const exportData = table?.options?.data.map((row, index) => {
-      return {
-        id: noValues[index],
-        ...row,
-      };
-    });
+    const filteredData =
+      table.getRowModel().rows?.map((row) => row?.original) ||
+      table.options.data;
 
     doc.autoTable({
       startY: 30,
       columns: columns
         .filter((column) => column?.accessorKey !== 'actions')
         .map((column) => column?.header),
-      body: exportData.map((row, index) => {
+      body: filteredData.map((row, index) => {
         const rowData = columns.map((header) => {
           return row[header?.accessorKey || 'NO'];
         });

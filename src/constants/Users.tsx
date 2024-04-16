@@ -1218,7 +1218,7 @@ export const columns = [
   },
   {
     header: "",
-    accessorKey: "actions",
+    accessorKey: "Actions",
     cell: () => {
       return (
         <menu className="flex items-center gap-4">
