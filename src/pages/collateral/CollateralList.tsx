@@ -10,20 +10,34 @@ import {
   setCollateralActiveTab,
   setCollateralApplications,
 } from "@/states/features/collateralRegistrationSlice";
+import { RootState } from "@/states/store";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Controller, set, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const CollateralList = () => {
   const [showCollateralTypeModal, setShowCollateralTypeModal] = useState(false);
+  const { collateral_applications } = useSelector(
+    (state: RootState) => state.collateralRegistration
+  );
+
+  const applications = collateral_applications
+    .filter((app) => app.status)
+    .map((app) => {
+      return {
+        description: app?.description,
+        secured_amount: app?.secured_amount,
+        debtor: app?.debtor_info?.debtor_names,
+        status: app?.status,
+        submission_date: app?.created_at,
+      };
+    });
   const columns = [
-    { header: "Collateral ID", accessorKey: "collateral_id" },
-    { header: "Description", accessorKey: "description" },
-    { header: "Debtors Name", accessorKey: "collateral_type" },
-    { header: "Credit Amount", accessorKey: "credit_amount" },
+    { header: "Debtors Name", accessorKey: "debtor" },
+    { header: "Credit Amount (Rwf)", accessorKey: "secured_amount" },
     { header: "Status", accessorKey: "status" },
     { header: "Submission Date", accessorKey: "submission_date" },
     {
@@ -48,7 +62,7 @@ const CollateralList = () => {
 
   return (
     <AdminLayout>
-      <section className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
+      <section className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#fff] rounded-md">
         <menu className="flex items-center justify-between w-full gap-3">
           <h1 className="pl-2 text-lg font-semibold uppercase w-fit text-primary">
             Collateral List
@@ -67,12 +81,12 @@ const CollateralList = () => {
             }
           />
         </menu>
-        <Table columns={columns} data={[]} />
-        {/* <span className="flex items-center justify-start w-full">
-          <h1 className="uppercase text-primary">
-            You have no applications yet //{" "}
-          </h1>
-        </span> */}
+        <Table
+          columns={columns}
+          data={applications || []}
+          showFilters={false}
+          showPagination={false}
+        />
 
         <NewCollateralType
           isOpen={showCollateralTypeModal}

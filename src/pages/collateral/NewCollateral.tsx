@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import DebtorInformation from "./DebtorInformation";
 import { useLocation } from "react-router-dom";
 import CollateralInformation from "./CollateralInformation";
+import CollateralAttachments from "./Attachments";
+import PreviewSubmission from "./PreviewSubmission";
 
 const NewCollateral = () => {
   const {
@@ -64,8 +66,28 @@ const NewCollateral = () => {
                     {activeStepName === "collateral_information" && (
                       <CollateralInformation
                         entry_id={entry_id}
-                        collateral_info={application?.collateral_info}
+                        collateral_infos={application?.collateral_infos || []}
                         debtor_info={application?.debtor_info}
+                        collateral_type={application?.collateral_type}
+                        secured_amount={application?.secured_amount}
+                        secured_amount_in_words={
+                          application?.secured_amount_in_words
+                        }
+                      />
+                    )}
+                    {activeStepName === "attachments" && (
+                      <CollateralAttachments
+                        entry_id={entry_id}
+                        attachments={application?.attachments?.fileNames || []}
+                      />
+                    )}
+                    {activeStepName === "preview" && (
+                      <PreviewSubmission
+                        entry_id={entry_id}
+                        collateral_attachments={application?.attachments}
+                        debtor_info={application?.debtor_info}
+                        collateral_infos={application?.collateral_infos}
+                        secured_amount={application?.secured_amount}
                         collateral_type={application?.collateral_type}
                       />
                     )}

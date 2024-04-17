@@ -89,6 +89,7 @@ export const collateralRegistrationSlice = createSlice({
       const applicationIndex = state.collateral_applications.findIndex(
         (app) => app.entry_id === action?.payload?.entry_id
       );
+
       if (applicationIndex === -1) {
         state.collateral_applications = [
           ...state.collateral_applications,

@@ -15,7 +15,7 @@ import {
 } from "@/states/features/collateralRegistrationSlice";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FC, useEffect, useState } from "react";
-import { Controller, set, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 
 type Props = {
@@ -31,12 +31,18 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
     watch,
     trigger,
     setValue,
+    reset,
     formState: { errors },
   } = useForm();
   const [searchInfo, setSearchInfo] = useState({
     error: false,
     loading: false,
-    data: {},
+    data: null,
+  });
+  const [searchedCompany, setSearchedCompany] = useState({
+    error: false,
+    loading: false,
+    data: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
@@ -56,29 +62,80 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
       dispatch(setCollateralCompletedTab("debtor_information"));
       dispatch(setCollateralActiveTab("collateral_information"));
       dispatch(setCollateralActiveStep("collateral_information"));
+      reset();
+      setSearchInfo({
+        ...searchInfo,
+        data: null,
+      });
+      setSearchedCompany({
+        ...searchedCompany,
+        data: null,
+      });
     }, 1000);
   };
 
   useEffect(() => {
     if (debtor_info) {
-      setValue("debtor_category", debtor_info.debtor_category);
-      setValue("id_number", debtor_info.id_number);
-      setValue("tin_number", debtor_info.tin_number);
-      setValue("debtor_names", debtor_info.debtor_names);
-      setValue("debtor_dob", debtor_info.debtor_dob);
-      setValue("spouse_names", debtor_info.spouse_names);
-      setValue("spouse_id_number", debtor_info.spouse_id_number);
-      setValue("spouse_dob", debtor_info.spouse_dob);
-      setValue("phone", debtor_info.phone);
-      setValue("spouse_phone", debtor_info.spouse_phone);
-      setValue("institution_address", debtor_info.institution_address);
-      setValue("company_name", debtor_info.company_name);
-      setValue("date_of_incorporation", debtor_info.date_of_incorporation);
-      setValue("company_type", debtor_info.company_type);
+      if (debtor_info.debtor_category === "individual") {
+        setSearchInfo({
+          error: false,
+          loading: false,
+          data: { ...debtor_info },
+        });
+      } else {
+        setSearchedCompany({
+          error: false,
+          loading: false,
+          data: { ...debtor_info },
+        });
+      }
     }
   }, [debtor_info, setValue]);
 
-  console.log(">>>>>>>>>>>>>>>>", debtor_info);
+  useEffect(() => {
+    if (searchInfo?.data) {
+      setValue(
+        "debtor_names",
+        `${searchInfo?.data?.debtor_names ?? ""} ${
+          searchInfo?.data?.first_name ?? ""
+        } ${searchInfo?.data?.middle_name ?? ""} ${
+          searchInfo?.data?.last_name ?? ""
+        }`
+      );
+      setValue("debtor_dob", searchInfo?.data?.date_of_birth);
+      setValue("debtor_dob", searchInfo?.data?.date_of_birth);
+      setValue("spouse_names", searchInfo?.data?.spouse_name);
+      setValue("spouse_id_number", searchInfo?.data?.spouse_id_number);
+      setValue("spouse_dob", searchInfo?.data?.spouse_date_of_birth);
+      setValue("phone", searchInfo?.data?.phone);
+      setValue("spouse_phone", searchInfo?.data?.spouse_phone);
+      setValue("marital_status", searchInfo?.data?.marital_status);
+      setValue("gender", searchInfo?.data?.gender);
+      setValue("company_name", "");
+      setValue("date_of_incorporation", "");
+      setValue("company_type", "");
+      setValue("company_address", "");
+    }
+    if (searchedCompany?.data) {
+      setValue("company_name", searchedCompany?.data?.company_name);
+      setValue(
+        "date_of_incorporation",
+        searchedCompany?.data?.date_of_incorporation
+      );
+      setValue("company_type", searchedCompany?.data?.company_type);
+      setValue("company_address", searchedCompany?.data?.company_address);
+      setValue("marital_status", "");
+      setValue("gender", "");
+      setValue("debtor_names", "");
+      setValue("debtor_dob", "");
+      setValue("debtor_dob", "");
+      setValue("spouse_names", "");
+      setValue("spouse_id_number", "");
+      setValue("spouse_dob", "");
+      setValue("phone", "");
+      setValue("spouse_phone", "");
+    }
+  }, [searchInfo, searchedCompany, setValue]);
 
   return (
     <section className="flex flex-col gap-8 max-md:w-full">
@@ -108,7 +165,12 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                     setSearchInfo({
                       error: false,
                       loading: false,
-                      data: {},
+                      data: null,
+                    });
+                    setSearchedCompany({
+                      error: false,
+                      loading: false,
+                      data: null,
                     });
                     setValue("id_number", "");
                     setValue("tin_number", "");
@@ -129,7 +191,9 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                 <Controller
                   name="id_number"
                   control={control}
-                  defaultValue={watch("id_number") || ""}
+                  defaultValue={
+                    watch("id_number") || debtor_info?.id_number || ""
+                  }
                   rules={{
                     required: watch("id_number")
                       ? "Debtor's ID number is required"
@@ -253,8 +317,8 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                             if (!field?.value) {
                               return;
                             }
-                            setSearchInfo({
-                              ...searchInfo,
+                            setSearchedCompany({
+                              ...searchedCompany,
                               loading: true,
                               error: false,
                             });
@@ -265,15 +329,15 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                               const company_details =
                                 searchedCompanies[randomNumber];
                               if (field?.value === String(validTinNumber)) {
-                                setSearchInfo({
-                                  ...searchInfo,
+                                setSearchedCompany({
+                                  ...searchedCompany,
                                   loading: false,
                                   error: false,
                                   data: company_details,
                                 });
                               } else {
-                                setSearchInfo({
-                                  ...searchInfo,
+                                setSearchedCompany({
+                                  ...searchedCompany,
                                   loading: false,
                                   error: true,
                                 });
@@ -281,18 +345,19 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                             }, 1000);
                           }}
                         />
-                        {searchInfo?.loading &&
+                        {searchedCompany?.loading &&
                           !errors?.tin_number &&
-                          !searchInfo?.error && (
+                          !searchedCompany?.error && (
                             <span className="flex items-center gap-[2px] text-[13px]">
                               <Loader size={4} /> Searching for Institution...
                             </span>
                           )}
-                        {searchInfo?.error && !searchInfo?.loading && (
-                          <span className="text-red-600 text-[13px]">
-                            Invalid TIN number
-                          </span>
-                        )}
+                        {searchedCompany?.error &&
+                          !searchedCompany?.loading && (
+                            <span className="text-red-600 text-[13px]">
+                              Invalid TIN number
+                            </span>
+                          )}
                         {errors?.tin_number && (
                           <p className="text-red-500 text-[13px]">
                             {String(errors?.tin_number?.message)}
@@ -307,20 +372,24 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
           )}
         </menu>
         {watch("debtor_category") === "individual" &&
-          (Object.keys(searchInfo?.data).length !== 0 ||
-            Object.keys(debtor_info).length !== 0) && (
+          searchInfo?.data &&
+          Object.keys(searchInfo?.data).length !== 0 && (
             <>
               <menu className="flex items-start w-full gap-3">
                 <Controller
                   name="debtor_names"
                   control={control}
-                  defaultValue={`${searchInfo?.data?.first_name || ""} ${
-                    searchInfo?.data?.middle_name || ""
-                  } ${
-                    searchInfo?.data?.last_name ||
-                    debtor_info?.debtor_names ||
+                  defaultValue={
+                    `${searchInfo?.data?.first_name || ""} ${
+                      searchInfo?.data?.middle_name || ""
+                    } ${
+                      searchInfo?.data?.last_name ||
+                      debtor_info?.debtor_names ||
+                      ""
+                    }` ||
+                    searchInfo?.data?.debtor_names ||
                     ""
-                  }`}
+                  }
                   rules={{ required: "Debtor's name is required" }}
                   render={({ field }) => {
                     return (
@@ -417,9 +486,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                 <Controller
                   name="phone"
                   control={control}
-                  defaultValue={
-                    searchInfo?.data?.phone || debtor_info?.phone || ""
-                  }
+                  defaultValue={debtor_info?.phone || ""}
                   rules={{
                     required: "Phone number is required",
                   }}
@@ -436,6 +503,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                         ) : (
                           <Select
                             label="Phone number"
+                            {...field}
                             onChange={(e) => {
                               field.onChange(e);
                             }}
@@ -574,15 +642,15 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
           )}
         {(watch("debtor_category") === "institution" ||
           debtor_info?.debtor_category === "institution") &&
-          (Object.keys(searchInfo?.data).length !== 0 ||
-            Object.keys(debtor_info).length !== 0) && (
+          searchedCompany?.data &&
+          Object.keys(searchedCompany?.data).length !== 0 && (
             <>
               <menu className="flex items-start w-full gap-3">
                 <Controller
                   name="company_name"
                   control={control}
                   defaultValue={
-                    searchInfo?.data?.company_name ||
+                    searchedCompany?.data?.company_name ||
                     debtor_info?.company_name ||
                     ""
                   }
@@ -610,7 +678,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                   name="date_of_incorporation"
                   control={control}
                   defaultValue={
-                    searchInfo?.data?.date_of_incorporation ||
+                    searchedCompany?.data?.date_of_incorporation ||
                     debtor_info?.date_of_incorporation ||
                     ""
                   }
@@ -633,7 +701,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                   name="company_type"
                   control={control}
                   defaultValue={
-                    searchInfo?.data?.company_type ||
+                    searchedCompany?.data?.company_type ||
                     debtor_info?.company_type ||
                     ""
                   }
@@ -654,7 +722,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                   name="company_address"
                   control={control}
                   defaultValue={
-                    searchInfo?.data?.company_address ||
+                    searchedCompany?.data?.company_address ||
                     debtor_info?.company_address ||
                     ""
                   }
@@ -679,7 +747,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
             value={isLoading ? <Loader /> : "Save & Continue"}
             primary
             submit
-            className="w-[200px]"
+            className="w-[180px]"
           />
         </menu>
       </form>
