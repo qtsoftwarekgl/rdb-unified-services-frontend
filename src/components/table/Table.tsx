@@ -30,19 +30,20 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   rowClickHandler: undefined | ((row: TData) => void);
+  showFilter?: boolean;
+  showPagination?: boolean;
 }
 
 export default function Table<TData, TValue>({
   columns,
   data,
   rowClickHandler = undefined,
+  showFilter = true,
+  showPagination = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [columnVisibility, setColumnVisibility] =
-    useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    []
-  );
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
@@ -69,7 +70,7 @@ export default function Table<TData, TValue>({
 
   return (
     <div className="space-y-4 w-full my-4">
-      <TableToolbar table={table} columns={columns} />
+      {showFilter && <TableToolbar table={table} columns={columns} />}
       <div className="rounded-md border">
         <DataTable>
           <TableHeader className="px-0">
@@ -100,9 +101,7 @@ export default function Table<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  className={`p-2 ${
-                    rowClickHandler ? 'cursor-pointer' : ''
-                  }`}
+                  className={`p-2 ${rowClickHandler ? 'cursor-pointer' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     rowClickHandler &&
@@ -142,7 +141,7 @@ export default function Table<TData, TValue>({
           </TableBody>
         </DataTable>
       </div>
-      <DataTablePagination table={table} />
+      {showPagination && <DataTablePagination table={table} />}
     </div>
   );
 }

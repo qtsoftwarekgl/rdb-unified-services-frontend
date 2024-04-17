@@ -5,28 +5,37 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { FC } from "react";
+} from '@/components/ui/select';
+import { FC } from 'react';
 
 interface SelectProps {
-    label?: string;
-    options?: Array<{ label: string; value: string }>;
-    defaultValue?: string | undefined;
-    placeholder?: string;
-    className?: string;
+  label?: string;
+  options?: Array<{ label: string; value: string }>;
+  defaultValue?: string | undefined;
+  placeholder?: string;
+  className?: string;
+  onChange?: ((value: string) => void) | undefined;
+  value?: string | undefined;
 }
 
-const Select: FC<SelectProps> = ({ options = [], defaultValue = undefined, placeholder = '', className = undefined }) => {
-
-
+const Select: FC<SelectProps> = ({
+  options = [],
+  defaultValue = undefined,
+  placeholder = '',
+  className = undefined,
+  value = '',
+  onChange,
+}) => {
   return (
-    <SelectComponent defaultValue={defaultValue}>
+    <SelectComponent onValueChange={onChange} defaultValue={defaultValue} value={value}>
       <SelectTrigger
         className={`w-fit !text-[10px] focus:ring-transparent ring-0 rounded-r-none ${className}`}
       >
         <SelectValue
           className="!text-[10px]"
-          placeholder={<p className="text-[12px] text-gray-500">{placeholder}</p>}
+          placeholder={
+            <p className="text-[12px] text-gray-500">{placeholder}</p>
+          }
         />
       </SelectTrigger>
       <SelectContent>
@@ -46,6 +55,6 @@ const Select: FC<SelectProps> = ({ options = [], defaultValue = undefined, place
       </SelectContent>
     </SelectComponent>
   );
-}
+};
 
-export default Select
+export default Select;
