@@ -48,6 +48,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         <menu className="flex items-start w-full gap-6 max-sm:flex-col">
           <Select
             label="Document Type"
+            placeholder='Select document type'
             required
             options={[
               { value: 'nid', label: 'National ID' },
@@ -56,7 +57,8 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
             onChange={(e) => {
               setDocumentType(e);
             }}
-            defaultValue={{ value: 'nid', label: 'National ID' }}
+            defaultValue={'nid'}
+            value={documentType}
             labelClassName={`${
               documentType === 'passport' &&
               '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'

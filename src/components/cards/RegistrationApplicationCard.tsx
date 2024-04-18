@@ -23,9 +23,9 @@ const RegistrationApplicationCard: FC<RegistrationApplicationCardProps> = ({
 
   return (
     <section
-      className={`flex flex-col items-start cursor-pointer justify-between w-full bg-white shadow-lg rounded-xl p-4 ease-in-out duration-200 max-w-[23%] max-[1150px]:max-w-[35%] max-[900px]:max-w-[45%] max-[600px]:max-w-[95%] ${
-        showCallToAction ? 'gap-2' : 'gap-0'
-      }`}
+    className={`flex flex-col items-start cursor-pointer justify-between w-full bg-white shadow-sm border border-slate-300 rounded-xl p-4 ease-in-out duration-200 max-w-[23%] max-[1150px]:max-w-[35%] max-[900px]:max-w-[45%] max-[600px]:max-w-[95%] ${
+      showCallToAction ? 'gap-2' : 'gap-0'
+    }`}
       onMouseEnter={() => setShowCallToAction(true)}
       onMouseLeave={() => setShowCallToAction(false)}
     >
