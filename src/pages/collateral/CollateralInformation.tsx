@@ -133,7 +133,7 @@ const CollateralInformation = ({
                     collateral_id:
                       collateral_type === "immovable"
                         ? collateral_info?.upi_number
-                        : collateral_info?.property_tin_number,
+                        : collateral_info?.property_tin_number || "N/A",
                   };
                 }
               ) || []

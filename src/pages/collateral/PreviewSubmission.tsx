@@ -166,7 +166,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               dispatch(
                 setCollateralApplications({
                   entry_id,
-                  status: "Pending Notarized",
+                  status: "Pending Notarized AOMA",
                   created_at: moment(Date.now()).format("DD/MM/YYYY"),
                 })
               );
