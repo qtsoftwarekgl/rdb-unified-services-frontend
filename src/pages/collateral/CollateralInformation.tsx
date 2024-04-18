@@ -84,7 +84,7 @@ const CollateralInformation = ({
       },
     },
   ];
-  console.log("********************", collateral_type);
+
   useEffect(() => {
     setValue("secured_amount", secured_amount);
     setValue("value_in_words", secured_amount_in_words);

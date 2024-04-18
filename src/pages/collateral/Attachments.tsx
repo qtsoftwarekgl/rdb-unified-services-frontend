@@ -6,7 +6,6 @@ import Loader from "../../components/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
-import { setUserApplications } from "../../states/features/userApplicationSlice";
 import ViewDocument from "../user-company-details/ViewDocument";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -36,7 +35,11 @@ const CollateralAttachments = ({ entry_id, attachments }: AttachmentsProps) => {
   } = useForm();
   const [attachmentFiles, setAttachmentFiles] = useState<Attachment[]>([
     { label: "Debtor Identification Document", file: null },
-    { label: "Collateral Documents", file: null },
+    { label: "Valuation report", file: null },
+    { label: "Collateral owner consent", file: null },
+    { label: "Power of attorney", file: null },
+    { label: "Collateral Agreement", file: null },
+    { label: "Board resolutions", file: null },
   ]);
   const [attachmentFilesNames, setAttachmentFilesNames] = useState<string[]>(
     []

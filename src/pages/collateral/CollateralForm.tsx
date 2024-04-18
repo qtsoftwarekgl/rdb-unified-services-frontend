@@ -3,6 +3,7 @@ import Button from "@/components/inputs/Button";
 import Input from "@/components/inputs/Input";
 import { validTinNumber, validUPI } from "@/constants/Users";
 import { propertyData } from "@/constants/authentication";
+import { filterObject } from "@/helpers/strings";
 import validateInputs from "@/helpers/validations";
 import { setCollateralApplications } from "@/states/features/collateralRegistrationSlice";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -51,7 +52,7 @@ const CollateralForm = ({
             secured_amount_in_words: data.value_in_words,
             collateral_infos: [
               {
-                ...data,
+                ...filterObject(data),
                 debtor_id_number:
                   debtor_info?.id_number || debtor_info?.tin_number,
               },

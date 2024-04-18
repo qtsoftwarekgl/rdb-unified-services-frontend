@@ -5,6 +5,7 @@ import Select from "@/components/inputs/Select";
 import { validNationalID, validTinNumber } from "@/constants/Users";
 import { userData } from "@/constants/authentication";
 import { searchedCompanies } from "@/constants/businessRegistration";
+import { filterObject } from "@/helpers/strings";
 import validateInputs from "@/helpers/validations";
 import {
   setCollateralActiveStep,
@@ -54,7 +55,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
         setCollateralApplications({
           entry_id,
           debtor_info: {
-            ...data,
+            ...filterObject(data),
           },
         })
       );
@@ -91,6 +92,8 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
       }
     }
   }, [debtor_info, setValue]);
+
+  console.log("&&&&&&&&&&&&&&&&&&&&&", searchInfo);
 
   useEffect(() => {
     if (searchInfo?.data) {
@@ -136,7 +139,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
       setValue("spouse_phone", "");
     }
   }, [searchInfo, searchedCompany, setValue]);
-
+  console.log(">>>>>>>>>>>>>>>>>>>>>>", watch("phone"));
   return (
     <section className="flex flex-col gap-8 max-md:w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
@@ -382,11 +385,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                   defaultValue={
                     `${searchInfo?.data?.first_name || ""} ${
                       searchInfo?.data?.middle_name || ""
-                    } ${
-                      searchInfo?.data?.last_name ||
-                      debtor_info?.debtor_names ||
-                      ""
-                    }` ||
+                    } ${searchInfo?.data?.last_name}` ||
                     searchInfo?.data?.debtor_names ||
                     ""
                   }
@@ -413,11 +412,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                 <Controller
                   name="debtor_dob"
                   control={control}
-                  defaultValue={
-                    searchInfo?.data?.date_of_birth ||
-                    debtor_info?.debtor_dob ||
-                    ""
-                  }
+                  defaultValue={searchInfo?.data?.date_of_birth || ""}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col items-start w-full gap-1">
@@ -437,9 +432,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                   <Controller
                     name="gender"
                     control={control}
-                    defaultValue={
-                      searchInfo?.data?.gender || debtor_info?.gender || ""
-                    }
+                    defaultValue={searchInfo?.data?.gender || ""}
                     render={() => {
                       return (
                         <label className="flex flex-col items-start gap-2 ">
@@ -460,11 +453,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                   <Controller
                     name="marital_status"
                     control={control}
-                    defaultValue={
-                      searchInfo?.data?.marital_status ||
-                      debtor_info?.marital_status ||
-                      ""
-                    }
+                    defaultValue={searchInfo?.data?.marital_status || ""}
                     render={() => {
                       return (
                         <label className="flex flex-col items-start gap-2 ">
@@ -474,7 +463,6 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
 
                           <p className="px-2 py-1 rounded-md bg-background">
                             {searchInfo?.data?.marital_status ||
-                              debtor_info?.marital_status ||
                               watch("marital_status") ||
                               ""}
                           </p>
@@ -486,7 +474,12 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                 <Controller
                   name="phone"
                   control={control}
-                  defaultValue={debtor_info?.phone || ""}
+                  defaultValue={
+                    {
+                      label: searchInfo?.data?.phone,
+                      value: searchInfo?.data?.phone,
+                    } || ""
+                  }
                   rules={{
                     required: "Phone number is required",
                   }}
@@ -504,14 +497,6 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                           <Select
                             label="Phone number"
                             {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                            }}
-                            defaultValue={
-                              searchInfo?.data?.phone ||
-                              debtor_info?.phone ||
-                              ""
-                            }
                             required
                             options={userData?.slice(0, 3)?.map((user) => {
                               return {
