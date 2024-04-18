@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import moment from 'moment';
 import rdb_logo from '/rdb-logo.png';
+import { capitalizeString } from '@/helpers/strings';
 
 export const convertBlobToBase64 = (blob) => {
   return new Promise((resolve) => {
@@ -50,7 +51,7 @@ const exportPDF = async ({
         .map((column) => column?.header),
       body: filteredData.map((row, index) => {
         const rowData = columns.map((header) => {
-          return row[header?.accessorKey || 'NO'];
+          return capitalizeString(row[header?.accessorKey || 'NO']);
         });
         return { index, ...rowData };
       }),

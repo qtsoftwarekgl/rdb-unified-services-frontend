@@ -12,6 +12,7 @@ import { Button } from '../ui/button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile } from '@fortawesome/free-regular-svg-icons';
 import { Cross2Icon } from '@radix-ui/react-icons';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface TableToolbarProps<TData, TValue> {
   table: Table<TData>;
@@ -22,8 +23,20 @@ export default function TableToolbar<TData, TValue>({
   table,
   columns,
 }: TableToolbarProps<TData, TValue>) {
+
+  // NAVIGATE
+  const { search } = useLocation();
+
+  // GET QUERY PARAMS
+  const queryParams = new URLSearchParams(search);
+
   // STATE VARIABLES
-  const isFiltered = table.getState().columnFilters.length > 0;
+  const isFiltered =
+    table.getState().columnFilters.length > 0 ||
+    Array.from(queryParams).length > 0;
+
+  // NAVIGATE
+  const navigate = useNavigate();
 
   // HANDLE DATE RANGE SELECTOR
   const [dateRange, setDateRange] = useState<
@@ -133,6 +146,7 @@ export default function TableToolbar<TData, TValue>({
           return (
             <DataTableFacetedFilter
               key={column?.accessorKey}
+              table={table}
               column={table.getColumn(column?.accessorKey)}
               title={capitalizeString(column?.accessorKey)}
               options={Array.from(
@@ -173,6 +187,7 @@ export default function TableToolbar<TData, TValue>({
           onClick={() => {
             table.resetColumnFilters();
             setDateRange(undefined);
+            navigate(``)
           }}
           className="h-8 px-2 lg:px-3 text-[12px] font-normal hover:font-medium"
         >
