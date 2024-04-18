@@ -29,13 +29,17 @@ import { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowClickHandler?: undefined | ((row: TData) => void);
+  rowClickHandler: undefined | ((row: TData) => void);
+  showFilter?: boolean;
+  showPagination?: boolean;
 }
 
 export default function Table<TData, TValue>({
   columns,
   data,
   rowClickHandler = undefined,
+  showFilter = true,
+  showPagination = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -66,7 +70,7 @@ export default function Table<TData, TValue>({
 
   return (
     <div className="w-full my-4 space-y-4">
-      <TableToolbar table={table} columns={columns} />
+      {showFilter && <TableToolbar table={table} columns={columns} />}
       <div className="border rounded-md">
         <DataTable>
           <TableHeader className="px-0">
@@ -137,7 +141,7 @@ export default function Table<TData, TValue>({
           </TableBody>
         </DataTable>
       </div>
-      <DataTablePagination table={table} />
+      {showPagination && <DataTablePagination table={table} />}
     </div>
   );
 }
