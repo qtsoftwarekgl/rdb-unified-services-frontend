@@ -50,7 +50,7 @@ import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDeta
 import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
 import CloseCompany from "./pages/company-closure/CloseCompany";
 import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
-import ReviewRegistration from "./pages/review-registration/ReviewRegistration";
+import ReviewRegistration from "./pages/review-applications/ReviewRegistration";
 import LandingPage from "./pages/home/LandingPage";
 import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
 import CollateralList from "./pages/collateral/CollateralList";

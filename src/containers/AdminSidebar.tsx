@@ -2,7 +2,6 @@ import {
   faBagShopping,
   faBars,
   faBook,
-  faH,
   faHouse,
   faHouseChimney,
   faMagnifyingGlassDollar,
@@ -48,14 +47,11 @@ const AdminSidebar = () => {
 
   // SIDEBAR NAV
   const sidebarNav = [
-    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
+    {
       title: "Dashboard",
-      path: "/admin/dashboard",
-      icon: faHouse,
-    },
-    RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Dashboard",
-      path: "/back-office/dashboard",
+      path: RDBVerifierAndApproverEmailPattern.test(user?.email)
+        ? "/back-office/dashboard"
+        : "/admin/dashboard",
       icon: faHouse,
     },
     !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
@@ -73,11 +69,12 @@ const AdminSidebar = () => {
       path: "/admin/roles",
       icon: faBagShopping,
     },
-    RDBAdminEmailPattern.test(user?.email) && {
-      title: "Foreign Accounts",
-      path: "/admin/foreign-applicants",
-      icon: faUser,
-    },
+    RDBAdminEmailPattern.test(user?.email) &&
+      user?.email.includes("info@rdb") && {
+        title: "Foreign Accounts",
+        path: "/admin/foreign-applicants",
+        icon: faUser,
+      },
     RDBAdminEmailPattern.test(user?.email) && {
       title: "Applications",
       path: "/admin/review-applications",

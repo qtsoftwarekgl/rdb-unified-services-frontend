@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -25,6 +24,7 @@ import {
 
 import { DataTablePagination } from "./TablePagination";
 import TableToolbar from "./TableToolbar";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,13 +37,10 @@ export default function Table<TData, TValue>({
   data,
   rowClickHandler = undefined,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -68,7 +65,7 @@ export default function Table<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="w-full my-4 space-y-4">
       <TableToolbar table={table} columns={columns} />
       <div className="border rounded-md">
         <DataTable>
@@ -78,7 +75,7 @@ export default function Table<TData, TValue>({
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
-                      className="text-[14px] text-black px-2"
+                      className="text-[14px] text-black p-4"
                       key={header.id}
                       colSpan={header.colSpan}
                     >
@@ -100,7 +97,7 @@ export default function Table<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={`px-2 ${rowClickHandler ? "cursor-pointer" : ""}`}
+                  className={`p-2 ${rowClickHandler ? "cursor-pointer" : ""}`}
                   onClick={(e) => {
                     e.preventDefault();
                     rowClickHandler &&
@@ -110,7 +107,7 @@ export default function Table<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
-                      className="text-[13px] p-2"
+                      className="text-[13px] p-4"
                       key={cell.id}
                       onClick={(e) => {
                         if (cell.column.id === "no") {

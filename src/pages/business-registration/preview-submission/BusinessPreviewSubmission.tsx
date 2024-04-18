@@ -852,7 +852,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     business_application?.status === 'action_required'
                       ? 're_submitted'
                       : 'submitted',
-                  created_at: moment(Date.now()).format('DD/MM/YYYY'),
+                  created_at: moment().format('DD/MM/YYYY'),
                 })
               );
               dispatch(setBusinessCompletedStep("preview_submission"));

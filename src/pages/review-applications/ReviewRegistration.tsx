@@ -11,7 +11,18 @@ const ReviewRegistration = () => {
   );
   const { user } = useSelector((state: RootState) => state.user);
 
-  const sortBySubmissionDate = (a, b) => {
+  const sortBySubmissionDate = (
+    a:
+      | Date
+      | {
+          submissionDate: string | Date;
+        },
+    b:
+      | Date
+      | {
+          submissionDate: string | Date;
+        }
+  ) => {
     return (
       new Date(b?.submissionDate).getTime() -
       new Date(a?.submissionDate).getTime()
