@@ -5,8 +5,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { FC } from 'react';
+} from "@/components/ui/select";
+import { FC } from "react";
 
 interface SelectProps {
   label?: string;
@@ -21,13 +21,17 @@ interface SelectProps {
 const Select: FC<SelectProps> = ({
   options = [],
   defaultValue = undefined,
-  placeholder = '',
+  placeholder = "",
   className = undefined,
-  value = '',
+  value = "",
   onChange,
 }) => {
   return (
-    <SelectComponent onValueChange={onChange} defaultValue={defaultValue} value={value}>
+    <SelectComponent
+      onValueChange={onChange}
+      defaultValue={defaultValue}
+      value={value}
+    >
       <SelectTrigger
         className={`w-fit !text-[10px] focus:ring-transparent ring-0 rounded-r-none ${className}`}
       >

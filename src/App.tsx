@@ -1,14 +1,14 @@
-import { useLocation } from 'react-router-dom';
-import Routes from './Routes';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './states/store';
-import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLocation } from "react-router-dom";
+import Routes from "./Routes";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "./states/store";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   setCurrentPage,
   setPage,
   setSize,
-} from './states/features/paginationSlice';
+} from "./states/features/paginationSlice";
 
 function App() {
   // STATE VARIABLES

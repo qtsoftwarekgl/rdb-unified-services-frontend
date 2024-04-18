@@ -11,7 +11,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
+} from "@tanstack/react-table";
 
 import {
   Table as DataTable,
@@ -20,11 +20,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import { DataTablePagination } from './TablePagination';
-import TableToolbar from './TableToolbar';
-import { useState } from 'react';
+import { DataTablePagination } from "./TablePagination";
+import TableToolbar from "./TableToolbar";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -69,9 +69,9 @@ export default function Table<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4 w-full my-4">
+    <div className="w-full my-4 space-y-4">
       {showFilter && <TableToolbar table={table} columns={columns} />}
-      <div className="rounded-md border">
+      <div className="border rounded-md">
         <DataTable>
           <TableHeader className="px-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -100,12 +100,12 @@ export default function Table<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className={`p-2 ${rowClickHandler ? 'cursor-pointer' : ''}`}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={`p-2 ${rowClickHandler ? "cursor-pointer" : ""}`}
                   onClick={(e) => {
                     e.preventDefault();
                     rowClickHandler &&
-                      row?.id !== 'no' &&
+                      row?.id !== "no" &&
                       rowClickHandler(row.original);
                   }}
                 >
@@ -114,7 +114,7 @@ export default function Table<TData, TValue>({
                       className="text-[13px] p-4"
                       key={cell.id}
                       onClick={(e) => {
-                        if (cell.column.id === 'no') {
+                        if (cell.column.id === "no") {
                           e.preventDefault();
                           e.stopPropagation();
                         }

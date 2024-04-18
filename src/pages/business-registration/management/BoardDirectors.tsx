@@ -811,6 +811,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
+            <h2 className="text-lg font-semibold uppercase text-primary">
+              Board Members
+            </h2>
             <Table
               data={
                 board_of_directors?.length > 0
@@ -831,7 +834,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              header="Board members"
+              rowClickHandler={undefined}
             />
           </section>
           {errors?.board_of_directors && (

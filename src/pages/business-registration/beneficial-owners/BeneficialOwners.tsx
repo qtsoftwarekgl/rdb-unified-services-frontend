@@ -952,6 +952,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <ul className="flex flex-col items-center w-full gap-3">
                         {attachmentFile && (
                           <Table
+                            rowClickHandler={undefined}
                             columns={attachmentColumns}
                             data={[attachmentFile]}
                             showPagination={false}
@@ -1525,7 +1526,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
         </fieldset>
       </form>
       <section className={`flex members-table flex-col w-full`}>
+        <h2 className="text-lg font-semibold uppercase text-primary">
+          Beneficial Owners
+        </h2>
         <Table
+          rowClickHandler={undefined}
           data={
             beneficial_owners?.length > 0
               ? beneficial_owners.map(
@@ -1553,7 +1558,6 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           columns={columns}
           showFilter={false}
           showPagination={false}
-          header="Beneficial owners"
         />
       </section>
       <menu

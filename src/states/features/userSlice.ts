@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import store from "store";
 export interface User {
   name: string;
   email: string;
@@ -18,10 +18,12 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
+      store.set("user", action.payload);
       sessionStorage.setItem("user", JSON.stringify(action.payload));
     },
     setToken: (state, action) => {
       state.token = action.payload;
+      store.set("token", action.payload);
       sessionStorage.setItem("token", action.payload);
     },
     setUserAuthenticated: (state, action) => {

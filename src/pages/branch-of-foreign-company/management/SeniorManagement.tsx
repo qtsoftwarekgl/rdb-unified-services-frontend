@@ -646,7 +646,11 @@ const SeniorManagement = ({
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
+            <h2 className="text-lg font-semibold uppercase text-primary">
+              Management Members
+            </h2>
             <Table
+              rowClickHandler={undefined}
               data={foreign_senior_management?.map((member, index) => {
                 return {
                   ...member,
@@ -661,7 +665,6 @@ const SeniorManagement = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              header="Management members"
             />
             {errors?.submit && (
               <p className="text-red-500 text-[15px] text-center">

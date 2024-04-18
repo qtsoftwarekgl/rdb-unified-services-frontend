@@ -15,10 +15,12 @@ import enterpriseRegistrationSlice from "./features/enterpriseRegistrationSlice"
 import foreignBranchRegistrationSlice from "./features/foreignBranchRegistrationSlice";
 import nameReservationSlice from "./features/nameReservationSlice";
 import userApplicationSlice from "./features/userApplicationSlice";
-import amendmentSlice from "./features/amendmentSlice";
+import { rootApi } from "./api/api";
+import collateralRegistrationSlice from "./features/collateralRegistrationSlice";
 
 export const store = configureStore({
   reducer: {
+    [rootApi.reducerPath]: rootApi.reducer,
     user: userSlice,
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
@@ -35,7 +37,10 @@ export const store = configureStore({
     foreignBranchRegistration: foreignBranchRegistrationSlice,
     nameReservation: nameReservationSlice,
     userApplication: userApplicationSlice,
-    amendment: amendmentSlice,
+    collateralRegistration: collateralRegistrationSlice,
+  },
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware().concat(rootApi.middleware);
   },
 });
 

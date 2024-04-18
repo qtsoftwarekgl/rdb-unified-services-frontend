@@ -17,12 +17,17 @@ import Modal from "../../components/Modal";
 import { setInfoModal } from "../../states/features/authSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { setUser, setUserAuthenticated } from "../../states/features/userSlice";
-import { useState } from "react";
+import {
+  setToken,
+  setUser,
+  setUserAuthenticated,
+} from "../../states/features/userSlice";
+import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
 import { RDBVerifierAndApproverEmailPattern } from "../../constants/Users";
+import { useLoginMutation } from "@/states/api/auth";
 
 const Login = () => {
   // LOCALES
@@ -49,9 +54,19 @@ const Login = () => {
     email: string;
     password: string;
   }
+  const [
+    login,
+    {
+      isLoading: isLoginLoading,
+      isSuccess: isLoginSuccess,
+      isError: isLoginError,
+      error: loginError,
+      data: loginData,
+    },
+  ] = useLoginMutation();
 
   // HANDLE SUBMIT
-  const onSubmit: SubmitHandler<FieldValues | LoginPayload> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues | LoginPayload> = async (data) => {
     toast.success("Login successful. Redirecting...");
     setIsLoading(true);
     setTimeout(() => {
@@ -68,7 +83,41 @@ const Login = () => {
       }
       return navigate("/services");
     }, 1000);
+
+    // TO DO After LOGIN ENDPOINT IS STABLE
+    // if (data?.email?.includes("admin")) {
+    //   await login({
+    //     email: data.email,
+    //     password: data.password,
+    //   });
+    //   console.log(">>>>>>>>>>>>>>>>>>>>>@@@@@@@@@@@@>", loginData);
+    //   // return navigate("/super-admin/dashboard");
+    //   return;
+    // } else {
+    //   toast.success("Login successful. Redirecting...");
+    //   setIsLoading(true);
+    //   setTimeout(() => {
+    //     setIsLoading(false);
+    //     dispatch(setUser(data));
+    //     dispatch(setUserAuthenticated(true));
+    //     if (RDBVerifierAndApproverEmailPattern.test(data.email)) {
+    //       return navigate("/back-office/dashboard");
+    //     }
+    //     if (data?.email?.includes("info")) {
+    //       return navigate("/admin/dashboard");
+    //     }
+    //     return navigate("/services");
+    //   }, 1000);
+    // }
   };
+
+  useEffect(() => {
+    if (isLoginSuccess) {
+      toast.success("Login successful. Redirecting to Dashboard");
+      dispatch(setUser(loginData?.response?.user || ""));
+      dispatch(setToken(loginData?.response?.token) || "");
+    }
+  }, [isLoginSuccess, isLoginError, loginData, dispatch, navigate]);
 
   return (
     <main className="h-[100vh] flex items-center justify-between w-full !bg-white">
@@ -165,7 +214,7 @@ const Login = () => {
             <Button
               submit
               primary
-              value={isLoading ? <Loader /> : t("login")}
+              value={isLoginLoading || isLoading ? <Loader /> : t("login")}
               className="w-full"
             />
             <ul className="flex items-center gap-6">

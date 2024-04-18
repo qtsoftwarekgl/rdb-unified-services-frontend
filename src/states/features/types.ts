@@ -11,5 +11,6 @@ export interface TabType {
   label: string;
   name: string;
   active: boolean;
+  completed: boolean;
   steps: Array<Step>;
 }

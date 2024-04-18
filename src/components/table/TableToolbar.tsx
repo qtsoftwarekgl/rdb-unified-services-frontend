@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Table, ColumnDef } from '@tanstack/react-table';
-import { DataTableViewOptions } from './TableViewOptions';
-import DateRangePicker from '../inputs/DateRangePicker';
-import { DataTableFacetedFilter } from './FacetedFilter';
-import { DateRange } from 'react-day-picker';
-import moment from 'moment';
-import Select from '../inputs/SingleSelect';
-import { capitalizeString } from '@/helpers/strings';
-import exportPDF from './Export';
-import { Button } from '../ui/button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile } from '@fortawesome/free-regular-svg-icons';
-import { Cross2Icon } from '@radix-ui/react-icons';
+import { useState } from "react";
+import { Table, ColumnDef } from "@tanstack/react-table";
+import { DataTableViewOptions } from "./TableViewOptions";
+import DateRangePicker from "../inputs/DateRangePicker";
+import { DataTableFacetedFilter } from "./FacetedFilter";
+import { DateRange } from "react-day-picker";
+import moment from "moment";
+import Select from "../inputs/SingleSelect";
+import { capitalizeString } from "@/helpers/strings";
+import exportPDF from "./Export";
+import { Button } from "../ui/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-regular-svg-icons";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 interface TableToolbarProps<TData, TValue> {
   table: Table<TData>;
@@ -26,18 +26,15 @@ export default function TableToolbar<TData, TValue>({
   const isFiltered = table.getState().columnFilters.length > 0;
 
   // HANDLE DATE RANGE SELECTOR
-  const [dateRange, setDateRange] = useState<
-    | DateRange
-    | undefined
-  >(() => {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     return {
       from: undefined,
       to: undefined,
     };
   });
-  const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
-  const [searchColumn, setSearchColumn] = useState<string>('');
-  const [searchType, setSearchType] = useState<string>('');
+  const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
+  const [searchColumn, setSearchColumn] = useState<string>("");
+  const [searchType, setSearchType] = useState<string>("");
 
   // HANDLE GLOBAL FILTER CHANGE
   const handleGlobalFilterChange = (value: string) => {
@@ -49,17 +46,16 @@ export default function TableToolbar<TData, TValue>({
   const handleColumnFilterChange = (columnId: string, value: string) => {
     setSearchColumn(value);
 
-    const column = table.getColumn(columnId); 
+    const column = table.getColumn(columnId);
 
     column?.setFilterValue(value);
   };
-  
 
   const handleDateRangeChange = (dateRange: DateRange | undefined) => {
-    const column = table.getColumn('date');
+    const column = table.getColumn("date");
     const selectedDate = {
-      from: dateRange?.from && moment(dateRange?.from).format('YYYY-MM-DD'),
-      to: dateRange?.to && moment(dateRange?.to).format('YYYY-MM-DD'),
+      from: dateRange?.from && moment(dateRange?.from).format("YYYY-MM-DD"),
+      to: dateRange?.to && moment(dateRange?.to).format("YYYY-MM-DD"),
     };
     setDateRange(selectedDate as DateRange);
     column?.setFilterValue(selectedDate?.from);
@@ -67,18 +63,18 @@ export default function TableToolbar<TData, TValue>({
 
   return (
     <section className="flex items-center justify-between gap-4">
-      <nav className="flex flex-1 items-center space-x-2 w-full">
-        <menu className="flex items-center gap-0 w-full">
+      <nav className="flex items-center flex-1 w-full space-x-2">
+        <menu className="flex items-center w-full gap-0">
           <Select
             value={searchType}
             onChange={(value) => {
-              if (value === 'global') {
-                setSearchType('');
-                setGlobalFilterValue('');
+              if (value === "global") {
+                setSearchType("");
+                setGlobalFilterValue("");
                 return;
               }
               setSearchType(value);
-              setGlobalFilterValue('');
+              setGlobalFilterValue("");
             }}
             className="border border-r-[0px] border-[#E5E5E5] outline-none focus:outline-none rounded-l-md"
             placeholder="Search by column..."
@@ -86,10 +82,10 @@ export default function TableToolbar<TData, TValue>({
               Array.from(columns)?.length <= 0
                 ? []
                 : [
-                    { label: 'All', value: 'global' },
+                    { label: "All", value: "global" },
                     ...Array.from(columns)
                       .filter(
-                        (column) => column.filterFn && column.id !== 'date'
+                        (column) => column.filterFn && column.id !== "date"
                       )
                       .map((column) => {
                         return {
@@ -102,14 +98,14 @@ export default function TableToolbar<TData, TValue>({
           />
           <input
             placeholder={
-              searchType === ''
-                ? 'Search all columns...'
+              searchType === ""
+                ? "Search all columns..."
                 : `Search by ${capitalizeString(searchType)}...`
             }
             className="placeholder:text-[13px] text-[14px] h-9 w-full max-w-[30%] border border-l-[0px] border-[#E5E5E5] outline-none focus:outline-none rounded-r-md"
-            value={searchType === '' ? globalFilterValue : searchColumn}
+            value={searchType === "" ? globalFilterValue : searchColumn}
             onChange={(event) => {
-              if (searchType !== '') {
+              if (searchType !== "") {
                 handleColumnFilterChange(searchType, event.target.value);
               } else {
                 handleGlobalFilterChange(event.target.value);
@@ -121,7 +117,7 @@ export default function TableToolbar<TData, TValue>({
       {Array.from(columns)
         ?.filter((column) => column?.filterFn)
         ?.map((column) => {
-          if (column.id === 'date') {
+          if (column.id === "date") {
             return (
               <DateRangePicker
                 key={column?.accessorKey}
@@ -140,7 +136,7 @@ export default function TableToolbar<TData, TValue>({
                   .getColumn(column?.accessorKey)
                   ?.getFacetedUniqueValues() || []
               )?.map((column) => {
-                const splitColumn = String(column)?.split(',')[0];
+                const splitColumn = String(column)?.split(",")[0];
                 return {
                   label: String(splitColumn),
                   value: String(splitColumn),
@@ -157,9 +153,9 @@ export default function TableToolbar<TData, TValue>({
           exportPDF({
             columns: Array.from(columns)?.filter(
               (column) =>
-                column?.accessorKey !== 'actions' &&
-                column?.accessorKey !== 'action' &&
-                column?.id !== 'no'
+                column?.accessorKey !== "actions" &&
+                column?.accessorKey !== "action" &&
+                column?.id !== "no"
             ),
             table,
           });
@@ -177,7 +173,7 @@ export default function TableToolbar<TData, TValue>({
           className="h-8 px-2 lg:px-3 text-[12px] font-normal hover:font-medium"
         >
           Reset
-          <Cross2Icon className="ml-2 h-4 w-4" />
+          <Cross2Icon className="w-4 h-4 ml-2" />
         </Button>
       )}
       <DataTableViewOptions table={table} />

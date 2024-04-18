@@ -1,15 +1,15 @@
-import { IconDefinition } from '@fortawesome/free-regular-svg-icons';
-import Table from '../../components/table/Table';
-import { RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { IconDefinition } from "@fortawesome/free-regular-svg-icons";
+import Table from "../../components/table/Table";
+import { RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../states/features/businessRegistrationSlice';
-import Button from '../../components/inputs/Button';
-import { Row } from '@tanstack/react-table';
-import RowSelectionCheckbox from '@/components/table/RowSelectionCheckbox';
+} from "../../states/features/businessRegistrationSlice";
+import Button from "../../components/inputs/Button";
+import { Row } from "@tanstack/react-table";
+import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 
 type Props = {
   title: string;
@@ -36,13 +36,13 @@ const ApplicatinsList = ({
   // Render status cell
   const renderStatusCell = ({ row }) => {
     const statusColors = {
-      Verified: 'bg-[#82ffa3] text-[#0d7b3e]',
-      Rejected: 'bg-[#eac3c3] text-red-500',
-      approved: 'bg-[#e8ffef] text-[#409261]',
-      'Action Required': 'bg-[#e4e4e4] text-[#6b6b6b]',
-      Submitted: 'bg-[#e8ffef] text-black',
+      Verified: "bg-[#82ffa3] text-[#0d7b3e]",
+      Rejected: "bg-[#eac3c3] text-red-500",
+      approved: "bg-[#e8ffef] text-[#409261]",
+      "Action Required": "bg-[#e4e4e4] text-[#6b6b6b]",
+      Submitted: "bg-[#e8ffef] text-black",
     };
-    const statusColor = statusColors[row?.original?.status] || '';
+    const statusColor = statusColors[row?.original?.status] || "";
     return (
       <span
         className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
@@ -71,8 +71,8 @@ const ApplicatinsList = ({
 
   const columns = [
     {
-      id: 'no',
-      accessorKey: 'no',
+      id: "no",
+      accessorKey: "no",
       header: ({ table }) => {
         return <RowSelectionCheckbox isHeader table={table} />;
       },
@@ -87,26 +87,26 @@ const ApplicatinsList = ({
         return <RowSelectionCheckbox row={row} />;
       },
     },
-    { header: 'Company Code', accessorKey: 'reg_number', id: 'company_code' },
+    { header: "Company Code", accessorKey: "reg_number", id: "company_code" },
     {
-      id: 'company_name',
-      header: 'Company/Enterprise Name',
-      accessorKey: 'company_name',
+      id: "company_name",
+      header: "Company/Enterprise Name",
+      accessorKey: "company_name",
       enableFiltering: true,
     },
     {
-      id: 'service_name',
-      header: 'Application Type',
-      accessorKey: 'service_name',
+      id: "service_name",
+      header: "Application Type",
+      accessorKey: "service_name",
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
       enableFiltering: true,
     },
     {
-      id: 'status',
-      header: 'Application Status',
-      accessorKey: 'status',
+      id: "status",
+      header: "Application Status",
+      accessorKey: "status",
       cell: renderStatusCell,
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
@@ -114,16 +114,16 @@ const ApplicatinsList = ({
       enableFiltering: true,
     },
     {
-      id: 'date',
-      header: 'Registration Date',
-      accessorKey: 'submission_date',
+      id: "date",
+      header: "Registration Date",
+      accessorKey: "submission_date",
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
     },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -137,17 +137,15 @@ const ApplicatinsList = ({
 
     if (!company) return;
 
-    dispatch(setBusinessActiveTab('general_information'));
-    dispatch(setBusinessActiveStep('company_details'));
+    dispatch(setBusinessActiveTab("general_information"));
+    dispatch(setBusinessActiveStep("company_details"));
 
     navigate(row.original?.path);
   };
 
   return (
-    <section className="flex flex-col gap-4 bg-white p-8 rounded-md">
-      <h1 className="uppercase text-primary font-semibold">
-        {title}
-      </h1>
+    <section className="flex flex-col gap-4 p-8 bg-white rounded-md">
+      <h1 className="font-semibold uppercase text-primary">{title}</h1>
       <section className="flex flex-col h-full rounded-md shadow-sm">
         <h1 className="font-semibold text-center">{description}</h1>
         {data.length > 0 ? (
@@ -160,7 +158,7 @@ const ApplicatinsList = ({
             showPagination={true}
             columnsToExport={columns
               ?.map((column) => column?.accessorKey)
-              ?.filter((column) => column !== 'action')}
+              ?.filter((column) => column !== "action")}
           />
         ) : (
           <span className="flex items-center justify-start w-full">
