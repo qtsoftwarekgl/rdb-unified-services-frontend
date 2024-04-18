@@ -798,6 +798,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
+            <h2 className="text-lg font-semibold uppercase text-primary">
+              Managemenet Members
+            </h2>
             <Table
               data={
                 senior_management?.length > 0
@@ -818,7 +821,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              header="Management members"
+              rowClickHandler={undefined}
             />
             {errors?.submit && (
               <p className="text-red-500 text-[13px] text-center my-2">

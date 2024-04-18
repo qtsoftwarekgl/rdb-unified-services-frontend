@@ -117,9 +117,13 @@ const CollateralInformation = ({
         collateral_type={collateral_type}
       />
       <section className={`flex members-table flex-col w-full`}>
+        <h2 className="text-lg font-semibold uppercase text-primary">
+          Collaterals
+        </h2>
         {collateral_infos && (
           <Table
-            showFilters={false}
+            showFilter={false}
+            rowClickHandler={undefined}
             showPagination={false}
             data={
               collateral_infos?.map(

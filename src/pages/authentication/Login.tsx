@@ -67,40 +67,49 @@ const Login = () => {
 
   // HANDLE SUBMIT
   const onSubmit: SubmitHandler<FieldValues | LoginPayload> = async (data) => {
-    if (data?.email?.includes("admin")) {
-      await login({
-        email: data.email,
-        password: data.password,
-      });
-      console.log(">>>>>>>>>>>>>>>>>>>>>@@@@@@@@@@@@>", loginData);
-      // return navigate("/super-admin/dashboard");
-      return;
-    } else {
-      toast.success("Login successful. Redirecting...");
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        dispatch(setUser(data));
-        dispatch(setUserAuthenticated(true));
-        if (RDBVerifierAndApproverEmailPattern.test(data.email)) {
-          return navigate("/back-office/dashboard");
-        }
-        if (data?.email?.includes("info")) {
-          return navigate("/admin/dashboard");
-        }
-        return navigate("/services");
-      }, 1000);
-    }
-  };
+    toast.success("Login successful. Redirecting...");
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      dispatch(setUser(data));
+      dispatch(setUserAuthenticated(true));
+      if (RDBVerifierAndApproverEmailPattern.test(data.email)) {
+        return navigate("/back-office/dashboard");
+      }
+      if (data?.email?.includes("admin")) {
+        return navigate("/super-admin/dashboard");
+      } else if (data?.email?.includes("info")) {
+        return navigate("/admin/dashboard");
+      }
+      return navigate("/services");
+    }, 1000);
 
-  console.log(
-    ">>>>>>>>>>>>>>>>",
-    loginData,
-    isLoading,
-    isLoginSuccess,
-    isLoginError,
-    loginError
-  );
+    // TO DO After LOGIN ENDPOINT IS STABLE
+    // if (data?.email?.includes("admin")) {
+    //   await login({
+    //     email: data.email,
+    //     password: data.password,
+    //   });
+    //   console.log(">>>>>>>>>>>>>>>>>>>>>@@@@@@@@@@@@>", loginData);
+    //   // return navigate("/super-admin/dashboard");
+    //   return;
+    // } else {
+    //   toast.success("Login successful. Redirecting...");
+    //   setIsLoading(true);
+    //   setTimeout(() => {
+    //     setIsLoading(false);
+    //     dispatch(setUser(data));
+    //     dispatch(setUserAuthenticated(true));
+    //     if (RDBVerifierAndApproverEmailPattern.test(data.email)) {
+    //       return navigate("/back-office/dashboard");
+    //     }
+    //     if (data?.email?.includes("info")) {
+    //       return navigate("/admin/dashboard");
+    //     }
+    //     return navigate("/services");
+    //   }, 1000);
+    // }
+  };
 
   useEffect(() => {
     if (isLoginSuccess) {

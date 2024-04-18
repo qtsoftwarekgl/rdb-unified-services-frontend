@@ -2,6 +2,7 @@ import Loader from "@/components/Loader";
 import Modal from "@/components/Modal";
 import Button from "@/components/inputs/Button";
 import Input from "@/components/inputs/Input";
+import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 import Table from "@/components/table/Table";
 import AdminLayout from "@/containers/AdminLayout";
 import { generateUUID } from "@/helpers/strings";
@@ -13,6 +14,7 @@ import {
 import { RootState } from "@/states/store";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Row } from "@tanstack/react-table";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,9 +38,42 @@ const CollateralList = () => {
       };
     });
   const columns = [
-    { header: "Debtors Name", accessorKey: "debtor" },
+    {
+      id: "row-selector",
+      accessorKey: "row-selector",
+      header: ({ table }) => {
+        return <RowSelectionCheckbox isHeader table={table} />;
+      },
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          name: string;
+          image: string;
+        }>;
+      }) => {
+        return <RowSelectionCheckbox row={row} />;
+      },
+    },
+    {
+      header: "Debtors Name",
+      accessorKey: "debtor",
+      id: "debtor",
+      enableFiltering: true,
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+    },
     { header: "Credit Amount (Rwf)", accessorKey: "secured_amount" },
-    { header: "Status", accessorKey: "status" },
+    {
+      header: "Status",
+      accessorKey: "status",
+      id: "status",
+      enableFiltering: true,
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+    },
     { header: "Submission Date", accessorKey: "submission_date" },
     {
       header: "Action",
@@ -84,8 +119,8 @@ const CollateralList = () => {
         <Table
           columns={columns}
           data={applications || []}
-          showFilters={false}
-          showPagination={false}
+          showFilter={true}
+          showPagination={true}
         />
 
         <NewCollateralType

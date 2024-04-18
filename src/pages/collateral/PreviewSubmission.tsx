@@ -67,11 +67,11 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
-                <p key={index} className="flex items-center gap-1">
-                  <span className="font-semibold">
-                    {capitalizeString(key)}:
-                  </span>{" "}
-                  {String(value) && capitalizeString(String(value))}
+                <p key={index} className="flex items-center gap-2">
+                  <span className="">{capitalizeString(key)}:</span>{" "}
+                  <span className="font-bold">
+                    {String(value) && capitalizeString(String(value))}
+                  </span>
                 </p>
               );
             })}
@@ -102,6 +102,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         >
           {collateral_infos && (
             <Table
+              showFilter={false}
+              rowClickHandler={undefined}
+              showPagination={false}
               data={
                 collateral_infos?.map(
                   (collateral_info: unknown, index: number) => {
