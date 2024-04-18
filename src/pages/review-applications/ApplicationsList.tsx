@@ -87,10 +87,12 @@ const ApplicatinsList = ({
         return <RowSelectionCheckbox row={row} />;
       },
     },
-    { header: 'Company Code', accessorKey: 'reg_number' },
+    { header: 'Company Code', accessorKey: 'reg_number', id: 'company_code' },
     {
+      id: 'company_name',
       header: 'Company/Enterprise Name',
       accessorKey: 'company_name',
+      enableFiltering: true,
     },
     {
       id: 'service_name',
@@ -99,6 +101,7 @@ const ApplicatinsList = ({
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
+      enableFiltering: true,
     },
     {
       id: 'status',
@@ -108,6 +111,7 @@ const ApplicatinsList = ({
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
+      enableFiltering: true,
     },
     {
       id: 'date',

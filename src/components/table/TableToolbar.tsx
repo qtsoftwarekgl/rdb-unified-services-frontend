@@ -1,4 +1,3 @@
-// In TableToolbar component
 import { useState } from 'react';
 import { Table, ColumnDef } from '@tanstack/react-table';
 import { DataTableViewOptions } from './TableViewOptions';
@@ -30,11 +29,6 @@ export default function TableToolbar<TData, TValue>({
   const [dateRange, setDateRange] = useState<
     | DateRange
     | undefined
-    | string
-    | {
-        from: string | undefined;
-        to: string | undefined;
-      }
   >(() => {
     return {
       from: undefined,
@@ -42,12 +36,24 @@ export default function TableToolbar<TData, TValue>({
     };
   });
   const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+  const [searchColumn, setSearchColumn] = useState<string>('');
+  const [searchType, setSearchType] = useState<string>('');
 
-  // Function to handle global filter change
+  // HANDLE GLOBAL FILTER CHANGE
   const handleGlobalFilterChange = (value: string) => {
     setGlobalFilterValue(value);
     table.setGlobalFilter(value);
   };
+
+  // HANDLE COLUMN FILTER CHANGE
+  const handleColumnFilterChange = (columnId: string, value: string) => {
+    setSearchColumn(value);
+
+    const column = table.getColumn(columnId); 
+
+    column?.setFilterValue(value);
+  };
+  
 
   const handleDateRangeChange = (dateRange: DateRange | undefined) => {
     const column = table.getColumn('date');
@@ -55,7 +61,7 @@ export default function TableToolbar<TData, TValue>({
       from: dateRange?.from && moment(dateRange?.from).format('YYYY-MM-DD'),
       to: dateRange?.to && moment(dateRange?.to).format('YYYY-MM-DD'),
     };
-    setDateRange(selectedDate);
+    setDateRange(selectedDate as DateRange);
     column?.setFilterValue(selectedDate?.from);
   };
 
@@ -64,23 +70,50 @@ export default function TableToolbar<TData, TValue>({
       <nav className="flex flex-1 items-center space-x-2 w-full">
         <menu className="flex items-center gap-0 w-full">
           <Select
+            value={searchType}
+            onChange={(value) => {
+              if (value === 'global') {
+                setSearchType('');
+                setGlobalFilterValue('');
+                return;
+              }
+              setSearchType(value);
+              setGlobalFilterValue('');
+            }}
             className="border border-r-[0px] border-[#E5E5E5] outline-none focus:outline-none rounded-l-md"
             placeholder="Search by column..."
-            options={Array.from(columns)
-              ?.filter((column) => column?.filterFn && column?.id !== 'date')
-              ?.map((column) => {
-                return {
-                  label: capitalizeString(column?.accessorKey),
-                  value: column?.accessorKey,
-                };
-              })}
+            options={
+              Array.from(columns)?.length <= 0
+                ? []
+                : [
+                    { label: 'All', value: 'global' },
+                    ...Array.from(columns)
+                      .filter(
+                        (column) => column.filterFn && column.id !== 'date'
+                      )
+                      .map((column) => {
+                        return {
+                          label: capitalizeString(column.accessorKey),
+                          value: column?.accessorKey,
+                        };
+                      }),
+                  ]
+            }
           />
           <input
-            placeholder="Search all columns..."
+            placeholder={
+              searchType === ''
+                ? 'Search all columns...'
+                : `Search by ${capitalizeString(searchType)}...`
+            }
             className="placeholder:text-[13px] text-[14px] h-9 w-full max-w-[30%] border border-l-[0px] border-[#E5E5E5] outline-none focus:outline-none rounded-r-md"
-            value={globalFilterValue}
+            value={searchType === '' ? globalFilterValue : searchColumn}
             onChange={(event) => {
-              handleGlobalFilterChange(event.target.value);
+              if (searchType !== '') {
+                handleColumnFilterChange(searchType, event.target.value);
+              } else {
+                handleGlobalFilterChange(event.target.value);
+              }
             }}
           />
         </menu>
