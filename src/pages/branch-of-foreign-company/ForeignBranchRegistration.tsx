@@ -193,6 +193,10 @@ const ForeignBranchRegistration = () => {
               setActiveTab={setForeignBusinessActiveTab}
               tabs={foreign_business_registration_tabs}
               activeStep={foreign_business_active_step}
+              first_step="company_details"
+              last_step="preview_submission"
+              redirectUrl="/admin/review-applications"
+              setApplication={setUserApplications}
             />
             <AddReviewComments
               entry_id={entry_id}

@@ -13,6 +13,8 @@ import { useLocation } from "react-router-dom";
 import CollateralInformation from "./CollateralInformation";
 import CollateralAttachments from "./Attachments";
 import PreviewSubmission from "./PreviewSubmission";
+import UserReviewComments from "@/components/applications-review/UserReviewComments";
+import ReviewComments from "./ReviewComments";
 
 const NewCollateral = () => {
   const {
@@ -43,7 +45,7 @@ const NewCollateral = () => {
           tabs={collateral_registration_tabs}
           setActiveTab={setCollateralActiveTab}
         />
-        <menu className="flex items-center w-full gap-2 rounded">
+        <menu className="flex w-full gap-2 rounded">
           {collateral_registration_tabs.map((tab: TabType, index: number) => {
             const isActiveTab = tab.active;
             const activeStepName = collateral_active_step?.name;
@@ -69,16 +71,17 @@ const NewCollateral = () => {
                         collateral_infos={application?.collateral_infos || []}
                         debtor_info={application?.debtor_info}
                         collateral_type={application?.collateral_type}
-                        secured_amount={application?.secured_amount}
-                        secured_amount_in_words={
-                          application?.secured_amount_in_words
-                        }
+                        loan_amount={application?.loan_amount}
+                        loan_amount_in_words={application?.loan_amount_in_words}
                       />
                     )}
                     {activeStepName === "attachments" && (
                       <CollateralAttachments
                         entry_id={entry_id}
                         attachments={application?.attachments?.fileNames || []}
+                        isAOMADownloaded={
+                          application?.isAOMADownloaded || false
+                        }
                       />
                     )}
                     {activeStepName === "preview" && (
@@ -87,8 +90,11 @@ const NewCollateral = () => {
                         collateral_attachments={application?.attachments}
                         debtor_info={application?.debtor_info}
                         collateral_infos={application?.collateral_infos}
-                        secured_amount={application?.secured_amount}
+                        loan_amount={application?.loan_amount}
                         collateral_type={application?.collateral_type}
+                        isAOMADownloaded={
+                          application?.isAOMADownloaded || false
+                        }
                       />
                     )}
                   </>
@@ -96,7 +102,9 @@ const NewCollateral = () => {
               </Tab>
             );
           })}
+          <ReviewComments />
         </menu>
+        <UserReviewComments active_tab={collateral_active_tab} />
       </section>
     </AdminLayout>
   );

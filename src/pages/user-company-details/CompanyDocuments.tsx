@@ -101,7 +101,11 @@ const CompanyDocuments = () => {
           />
         </menu>
         <section className="p-2">
-          <Table data={companyDocuments} columns={columns} />
+          <Table
+            data={companyDocuments}
+            columns={columns}
+            rowClickHandler={undefined}
+          />
         </section>
         {documentToView && (
           <ViewDocument

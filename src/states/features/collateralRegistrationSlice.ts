@@ -8,6 +8,7 @@ export const collateral_registration_tabs_initial_state: Array<TabType> = [
     name: "debtor_information",
     active: true,
     completed: false,
+    review_group_tabs: ["mortgage"],
     steps: [
       {
         label: "Debtor Information",
@@ -24,6 +25,7 @@ export const collateral_registration_tabs_initial_state: Array<TabType> = [
     name: "collateral_information",
     active: false,
     completed: false,
+    review_group_tabs: ["property", "mortgage"],
     steps: [
       {
         label: "Collateral Information",
@@ -40,6 +42,7 @@ export const collateral_registration_tabs_initial_state: Array<TabType> = [
     name: "attachments",
     active: false,
     completed: false,
+    review_group_tabs: ["aoma", "attachments"],
     steps: [
       {
         label: "Attachments",

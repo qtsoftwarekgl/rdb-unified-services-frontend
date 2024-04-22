@@ -26,7 +26,10 @@ import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
-import { RDBVerifierAndApproverEmailPattern } from "../../constants/Users";
+import {
+  BankEmailPattern,
+  RDBVerifierAndApproverEmailPattern,
+} from "../../constants/Users";
 import { useLoginMutation } from "@/states/api/auth";
 
 const Login = () => {
@@ -78,8 +81,13 @@ const Login = () => {
       }
       if (data?.email?.includes("admin")) {
         return navigate("/super-admin/dashboard");
-      } else if (data?.email?.includes("info")) {
+      } else if (
+        data?.email?.includes("info") &&
+        !BankEmailPattern.test(data.email)
+      ) {
         return navigate("/admin/dashboard");
+      } else if (BankEmailPattern.test(data.email)) {
+        return navigate("/admin/collaterals");
       }
       return navigate("/services");
     }, 1000);

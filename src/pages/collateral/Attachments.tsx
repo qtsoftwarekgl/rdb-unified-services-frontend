@@ -19,6 +19,7 @@ import {
 type AttachmentsProps = {
   entry_id: string | null;
   attachments: any;
+  isAOMADownloaded: boolean;
 };
 
 type Attachment = {
@@ -26,7 +27,11 @@ type Attachment = {
   file: File | null;
 };
 
-const CollateralAttachments = ({ entry_id, attachments }: AttachmentsProps) => {
+const CollateralAttachments = ({
+  entry_id,
+  attachments,
+  isAOMADownloaded,
+}: AttachmentsProps) => {
   const {
     handleSubmit,
     control,
@@ -51,14 +56,18 @@ const CollateralAttachments = ({ entry_id, attachments }: AttachmentsProps) => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const onSubmitAttachments = (data: FieldValues) => {
-    const fileNames = attachmentFiles.map((file) => file.file?.name);
+    const fileNames: string[] = [];
+    attachmentFiles.forEach(
+      (file) => file.file?.name && fileNames.push(file.file?.name)
+    );
+
     setIsLoading(true);
     setTimeout(() => {
       dispatch(
         setCollateralApplications({
           entry_id,
           attachments: {
-            fileNames,
+            fileNames: [...fileNames, ...attachments],
           },
         })
       );
@@ -80,6 +89,16 @@ const CollateralAttachments = ({ entry_id, attachments }: AttachmentsProps) => {
     // SET ATTACHMENTS FROM PERSISTED STATE
     if (attachments?.length > 0) {
       setAttachmentFilesNames(attachments);
+    }
+    if (isAOMADownloaded) {
+      setAttachmentFiles([
+        ...attachmentFiles,
+        { label: "Notarized AOMA", file: null },
+        {
+          label: "Payment Receipt",
+          file: null,
+        },
+      ]);
     }
   }, []);
 
@@ -104,14 +123,17 @@ const CollateralAttachments = ({ entry_id, attachments }: AttachmentsProps) => {
               key={index}
               className="flex flex-col items-start w-full gap-3 mb-4 max-md:items-center"
             >
-              <menu className="flex items-start w-full gap-12">
+              <menu className="flex items-start w-full">
                 <h3 className="capitalize text-[14px] font-normal w-1/2">
                   {file.label} <span className="text-red-600">*</span>
                 </h3>
                 <Controller
                   name={`attachment${index + 1}`}
                   rules={{
-                    required: `Document attachment ${index + 1} is required`,
+                    required:
+                      attachments?.length !== 0
+                        ? false
+                        : `Document attachment ${index + 1} is required`,
                   }}
                   control={control}
                   render={({ field }) => (
@@ -147,7 +169,7 @@ const CollateralAttachments = ({ entry_id, attachments }: AttachmentsProps) => {
                       )}
                       {(file?.file || attachmentFilesNames?.length > 0) && (
                         <p className="flex  items-center gap-2 text-[14px] text-black font-normal">
-                          <span className="truncate">
+                          <span className="w-32 truncate">
                             {file.file?.name || attachmentFilesNames[index]}
                           </span>
 

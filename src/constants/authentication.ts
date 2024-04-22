@@ -112,6 +112,37 @@ export const propertyData = [
   },
 ];
 
+export const bankData = [
+  {
+    id: 1,
+    name: "Bank of Kigali",
+    address: "Remera, Gasabo, Kigali, Rwanda",
+    phone: "0788436567",
+    email: "info@bk.rw",
+  },
+  {
+    id: 2,
+    name: "Equity Bank",
+    address: "Nyarugenge, Nyarugenge, Kigali, Rwanda",
+    phone: "0788436567",
+    email: "info@equity.rw",
+  },
+  {
+    id: 3,
+    name: "I&M Bank",
+    address: "Kacyiru, Gasabo, Kigali, Rwanda",
+    phone: "0788436567",
+    email: "info@im.rw",
+  },
+  {
+    id: 4,
+    name: "Bank of Africa",
+    address: "Kicukiro, Kicukiro, Kigali, Rwanda",
+    phone: "0788436567",
+    email: "info@ba.org",
+  },
+];
+
 export const userData = [
   {
     id: 1,

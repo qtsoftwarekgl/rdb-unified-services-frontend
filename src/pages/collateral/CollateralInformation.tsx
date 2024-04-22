@@ -16,14 +16,15 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import CollateralForm from "./CollateralForm";
+import { integerToWords } from "@/constants/integerToWords";
 
 type Props = {
   entry_id: string | null;
   collateral_infos: any;
   debtor_info: any;
   collateral_type: string;
-  secured_amount: number;
-  secured_amount_in_words: string;
+  loan_amount: number;
+  loan_amount_in_words: string;
 };
 
 const CollateralInformation = ({
@@ -31,8 +32,8 @@ const CollateralInformation = ({
   collateral_infos,
   debtor_info,
   collateral_type,
-  secured_amount,
-  secured_amount_in_words,
+  loan_amount,
+  loan_amount_in_words,
 }: Props) => {
   const {
     handleSubmit,
@@ -49,8 +50,8 @@ const CollateralInformation = ({
 
   const columns = [
     {
-      header: "Collateral UPIN/TIN",
-      accessorKey: "collateral_id",
+      header: "Collateral UPI/Plate Number",
+      accessorKey: "collateral_id_number",
     },
     {
       header: "Description",
@@ -59,6 +60,10 @@ const CollateralInformation = ({
     {
       header: "Value",
       accessorKey: "value",
+    },
+    {
+      header: "Secured Amount",
+      accessorKey: "secured_amount",
     },
     {
       header: "Valuer",
@@ -86,9 +91,9 @@ const CollateralInformation = ({
   ];
 
   useEffect(() => {
-    setValue("secured_amount", secured_amount);
-    setValue("value_in_words", secured_amount_in_words);
-  }, [secured_amount, secured_amount_in_words]);
+    setValue("loan_amount", loan_amount);
+    setValue("loan_amount_in_words", loan_amount_in_words);
+  }, [loan_amount, loan_amount_in_words, setValue]);
 
   const onSubmitAll = (data: any) => {
     setSubmitSuccessful(true);
@@ -97,8 +102,8 @@ const CollateralInformation = ({
       dispatch(
         setCollateralApplications({
           entry_id,
-          secured_amount: data.secured_amount,
-          secured_amount_in_words: data.value_in_words,
+          loan_amount: data.loan_amount,
+          loan_amount_in_words: data.loan_amount_in_words,
         })
       );
       dispatch(setCollateralActiveStep("attachments"));
@@ -134,10 +139,10 @@ const CollateralInformation = ({
                     description: collateral_info?.property_description,
                     value: collateral_info?.property_value,
                     valuer: collateral_info?.valuer_name,
-                    collateral_id:
+                    collateral_id_number:
                       collateral_type === "immovable"
                         ? collateral_info?.upi_number
-                        : collateral_info?.property_tin_number || "N/A",
+                        : collateral_info?.vehicle_plate_number || "N/A",
                   };
                 }
               ) || []
@@ -153,31 +158,36 @@ const CollateralInformation = ({
         <section className="border border-[#ebebeb] rounded-md p-6 flex flex-col gap-2">
           <menu className="flex items-start w-full gap-3">
             <Controller
-              name="secured_amount"
+              name="loan_amount"
               control={control}
               rules={{
-                required: !watch("secured_amount")
-                  ? "Secured amount is required"
+                required: !watch("loan_amount")
+                  ? "Laon amount is required"
                   : false,
                 validate: (value) => {
-                  if (value <= 0)
-                    return "Secured amount must be greater than 0";
+                  if (value <= 0) return "Loan amount must be greater than 0";
                   return true;
                 },
               }}
-              defaultValue={watch("secured_amount") || ""}
+              defaultValue={watch("loan_amount") || ""}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       required
-                      label="Secured amount in Rwf"
+                      label="Loan amount in Rwf"
                       {...field}
-                      placeholder="Secured amount"
+                      placeholder="Loan amount"
+                      type="number"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        const words = integerToWords(+e.target.value);
+                        setValue("loan_amount_in_words", words);
+                      }}
                     />
-                    {errors?.secured_amount && (
+                    {errors?.loan_amount && (
                       <p className="text-red-500 text-[13px]">
-                        {String(errors?.secured_amount?.message)}
+                        {String(errors?.loan_amount?.message)}
                       </p>
                     )}
                   </label>
@@ -185,26 +195,27 @@ const CollateralInformation = ({
               }}
             />
             <Controller
-              name="value_in_words"
+              name="loan_amount_in_words"
               control={control}
               rules={{
-                required: !watch("value_in_words")
+                required: !watch("loan_amount_in_words")
                   ? "Value in words is required"
                   : false,
               }}
-              defaultValue={watch("value_in_words") || ""}
+              defaultValue={watch("loan_amount_in_words") || ""}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
-                    <Input
-                      required
-                      label="Value in words"
+                    <span className="text-[13px]">Amount in words (Rwf)</span>
+                    <textarea
+                      className="w-full p-2 border capitalize rounded-md resize-none placeholder:!font-light  placeholder:text-[13px]"
+                      placeholder="Amount in words..."
+                      readOnly
                       {...field}
-                      placeholder="Value in words"
                     />
-                    {errors?.value_in_words && (
+                    {errors?.loan_amount_in_words && (
                       <p className="text-red-500 text-[13px]">
-                        {String(errors?.value_in_words?.message)}
+                        {String(errors?.loan_amount_in_words?.message)}
                       </p>
                     )}
                   </label>

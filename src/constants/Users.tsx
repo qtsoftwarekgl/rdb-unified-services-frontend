@@ -1239,9 +1239,16 @@ export const columns = [
 export const validNationalID = "1111111111111111";
 export const validTinNumber = "121111111";
 export const validUPI = "1/01/01/01/1111";
+export const validPlateNumber = "RAG505C";
 export const passportNumberRegex = /^[a-zA-Z0-9]{12}$/;
 
 export const RDBAdminEmailPattern =
   /(info@rdb|infoapprover@rdb|infoverifier@rdb).*?/;
 export const RDBVerifierAndApproverEmailPattern =
   /(infoapprover@rdb|infoverifier@rdb).*?/;
+export const BankEmailPattern = /info@.+?bank\..+/;
+
+export const documents = [
+  "/public/BusinessCrt_202104051447207533.pdf",
+  "/public/passport.pdf",
+];

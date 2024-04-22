@@ -4,6 +4,7 @@ import Button from "@/components/inputs/Button";
 import Input from "@/components/inputs/Input";
 import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 import Table from "@/components/table/Table";
+import { bankData } from "@/constants/authentication";
 import AdminLayout from "@/containers/AdminLayout";
 import { generateUUID } from "@/helpers/strings";
 import {
@@ -25,16 +26,19 @@ const CollateralList = () => {
   const { collateral_applications } = useSelector(
     (state: RootState) => state.collateralRegistration
   );
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const applications = collateral_applications
     .filter((app) => app.status)
     .map((app) => {
       return {
         description: app?.description,
-        secured_amount: app?.secured_amount,
+        loan_amount: app?.loan_amount,
         debtor: app?.debtor_info?.debtor_names,
         status: app?.status,
         submission_date: app?.created_at,
+        entry_id: app?.entry_id,
       };
     });
   const columns = [
@@ -64,7 +68,7 @@ const CollateralList = () => {
         return value.includes(row.getValue(id));
       },
     },
-    { header: "Credit Amount (Rwf)", accessorKey: "secured_amount" },
+    { header: "Credit Amount (Rwf)", accessorKey: "loan_amount" },
     {
       header: "Status",
       accessorKey: "status",
@@ -83,7 +87,12 @@ const CollateralList = () => {
           <menu className="flex items-center gap-2">
             <Button
               onClick={(e) => {
-                console.log("view", e);
+                e.preventDefault();
+                dispatch(setCollateralActiveTab("debtor_information"));
+                dispatch(setCollateralActiveStep("debtor_information"));
+                navigate(
+                  `/admin/collateral?entry_id=${row?.original?.entry_id}`
+                );
               }}
               value="View"
               styled={false}
@@ -152,6 +161,7 @@ const NewCollateralType = ({
         setCollateralApplications({
           collateral_type: data.collateral_type,
           entry_id,
+          creditor: bankData[Math.floor(Math.random() * 3)],
         })
       );
       dispatch(setCollateralActiveTab("debtor_information"));

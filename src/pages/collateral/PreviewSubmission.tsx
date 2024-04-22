@@ -8,18 +8,19 @@ import {
   setCollateralActiveTab,
   setCollateralApplications,
 } from "@/states/features/collateralRegistrationSlice";
-import moment from "moment";
 import { FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import ApplicationSuccess from "./ApplicationSuccess";
 
 type PreviewSubmissionProps = {
   entry_id: string | null;
   collateral_attachments: any;
   debtor_info: any;
   collateral_infos: any;
-  secured_amount: number;
+  loan_amount: number;
   collateral_type: string;
+  isAOMADownloaded: boolean;
 };
 
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
@@ -27,16 +28,18 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   collateral_attachments,
   debtor_info,
   collateral_infos,
-  secured_amount,
+  loan_amount,
   collateral_type,
+  isAOMADownloaded,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const columns = [
     {
       header: "Collateral UPIN/TIN",
-      accessorKey: "collateral_id",
+      accessorKey: "collateral_id_number",
     },
     {
       header: "Description",
@@ -45,6 +48,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     {
       header: "Value",
       accessorKey: "value",
+    },
+    {
+      header: "Secured Amount",
+      accessorKey: "secured_amount",
     },
     {
       header: "Valuer",
@@ -79,7 +86,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       )}
       {
         <PreviewCard
-          header="Secured Amount"
+          header="Loan Amount"
           entry_id={entry_id}
           tabName="collateral_information"
           stepName="collateral_information"
@@ -87,7 +94,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           setActiveTab={setCollateralActiveTab}
         >
           <p className="flex items-center gap-1">
-            <span className="font-semibold">{secured_amount} Rwf</span>{" "}
+            <span className="font-semibold">{loan_amount} Rwf</span>{" "}
           </p>
         </PreviewCard>
       }
@@ -114,10 +121,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       description: collateral_info?.property_description,
                       value: collateral_info?.property_value,
                       valuer: collateral_info?.valuer_name,
-                      collateral_id:
+                      collateral_id_number:
                         collateral_type === "immovable"
                           ? collateral_info?.upi_number
-                          : collateral_info?.property_tin_number,
+                          : collateral_info?.vehicle_plate_number || "N/A",
                     };
                   }
                 ) || []
@@ -166,18 +173,28 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             setIsLoading(true);
             setTimeout(() => {
               setIsLoading(false);
-              dispatch(
-                setCollateralApplications({
-                  entry_id,
-                  status: "Pending Notarized AOMA",
-                  created_at: moment(Date.now()).format("DD/MM/YYYY"),
-                })
-              );
-              navigate("/admin/collaterals");
+              setOpenSuccessModal(true);
+              if (isAOMADownloaded) {
+                dispatch(
+                  setCollateralApplications({
+                    entry_id,
+                    status: "Pending for approval",
+                  })
+                );
+              }
             }, 1000);
           }}
         />
       </menu>
+      <ApplicationSuccess
+        isOpen={openSuccessModal}
+        onClose={() => {
+          setOpenSuccessModal(false);
+          if (isAOMADownloaded) navigate("/admin/collaterals");
+        }}
+        entry_id={entry_id}
+        isAOMADownloaded={isAOMADownloaded}
+      />
     </section>
   );
 };

@@ -16,6 +16,7 @@ import { AppDispatch, RootState } from "../states/store";
 import { toggleSidebar } from "../states/features/sidebarSlice";
 import { useEffect, useRef, useState } from "react";
 import {
+  BankEmailPattern,
   RDBAdminEmailPattern,
   RDBVerifierAndApproverEmailPattern,
 } from "../constants/Users";
@@ -51,38 +52,50 @@ const AdminSidebar = () => {
       title: "Dashboard",
       path: RDBVerifierAndApproverEmailPattern.test(user?.email)
         ? "/back-office/dashboard"
+        : BankEmailPattern.test(user?.email)
+        ? "/bank/dashboard"
         : "/admin/dashboard",
       icon: faHouse,
     },
-    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Users",
-      path: "/admin/users",
-      icon: faPen,
-    },
-    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Staff",
-      path: "/admin/staff",
-      icon: faPen,
-    },
-    !RDBVerifierAndApproverEmailPattern.test(user?.email) && {
-      title: "Roles",
-      path: "/admin/roles",
-      icon: faBagShopping,
-    },
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) &&
+      !BankEmailPattern.test(user?.email) && {
+        title: "Users",
+        path: "/admin/users",
+        icon: faPen,
+      },
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) &&
+      !BankEmailPattern.test(user?.email) && {
+        title: "Staff",
+        path: "/admin/staff",
+        icon: faPen,
+      },
+    !RDBVerifierAndApproverEmailPattern.test(user?.email) &&
+      !BankEmailPattern.test(user?.email) && {
+        title: "Roles",
+        path: "/admin/roles",
+        icon: faBagShopping,
+      },
     RDBAdminEmailPattern.test(user?.email) &&
-      user?.email.includes("info@rdb") && {
+      user?.email.includes("info@rdb") &&
+      !BankEmailPattern.test(user?.email) && {
         title: "Foreign Accounts",
         path: "/admin/foreign-applicants",
         icon: faUser,
       },
-    RDBAdminEmailPattern.test(user?.email) && {
-      title: "Applications",
-      path: "/admin/review-applications",
-      icon: faMagnifyingGlassDollar,
-    },
-    {
+    RDBAdminEmailPattern.test(user?.email) &&
+      !BankEmailPattern.test(user?.email) && {
+        title: "Applications",
+        path: "/admin/review-applications",
+        icon: faMagnifyingGlassDollar,
+      },
+    BankEmailPattern.test(user?.email) && {
       title: "Collaterals",
       path: "/admin/collaterals",
+      icon: faHouseChimney,
+    },
+    RDBVerifierAndApproverEmailPattern.test(user?.email) && {
+      title: "Collaterals",
+      path: "/admin/review-collaterals",
       icon: faHouseChimney,
     },
     {

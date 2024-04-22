@@ -55,6 +55,8 @@ import LandingPage from "./pages/home/LandingPage";
 import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
 import CollateralList from "./pages/collateral/CollateralList";
 import NewCollateral from "./pages/collateral/NewCollateral";
+import CollateralListReview from "./pages/collateral-review/CollateralList";
+import CollateralReview from "./pages/collateral-review/CollateralReview";
 
 const Routes = () => {
   return (
@@ -193,6 +195,14 @@ const Routes = () => {
           <Route
             path="/back-office/dashboard"
             element={<BackOfficeDashboard />}
+          />
+          <Route
+            path="/admin/review-collaterals"
+            element={<CollateralListReview />}
+          />
+          <Route
+            path="/admin/collateral-review"
+            element={<CollateralReview />}
           />
           <Route
             path="/admin/review-applications"

@@ -139,7 +139,6 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
       setValue("spouse_phone", "");
     }
   }, [searchInfo, searchedCompany, setValue]);
-  console.log(">>>>>>>>>>>>>>>>>>>>>>", watch("phone"));
   return (
     <section className="flex flex-col gap-8 max-md:w-full">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">

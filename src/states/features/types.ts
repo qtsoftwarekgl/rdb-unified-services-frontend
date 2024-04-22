@@ -13,4 +13,5 @@ export interface TabType {
   active: boolean;
   completed: boolean;
   steps: Array<Step>;
+  review_group_tabs?: Array<string>;
 }

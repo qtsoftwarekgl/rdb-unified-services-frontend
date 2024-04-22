@@ -237,6 +237,10 @@ const BusinessRegistration = () => {
               setActiveTab={setBusinessActiveTab}
               tabs={business_registration_tabs}
               activeStep={business_active_step}
+              first_step="company_details"
+              last_step="preview_submission"
+              redirectUrl="/admin/review-applications"
+              setApplication={setUserApplications}
             />
             <AddReviewComments
               entry_id={entry_id}
