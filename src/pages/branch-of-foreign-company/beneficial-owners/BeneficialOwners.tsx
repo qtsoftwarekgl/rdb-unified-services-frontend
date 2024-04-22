@@ -1313,7 +1313,11 @@ const BeneficialOwners = ({
         </fieldset>
       </form>
       <section className={`flex members-table flex-col w-full`}>
+        <h2 className="text-lg font-semibold uppercase text-primary">
+          Beneficial Owners
+        </h2>
         <Table
+          rowClickHandler={undefined}
           data={foreign_beneficial_owners?.map(
             (beneficial_owner: unknown, index: number) => {
               return {
@@ -1335,7 +1339,6 @@ const BeneficialOwners = ({
           columns={columns}
           showFilter={false}
           showPagination={false}
-          header="Beneficial owners"
         />
       </section>
       <menu

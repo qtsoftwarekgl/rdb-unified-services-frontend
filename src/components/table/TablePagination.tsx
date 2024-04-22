@@ -3,25 +3,25 @@ import {
   ChevronRightIcon,
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
-} from '@radix-ui/react-icons';
-import { Table } from '@tanstack/react-table';
+} from "@radix-ui/react-icons";
+import { Table } from "@tanstack/react-table";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/states/store';
-import { useEffect } from 'react';
+} from "@/components/ui/select";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/states/store";
+import { useEffect } from "react";
 import {
   setCurrentPage,
   setSize,
   setTotalPages,
-} from '@/states/features/paginationSlice';
+} from "@/states/features/paginationSlice";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
@@ -55,7 +55,7 @@ export function DataTablePagination<TData>({
   return (
     <footer className="flex items-center justify-between px-2">
       <p className="flex-1 text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{' '}
+        {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </p>
       <menu className="flex items-center space-x-6 lg:space-x-8">
@@ -104,7 +104,7 @@ export function DataTablePagination<TData>({
         <section className="flex items-center space-x-2">
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden w-8 h-8 p-0 lg:flex"
             onClick={(e) => {
               e.preventDefault();
               table.setPageIndex(0);
@@ -113,11 +113,11 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanPreviousPage() || currentPage === 1}
           >
             <span className="sr-only">Go to first page</span>
-            <DoubleArrowLeftIcon className="h-4 w-4" />
+            <DoubleArrowLeftIcon className="w-4 h-4" />
           </Button>
           <Button
             variant="outline"
-            className="h-8 w-8 p-0"
+            className="w-8 h-8 p-0"
             onClick={(e) => {
               e.preventDefault();
               table.previousPage();
@@ -126,11 +126,11 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanPreviousPage() || currentPage === 1}
           >
             <span className="sr-only">Go to previous page</span>
-            <ChevronLeftIcon className="h-4 w-4" />
+            <ChevronLeftIcon className="w-4 h-4" />
           </Button>
           <Button
             variant="outline"
-            className="h-8 w-8 p-0"
+            className="w-8 h-8 p-0"
             onClick={(e) => {
               e.preventDefault();
               table.nextPage();
@@ -139,11 +139,11 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanNextPage() || currentPage === totalPages}
           >
             <span className="sr-only">Go to next page</span>
-            <ChevronRightIcon className="h-4 w-4" />
+            <ChevronRightIcon className="w-4 h-4" />
           </Button>
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden w-8 h-8 p-0 lg:flex"
             onClick={(e) => {
               e.preventDefault();
               table.setPageIndex(table.getPageCount() - 1);
@@ -152,7 +152,7 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanNextPage() || currentPage === totalPages}
           >
             <span className="sr-only">Go to last page</span>
-            <DoubleArrowRightIcon className="h-4 w-4" />
+            <DoubleArrowRightIcon className="w-4 h-4" />
           </Button>
         </section>
       </menu>

@@ -10,8 +10,8 @@ export const userApplicationsSlice = createSlice({
     application_review_comments:
       JSON.parse(String(localStorage.getItem("application_review_comments"))) ||
       [],
-      userReviewCommentsModal: false,
-      user_review_comments: [],
+    userReviewCommentsModal: false,
+    user_review_comments: [],
   },
   reducers: {
     // SET USER APPLICATIONS
@@ -99,7 +99,8 @@ export const userApplicationsSlice = createSlice({
     // DELETE USER APPLICATION
     deleteUserApplication: (state, action) => {
       state.user_applications = state.user_applications.filter(
-        (app) => app?.entry_id !== action.payload);
+        (app) => app?.entry_id !== action.payload
+      );
     },
   },
 });
@@ -115,5 +116,5 @@ export const {
   setUserReviewCommentsModal,
   setUserReviewComments,
   updateUserReviewComment,
-  deleteUserApplication
+  deleteUserApplication,
 } = userApplicationsSlice.actions;

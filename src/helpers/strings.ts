@@ -14,9 +14,8 @@ export const formatDate = (date: string | Date) => {
 export const capitalizeString = (string: string) => {
   if (!string) return "";
   const words = string.split("_");
-  const capitalizedWords = words && words.map(
-    (word) => word.charAt(0).toUpperCase() + word.slice(1)
-  );
+  const capitalizedWords =
+    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords.join(" ");
 };
 
@@ -29,15 +28,12 @@ export const generateUUID = () => {
 };
 
 export const formatCompanyData = (business) => {
-
-  if (business?.type === 'name_reservation') {
+  if (business?.type === "name_reservation") {
     return {
       ...business,
-      company_name: business?.name || 'N/A',
-      status: business?.status,
-      id:
-        business?.id ||
-        Math.floor(Math.random() * 9000) + 1000,
+      company_name: business?.name || "N/A",
+      status: capitalizeString(business?.status),
+      id: business?.id || Math.floor(Math.random() * 9000) + 1000,
       entry_id: business?.entry_id,
       reg_number: `REG-${(
         business?.entry_id?.split("-")[0] || ""
@@ -54,11 +50,9 @@ export const formatCompanyData = (business) => {
   return {
     ...company,
     company_name: company?.name || "N/A",
-    status: business?.status,
-    id:
-      business?.id ||
-      Math.floor(Math.random() * 9000) + 1000,
-      entry_id: business?.entry_id,
+    status: capitalizeString(business?.status),
+    id: business?.id || Math.floor(Math.random() * 9000) + 1000,
+    entry_id: business?.entry_id,
     reg_number: `REG-${(
       business?.entry_id?.split("-")[0] || ""
     ).toUpperCase()}`,
@@ -70,21 +64,35 @@ export const formatCompanyData = (business) => {
   };
 };
 
+export function filterObject(
+  obj: Record<string, string | number | undefined>
+): Record<string, string | number | undefined> {
+  const cleanedObj: Record<string, string | number | undefined> = {};
+  for (const key in obj) {
+    const value = obj[key];
+    if (value !== undefined && value !== "") {
+      cleanedObj[key] = value;
+    }
+  }
+
+  return cleanedObj;
+}
+
 export const validatePassword = (password: string) => {
   const missingCharacters = [];
 
   if (!/(?=.*[A-Z])/.test(password)) {
-    missingCharacters.push('No uppercase letter');
+    missingCharacters.push("No uppercase letter");
   }
   if (!/(?=.*[a-z])/.test(password)) {
-    missingCharacters.push('No lowercase letter');
+    missingCharacters.push("No lowercase letter");
   }
   if (!/(?=.*\d)/.test(password)) {
-    missingCharacters.push('No number');
+    missingCharacters.push("No number");
   }
   if (!/(?=.*[^\w\s])/.test(password)) {
-    missingCharacters.push('No special character');
+    missingCharacters.push("No special character");
   }
 
   return missingCharacters;
-}
+};

@@ -1226,6 +1226,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             />
           </article>
           <section className={`flex members-table flex-col w-full`}>
+            <h2 className="text-lg font-semibold uppercase text-primary">
+              Shareholders
+            </h2>
             <Table
               data={
                 shareholders?.length > 0
@@ -1246,7 +1249,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              header="Shareholders"
+              rowClickHandler={undefined}
             />
           </section>
           <menu

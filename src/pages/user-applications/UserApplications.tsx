@@ -1,4 +1,4 @@
-import { faEye, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
 import UserLayout from "../../containers/UserLayout";
@@ -14,7 +14,6 @@ import {
   setCompanySubActivities,
 } from "../../states/features/businessRegistrationSlice";
 import { useNavigate } from "react-router-dom";
-import { faEdit } from "@fortawesome/free-regular-svg-icons";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 
 const UserApplications = () => {
@@ -139,12 +138,7 @@ const UserApplications = () => {
           />
         </menu>
         {user_applications?.length > 0 ? (
-          <Table
-            showFilter={false}
-            columns={columns}
-            data={registeredBusinesses}
-            className="bg-white rounded-2xl"
-          />
+          <Table columns={columns} data={registeredBusinesses} />
         ) : (
           <span className="flex items-center justify-start w-full">
             <h1 className="uppercase text-primary">

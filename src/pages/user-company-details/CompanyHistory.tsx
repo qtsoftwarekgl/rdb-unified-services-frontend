@@ -2,12 +2,14 @@ import { useTranslation } from "react-i18next";
 import UserLayout from "../../containers/UserLayout";
 import { companyHistories } from "../../constants/Users";
 import Table from "../../components/table/Table";
-import CreateAmendment from "./CreateAmendment";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { RootState } from "../../states/store";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBackward } from "@fortawesome/free-solid-svg-icons";
+import Button from "@/components/inputs/Button";
 
 const CompanyHistory = () => {
   const { t } = useTranslation();
@@ -17,6 +19,7 @@ const CompanyHistory = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
@@ -52,16 +55,24 @@ const CompanyHistory = () => {
       <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
         <menu className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-medium text-center text-black ">
-            {t("company history")}
+            {t("company documents")}
           </h1>
-          <CreateAmendment />
+          <Button
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/user-applications");
+            }}
+            value={
+              <menu className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faBackward} />
+                Back
+              </menu>
+            }
+          />
         </menu>
         <section className="p-2">
-          <Table
-            data={companyHistories}
-            columns={columns}
-            className="bg-white rounded-t-2xl"
-          />
+          <Table data={companyHistories} columns={columns} />
         </section>
       </main>
     </UserLayout>

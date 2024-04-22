@@ -111,7 +111,7 @@ const Attachments = ({
           {attachmentFiles.map((file, index) => (
             <menu
               key={index}
-              className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center"
+              className="flex flex-col items-start w-full gap-3 mb-4 max-md:items-center"
             >
               <menu className="flex items-start w-full gap-12">
                 <h3 className="capitalize text-[14px] font-normal w-1/2">
@@ -156,7 +156,7 @@ const Attachments = ({
                       )}
                       {(file?.file || attachmentFilesNames?.length > 0) && (
                         <p className="flex  items-center gap-2 text-[14px] text-black font-normal">
-                          <span className="truncate">
+                          <span className="w-32 truncate">
                             {file.file?.name || attachmentFilesNames[index]}
                           </span>
 

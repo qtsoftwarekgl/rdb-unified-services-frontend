@@ -148,6 +148,10 @@ const EnterpriseRegistration = () => {
                 setActiveTab={setEnterpriseActiveTab}
                 tabs={enterprise_registration_tabs}
                 activeStep={enterprise_registration_active_step}
+                first_step="company_details"
+                last_step="preview_submission"
+                redirectUrl="/admin/review-applications"
+                setApplication={setUserApplications}
               />
               <AddReviewComments
                 entry_id={entry_id}

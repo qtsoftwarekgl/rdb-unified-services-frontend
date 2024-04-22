@@ -182,7 +182,7 @@ export const EnterpriseDetails = ({
                     <Input
                       label={`${
                         company_details?.name_reserved ? "" : "Search"
-                      }  company name"`}
+                      }  Enterprise Name"`}
                       required
                       defaultValue={watch("name") || company_details?.name}
                       suffixIcon={

@@ -109,11 +109,11 @@ const PreviewSubmission = ({
             ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
-                <p key={index} className="flex items-center gap-1">
-                  <span className="font-semibold">
-                    {capitalizeString(key)}:
-                  </span>{" "}
-                  {String(value) && capitalizeString(String(value))}
+                <p key={index} className="flex items-center gap-2">
+                  <span className="">{capitalizeString(key)}:</span>{" "}
+                  <span className="font-bold">
+                    {String(value) && capitalizeString(String(value))}
+                  </span>
                 </p>
               );
             })}
@@ -132,22 +132,23 @@ const PreviewSubmission = ({
             ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
-                <p key={index} className="flex items-center gap-1">
-                  <span className="font-semibold">
-                    {capitalizeString(key)}:
-                  </span>{" "}
-                  {String(
-                    provicesList.find((province) => province.code === value)
-                      ?.name ||
-                      districtsList.find((district) => district.code === value)
+                <p key={index} className="flex items-center gap-2">
+                  <span className="">{capitalizeString(key)}:</span>{" "}
+                  <span className="font-bold">
+                    {String(
+                      provicesList.find((province) => province.code === value)
                         ?.name ||
-                      sectorsList.find((sector) => sector.code === value)
-                        ?.name ||
-                      cellsList.find((cell) => cell.code === value)?.name ||
-                      villagesList.find((village) => village.code === value)
-                        ?.name ||
-                      value
-                  ) ?? ""}
+                        districtsList.find(
+                          (district) => district.code === value
+                        )?.name ||
+                        sectorsList.find((sector) => sector.code === value)
+                          ?.name ||
+                        cellsList.find((cell) => cell.code === value)?.name ||
+                        villagesList.find((village) => village.code === value)
+                          ?.name ||
+                        value
+                    ) ?? ""}
+                  </span>
                 </p>
               );
             })}
@@ -200,9 +201,9 @@ const PreviewSubmission = ({
         entry_id={entry_id}
       >
         <Table
+          rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
-          header="Board of directors"
           columns={managementColumns}
           data={foreign_board_of_directors?.map((director) => {
             return {
@@ -228,9 +229,9 @@ const PreviewSubmission = ({
         entry_id={entry_id}
       >
         <Table
+          rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
-          header="Senior Management"
           columns={managementColumns}
           data={foreign_senior_management?.map((director) => {
             return {
@@ -289,6 +290,7 @@ const PreviewSubmission = ({
         entry_id={entry_id}
       >
         <Table
+          rowClickHandler={undefined}
           data={foreign_beneficial_owners?.map((owner) => {
             return {
               ...owner,
@@ -301,7 +303,6 @@ const PreviewSubmission = ({
             };
           })}
           columns={beneficialOwnersColumns}
-          header="Beneficial owners"
           showFilter={false}
           showPagination={false}
         />

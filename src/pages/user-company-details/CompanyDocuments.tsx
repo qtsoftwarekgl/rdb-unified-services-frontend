@@ -6,12 +6,12 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { companyDocuments } from "../../constants/dashboard";
 import { useEffect, useState } from "react";
 import ViewDocument from "./ViewDocument";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import CreateAmendment from "./CreateAmendment";
+import { faBackward, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
+import Button from "@/components/inputs/Button";
 
 const CompanyDocuments = () => {
   const { t } = useTranslation();
@@ -21,6 +21,7 @@ const CompanyDocuments = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -85,13 +86,25 @@ const CompanyDocuments = () => {
           <h1 className="text-2xl font-medium text-center text-black ">
             {t("company documents")}
           </h1>
-          <CreateAmendment />
+          <Button
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/user-applications");
+            }}
+            value={
+              <menu className="flex items-center gap-2">
+                <FontAwesomeIcon icon={faBackward} />
+                Back
+              </menu>
+            }
+          />
         </menu>
         <section className="p-2">
           <Table
             data={companyDocuments}
             columns={columns}
-            className="bg-white rounded-t-2xl"
+            rowClickHandler={undefined}
           />
         </section>
         {documentToView && (

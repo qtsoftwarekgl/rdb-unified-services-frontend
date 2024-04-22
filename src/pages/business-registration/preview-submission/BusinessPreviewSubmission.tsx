@@ -53,7 +53,7 @@ interface business_application {
   capital_details: business_capital_details[];
   beneficial_owners: business_beneficial_owners[];
   company_attachments: business_company_attachments;
-  status: string
+  status: string;
 }
 
 interface PreviewSubmissionProps {
@@ -65,7 +65,6 @@ interface PreviewSubmissionProps {
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   isOpen,
   business_application,
-  status,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -184,11 +183,11 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
-                <p key={index} className="flex items-center gap-1">
-                  <span className="font-semibold">
-                    {capitalizeString(key)}:
-                  </span>{" "}
-                  {String(value) && capitalizeString(String(value))}
+                <p key={index} className="flex items-center gap-2">
+                  <span className="">{capitalizeString(key)}:</span>{" "}
+                  <span className="font-bold">
+                    {String(value) && capitalizeString(String(value))}
+                  </span>
                 </p>
               );
             })}
@@ -209,22 +208,23 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             ?.filter(([key]) => key !== "step")
             ?.map(([key, value], index: number) => {
               return (
-                <p key={index} className="flex items-center gap-1">
-                  <span className="font-semibold">
-                    {capitalizeString(key)}:
-                  </span>{" "}
-                  {String(
-                    provicesList.find((province) => province.code === value)
-                      ?.name ||
-                      districtsList.find((district) => district.code === value)
+                <p key={index} className="flex items-center gap-2">
+                  <span className="">{capitalizeString(key)}:</span>{" "}
+                  <span className="font-bold">
+                    {String(
+                      provicesList.find((province) => province.code === value)
                         ?.name ||
-                      sectorsList.find((sector) => sector.code === value)
-                        ?.name ||
-                      cellsList.find((cell) => cell.code === value)?.name ||
-                      villagesList.find((village) => village.code === value)
-                        ?.name ||
-                      value
-                  ) ?? ""}
+                        districtsList.find(
+                          (district) => district.code === value
+                        )?.name ||
+                        sectorsList.find((sector) => sector.code === value)
+                          ?.name ||
+                        cellsList.find((cell) => cell.code === value)?.name ||
+                        villagesList.find((village) => village.code === value)
+                          ?.name ||
+                        value
+                    ) ?? ""}
+                  </span>
                 </p>
               );
             })}
@@ -285,7 +285,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Table
           showFilter={false}
           showPagination={false}
-          header="Board of directors"
+          rowClickHandler={undefined}
           columns={managementColumns}
           data={
             business_application?.board_of_directors?.length > 0
@@ -321,7 +321,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Table
           showFilter={false}
           showPagination={false}
-          header="Senior Management"
+          rowClickHandler={undefined}
           columns={managementColumns}
           data={
             business_application?.senior_management?.length > 0
@@ -453,7 +453,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               : []
           }
           columns={shareholdersColumns}
-          header="Shareholders"
+          rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
         />
@@ -469,7 +469,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         setActiveTab={setBusinessActiveTab}
       >
         <Table
-          header="Capital Details"
+          rowClickHandler={undefined}
           data={
             business_application?.capital_details?.length > 0
               ? business_application?.capital_details?.map((shareholder) => {
@@ -528,7 +528,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               : []
           }
           columns={beneficialOwnersColumns}
-          header="Beneficial owners"
+          rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
         />
@@ -849,10 +849,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     business_application?.company_attachments,
                   path: `/business-registration/?entry_id=${entry_id}`,
                   status:
-                    business_application?.status === 'action_required'
-                      ? 're_submitted'
-                      : 'submitted',
-                  created_at: moment().format('DD/MM/YYYY'),
+                    business_application?.status === "action_required"
+                      ? "re_submitted"
+                      : "submitted",
+                  created_at: moment().format("DD/MM/YYYY"),
                 })
               );
               dispatch(setBusinessCompletedStep("preview_submission"));

@@ -670,7 +670,11 @@ const BoardDirectors = ({
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
+            <h2 className="text-lg font-semibold uppercase text-primary">
+              Board Members
+            </h2>
             <Table
+              rowClickHandler={undefined}
               data={foreign_board_of_directors?.map((member, index) => {
                 return {
                   ...member,
@@ -685,7 +689,6 @@ const BoardDirectors = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              header="Board members"
             />
           </section>
           {errors?.board_of_directors && (
