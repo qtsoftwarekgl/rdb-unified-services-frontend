@@ -31,6 +31,10 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   );
 
   useEffect(() => {
+    dispatch(setNationalIdDetails(null));
+  }, [dispatch]);
+
+  useEffect(() => {
     if (documentType === 'passport') {
       dispatch(setNationalIdDetails(null));
       dispatch(setNationalIdDetails(null));
@@ -48,7 +52,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         <menu className="flex items-start w-full gap-6 max-sm:flex-col">
           <Select
             label="Document Type"
-            placeholder='Select document type'
+            placeholder="Select document type"
             required
             options={[
               { value: 'nid', label: 'National ID' },
@@ -103,13 +107,12 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                 onChange={(e) => {
                   e.preventDefault();
                   setDocumentNo(e.target.value);
-                  if (e.target.value.length > 16) {
+                  if (e.target.value.length !== 16) {
                     setIsError(true);
-                  } else if (e.target.value.length < 16) {
-                    setIsError(true);
-                  } else if (e.target.value.length === 16) {
+                  } else {
                     setIsError(false);
                   }
+                  dispatch(setNationalIdDetails(null));
                 }}
               />
               {isLoading && !isError && (
@@ -119,7 +122,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
               )}
               {isError && !isLoading && (
                 <span className="text-red-600 text-[13px]">
-                  Invalid document number
+                  ID Number must be 16 digits long
                 </span>
               )}
             </label>
@@ -141,7 +144,9 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         </menu>
         <menu
           className={`${
-            registrationStep !== 'rwandan-registration-form' && 'mt-[-24px] h-0'
+            registrationStep !== 'rwandan-registration-form' &&
+            nationalIdDetails &&
+            'mt-[-24px] h-0'
           } w-full`}
         >
           <RwandanRegistrationForm

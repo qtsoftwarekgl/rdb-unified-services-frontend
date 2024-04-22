@@ -63,6 +63,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const [selectedSector, setSelectedSector] = useState('')
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -162,21 +163,20 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
           <label className="flex flex-col gap-1 w-[50%] items-start">
             <Select
               label="Select sector"
+              placeholder="Select sector"
               required
-              defaultValue={{
-                label: businessActivities[0]?.name,
-                value: businessActivities[0]?.id,
-              }}
+              defaultValue={String(businessActivities[0]?.id)}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
-                  value: activity.id,
+                  value: String(activity.id),
                 };
               })}
               onChange={(e) => {
                 setRandomNumber(Math.floor(Math.random() * 10) + 1);
-                return e;
+                setSelectedSector(e)
               }}
+              value={selectedSector}
             />
             {errors.activity && (
               <p className="text-[13px] text-red-500">
@@ -403,21 +403,23 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           type="radio"
                           label="Yes"
                           checked={watch("vat") === "yes"}
-                          value={"yes"}
+                          {...field}
                           onChange={(e) => {
-                            field.onChange(e?.target.value);
+                            field.onChange(e.target.value)
+                            clearErrors("vat");
                           }}
-                          name={field?.name}
+                          value={"yes"}
                         />
                         <Input
                           type="radio"
                           label="No"
                           checked={watch("vat") === "no"}
-                          value={"no"}
+                          {...field}
                           onChange={(e) => {
-                            field.onChange(e?.target.value);
+                            field.onChange(e.target.value)
+                            clearErrors("vat");
                           }}
-                          name={field?.name}
+                          value={"no"}
                         />
                         {errors?.vat && (
                           <p className="text-[13px] text-red-500">
@@ -518,7 +520,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             )}
             <Button
               value={isLoading?.submit ? <Loader /> : "Save & Continue"}
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                  if (Object.keys(errors).length > 0) return;
                 setIsLoading({
                   ...isLoading,
                   submit: true,

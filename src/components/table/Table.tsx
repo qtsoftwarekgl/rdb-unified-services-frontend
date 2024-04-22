@@ -29,9 +29,10 @@ import { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  rowClickHandler: undefined | ((row: TData) => void);
+  rowClickHandler?: undefined | ((row: TData) => void);
   showFilter?: boolean;
   showPagination?: boolean;
+  showExport?: boolean;
 }
 
 export default function Table<TData, TValue>({
@@ -40,6 +41,7 @@ export default function Table<TData, TValue>({
   rowClickHandler = undefined,
   showFilter = true,
   showPagination = true,
+  showExport = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -69,9 +71,9 @@ export default function Table<TData, TValue>({
   });
 
   return (
-    <div className="w-full my-4 space-y-4">
-      {showFilter && <TableToolbar table={table} columns={columns} />}
-      <div className="border rounded-md">
+    <div className="space-y-4 w-full my-4">
+      {showFilter && <TableToolbar table={table} columns={columns} showExport={showExport} />}
+      <div className="rounded-md border">
         <DataTable>
           <TableHeader className="px-0">
             {table.getHeaderGroups().map((headerGroup) => (

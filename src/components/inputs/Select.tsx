@@ -31,6 +31,7 @@ const Select: FC<SelectProps> = ({
   required = false,
   labelClassName = undefined,
 }) => {
+
   return (
     <label className={`flex flex-col gap-1 w-full ${labelClassName}`}>
       <p className="flex items-center gap-1 text-[14px]">
@@ -42,7 +43,7 @@ const Select: FC<SelectProps> = ({
         value={value}
       >
         <SelectTrigger
-          className={`w-full focus:ring-transparent ring-0 ${className}`}
+          className={`w-full focus:ring-transparent ring-0 h-10 ${className}`}
         >
           <SelectValue
             className="!text-[10px]"
@@ -53,10 +54,10 @@ const Select: FC<SelectProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {options.map((option) => {
+            {options.map((option, index: number) => {
               return (
                 <SelectItem
-                  key={option.value}
+                  key={index}
                   value={option.value}
                   className="cursor-pointer text-[12px]"
                 >

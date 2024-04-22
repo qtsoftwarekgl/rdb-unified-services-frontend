@@ -124,13 +124,6 @@ const OwnerDetails = ({ isOpen }: Props) => {
                   {...field}
                   value={"owner"}
                 />
-                <Input
-                  type="radio"
-                  label="Someone else"
-                  checked={watch("name_owner") === "other"}
-                  {...field}
-                  value={"other"}
-                />
               </ul>
             );
           }}

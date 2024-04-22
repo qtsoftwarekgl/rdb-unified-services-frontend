@@ -3,9 +3,9 @@ import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Input from '../../components/inputs/Input';
-import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
+import { faEyeSlash, faEye, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
@@ -22,14 +22,19 @@ const RegistrationSetPassword = () => {
     handleSubmit,
     formState: { errors },
     watch,
-    trigger
+    trigger,
+    clearErrors,
   } = useForm();
 
   // NAVIGATE
   const navigate = useNavigate();
 
   // PASSWORD ERRORS
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordErrors, setPasswordErrors] = useState<{
+    message: string;
+    type: string;
+    color: string;
+  }[]>([]);
 
   // STATE VARIABLES
   const [isLoading, setIsLoading] = useState(false);
@@ -37,14 +42,9 @@ const RegistrationSetPassword = () => {
     password: false,
     confirmPassword: false,
   });
+  const [passwordIsValid, setPasswordIsValid] = useState(false);
 
-  // HANDLE FORM SUBMIT
-  interface Payload {
-    password: string;
-    confirmPassword: string;
-  }
-
-  const onSubmit = (data: Payload | FieldValues) => {
+  const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -71,14 +71,19 @@ const RegistrationSetPassword = () => {
               name="password"
               control={control}
               rules={{
-                required: `${t('password-required')}`,
                 validate: (value) => {
                   if (validatePassword(value).length > 0) {
                     setPasswordErrors(validatePassword(value));
-                    return false;
-                  } else {
-                    setPasswordErrors([]);
-                    return true;
+                    if (
+                      !passwordErrors?.find((error) => error?.color === 'red')
+                    ) {
+                      clearErrors('password');
+                      setPasswordIsValid(true);
+                      return true;
+                    }
+                    else {
+                      return false;
+                    }
                   }
                 },
               }}
@@ -103,17 +108,27 @@ const RegistrationSetPassword = () => {
                         await trigger('password');
                       }}
                     />
-                    {errors.password && (
+                    {(errors.password || passwordIsValid) && (
                       <menu className="flex flex-col gap-1">
-                        <p className="text-[13px] text-red-500">
-                          {String(errors?.password?.message)}
+                        <p className="text-[13px] text-red-500 ml-1">
+                          {errors?.password?.message && String(errors?.password?.message)}
                         </p>
-                        {passwordErrors?.length > 0 && (
-                          <ul className="text-[13px] text-red-500">
+                        {(passwordErrors?.length > 0) && (
+                          <ul className="text-[13px] flex flex-col gap-1">
                             {passwordErrors?.map((error, index) => {
                               return (
-                                <li key={index} className="list-disc ml-4 text-[12px]">
-                                  {error}
+                                <li
+                                  key={index}
+                                  className={`ml-1 text-[12px] text-${error?.color}-600 flex items-center gap-2`}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={
+                                      error?.color === 'red'
+                                        ? faCircle
+                                        : faCircleCheck
+                                    }
+                                  />
+                                  {error?.message}
                                 </li>
                               );
                             })}

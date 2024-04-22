@@ -21,6 +21,7 @@ import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { useEffect } from 'react';
 import DeleteRole from './DeleteRole';
 import ListRolePermissions from './ListRolePermissions';
+import { Row } from '@tanstack/react-table';
 
 const ListRoles = () => {
   // STATE VARIABLES
@@ -65,6 +66,7 @@ const ListRoles = () => {
       },
     },
     {
+      id: 'status',
       header: 'Status',
       accessorKey: 'status',
       cell: ({ row }) => {
@@ -72,25 +74,32 @@ const ListRoles = () => {
         return (
           <p
             className={`${
-              status === 'Active'
+              status === 'active'
                 ? 'bg-green-600'
                 : status === 'Inactive'
                 ? 'bg-red-600'
                 : null
             } text-white text-center rounded-md text-[14px]`}
           >
-            {row?.original?.status}
+            {capitalizeString(row?.original?.status)}
           </p>
         );
       },
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id))
+      }
     },
     {
       header: 'Added By',
       accessorKey: 'user_name',
     },
     {
+      id: 'date',
       header: 'Date Added',
       accessorKey: 'created_at',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id))
+      }
     },
     {
       header: 'Actions',
@@ -143,12 +152,17 @@ const ListRoles = () => {
         </menu>
         <section>
           <Table
+            showExport={false}
+            rowClickHandler={(row) => {
+              dispatch(setRole(row));
+              dispatch(setEditRoleModal(true));
+            }}
             data={rolesList?.map((role, index) => {
               return {
                 ...role,
                 no: index + 1,
                 created_at: formatDate(role?.created_at),
-                status: capitalizeString(role?.status) || 'Active',
+                status: role?.status || 'active',
               };
             })}
             columns={columns}

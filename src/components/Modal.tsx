@@ -37,7 +37,7 @@ const JSX_MODAL: FC<ModalProps> = ({
     <main
       className={`${
         isOpen ? "opacity-1" : "opacity-0 pointer-events-none"
-      } min-h-screen flex items-center justify-center flex-col gap-6 fixed top-0 bottom-0 left-0 right-0 z-[1000] bg-black bg-opacity-30 transition-all ease-in-out duration-700 ${mainClassName}`}
+      } min-h-screen flex items-center justify-center flex-col overflow-scroll gap-6 fixed top-0 bottom-0 left-0 right-0 z-[1000] bg-black bg-opacity-30 transition-all ease-in-out duration-300 ${mainClassName}`}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

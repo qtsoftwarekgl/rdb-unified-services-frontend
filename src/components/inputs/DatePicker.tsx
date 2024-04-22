@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/popover"
 import { ChangeEvent, FC } from "react"
 import { SelectSingleEventHandler } from "react-day-picker"
+import moment from "moment"
 
 interface DatePickerProps {
-  onChange: SelectSingleEventHandler | ((e: ChangeEvent<HTMLInputElement>) => void)
   value: Date | undefined
-
+onChange: SelectSingleEventHandler | ((e: ChangeEvent<HTMLInputElement>) => void) | undefined
 }
 
 const DatePicker: FC<DatePickerProps> = ({ onChange, value = undefined }) => {
@@ -24,26 +24,32 @@ const DatePicker: FC<DatePickerProps> = ({ onChange, value = undefined }) => {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={"outline"}
+          variant={'outline'}
           className={cn(
-            "w-full justify-start text-left font-normal py-2 h-[41px]",
-            !value && "text-muted-foreground"
+            'w-full justify-start text-left font-normal py-2 h-[41px]',
+            !value && 'text-muted-foreground'
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, "PPP") : <p className="text-[13px]">Select date</p>}
+          {value ? (
+            format(value, 'PPP')
+          ) : (
+            <p className="text-[13px]">Select date</p>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
         <Calendar
           mode="single"
           selected={value}
-          onSelect={onChange as SelectSingleEventHandler}
+          onSelect={(e) => {
+            e && onChange(moment(e).format());
+          }}
           initialFocus
         />
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 export default DatePicker;

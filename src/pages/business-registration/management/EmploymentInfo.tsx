@@ -41,6 +41,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
     formState: { errors },
     setValue,
     watch,
+    trigger
   } = useForm();
 
   // STATE VARIABLES
@@ -206,9 +207,14 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
                     <Input
+                    required
                       label="Number of employees"
                       defaultValue={employment_info?.employees_no}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger('employees_no')
+                      }}
                     />
                     {errors?.employees_no && (
                       <p className="text-red-600 text-[13px]">

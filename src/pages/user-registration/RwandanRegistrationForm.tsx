@@ -26,7 +26,6 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
 }) => {
   // REACT HOOK FORM
   const {
-    handleSubmit,
     control,
     formState: { errors },
     watch,
@@ -68,11 +67,6 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
     }
   }, [dispatch, isOpen, nationalIdDetails]);
 
-  const handleInputChanges = async (name: string | number) => {
-    handleSubmit(async () => {
-      await trigger(String(name));
-    })();
-  };
 
   return (
     <section
@@ -213,11 +207,8 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
               return (
                 <label className="flex flex-col w-full gap-1">
                   <Select
+                  placeholder='Select phone number'
                     required
-                    defaultValue={{
-                      label: `(+250) ${userData?.[0]?.phone}`,
-                      value: userData?.[0]?.phone,
-                    }}
                     label="Phone"
                     options={userData?.slice(0, 3)?.map((user) => {
                       return {
@@ -225,9 +216,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                         value: user?.phone,
                       };
                     })}
-                    onChange={(e) => {
-                      field.onChange(e);
-                    }}
+                    {...field}
                   />
                   {errors?.phone && (
                     <p className="text-sm text-red-500">
@@ -259,9 +248,9 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     required
                     label="Email"
                     placeholder="name@domain.com"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      handleInputChanges('email');
+                    onChange={async (e: ChangeEvent<HTMLInputElement>) => {
                       field.onChange(e.target.value);
+                      await trigger('email');
                     }}
                   />
                   {errors?.email && (

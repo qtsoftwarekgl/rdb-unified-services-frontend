@@ -33,7 +33,7 @@ const Select: FC<SelectProps> = ({
       value={value}
     >
       <SelectTrigger
-        className={`w-fit !text-[10px] focus:ring-transparent ring-0 rounded-r-none ${className}`}
+        className={`w-fit !text-[10px] focus:ring-transparent ring-0 rounded-r-none bg-white ${className}`}
       >
         <SelectValue
           className="!text-[10px]"

@@ -15,8 +15,14 @@ import Table from '../../components/table/Table';
 import RecentActivities from '../../components/cards/RecentActivities';
 import DashboardChart from '../../components/DashboardChart';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { Controller, useForm } from 'react-hook-form';
+import { capitalizeString, formatDate } from '@/helpers/strings';
 
 const SuperAdminDashboard = () => {
+
+  // REACT HOOK FORM
+  const { control } = useForm();
+
   // STATE VARIABLES
   const [monthsDataArray, setMonthsDataArray] = useState(monthsData());
 
@@ -37,22 +43,18 @@ const SuperAdminDashboard = () => {
     {
       header: 'Type',
       accessorKey: 'type',
+      cell: ({ row }) => {
+        return (
+          <p className="text-[13px]">{capitalizeString(row?.original?.type)}</p>
+        );
+      },
     },
     {
       header: 'Date Added',
       accessorKey: 'created_at',
-    },
-    {
-      header: '',
-      accessorKey: 'actions',
       cell: ({ row }) => {
         return (
-          <menu className="flex items-center gap-4">
-            <FontAwesomeIcon
-              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-              icon={faPenToSquare}
-            />
-          </menu>
+          <p className="text-[13px]">{formatDate(row?.original?.created_at)}</p>
         );
       },
     },
@@ -83,14 +85,24 @@ const SuperAdminDashboard = () => {
             <menu className="flex w-full items-center gap-3 justify-between max-[600px]:flex-col">
               <h1 className="text-lg font-medium">User Overview</h1>
               <span className="flex items-center w-full max-w-[20%] max-[600px]:max-w-[80%]">
-                <Select
-                  options={[
-                    { label: 'Yearly', value: 'year' },
-                    { label: 'Monthly', value: 'month' },
-                  ]}
-                  onChange={(e) => {
-                    setMonthsDataArray(monthsData());
-                    return e?.value;
+                <Controller
+                  name="period"
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        placeholder="Select period"
+                        options={[
+                          { label: 'Yearly', value: 'year' },
+                          { label: 'Monthly', value: 'month' },
+                        ]}
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setMonthsDataArray(monthsData());
+                        }}
+                      />
+                    );
                   }}
                 />
               </span>
@@ -128,7 +140,6 @@ const SuperAdminDashboard = () => {
             })}
             columns={columns}
             showPagination={false}
-            pageSize={5}
             showFilter={false}
           />
         </section>

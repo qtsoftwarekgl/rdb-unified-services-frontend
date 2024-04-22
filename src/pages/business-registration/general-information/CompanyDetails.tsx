@@ -280,9 +280,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       defaultValue={company_details?.category}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.category && (
                       <p className="text-xs text-red-500">
@@ -314,9 +312,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: type?.label,
                         };
                       })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.type && (
                       <p className="text-xs text-red-500">
@@ -346,9 +342,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: position?.label,
                         };
                       })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.position && (
                       <p className="text-xs text-red-500">

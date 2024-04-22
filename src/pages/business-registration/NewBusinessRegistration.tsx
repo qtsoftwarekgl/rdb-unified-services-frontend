@@ -47,7 +47,6 @@ export const NewRegistration = ({
     .filter(
       (app) =>
         app.status === "in_progress" &&
-        path.split("-")[0].includes(app.type.split("_")[0]) &&
         app?.company_details
     )
     .map((business) => {
@@ -69,6 +68,7 @@ export const NewRegistration = ({
         active_step: business?.active_step,
       };
     });
+
 
   function renderActionCell({ row }) {
     return (
