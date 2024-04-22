@@ -10,6 +10,8 @@ import {
 import Button from "../../components/inputs/Button";
 import { Row } from "@tanstack/react-table";
 import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
+import RegistrationApplicationCard from "@/components/cards/RegistrationApplicationCard";
+import { capitalizeString } from "@/helpers/strings";
 
 type Props = {
   title: string;
@@ -48,7 +50,9 @@ const ApplicatinsList = ({
         className={`px-3 py-1 rounded-full flex w-fit items-center ${statusColor}`}
       >
         <span className="w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-        <span className="text-sm font-light">{row?.original?.status}</span>
+        <span className="text-sm font-light">
+          {capitalizeString(row?.original?.status)}
+        </span>
       </span>
     );
   };
@@ -69,6 +73,7 @@ const ApplicatinsList = ({
     );
   };
 
+  // TABLE COLUMNS
   const columns = [
     {
       id: "no",
@@ -102,6 +107,13 @@ const ApplicatinsList = ({
         return value.includes(row.getValue(id));
       },
       enableFiltering: true,
+      cell: ({ row }) => {
+        return (
+          <p className="text-[13px]">
+            {capitalizeString(row?.original?.service_name)}
+          </p>
+        );
+      },
     },
     {
       id: "status",
@@ -129,6 +141,30 @@ const ApplicatinsList = ({
     },
   ];
 
+  // APPLICATIONS LIST
+  const applicationsList = [
+    {
+      label: "Pending for your action",
+      value: 24,
+      status: "submitted",
+    },
+    {
+      label: "Submitted for approval",
+      value: 38,
+      status: "pending_approval",
+    },
+    {
+      label: "Action required from client",
+      value: 18,
+      status: "action_required",
+    },
+    {
+      label: "Completed",
+      value: 90,
+      status: "approved",
+    },
+  ];
+
   const handleEditClick = (e, row) => {
     e.preventDefault();
     const company = user_applications?.find(
@@ -148,6 +184,21 @@ const ApplicatinsList = ({
       <h1 className="font-semibold uppercase text-primary">{title}</h1>
       <section className="flex flex-col h-full rounded-md shadow-sm">
         <h1 className="font-semibold text-center">{description}</h1>
+        <menu className="flex flex-wrap items-start gap-6">
+          {applicationsList.map((application, index) => {
+            return (
+              <RegistrationApplicationCard
+                label={application?.label}
+                value={application?.value}
+                key={index}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`?status=${application?.status}`);
+                }}
+              />
+            );
+          })}
+        </menu>
         {data.length > 0 ? (
           <Table
             showExport

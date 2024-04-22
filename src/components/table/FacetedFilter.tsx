@@ -1,6 +1,5 @@
-import * as React from "react"
 import { CheckIcon } from "@radix-ui/react-icons"
-import { Column } from "@tanstack/react-table"
+import { Column, Table } from "@tanstack/react-table"
 
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -23,6 +22,8 @@ import { Separator } from "@/components/ui/separator"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFilter } from "@fortawesome/free-solid-svg-icons"
 import { capitalizeString } from "@/helpers/strings"
+import { useLocation, useNavigate } from "react-router-dom"
+import { ComponentType, useEffect, useMemo, useState } from "react"
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -30,17 +31,63 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   options: {
     label: string
     value: string
-    icon?: React.ComponentType<{ className?: string }>
-  }[]
+    icon?: ComponentType<{ className?: string }>
+  }[];
+  table: Table<TData>
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  table
 }: DataTableFacetedFilterProps<TData, TValue>) {
+
+  // STATE VARIABLES
+  const [queryExists, setQueryExists] = useState<string[]>([])
+
+  // TABLE DEFINITIONS
   const facets = column?.getFacetedUniqueValues()
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  const selectedValues = useMemo(
+    () => new Set(column?.getFilterValue() as string[]),
+    [column]
+  );
+
+  // NAVIGATE
+  const navigate = useNavigate();
+  const { search } = useLocation();
+
+  // CATCH QUERY PARAMS
+  const urlParams = new URLSearchParams(search);
+
+
+  useEffect(() => {
+    if (
+      urlParams.has('status') &&
+      !Array.from(selectedValues).includes(urlParams.get('status') as string)
+    ) {
+      const statusColumn = table.getColumn('status');
+      const statuses = Array.from(
+        statusColumn?.getFacetedUniqueValues() ?? []
+      ).map((status) => {
+        return String(status)?.split(',')[0];
+      });
+      // REMOVE STATUSES FROM SELECTED VALUES
+      statuses.forEach((status) => {
+        if (selectedValues.has(status)) {
+          selectedValues.delete(status);
+        }
+      });
+      setQueryExists([urlParams.get('status') as string]);
+      queryExists.forEach((query) => {
+        selectedValues.add(query);
+      });
+      const filterValues = Array.from(selectedValues);
+      statusColumn?.setFilterValue(
+        filterValues.length ? filterValues : undefined
+      );
+    }
+  }, [urlParams]);
 
   return (
     <Popover>
@@ -102,12 +149,11 @@ export function DataTableFacetedFilter<TData, TValue>({
                   <CommandItem
                     className="flex items-center w-full"
                     key={option.value}
-                    onClick={(e) => {
-                      console.log(e);
-                    }}
                     onSelect={() => {
-                      if (isSelected) {
+                      navigate(``);
+                      if (isSelected || queryExists.includes(option.value)) {
                         selectedValues.delete(option.value);
+                        queryExists.splice(queryExists.indexOf(option.value), 1);
                       } else {
                         selectedValues.add(option.value?.split(',')[0]);
                       }
@@ -149,7 +195,10 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandSeparator />
                 <CommandGroup>
                   <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                    onSelect={() => {
+                      column?.setFilterValue(undefined);
+                      navigate(``);
+                    }}
                     className="justify-center text-center"
                   >
                     Clear filters

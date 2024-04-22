@@ -38,7 +38,7 @@ export const formatCompanyData = (business) => {
       reg_number: `REG-${(
         business?.entry_id?.split("-")[0] || ""
       ).toUpperCase()}`,
-      service_name: capitalizeString(business?.type),
+      service_name: business?.type,
       submission_date: moment(business?.created_at).format("DD/MM/YYYY"),
       path: business?.path,
       active_tab: business?.active_tab,
@@ -56,7 +56,7 @@ export const formatCompanyData = (business) => {
     reg_number: `REG-${(
       business?.entry_id?.split("-")[0] || ""
     ).toUpperCase()}`,
-    service_name: capitalizeString(business?.type),
+    service_name: business?.type,
     submission_date: moment(business?.created_at).format("DD/MM/YYYY"),
     path: business?.path,
     active_tab: business?.active_tab,
