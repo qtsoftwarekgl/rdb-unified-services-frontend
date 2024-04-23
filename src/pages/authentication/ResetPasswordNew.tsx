@@ -6,11 +6,11 @@ import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Input from '../../components/inputs/Input';
-import { faEyeSlash, faEye } from '@fortawesome/free-regular-svg-icons';
+import { faEyeSlash, faEye, faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
-import validateInputs from '../../helpers/validations';
+import { validatePassword } from '@/helpers/strings';
 
 const ResetPasswordNew = () => {
 
@@ -23,10 +23,19 @@ const ResetPasswordNew = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    clearErrors,
+    trigger
   } = useForm();
 
   // NAVIGATE
   const navigate = useNavigate();
+
+    // PASSWORD ERRORS
+    const [passwordErrors, setPasswordErrors] = useState<{
+      message: string;
+      type: string;
+      color: string;
+    }[]>([]);
 
   // STATE VARIABLES
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +43,7 @@ const ResetPasswordNew = () => {
     password: false,
     confirmPassword: false,
   });
+  const [passwordIsValid, setPasswordIsValid] = useState(false);
 
   // HANDLE FORM SUBMIT
   interface Payload {
@@ -67,16 +77,24 @@ const ResetPasswordNew = () => {
             </h1>
           </menu>
           <menu className="flex flex-col w-full gap-4">
-            <Controller
+          <Controller
               name="password"
               control={control}
               rules={{
-                required: `${t('password-required')}`,
                 validate: (value) => {
-                  return (
-                    validateInputs(value, 'password') ||
-                    'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character.'
-                  );
+                  if (validatePassword(value).length > 0) {
+                    setPasswordErrors(validatePassword(value));
+                    if (
+                      !passwordErrors?.find((error) => error?.color === 'red')
+                    ) {
+                      clearErrors('password');
+                      setPasswordIsValid(true);
+                      return true;
+                    }
+                    else {
+                      return false;
+                    }
+                  }
                 },
               }}
               render={({ field }) => {
@@ -95,11 +113,38 @@ const ResetPasswordNew = () => {
                         });
                       }}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger('password');
+                      }}
                     />
-                    {errors.password && (
-                      <span className="text-[13px] text-red-500">
-                        {String(errors?.password?.message)}
-                      </span>
+                    {(errors.password || passwordIsValid) && (
+                      <menu className="flex flex-col gap-1">
+                        <p className="text-[13px] text-red-500 ml-1">
+                          {errors?.password?.message && String(errors?.password?.message)}
+                        </p>
+                        {(passwordErrors?.length > 0) && (
+                          <ul className="text-[13px] flex flex-col gap-1">
+                            {passwordErrors?.map((error, index) => {
+                              return (
+                                <li
+                                  key={index}
+                                  className={`ml-1 text-[12px] text-${error?.color}-600 flex items-center gap-2`}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={
+                                      error?.color === 'red'
+                                        ? faCircle
+                                        : faCircleCheck
+                                    }
+                                  />
+                                  {error?.message}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </menu>
                     )}
                   </label>
                 );
@@ -131,6 +176,11 @@ const ResetPasswordNew = () => {
                         });
                       }}
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        trigger('confirmPassword');
+                      
+                      }}
                     />
                     {errors.confirmPassword && (
                       <span className="text-[13px] text-red-500">
@@ -147,6 +197,7 @@ const ResetPasswordNew = () => {
                 className="w-[90%] mx-auto !text-[14px]"
                 submit
                 primary
+                disabled={Object.keys(errors)?.length > 0}
               />
               <Button
                 className="!text-[14px]"

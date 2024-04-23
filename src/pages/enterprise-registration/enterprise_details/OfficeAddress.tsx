@@ -83,7 +83,7 @@ const OfficeAddress = ({
         })
       );
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET ACTIVE STEP
@@ -167,6 +167,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Province"
+                        placeholder="Select province"
                         options={provicesList?.map((province) => {
                           return {
                             label: province.name,
@@ -228,6 +229,7 @@ const OfficeAddress = ({
                       <Select
                         required
                         label="District"
+                        placeholder="Select district"
                         options={districtsList
                           ?.filter(
                             (district) =>
@@ -297,6 +299,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Sector"
+                        placeholder="Select sector"
                         options={sectorsList
                           ?.filter(
                             (sector) =>
@@ -361,6 +364,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Cell"
+                        placeholder="Select cell"
                         options={cellsList
                           ?.filter(
                             (cell) => cell?.sector_code === watch("sector")
@@ -426,6 +430,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Village"
+                        placeholder="Select village"
                         options={villagesList
                           ?.filter(
                             (village) => village?.cell_code === watch("cell")
@@ -609,10 +614,10 @@ const OfficeAddress = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
                 }
                 primary
                 onClick={async () => {
@@ -648,7 +653,7 @@ const OfficeAddress = ({
                   submit: true,
                   amend: false,
                 });
-                if (status === "in_preview")
+                if ((['in_preview', 'action_required'].includes(status)))
                   dispatch(
                     setUserApplications({ entry_id, status: "in_progress" })
                   );

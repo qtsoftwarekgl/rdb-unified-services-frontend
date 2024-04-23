@@ -206,6 +206,7 @@ const BeneficialOwners = ({
                     <Select
                       label="Beneficial owner type"
                       required
+                      placeholder="Select beneficial owner type"
                       options={personnelTypes}
                       {...field}
                     />
@@ -285,6 +286,8 @@ const BeneficialOwners = ({
                         options={options}
                         label="Document Type"
                         required
+                        {...field}
+                        placeholder="Select document type"
                         onChange={(e) => {
                           field.onChange(e);
                         }}
@@ -611,7 +614,8 @@ const BeneficialOwners = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Select
-                      isSearchable
+                      {...field}
+                      placeholder="Select country of residence"
                       label="Country"
                       options={countriesList?.map((country) => {
                         return {
@@ -671,10 +675,8 @@ const BeneficialOwners = ({
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
+                        placeholder="Select phone number"
+                        {...field}
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -839,7 +841,8 @@ const BeneficialOwners = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Select
-                      isSearchable
+                      placeholder="Select country of residence"
+                      {...field}
                       label="Country"
                       options={countriesList?.map((country) => {
                         return {
@@ -1056,6 +1059,8 @@ const BeneficialOwners = ({
                           value: country.code,
                         };
                       })}
+                      {...field}
+                      placeholder="Select country of incorporation"
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -1216,6 +1221,7 @@ const BeneficialOwners = ({
                             value: relationship?.label,
                           };
                         })}
+                        placeholder="Select relationship"
                         {...field}
                       />
                       {errors?.beneficial_relationship && (
@@ -1241,6 +1247,8 @@ const BeneficialOwners = ({
                           { value: "direct", label: "Direct" },
                           { value: "indirect", label: "Indirect" },
                         ]}
+                        {...field}
+                        placeholder="Control type"
                         onChange={(e) => {
                           field.onChange(e);
                         }}
@@ -1278,6 +1286,8 @@ const BeneficialOwners = ({
                       <Select
                         label="Nature and extent of ownership"
                         options={[{ value: "shares", label: "Shares" }]}
+                        {...field}
+                        placeholder="Ownership type"
                         onChange={(e) => {
                           field.onChange(e);
                         }}
@@ -1363,9 +1373,9 @@ const BeneficialOwners = ({
             }}
           />
         )}
-        {status === "in_preview" && (
+        {['in_preview', 'action_required'].includes(status) && (
           <Button
-            value={"Save & Complete Preview"}
+            value={"Save & Complete Review"}
             primary
             onClick={(e) => {
               e.preventDefault();

@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import Table from "../../components/table/Table";
 import { attachmentFileColumns } from "../../constants/businessRegistration";
+import ViewDocument from "../user-company-details/ViewDocument";
 
 interface ForeignRegistrationFormProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     control,
     formState: { errors },
     setValue,
+    trigger
   } = useForm();
 
   // STATE VARIABLES
@@ -38,6 +40,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     null
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>(null);
 
   // NAVIGATE
   const navigate = useNavigate();
@@ -66,12 +69,16 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
     {
       header: 'action',
       accesorKey: 'action',
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <menu className="flex items-center gap-2">
             <FontAwesomeIcon
               icon={faEye}
               className="bg-primary text-[12px] rounded-full text-white p-2 cursor-pointer transition-all duration-300 ease-in-out hover:bg-primary-dark"
+              onClick={(e) => {
+                e.preventDefault();
+                setAttachmentPreview(URL.createObjectURL(attachmentFile));
+              }}
             />
             <FontAwesomeIcon
               icon={faTrash}
@@ -99,12 +106,22 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
         <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
             name="documentNo"
-            rules={{ required: 'Document No is required' }}
+            rules={{
+              required: 'Document No is required',
+            }}
             control={control}
             render={({ field }) => {
               return (
                 <label className="flex flex-col w-full gap-1">
-                  <Input label="Document No" required {...field} />
+                  <Input
+                    label="Document No"
+                    required
+                    {...field}
+                    onChange={async (e) => {
+                      field.onChange(e?.target?.value.toUpperCase());
+                      await trigger('documentNo');
+                    }}
+                  />
                   {errors?.documentNo && (
                     <p className="text-[13px] text-red-500">
                       {String(errors?.documentNo?.message)}
@@ -120,7 +137,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
               required: 'Select expiry date',
               validate: (value) => {
                 if (moment(value).format() < moment(new Date()).format()) {
-                  return 'Select a valid expiry date';
+                  return 'Expiry date cannot be in the past';
                 }
                 return true;
               },
@@ -208,21 +225,12 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     Gender<span className="text-red-500">*</span>
                   </p>
                   <menu className="flex items-center gap-4 mt-2">
-                    <Input
-                      type="radio"
-                      label="Male"
-                      value="Male"
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                      }}
-                    />
+                    <Input type="radio" label="Male" {...field} value="Male" />
                     <Input
                       type="radio"
                       label="Female"
+                      {...field}
                       value="Female"
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
-                      }}
                     />
                   </menu>
                   {errors?.gender && (
@@ -244,8 +252,8 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
               return (
                 <label className="flex flex-col items-start w-full gap-1">
                   <Select
-                    isSearchable
                     label="Country"
+                    placeholder="Select country"
                     options={countriesList
                       ?.filter((country) => country?.code !== 'RW')
                       ?.map((country) => {
@@ -255,9 +263,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                           value: country?.code,
                         };
                       })}
-                    onChange={(e) => {
-                      field.onChange(e);
-                    }}
+                    {...field}
                   />
                   {errors?.country && (
                     <p className="text-sm text-red-500">
@@ -363,7 +369,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                 <label className="flex flex-col w-full items-start gap-2 max-sm:!w-full">
                   <Input
                     type="file"
-                    accept="application/pdf,image/*"
+                    accept="application/pdf"
                     className="!w-fit max-sm:!w-full"
                     onChange={(e) => {
                       field.onChange(e?.target?.files?.[0]);
@@ -416,6 +422,12 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
           />
         </menu>
       </form>
+      {attachmentPreview && (
+        <ViewDocument
+          documentUrl={attachmentPreview}
+          setDocumentUrl={setAttachmentPreview}
+        />
+      )}
     </section>
   );
 };

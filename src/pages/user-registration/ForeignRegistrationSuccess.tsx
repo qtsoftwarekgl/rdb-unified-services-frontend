@@ -11,7 +11,7 @@ const ForeignRegistrationSuccess: FC<ForeignRegistrationSuccessProps> = ({
   if (!isOpen) return null;
 
   return (
-    <section className="flex flex-col gap-5 bg-white p-6 w-[90%] mx-auto rounded-md shadow-sm">
+    <section className="flex flex-col gap-5 bg-white p-6 w-[50%] mx-auto rounded-md shadow-sm h-[50%]">
       <section className="flex flex-col gap-5 w-full items-center justify-center m-auto">
         <h2 className="text-[14px] p-2 text-black rounded-md bg-green-200 text-center">
           Your account application has been submitted successully. You will

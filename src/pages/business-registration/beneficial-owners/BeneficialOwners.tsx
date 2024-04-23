@@ -232,7 +232,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
     {
       header: "action",
       accesorKey: "action",
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <menu className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -323,6 +323,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   <label className="w-[49%] flex flex-col gap-1">
                     <Select
                       label="Beneficial owner type"
+                      placeholder="Select beneficial owner type"
                       required
                       options={personnelTypes}
                       {...field}
@@ -360,6 +361,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <Select
                         options={options}
                         label="Document Type"
+                        placeholder="Select document type"
                         required
                         {...field}
                         {...field}
@@ -835,7 +837,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     } w-[49%] flex flex-col gap-1 items-start`}
                   >
                     <Select
-                      isSearchable
+                      placeholder="Select country"
                       required
                       label="Country"
                       options={countriesList
@@ -897,6 +899,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     ) : (
                       <Select
                         label="Phone number"
+                        placeholder="Select phone number"
                         required
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
@@ -1041,7 +1044,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Select
-                      isSearchable
+                      placeholder="Select country of residence"
                       label="Country"
                       options={countriesList?.map((country) => {
                         return {
@@ -1196,6 +1199,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <Select
                         required
                         label="Country of Incorporation"
+                        placeholder="Select country of incorporation"
                         options={countriesList
                           ?.filter((country) => country?.code !== "RW")
                           ?.map((country) => {
@@ -1401,6 +1405,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     <label className="flex flex-col gap-1 w-[49%]">
                       <Select
                         label="Beneficial owner relationship"
+                        placeholder="Select relationship"
                         required
                         options={ownerRelationships?.map((relationship) => {
                           return {
@@ -1430,11 +1435,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <Select
                         required
                         label="Control type"
+                        placeholder="Select control type"
                         options={[
                           { value: "direct", label: "Direct" },
                           { value: "indirect", label: "Indirect" },
                         ]}
-                        {...field}
                         {...field}
                       />
                       {errors?.control_type && (
@@ -1486,6 +1491,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <Select
                         required
                         label="Nature and extent of ownership"
+                        placeholder="Select ownership type"
                         options={[{ value: "shares", label: "Shares" }]}
                         {...field}
                       />
@@ -1590,9 +1596,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             }}
           />
         )}
-        {status === "in_preview" && (
+        {['in_preview', 'action_required'].includes(status) && (
           <Button
-            value="Save & Complete Preview"
+            value="Save & Complete Review"
             disabled={disableForm}
             primary
             onClick={(e) => {

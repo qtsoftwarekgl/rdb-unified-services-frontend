@@ -16,7 +16,10 @@ import Loader from "../../components/Loader";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
-import { business_registration_tabs_initial_state, setBusinessRegistrationTabs } from "../../states/features/businessRegistrationSlice";
+import {
+  business_registration_tabs_initial_state,
+  setBusinessRegistrationTabs,
+} from '../../states/features/businessRegistrationSlice';
 
 interface SelectReservedNameProps {
   path: string;
@@ -44,6 +47,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
 
   // REACT HOOK FORM
   const { handleSubmit, control, setValue, watch } = useForm();
+
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -82,20 +86,18 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
         <h1 className="font-medium uppercase">
           You have name reservations for {application_type}
         </h1>
-        <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
+        <form className="flex flex-col gap-3 z-[1000]" onSubmit={handleSubmit(onSubmit)}>
           <Controller
             name="name_reservation"
             control={control}
             render={({ field }) => {
               return (
                 <Select
-                  ref={nameReservationRef}
-                  label="Select a name"
-                  onChange={(e) => {
-                    field.onChange(e);
-                    setValue("name_reservation", e);
-                  }}
-                  options={reservedNames?.map((name) => {
+                  placeholder="Select a name"
+                  options={reservedNames?.map((name: {
+                    name: string;
+                    created_at: string;
+                  }) => {
                     const expiry_date = moment(name?.created_at)
                       .add(3, "months")
                       .format("MM/DD/YYYY");
@@ -104,6 +106,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                       value: name?.name,
                     };
                   })}
+                  {...field}
                 />
               );
             }}

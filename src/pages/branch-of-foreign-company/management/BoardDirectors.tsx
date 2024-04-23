@@ -182,6 +182,7 @@ const BoardDirectors = ({
                     <Select
                       {...field}
                       label="Select position"
+                      placeholder="Select position"
                       required
                       options={[
                         {
@@ -247,6 +248,7 @@ const BoardDirectors = ({
                       }`}
                     >
                       <Select
+                      placeholder="Select document type"
                         options={options}
                         label="Document Type"
                         required
@@ -524,6 +526,7 @@ const BoardDirectors = ({
                       <Select
                         label="Phone number"
                         required
+                        placeholder="Select phone number"
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -552,7 +555,8 @@ const BoardDirectors = ({
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
                       <Select
-                        isSearchable
+                        placeholder="Select country"
+                        {...field}
                         label="Country"
                         options={countriesList
                           ?.filter((country) => country?.code !== "RW")
@@ -720,9 +724,9 @@ const BoardDirectors = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value={"Save & Complete Preview"}
+                value={"Save & Complete Review"}
                 primary
                 onClick={(e) => {
                   e.preventDefault();

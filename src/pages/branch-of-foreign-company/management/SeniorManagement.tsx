@@ -196,6 +196,8 @@ const SeniorManagement = ({
                       label="Select position"
                       required
                       options={options}
+                      {...field}
+                      placeholder="Select position"
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -233,6 +235,7 @@ const SeniorManagement = ({
                         options={options}
                         label="Document Type"
                         required
+                        placeholder="Select document type"
                         {...field}
                       />
                     </label>
@@ -506,10 +509,7 @@ const SeniorManagement = ({
                       <Select
                         label="Phone number"
                         required
-                        defaultValue={{
-                          label: `(+250) ${userData?.[0]?.phone}`,
-                          value: userData?.[0]?.phone,
-                        }}
+                        placeholder="Select phone number"
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -538,7 +538,8 @@ const SeniorManagement = ({
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
                       <Select
-                        isSearchable
+                        {...field}
+                        placeholder="Select country"
                         label="Country"
                         options={countriesList?.map((country) => {
                           return {
@@ -695,9 +696,9 @@ const SeniorManagement = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value="Save & Complete Preview"
+                value="Save & Complete Review"
                 primary
                 onClick={(e) => {
                   e.preventDefault();

@@ -59,6 +59,7 @@ const BusinessActivity = ({
   const mainExists = enterprise_business_lines?.find(
     (activity: object) => activity?.main === true
   );
+  const [selectedSector, setSelectedSector] = useState<string | null>(null);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = () => {
@@ -73,7 +74,7 @@ const BusinessActivity = ({
         })
       );
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET THE NEXT STEP AS ACTIVE
@@ -103,14 +104,17 @@ const BusinessActivity = ({
             <Select
               label="Select sector"
               required
+              placeholder="Select sector"
+              value={String(selectedSector)}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
-                  value: activity.id,
+                  value: String(activity.id),
                 };
               })}
-              onChange={() => {
+              onChange={(e) => {
                 setRandomNumber(Math.floor(Math.random() * 10) + 1);
+                setSelectedSector(e)
               }}
             />
             {errors.activity && (
@@ -352,7 +356,7 @@ const BusinessActivity = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 onClick={async () => {
                   await trigger();
@@ -370,7 +374,7 @@ const BusinessActivity = ({
                   isLoading?.preview && !Object.keys(errors)?.length ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Preview"
+                    "Save & Complete Review"
                   )
                 }
                 primary

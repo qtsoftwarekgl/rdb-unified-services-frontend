@@ -66,7 +66,7 @@ const EmploymentInfo = ({
           },
         })
       );
-      if (status === "in_preview" || isLoading.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading.amend) {
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       } else {
         dispatch(setForeignBusinessActiveStep("foreign_beneficial_owners"));
@@ -238,13 +238,13 @@ const EmploymentInfo = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Preview"
+                    "Save & Complete Review"
                   )
                 }
                 primary

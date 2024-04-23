@@ -48,6 +48,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
     setError,
     clearErrors,
     watch,
+    trigger
   } = useForm();
 
   // STATE VARIABLES
@@ -80,45 +81,46 @@ const ShareDetails: FC<ShareDetailsProps> = ({
   // HANDLE CAPITAL SHARES OVERFLOW
   useEffect(() => {
     setValue(
-      "total_shares",
+      'total_shares',
       tableRows
         ?.map((row) => watch(`${row.name}_no_shares`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
   }, [
-    watch("ordinary_share_no_shares"),
-    watch("preference_share_no_shares"),
-    watch("non_voting_share_no_shares"),
-    watch("redeemable_share_no_shares"),
-    watch("redeemable_share_no_shares"),
-    watch("irredeemable_share_no_shares"),
+    watch('ordinary_share_no_shares'),
+    watch('preference_share_no_shares'),
+    watch('non_voting_share_no_shares'),
+    watch('redeemable_share_no_shares'),
+    watch('redeemable_share_no_shares'),
+    watch('irredeemable_share_no_shares'),
   ]);
 
   // HANDLE CAPITAL TOTAL OVERFLOW
   useEffect(() => {
     setValue(
-      "total_value",
+      'total_value',
       tableRows
         ?.map((row) => watch(`${row.name}_total_value`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
-    if (Number(watch("total_value")) > Number(watch("company_capital"))) {
-      setError("total_value", {
-        type: "manual",
-        message: "Share values cannot exceed total company capital",
+    setValue('company_capital', watch('total_value'));
+    if (Number(watch('total_value')) > Number(watch('company_capital'))) {
+      setError('total_value', {
+        type: 'manual',
+        message: 'Share values cannot exceed total company capital',
       });
     } else {
-      clearErrors("total_value");
+      clearErrors('total_value');
     }
   }, [
-    watch("ordinary_share_total_value"),
-    watch("preference_share_total_value"),
-    watch("non_voting_share_total_value"),
-    watch("redeemable_share_total_value"),
-    watch("irredeemable_share_total_value"),
-    watch("company_capital"),
+    watch('ordinary_share_total_value'),
+    watch('preference_share_total_value'),
+    watch('non_voting_share_total_value'),
+    watch('redeemable_share_total_value'),
+    watch('irredeemable_share_total_value'),
+    watch('company_capital'),
   ]);
 
   // SET DEFAULT VALUES
@@ -142,7 +144,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       let active_tab = "capital_information";
       let active_step = "shareholders";
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         active_tab = "preview_submission";
         active_step = "preview_submission";
       }
@@ -168,7 +170,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       );
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
-      dispatch(setBusinessCompletedStep("shareholders"));
+      dispatch(setBusinessCompletedStep("share_details"));
 
       setIsLoading({
         preview: false,
@@ -195,9 +197,14 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                   <Input
                     prefixText="RWF"
                     required
-                    label="Enter company capital"
+                    label="Total company capital"
                     {...field}
+                    readOnly
                   />
+                  <p className="text-secondary text-[12px]">
+                    The amount is derived from the total value of available
+                    shares
+                  </p>
                   {errors?.company_capital && (
                     <p className="text-[13px] text-red-600">
                       {String(errors?.company_capital?.message)}
@@ -330,7 +337,9 @@ const ShareDetails: FC<ShareDetailsProps> = ({
             <Button
               value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
               disabled={disableForm || Object.keys(errors)?.length > 0}
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors).length > 0) return;
                 setIsLoading({
                   preview: false,
                   amend: true,
@@ -340,13 +349,15 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               submit
             />
           )}
-          {status === "in_preview" && (
+          {['in_preview', 'action_required'].includes(status) && (
             <Button
               value={
-                isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                isLoading?.preview ? <Loader /> : "Save & Complete Review"
               }
               primary
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors).length > 0) return;
                 setIsLoading({
                   preview: true,
                   submit: false,
@@ -360,7 +371,9 @@ const ShareDetails: FC<ShareDetailsProps> = ({
           <Button
             value={isLoading?.submit ? <Loader /> : "Save & Continue"}
             primary
-            onClick={() => {
+            onClick={async () => {
+              await trigger();
+                if (Object.keys(errors).length > 0) return;
               setIsLoading({
                 preview: false,
                 submit: true,

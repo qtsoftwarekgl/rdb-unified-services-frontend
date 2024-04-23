@@ -65,6 +65,7 @@ export function DataTablePagination<TData>({
             value={`${size}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value));
+              dispatch(setSize(Number(value)));
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -72,7 +73,11 @@ export function DataTablePagination<TData>({
             </SelectTrigger>
             <SelectContent side="top">
               {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={`${pageSize}`}>
+                <SelectItem
+                  key={pageSize}
+                  value={`${pageSize}`}
+                  className="cursor-pointer"
+                >
                   {pageSize}
                 </SelectItem>
               ))}
@@ -80,7 +85,7 @@ export function DataTablePagination<TData>({
           </Select>
         </section>
         <section className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {currentPage} of {totalPages}
+          Page {currentPage} of {table.getPageCount() || totalPages}
         </section>
         <section className="flex w-[100px] gap-2 items-center justify-center text-sm font-medium">
           <p className="text-[13px] text-secondary">Go to:</p>
@@ -110,7 +115,7 @@ export function DataTablePagination<TData>({
               table.setPageIndex(0);
               dispatch(setCurrentPage(1));
             }}
-            disabled={!table.getCanPreviousPage() || currentPage === 1}
+            disabled={!table.getCanPreviousPage() && currentPage === 1}
           >
             <span className="sr-only">Go to first page</span>
             <DoubleArrowLeftIcon className="w-4 h-4" />
@@ -123,7 +128,7 @@ export function DataTablePagination<TData>({
               table.previousPage();
               dispatch(setCurrentPage(currentPage - 1));
             }}
-            disabled={!table.getCanPreviousPage() || currentPage === 1}
+            disabled={!table.getCanPreviousPage() && currentPage === 1}
           >
             <span className="sr-only">Go to previous page</span>
             <ChevronLeftIcon className="w-4 h-4" />
@@ -136,7 +141,7 @@ export function DataTablePagination<TData>({
               table.nextPage();
               dispatch(setCurrentPage(currentPage + 1));
             }}
-            disabled={!table.getCanNextPage() || currentPage === totalPages}
+            disabled={!table.getCanNextPage() && currentPage === totalPages}
           >
             <span className="sr-only">Go to next page</span>
             <ChevronRightIcon className="w-4 h-4" />
@@ -149,7 +154,7 @@ export function DataTablePagination<TData>({
               table.setPageIndex(table.getPageCount() - 1);
               dispatch(setCurrentPage(totalPages));
             }}
-            disabled={!table.getCanNextPage() || currentPage === totalPages}
+            disabled={!table.getCanNextPage() && currentPage === totalPages}
           >
             <span className="sr-only">Go to last page</span>
             <DoubleArrowRightIcon className="w-4 h-4" />

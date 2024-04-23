@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react';
+import React, { FC, LegacyRef, forwardRef, ChangeEvent } from 'react';
 
 interface TextAreaProps {
   cols?: number;
@@ -6,28 +6,28 @@ interface TextAreaProps {
   className?: string;
   defaultValue?: string | number | readonly string[] | undefined;
   resize?: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string | undefined;
   required?: boolean;
   readonly?: boolean;
   onBlur?: () => void | undefined;
   label?: string | JSX.Element;
+  ref?: LegacyRef<HTMLTextAreaElement> | undefined;
 }
 
-const TextArea: FC<TextAreaProps> = ({
+const TextArea: FC<TextAreaProps> = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
   cols = 50,
   rows = 5,
-  className,
+  className = '',
   defaultValue = undefined,
   resize = false,
   onChange,
   placeholder = undefined,
   required = false,
-  readonly,
+  readonly = false,
   onBlur,
   label = null,
-}) => {
-  const ref = useRef<HTMLTextAreaElement>(null);
+}, ref) => {
 
   return (
     <label className="flex flex-col gap-[6px] item-start w-full">
@@ -52,6 +52,8 @@ const TextArea: FC<TextAreaProps> = ({
       ></textarea>
     </label>
   );
-};
+});
+
+TextArea.displayName = 'TextArea';
 
 export default TextArea;

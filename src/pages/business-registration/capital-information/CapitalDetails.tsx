@@ -336,7 +336,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         />
         {status === "is_Amending" && (
           <Button
-            disabled={disableForm}
+            disabled={disableForm || Object.keys(errors).length > 0}
             value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
             onClick={(e) => {
               e.preventDefault();
@@ -387,11 +387,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             }}
           />
         )}
-        {status === "in_preview" && (
+        {['in_preview', 'action_required'].includes(status) && (
           <Button
-            value={isLoading?.preview ? <Loader /> : "Save & Complete Preview"}
+            value={isLoading?.preview ? <Loader /> : "Save & Complete Review"}
             primary
-            disabled={disableForm}
+            disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
               e.preventDefault();
 
@@ -444,7 +444,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         <Button
           value={isLoading?.submit ? <Loader /> : "Save & Continue"}
           primary
-          disabled={disableForm}
+          disabled={disableForm || Object.keys(errors).length > 0}
           onClick={(e) => {
             e.preventDefault();
             // CHECK FOR SHAREHOLDERS WITH 0 SHARES

@@ -1,25 +1,24 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
-import Input from "../../../components/inputs/Input";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/validations";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
+import Input from '../../../components/inputs/Input';
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
+import validateInputs from '../../../helpers/validations';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../states/features/businessRegistrationSlice";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
-import { provicesList } from "../../../constants/provinces";
-import { districtsList } from "../../../constants/districts";
-import { sectorsList } from "../../../constants/sectors";
-import { cellsList } from "../../../constants/cells";
-import { villagesList } from "../../../constants/villages";
+} from '../../../states/features/businessRegistrationSlice';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
+import { provicesList } from '../../../constants/provinces';
+import { districtsList } from '../../../constants/districts';
+import { sectorsList } from '../../../constants/sectors';
+import { cellsList } from '../../../constants/cells';
+import { villagesList } from '../../../constants/villages';
 
 export interface business_company_address {
   province: string;
@@ -57,6 +56,20 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     trigger,
   } = useForm();
 
+  // SET DEFAULT VALUES
+  useEffect(() => {
+    setValue('province', company_address?.province);
+    setValue('district', company_address?.district);
+    setValue('sector', company_address?.sector);
+    setValue('cell', company_address?.cell);
+    setValue('village', company_address?.village);
+    setValue('street_name', company_address?.street_name);
+    setValue('po_box', company_address?.po_box);
+    setValue('fax', company_address?.fax);
+    setValue('email', company_address?.email);
+    setValue('phone', company_address?.phone);
+  }, [company_address]);
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState({
@@ -67,74 +80,39 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
-  // RESET COMPANY ADDRESS
-  const resetCompanyLocation = () => {
-    dispatch(
-      setUserApplications({
-        entry_id,
-        company_address: {
-          ...company_address,
-          province: "",
-          district: "",
-          sector: "",
-          cell: "",
-          village: "",
-        },
-      })
-    );
-  };
-
-  // SET DEFAULT VALUES
-  useEffect(() => {
-    if (company_address) {
-      setValue("province", company_address?.province);
-      setValue("district", company_address?.district);
-      setValue("sector", company_address?.sector);
-      setValue("cell", company_address?.cell);
-      setValue("village", company_address?.village);
-      setValue("street_name", company_address?.street_name);
-      setValue("po_box", company_address?.po_box);
-      setValue("fax", company_address?.fax);
-      setValue("email", company_address?.email);
-      setValue("phone", company_address?.phone);
-    } else {
-      dispatch(removeBusinessCompletedStep("company_address"));
-    }
-  }, [company_address, dispatch, setValue]);
-
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
       dispatch(
         setUserApplications({
           entry_id,
-          status: "in_progress",
-          active_tab: "general_information",
-          active_step: "business_activity_vat",
+          status: 'in_progress',
+          active_tab: 'general_information',
+          active_step: 'business_activity_vat',
           company_address: {
             ...data,
-            step: "company_address",
+            step: 'company_address',
           },
         })
       );
 
       // SET ACTIVE TAB AND STEP
-      let active_tab = "general_information";
-      let active_step = "business_activity_vat";
+      let active_tab = 'general_information';
+      let active_step = 'business_activity_vat';
 
-      if (status === "in_preview") {
-        active_tab = "preview_submission";
-        active_step = "preview_submission";
+      if (['in_preview', 'action_required'].includes(status)) {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
       }
 
       if (isLoading?.amend) {
-        active_tab = "preview_submission";
-        active_step = "preview_submission";
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
       }
 
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
-      dispatch(setBusinessCompletedStep("company_address"));
+      dispatch(setBusinessCompletedStep('company_address'));
 
       setIsLoading({
         ...isLoading,
@@ -156,55 +134,29 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="province"
               defaultValue={company_address?.province}
               control={control}
-              rules={{ required: "Select province of residence" }}
+              rules={{ required: 'Select province of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    {company_address?.province ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Province <span className="text-red-600">*</span>
-                        </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              provicesList?.find(
-                                (province) =>
-                                  province.code === company_address?.province
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetCompanyLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Province"
-                        options={provicesList?.map((province) => {
-                          return {
-                            label: province.name,
-                            value: province.code,
-                          };
-                        })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("district", "");
-                          setValue("sector", "");
-                          setValue("cell", "");
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
+                    <Select
+                      {...field}
+                      required
+                      placeholder='Select province'
+                      label="Province"
+                      options={provicesList?.map((province) => {
+                        return {
+                          label: province.name,
+                          value: province.code,
+                        };
+                      })}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setValue('district', '');
+                        setValue('sector', '');
+                        setValue('cell', '');
+                        setValue('village', '');
+                      }}
+                    />
                     {errors?.province && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.province.message)}
@@ -218,59 +170,33 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               name="district"
               control={control}
               defaultValue={company_address?.district}
-              rules={{ required: "Select district of residence" }}
+              rules={{ required: 'Select district of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    {company_address?.district ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          District <span className="text-red-600">*</span>
-                        </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              districtsList?.find(
-                                (district) =>
-                                  district?.code === company_address?.district
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetCompanyLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        required
-                        label="District"
-                        options={districtsList
-                          ?.filter(
-                            (district) =>
-                              district?.province_code === watch("province")
-                          )
-                          ?.map((district) => {
-                            return {
-                              label: district.name,
-                              value: district.code,
-                            };
-                          })}
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("sector", "");
-                          setValue("cell", "");
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
+                    <Select
+                      required
+                      placeholder='Select district'
+                      label="District"
+                      options={districtsList
+                        ?.filter(
+                          (district) =>
+                            district?.province_code === watch('province')
+                        )
+                        ?.map((district) => {
+                          return {
+                            label: district.name,
+                            value: district.code,
+                          };
+                        })}
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setValue('sector', '');
+                        setValue('cell', '');
+                        setValue('village', '');
+                      }}
+                    />
                     {errors?.district && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.district.message)}
@@ -290,58 +216,32 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   (sector) => sector?.code === company_address?.sector
                 )?.code
               }
-              rules={{ required: "Select sector of residence" }}
+              rules={{ required: 'Select sector of residence' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    {company_address?.sector ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Sector <span className="text-red-600">*</span>
-                        </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              sectorsList?.find(
-                                (sector) =>
-                                  sector?.code === company_address?.sector
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetCompanyLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Sector"
-                        options={sectorsList
-                          ?.filter(
-                            (sector) =>
-                              sector?.district_code === watch("district")
-                          )
-                          ?.map((sector) => {
-                            return {
-                              label: sector.name,
-                              value: sector.code,
-                            };
-                          })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("cell", "");
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
+                    <Select
+                      {...field}
+                      required
+                      placeholder='Select sector'
+                      label="Sector"
+                      options={sectorsList
+                        ?.filter(
+                          (sector) =>
+                            sector?.district_code === watch('district')
+                        )
+                        ?.map((sector) => {
+                          return {
+                            label: sector.name,
+                            value: sector.code,
+                          };
+                        })}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setValue('cell', '');
+                        setValue('village', '');
+                      }}
+                    />
                     {errors?.sector && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.sector.message)}
@@ -354,7 +254,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="cell"
               control={control}
-              rules={{ required: "Select cell of residence" }}
+              rules={{ required: 'Select cell of residence' }}
               defaultValue={
                 cellsList?.find((cell) => cell?.code === company_address?.cell)
                   ?.code
@@ -362,51 +262,26 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    {company_address?.cell ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Cell <span className="text-red-600">*</span>
-                        </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              cellsList?.find(
-                                (cell) => cell?.code === company_address?.cell
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetCompanyLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Cell"
-                        options={cellsList
-                          ?.filter(
-                            (cell) => cell?.sector_code === watch("sector")
-                          )
-                          ?.map((cell) => {
-                            return {
-                              label: cell.name,
-                              value: cell.code,
-                            };
-                          })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
+                    <Select
+                      {...field}
+                      placeholder='Select cell'
+                      required
+                      label="Cell"
+                      options={cellsList
+                        ?.filter(
+                          (cell) => cell?.sector_code === watch('sector')
+                        )
+                        ?.map((cell) => {
+                          return {
+                            label: cell.name,
+                            value: cell.code,
+                          };
+                        })}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setValue('village', '');
+                      }}
+                    />
                     {errors?.cell && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.cell.message)}
@@ -421,7 +296,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="village"
               control={control}
-              rules={{ required: "Select village of residence" }}
+              rules={{ required: 'Select village of residence' }}
               defaultValue={
                 villagesList?.find(
                   (village) => village?.code === company_address?.village
@@ -430,51 +305,25 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
-                    {company_address?.village ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Village <span className="text-red-600">*</span>
-                        </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              villagesList?.find(
-                                (village) =>
-                                  village?.code === company_address?.village
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetCompanyLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Village"
-                        options={villagesList
-                          ?.filter(
-                            (village) => village?.cell_code === watch("cell")
-                          )
-                          ?.map((village) => {
-                            return {
-                              label: village.name,
-                              value: village.code,
-                            };
-                          })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                        }}
-                      />
-                    )}
+                    <Select
+                    placeholder='Select village'
+                      {...field}
+                      required
+                      label="Village"
+                      options={villagesList
+                        ?.filter(
+                          (village) => village?.cell_code === watch('cell')
+                        )
+                        ?.map((village) => {
+                          return {
+                            label: village.name,
+                            value: village.code,
+                          };
+                        })}
+                      onChange={(e) => {
+                        field.onChange(e);
+                      }}
+                    />
                     {errors?.village && (
                       <p className="text-red-500 text-[13px]">
                         {String(errors?.village.message)}
@@ -488,14 +337,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               control={control}
               name="street_name"
               defaultValue={
-                watch("street_name") || company_address?.street_name
+                watch('street_name') || company_address?.street_name
               }
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       defaultValue={
-                        watch("street_name") || company_address?.street_name
+                        watch('street_name') || company_address?.street_name
                       }
                       label="Street Name"
                       placeholder="Street name"
@@ -509,7 +358,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           <menu className="flex items-start w-full gap-6">
             <Controller
               control={control}
-              defaultValue={watch("po_box") || company_address?.po_box}
+              defaultValue={watch('po_box') || company_address?.po_box}
               name="po_box"
               render={({ field }) => {
                 return (
@@ -517,7 +366,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       label="P.O Box"
                       placeholder="Postal code"
-                      defaultValue={watch("po_box") || company_address?.po_box}
+                      defaultValue={watch('po_box') || company_address?.po_box}
                       {...field}
                     />
                   </label>
@@ -527,13 +376,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               control={control}
               name="fax"
-              defaultValue={watch("fax") || company_address?.fax}
+              defaultValue={watch('fax') || company_address?.fax}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       label="Fax"
-                      defaultValue={watch("fax") || company_address?.fax}
+                      defaultValue={watch('fax') || company_address?.fax}
                       placeholder="Fax"
                       {...field}
                     />
@@ -546,13 +395,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="email"
               control={control}
-              defaultValue={watch("email") || company_address?.email}
+              defaultValue={watch('email') || company_address?.email}
               rules={{
-                required: "Email address is required",
+                required: 'Email address is required',
                 validate: (value) => {
                   return (
-                    validateInputs(String(value), "email") ||
-                    "Invalid email address"
+                    validateInputs(String(value), 'email') ||
+                    'Invalid email address'
                   );
                 },
               }}
@@ -562,7 +411,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       required
                       label="Email"
-                      defaultValue={watch("email") || company_address?.email}
+                      defaultValue={watch('email') || company_address?.email}
                       placeholder="name@domain.com"
                       {...field}
                     />
@@ -577,15 +426,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             />
             <Controller
               name="phone"
-              defaultValue={watch("phone") || company_address?.phone}
+              defaultValue={watch('phone') || company_address?.phone}
               rules={{
-                required: "Phone number is required",
+                required: 'Phone number is required',
                 validate: (value) => {
                   return (
                     validateInputs(
                       value?.length < 10 ? `0${value}` : String(value),
-                      "tel"
-                    ) || "Invalid phone number"
+                      'tel'
+                    ) || 'Invalid phone number'
                   );
                 },
               }}
@@ -595,7 +444,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       required
-                      defaultValue={watch("phone") || company_address?.phone}
+                      defaultValue={watch('phone') || company_address?.phone}
                       label="Phone"
                       prefixText="+250"
                       placeholder="Phone number"
@@ -619,13 +468,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep("company_details"));
+                dispatch(setBusinessActiveStep('company_details'));
               }}
             />
-            {status === "is_Amending" && (
+            {status === 'is_Amending' && (
               <Button
                 submit
-                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
                 onClick={async () => {
                   await trigger();
                   if (Object.keys(errors).length > 0) return;
@@ -638,15 +487,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
                 }
                 primary
                 onClick={() => {
                   dispatch(
-                    setUserApplications({ entry_id, status: "in_preview" })
+                    setUserApplications({ entry_id, status: 'in_preview' })
                   );
 
                   setIsLoading({
@@ -661,8 +510,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               />
             )}
             <Button
-              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
-              onClick={() => {
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors).length > 0) return;
                 setIsLoading({
                   ...isLoading,
                   preview: false,
@@ -670,7 +521,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entry_id, status: 'in_progress' })
                 );
               }}
               primary

@@ -52,9 +52,9 @@ const BusinessActivity = ({
     amend: false,
   });
   const [randomNumber, setRandomNumber] = useState<number>(5);
-
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const [selectedSector, setSelectedSector] = useState<string>("");
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -72,7 +72,7 @@ const BusinessActivity = ({
         })
       );
 
-      if (status === "in_preview" || isLoading?.amend)
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         // SET THE NEXT TAB AS ACTIVE
@@ -112,15 +112,16 @@ const BusinessActivity = ({
             <Select
               label="Select sector"
               required
+              value={selectedSector}
               options={businessActivities?.map((activity) => {
                 return {
                   label: activity.name,
-                  value: activity.id,
+                  value: String(activity.id),
                 };
               })}
               onChange={(e) => {
                 setRandomNumber(Math.floor(Math.random() * 10) + 1);
-                return e;
+                setSelectedSector(e);
               }}
             />
             {errors.activity && (
@@ -460,13 +461,13 @@ const BusinessActivity = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Preview"
+                    "Save & Complete Review"
                   )
                 }
                 primary

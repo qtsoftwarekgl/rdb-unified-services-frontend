@@ -132,6 +132,8 @@ const AddInstitution = () => {
               <label className="flex flex-col items-start gap-1">
                 <Select
                   label="Institution type"
+                  placeholder="Select institution type"
+                  {...field}
                   onChange={(e) => {
                     field.onChange(e);
                   }}

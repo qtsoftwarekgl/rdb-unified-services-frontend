@@ -41,6 +41,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
     formState: { errors },
     setValue,
     watch,
+    trigger
   } = useForm();
 
   // STATE VARIABLES
@@ -82,7 +83,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       let active_tab = "capital_information";
       let active_step = "share_details";
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         active_tab = "preview_submission";
         active_step = "preview_submission";
       }
@@ -206,9 +207,14 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
                     <Input
+                    required
                       label="Number of employees"
                       defaultValue={employment_info?.employees_no}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger('employees_no')
+                      }}
                     />
                     {errors?.employees_no && (
                       <p className="text-red-600 text-[13px]">
@@ -272,10 +278,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 submit
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
                 }
                 onClick={() => {
                   setIsLoading({

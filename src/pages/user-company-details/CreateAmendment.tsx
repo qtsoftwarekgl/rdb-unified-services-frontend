@@ -91,8 +91,9 @@ const CreateAmendment = () => {
             </h1>
             <Select
               label="Amendment Type"
+              value={amendmentType}
               onChange={(e) => {
-                setAmendmentType(e?.value);
+                setAmendmentType(e);
               }}
               options={amendmentTypes}
               className="text-lg"

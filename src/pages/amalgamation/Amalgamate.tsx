@@ -100,6 +100,7 @@ const Amalgamation = () => {
                 render={({ field }) => (
                   <label className="flex flex-col w-1/2 max-sm:w-full">
                     <Select
+                    placeholder="Select Company"
                       label="Amalgamate from"
                       options={cessationCompanies.map((company) => {
                         return {
@@ -138,6 +139,7 @@ const Amalgamation = () => {
                             company.value !== watch("amalgamate_from")?.value
                         )}
                       required
+                      placeholder="Select Company"
                       {...field}
                     />
                     {errors?.company && (
@@ -167,6 +169,7 @@ const Amalgamation = () => {
                         { value: "3", label: "Ownership Certificate" },
                       ]}
                       required
+                      placeholder="Select Document Type"
                       {...field}
                     />
                     {errors?.document_type && (

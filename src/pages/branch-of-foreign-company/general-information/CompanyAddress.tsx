@@ -73,7 +73,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           },
         })
       );
-      if (status === "in_preview" || isLoading?.amend)
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
@@ -108,7 +108,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      isSearchable
+                      placeholder="Select country of incorporation"
+                      {...field}
                       required
                       defaultValue={
                         countriesList
@@ -332,13 +333,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Preview"
+                    "Save & Complete Review"
                   )
                 }
                 primary

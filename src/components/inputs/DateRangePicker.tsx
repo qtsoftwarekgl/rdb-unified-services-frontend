@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { DateRange } from 'react-day-picker';
+import { DateRange, SelectRangeEventHandler } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/popover';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarWeek } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
 
 interface DateRangePickerProps {
   value: DateRange | undefined;
@@ -22,8 +23,13 @@ const DateRangePicker = ({
   onChange,
   className,
 }: DateRangePickerProps) => {
+  const [selectedValue, setSelectedValue] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  });
+
   const handleDateChange = (dateRange: DateRange) => {
-    onChange(dateRange);
+    setSelectedValue(dateRange);
   };
 
   return (
@@ -56,13 +62,38 @@ const DateRangePicker = ({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent
+          className="w-auto p-0 flex flex-col items-center"
+          align="start"
+        >
           <Calendar
             mode="range"
-            selected={value}
-            onSelect={handleDateChange}
+            selected={selectedValue}
+            onSelect={handleDateChange as SelectRangeEventHandler}
             numberOfMonths={2}
           />
+          <menu className="flex items-center gap-2">
+            <Button
+              variant="default"
+              className="my-2 mx-auto text-[12px] bg-primary hover:bg-primary"
+              onClick={(e) => {
+                e.preventDefault();
+                onChange(selectedValue);
+              }}
+            >
+              Apply
+            </Button>
+            <Button
+              variant="outline"
+              className="my-2 mx-auto text-[12px]"
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedValue({ from: undefined, to: undefined });
+              }}
+            >
+              Clear
+            </Button>
+          </menu>
         </PopoverContent>
       </Popover>
     </div>

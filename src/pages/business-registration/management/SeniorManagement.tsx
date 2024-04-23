@@ -132,6 +132,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         error: false,
       });
       setValue("attachment", null);
+      setAttachmentFile(null);
       reset();
     }, 1000);
     return data;
@@ -343,10 +344,11 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     <Select
                       label="Select position"
                       required
+                      placeholder="Select position"
                       options={options}
                       {...field}
-                      onChange={(e) => {
-                        trigger("position");
+                      onChange={async (e) => {
+                        await trigger("position");
                         setValue("document_type", "");
                         field.onChange(e);
                         clearErrors("position");
@@ -384,8 +386,16 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       <Select
                         options={options}
                         label="Document Type"
+                        placeholder="Select document type"
                         required
                         {...field}
+                        onChange={(e) => {
+                          field.onChange(e)
+                          reset({
+                            position: watch("position"),
+                            document_type: e,
+                          })
+                        }}
                       />
                     </label>
                   );
@@ -670,6 +680,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       <Select
                         label="Phone number"
                         required
+                        placeholder="Select phone number"
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
@@ -698,8 +709,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
                       <Select
-                        isSearchable
                         label="Country"
+                        placeholder="Select country"
                         options={countriesList
                           ?.filter((country) => country?.code !== "RW")
                           ?.map((country) => {
@@ -862,9 +873,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value="Save & Complete Preview"
+                value="Save & Complete Review"
                 primary
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {

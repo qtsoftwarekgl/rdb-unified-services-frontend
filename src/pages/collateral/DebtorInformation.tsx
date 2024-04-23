@@ -156,12 +156,14 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
               >
                 <Select
                   label="Debtor Category"
+                  placeholder="Select debtor category"
                   defaultValue={debtor_info?.debtor_category || ""}
                   required
                   options={[
                     { label: "Individual", value: "individual" },
                     { label: "Institution", value: "institution" },
                   ]}
+                  {...field}
                   onChange={(e) => {
                     field.onChange(e);
                     setSearchInfo({
@@ -495,6 +497,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                         ) : (
                           <Select
                             label="Phone number"
+                            placeholder="Select phone number"
                             {...field}
                             required
                             options={userData?.slice(0, 3)?.map((user) => {

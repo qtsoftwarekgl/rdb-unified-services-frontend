@@ -70,7 +70,7 @@ const EditRole = () => {
       </h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-[60%] mx-auto"
+        className="flex flex-col gap-4 w-full max-w-[80%] mx-auto"
       >
         <Controller
           defaultValue={watch('name')}
@@ -88,7 +88,7 @@ const EditRole = () => {
                 />
                 {errors?.name && (
                   <p className="text-red-600 text-[13px]">
-                    {errors?.name?.message}
+                    {String(errors?.name?.message)}
                   </p>
                 )}
               </label>

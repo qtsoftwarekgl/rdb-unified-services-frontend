@@ -17,6 +17,7 @@ import {
 import AddInstitution from './AddInstitution';
 import { useEffect } from 'react';
 import EditInstitution from './EditInstitution';
+import { Row } from '@tanstack/react-table';
 
 const ListInstitutions = () => {
   // STATE VARIABLES
@@ -45,12 +46,21 @@ const ListInstitutions = () => {
       accessorKey: 'email',
     },
     {
+      id: 'type',
       header: 'Type',
       accessorKey: 'type',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+      cell: ({ row }) => capitalizeString(row?.original?.type),
     },
     {
+      id: 'date',
       header: 'Date Added',
       accessorKey: 'created_at',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      }
     },
     {
       header: '',
@@ -96,13 +106,21 @@ const ListInstitutions = () => {
         </menu>
         <section className="p-2">
           <Table
-            data={institutionsList?.map((institution, index) => {
+          rowClickHandler={(row) => {
+              dispatch(setInstitution(row));
+              dispatch(setEditInstitutionModal(true));
+          }}
+            data={institutionsList?.map((institution: {
+              name: string;
+              email: string;
+              type: string;
+              created_at: string;
+            }, index) => {
               return {
                 ...institution,
                 no: index + 1,
                 name: institution?.name,
                 email: institution?.email,
-                type: capitalizeString(institution?.type),
                 created_at: formatDate(institution?.created_at),
               };
             })}

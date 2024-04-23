@@ -126,6 +126,8 @@ const CloseCompany = () => {
                             }`,
                         };
                       })}
+                      {...field}
+                      placeholder='Select company to close'
                     onChange={(e) => {
                       field.onChange(e);
                     }}
@@ -168,6 +170,8 @@ const CloseCompany = () => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
                     <Select
+                    {...field}
+                    placeholder='Select dissolution reason'
                       label="Dissolution reason"
                       options={dissolutionReasons}
                       onChange={(e) => {

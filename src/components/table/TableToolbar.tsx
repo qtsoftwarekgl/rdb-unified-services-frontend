@@ -17,11 +17,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 interface TableToolbarProps<TData, TValue> {
   table: Table<TData>;
   columns: ColumnDef<TData, TValue>[];
+  showExport?: boolean;
 }
 
 export default function TableToolbar<TData, TValue>({
   table,
   columns,
+  showExport = true,
 }: TableToolbarProps<TData, TValue>) {
   // NAVIGATE
   const { search } = useLocation();
@@ -158,7 +160,7 @@ export default function TableToolbar<TData, TValue>({
             />
           );
         })}
-      <Button
+      {showExport && <Button
         variant="outline"
         className="flex items-center gap-2 font-normal"
         onClick={(e) => {
@@ -175,7 +177,7 @@ export default function TableToolbar<TData, TValue>({
         }}
       >
         <FontAwesomeIcon icon={faFile} className="text-primary" /> Export
-      </Button>
+      </Button>}
       {isFiltered && (
         <Button
           variant="ghost"

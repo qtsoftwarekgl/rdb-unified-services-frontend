@@ -141,6 +141,8 @@ const BusinessNewBranch = () => {
                           }`,
                         };
                       })}
+                      {...field}
+                      placeholder='Select company'
                     onChange={(e) => {
                       field.onChange(e);
                     }}
@@ -197,6 +199,8 @@ const BusinessNewBranch = () => {
                           value: province.code,
                         };
                       })}
+                      {...field}
+                      placeholder='Select province'
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -234,6 +238,8 @@ const BusinessNewBranch = () => {
                             };
                           })
                       }
+                      {...field}
+                      placeholder='Select district'
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -273,6 +279,8 @@ const BusinessNewBranch = () => {
                             };
                           })
                       }
+                      {...field}
+                      placeholder='Select sector'
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -309,6 +317,8 @@ const BusinessNewBranch = () => {
                             };
                           })
                       }
+                      {...field}
+                      placeholder='Select cell'
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -347,6 +357,8 @@ const BusinessNewBranch = () => {
                             };
                           })
                       }
+                      {...field}
+                      placeholder='Select village'
                       onChange={(e) => {
                         field.onChange(e);
                       }}

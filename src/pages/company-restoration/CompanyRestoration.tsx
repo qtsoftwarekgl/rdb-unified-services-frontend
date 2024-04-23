@@ -121,6 +121,8 @@ const CompanyRestoration = () => {
                         value: app?.entry_id,
                       };
                     })}
+                    {...field}
+                    placeholder='Select company to restore'
                     onChange={(e) => {
                       field.onChange(e);
                     }}

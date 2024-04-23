@@ -58,9 +58,11 @@ const RegistrationSuccess = () => {
           />
         </article>
       </section>
-      <ForeignRegistrationSuccess
+     <section className='h-[80vh] w-full flex flex-col items-center justify-center'>
+     <ForeignRegistrationSuccess
         isOpen={registrationStep === 'foreign-registration-form'}
       />
+     </section>
     </main>
   );
 };

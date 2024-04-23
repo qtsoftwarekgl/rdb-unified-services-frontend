@@ -72,7 +72,7 @@ const EditInstitution = () => {
       </h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-[60%] mx-auto"
+        className="flex flex-col gap-4 w-full max-w-[80%] mx-auto"
       >
         <Controller
           name="name"
@@ -111,7 +111,7 @@ const EditInstitution = () => {
                 />
                 {errors?.email && (
                   <p className="text-red-500 text-[12px]">
-                    {String(errors?.name.message)}
+                    {String(errors?.name?.message)}
                   </p>
                 )}
               </label>
@@ -130,11 +130,12 @@ const EditInstitution = () => {
             return (
               <label className="flex flex-col items-start gap-1">
                 <Select
-                  defaultValue={options?.find((o) => o.value === watch('type'))}
+                placeholder='Select institution type'
+                  defaultValue={
+                    options?.find((o) => o.value === watch('type'))?.value
+                  }
                   label="Institution type"
-                  onChange={(e) => {
-                    field.onChange(e);
-                  }}
+                  {...field}
                   options={options}
                 />
                 {errors?.type && (

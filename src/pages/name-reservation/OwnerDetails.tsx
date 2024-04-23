@@ -124,13 +124,6 @@ const OwnerDetails = ({ isOpen }: Props) => {
                   {...field}
                   value={"owner"}
                 />
-                <Input
-                  type="radio"
-                  label="Someone else"
-                  checked={watch("name_owner") === "other"}
-                  {...field}
-                  value={"other"}
-                />
               </ul>
             );
           }}
@@ -161,6 +154,8 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       label="Document Type"
                       defaultValue={owner_details?.document_type}
                       required
+                      {...field}
+                      placeholder="Select document type"
                       onChange={(e) => {
                         reset({
                           document_type: e,
@@ -437,7 +432,8 @@ const OwnerDetails = ({ isOpen }: Props) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
                       <Select
-                        isSearchable
+                        placeholder="Select country"
+                        {...field}
                         required
                         label="Country"
                         options={countriesList
@@ -528,6 +524,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                             value: user?.phone,
                           };
                         })}
+                        placeholder="Select phone number"
                         {...field}
                       />
                     )}

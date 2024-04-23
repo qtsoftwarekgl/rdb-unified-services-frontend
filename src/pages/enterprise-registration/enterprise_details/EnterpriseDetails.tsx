@@ -134,7 +134,7 @@ export const EnterpriseDetails = ({
       );
       dispatch(setUsedIds(data?.id_no));
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET ACTIVE STEP
@@ -329,6 +329,8 @@ export const EnterpriseDetails = ({
                           company_details?.owner_details?.document_type
                         }
                         required
+                        {...field}
+                        placeholder="Select document type"
                         onChange={(e) => {
                           reset({
                             document_type: e,
@@ -690,7 +692,8 @@ export const EnterpriseDetails = ({
                     return (
                       <label className="w-[48%] flex flex-col gap-1 items-start">
                         <Select
-                          isSearchable
+                          placeholder="Select country"
+                          {...field}
                           required
                           label="Country"
                           options={countriesList
@@ -779,6 +782,8 @@ export const EnterpriseDetails = ({
                         <Select
                           label="Phone number"
                           required
+                          {...field}
+                          placeholder="Select phone number"
                           options={userData?.slice(0, 3)?.map((user) => {
                             return {
                               ...user,
@@ -929,7 +934,7 @@ export const EnterpriseDetails = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 onClick={async () => {
                   await trigger();
@@ -947,7 +952,7 @@ export const EnterpriseDetails = ({
                   isLoading?.preview && !Object.keys(errors)?.length ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Preview"
+                    "Save & Complete Review"
                   )
                 }
                 primary

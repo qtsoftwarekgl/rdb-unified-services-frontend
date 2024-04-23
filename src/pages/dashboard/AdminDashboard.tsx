@@ -14,10 +14,14 @@ import Table from '../../components/table/Table';
 import { columns, users } from '../../constants/Users';
 import RecentActivities from '../../components/cards/RecentActivities';
 import DashboardChart from '../../components/DashboardChart';
+import { Controller, useForm } from 'react-hook-form';
 
 const AdminDashboard = () => {
   // STATE VARIABLES
   const [monthsDataArray, setMonthsDataArray] = useState(monthsData());
+
+  // REACT HOOK FORM
+  const { control } = useForm();
 
   return (
     <AdminLayout>
@@ -44,14 +48,24 @@ const AdminDashboard = () => {
             <menu className="flex w-full items-center gap-3 justify-between max-[600px]:flex-col">
               <h1 className="text-lg font-medium">User Overview</h1>
               <span className="flex items-center w-full max-w-[20%] max-[600px]:max-w-[80%]">
-                <Select
-                  options={[
-                    { label: "Yearly", value: "year" },
-                    { label: "Monthly", value: "month" },
-                  ]}
-                  onChange={(e) => {
-                    setMonthsDataArray(monthsData());
-                    return e?.value;
+              <Controller
+                  name="period"
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <Select
+                        placeholder="Select period"
+                        options={[
+                          { label: 'Yearly', value: 'year' },
+                          { label: 'Monthly', value: 'month' },
+                        ]}
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setMonthsDataArray(monthsData());
+                        }}
+                      />
+                    );
                   }}
                 />
               </span>

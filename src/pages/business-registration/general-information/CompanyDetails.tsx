@@ -89,7 +89,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       let active_tab = "general_information";
       let active_step = "company_address";
 
-      if (status === "in_preview") {
+      if ((['in_preview', 'action_required'].includes(status))) {
         active_tab = "preview_submission";
         active_step = "preview_submission";
       }
@@ -272,6 +272,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Select
                       label="Company category"
                       required
+                      placeholder="Select company category"
                       options={companyCategories?.map((category) => {
                         return {
                           ...category,
@@ -280,9 +281,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       defaultValue={company_details?.category}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.category && (
                       <p className="text-xs text-red-500">
@@ -307,6 +306,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       defaultValue={company_details?.type}
                       label="Company type"
                       required
+                      placeholder="Select company type"
                       options={companyTypesOptions?.map((type) => {
                         return {
                           ...type,
@@ -314,9 +314,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: type?.label,
                         };
                       })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.type && (
                       <p className="text-xs text-red-500">
@@ -339,6 +337,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       defaultValue={company_details?.position}
                       label="Your position"
                       required
+                      placeholder="Select your position"
                       options={companyPositions?.map((position) => {
                         return {
                           ...position,
@@ -346,9 +345,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: position?.label,
                         };
                       })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
+                      {...field}
                     />
                     {errors?.position && (
                       <p className="text-xs text-red-500">
@@ -415,10 +412,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
                 }
                 submit
                 primary={!searchCompany?.error}
