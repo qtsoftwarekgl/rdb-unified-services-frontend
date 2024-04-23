@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { validPlateNumber, validUPI } from "@/constants/Users";
-import { propertyData } from "@/constants/authentication";
+import { propertyData, vehicleData } from "@/constants/authentication";
 import { integerToWords } from "@/constants/integerToWords";
 import { filterObject, generateUUID } from "@/helpers/strings";
 import validateInputs from "@/helpers/validations";
@@ -373,7 +373,11 @@ const CollateralForm = ({
                   });
                   setTimeout(() => {
                     const randomNumber = Math.floor(Math.random() * 4);
-                    let property_details = propertyData[randomNumber];
+                    let property_details =
+                      watch("movable_collateral_type") === "vehicle" ||
+                      watch("movable_collateral_type") === "other"
+                        ? vehicleData[randomNumber]
+                        : propertyData[randomNumber];
                     property_details = {
                       ...property_details,
                       property_nature:
