@@ -167,6 +167,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Province"
+                        placeholder="Select province"
                         options={provicesList?.map((province) => {
                           return {
                             label: province.name,
@@ -228,6 +229,7 @@ const OfficeAddress = ({
                       <Select
                         required
                         label="District"
+                        placeholder="Select district"
                         options={districtsList
                           ?.filter(
                             (district) =>
@@ -297,6 +299,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Sector"
+                        placeholder="Select sector"
                         options={sectorsList
                           ?.filter(
                             (sector) =>
@@ -361,6 +364,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Cell"
+                        placeholder="Select cell"
                         options={cellsList
                           ?.filter(
                             (cell) => cell?.sector_code === watch("sector")
@@ -426,6 +430,7 @@ const OfficeAddress = ({
                         {...field}
                         required
                         label="Village"
+                        placeholder="Select village"
                         options={villagesList
                           ?.filter(
                             (village) => village?.cell_code === watch("cell")

@@ -14,7 +14,6 @@ import Button from '../../components/inputs/Button';
 import Table from '../../components/table/Table';
 import RecentActivities from '../../components/cards/RecentActivities';
 import DashboardChart from '../../components/DashboardChart';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { Controller, useForm } from 'react-hook-form';
 import { capitalizeString, formatDate } from '@/helpers/strings';
 

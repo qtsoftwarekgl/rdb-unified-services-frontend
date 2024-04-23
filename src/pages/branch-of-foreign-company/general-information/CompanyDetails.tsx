@@ -279,6 +279,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: category?.label,
                         };
                       })}
+                      {...field}
+                      placeholder="Select company category"
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -317,6 +319,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: type?.label,
                         };
                       })}
+                      {...field}
+                      placeholder="Select company type"
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -354,6 +358,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           label: position?.label,
                         };
                       })}
+                      {...field}
+                      placeholder="Select your position"
                       onChange={(e) => {
                         field.onChange(e);
                       }}

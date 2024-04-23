@@ -124,6 +124,8 @@ const CompanyDormancy = () => {
                         }`,
                       };
                     })}
+                    {...field}
+                    placeholder='Select company to close'
                     onChange={(e) => {
                       field.onChange(e);
                     }}
@@ -195,6 +197,8 @@ const CompanyDormancy = () => {
                     <Select
                       label="Dormancy reason"
                       options={dormancyReasons}
+                      {...field}
+                      placeholder='Select dormancy reason'
                       onChange={(e) => {
                         field.onChange(e);
                       }}

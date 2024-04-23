@@ -106,6 +106,8 @@ const CessationToDormant = () => {
                         };
                       })}
                       required
+                      {...field}
+                      placeholder="Select Company"
                       onChange={(e) => {
                         field.onChange(e);
                         setValue(

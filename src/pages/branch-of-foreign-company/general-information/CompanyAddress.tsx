@@ -108,7 +108,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                      isSearchable
+                      placeholder="Select country of incorporation"
+                      {...field}
                       required
                       defaultValue={
                         countriesList

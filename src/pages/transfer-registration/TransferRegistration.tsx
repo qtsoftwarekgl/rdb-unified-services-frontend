@@ -101,6 +101,7 @@ const TransferRegistration = () => {
                   <label className="flex flex-col">
                     <Select
                       label="Company"
+                      placeholder="Select Company"
                       options={cessationCompanies.map((company) => {
                         return {
                           value: company.name,
@@ -158,6 +159,8 @@ const TransferRegistration = () => {
                     <Select
                       options={dissolutionReasons}
                       label="Transfer reason"
+                      placeholder="Select transfer reason"
+                      {...field}
                       required
                       onChange={(e) => {
                         field.onChange(e);

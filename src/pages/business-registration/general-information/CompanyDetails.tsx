@@ -272,6 +272,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     <Select
                       label="Company category"
                       required
+                      placeholder="Select company category"
                       options={companyCategories?.map((category) => {
                         return {
                           ...category,
@@ -305,6 +306,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       defaultValue={company_details?.type}
                       label="Company type"
                       required
+                      placeholder="Select company type"
                       options={companyTypesOptions?.map((type) => {
                         return {
                           ...type,
@@ -335,6 +337,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       defaultValue={company_details?.position}
                       label="Your position"
                       required
+                      placeholder="Select your position"
                       options={companyPositions?.map((position) => {
                         return {
                           ...position,

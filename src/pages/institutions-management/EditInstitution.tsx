@@ -130,6 +130,7 @@ const EditInstitution = () => {
             return (
               <label className="flex flex-col items-start gap-1">
                 <Select
+                placeholder='Select institution type'
                   defaultValue={
                     options?.find((o) => o.value === watch('type'))?.value
                   }

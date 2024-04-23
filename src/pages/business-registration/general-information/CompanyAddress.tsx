@@ -141,6 +141,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Select
                       {...field}
                       required
+                      placeholder='Select province'
                       label="Province"
                       options={provicesList?.map((province) => {
                         return {
@@ -175,6 +176,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       required
+                      placeholder='Select district'
                       label="District"
                       options={districtsList
                         ?.filter(
@@ -221,6 +223,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Select
                       {...field}
                       required
+                      placeholder='Select sector'
                       label="Sector"
                       options={sectorsList
                         ?.filter(
@@ -261,6 +264,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       {...field}
+                      placeholder='Select cell'
                       required
                       label="Cell"
                       options={cellsList
@@ -302,6 +306,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
+                    placeholder='Select village'
                       {...field}
                       required
                       label="Village"

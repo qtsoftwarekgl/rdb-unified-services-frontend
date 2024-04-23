@@ -1441,7 +1441,6 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           { value: "indirect", label: "Indirect" },
                         ]}
                         {...field}
-                        {...field}
                       />
                       {errors?.control_type && (
                         <p className="text-red-600 text-[13px]">
