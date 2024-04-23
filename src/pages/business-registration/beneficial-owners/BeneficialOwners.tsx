@@ -1597,9 +1597,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             }}
           />
         )}
-        {status === "in_preview" && (
+        {['in_preview', 'action_required'].includes(status) && (
           <Button
-            value="Save & Complete Preview"
+            value="Save & Complete Review"
             disabled={disableForm}
             primary
             onClick={(e) => {

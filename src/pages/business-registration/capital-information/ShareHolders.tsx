@@ -26,6 +26,7 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
+  setShareholderDetailsModal,
 } from "../../../states/features/businessRegistrationSlice";
 import { capitalizeString, generateUUID } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
@@ -33,6 +34,7 @@ import moment from "moment";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
 import Modal from "../../../components/Modal";
 import ViewDocument from "../../user-company-details/ViewDocument";
+import ShareholderDetails from "./ShareholderDetails";
 
 export interface business_shareholders {
   shareholder_type: string;
@@ -94,6 +96,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
     data: null,
   });
   const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const [shareholderDetails, setShareholderDetails] = useState<business_shareholders | null>(null);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -1235,6 +1238,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               Shareholders
             </h2>
             <Table
+            rowClickHandler={(row) => {
+              dispatch(setShareholderDetailsModal(true))
+              setShareholderDetails(row)
+            }}
               data={
                 shareholders?.length > 0
                   ? shareholders?.map((shareholder: unknown, index: number) => {
@@ -1292,9 +1299,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 }}
               />
             )}
-            {status === 'in_preview' && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value="Save & Complete Preview"
+                value="Save & Complete Review"
                 primary
                 disabled={disableForm}
                 onClick={(e) => {
@@ -1346,6 +1353,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           setDocumentUrl={setAttachmentPreview}
         />
       )}
+      <ShareholderDetails shareholder={shareholderDetails} />
     </section>
   );
 };

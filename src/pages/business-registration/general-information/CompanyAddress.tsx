@@ -100,7 +100,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       let active_tab = 'general_information';
       let active_step = 'business_activity_vat';
 
-      if (status === 'in_preview') {
+      if (['in_preview', 'action_required'].includes(status)) {
         active_tab = 'preview_submission';
         active_step = 'preview_submission';
       }
@@ -482,7 +482,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 }}
               />
             )}
-            {status === 'in_preview' && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview ? <Loader /> : 'Save & Complete Preview'

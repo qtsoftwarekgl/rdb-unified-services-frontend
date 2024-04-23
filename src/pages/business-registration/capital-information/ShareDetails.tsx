@@ -144,7 +144,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       let active_tab = "capital_information";
       let active_step = "shareholders";
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         active_tab = "preview_submission";
         active_step = "preview_submission";
       }
@@ -349,10 +349,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               submit
             />
           )}
-          {status === "in_preview" && (
+          {['in_preview', 'action_required'].includes(status) && (
             <Button
               value={
-                isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                isLoading?.preview ? <Loader /> : "Save & Complete Review"
               }
               primary
               onClick={async () => {

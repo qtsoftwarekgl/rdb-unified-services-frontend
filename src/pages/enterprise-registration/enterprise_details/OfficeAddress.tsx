@@ -83,7 +83,7 @@ const OfficeAddress = ({
         })
       );
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET ACTIVE STEP
@@ -609,10 +609,10 @@ const OfficeAddress = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Preview"
+                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
                 }
                 primary
                 onClick={async () => {
@@ -648,7 +648,7 @@ const OfficeAddress = ({
                   submit: true,
                   amend: false,
                 });
-                if (status === "in_preview")
+                if ((['in_preview', 'action_required'].includes(status)))
                   dispatch(
                     setUserApplications({ entry_id, status: "in_progress" })
                   );

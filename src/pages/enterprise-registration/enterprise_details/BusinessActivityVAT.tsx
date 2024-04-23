@@ -73,7 +73,7 @@ const BusinessActivity = ({
         })
       );
 
-      if (status === "in_preview" || isLoading?.amend) {
+      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET THE NEXT STEP AS ACTIVE
@@ -352,7 +352,7 @@ const BusinessActivity = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
                 onClick={async () => {
                   await trigger();
@@ -370,7 +370,7 @@ const BusinessActivity = ({
                   isLoading?.preview && !Object.keys(errors)?.length ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Preview"
+                    "Save & Complete Review"
                   )
                 }
                 primary

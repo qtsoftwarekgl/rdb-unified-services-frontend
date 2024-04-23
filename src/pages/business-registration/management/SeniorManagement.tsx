@@ -873,9 +873,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 }}
               />
             )}
-            {status === "in_preview" && (
+            {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value="Save & Complete Preview"
+                value="Save & Complete Review"
                 primary
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {

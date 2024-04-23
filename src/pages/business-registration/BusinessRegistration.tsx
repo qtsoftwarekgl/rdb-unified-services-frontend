@@ -60,7 +60,7 @@ const BusinessRegistration = () => {
   const navigate = useNavigate();
 
   // APPLICATION STATUS
-  let status = "in_progress";
+  let status = businessApplication?.status || "in_progress";
   if (businessApplication) {
     status = businessApplication.status;
   }

@@ -194,7 +194,7 @@ export const NewRegistration = ({
           <Button
             value={
               <menu className="flex items-center gap-2">
-                <span>Start Business Registration</span>
+                <span>Start Registration</span>
                 <FontAwesomeIcon icon={faArrowRight} />
               </menu>
             }

@@ -5,7 +5,7 @@ import UserLayout from "../../containers/UserLayout";
 import Button from "../../components/inputs/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
-import { formatCompanyData } from "../../helpers/strings";
+import { capitalizeString, formatCompanyData } from "../../helpers/strings";
 import {
   business_registration_tabs_initial_state,
   setBusinessActiveStep,
@@ -43,14 +43,22 @@ const UserApplications = () => {
   };
 
   const columns = [
-    { header: "Registration Number", accessorKey: "reg_number" },
-    { header: "Company Name", accessorKey: "company_name" },
-    { header: "Service Name", accessorKey: "service_name" },
-    { header: "Status", accessorKey: "status", cell: renderStatusCell },
-    { header: "Submission Date", accessorKey: "submission_date" },
+    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Company Name', accessorKey: 'company_name' },
     {
-      header: "Action",
-      accessorKey: "actions",
+      header: 'Service Name',
+      accessorKey: 'service_name',
+      cell: ({ row }) => (
+        <span className="text-[13px]">
+          {capitalizeString(row.original?.service_name) || 'N/A'}
+        </span>
+      ),
+    },
+    { header: 'Status', accessorKey: 'status', cell: renderStatusCell },
+    { header: 'Submission Date', accessorKey: 'submission_date' },
+    {
+      header: 'Action',
+      accessorKey: 'actions',
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -64,7 +72,7 @@ const UserApplications = () => {
         )}`}
       >
         <span className="w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-        <span className="text-sm font-light ">{row?.original.status}</span>
+        <span className="text-sm font-light ">{capitalizeString(row?.original.status)}</span>
       </span>
     );
   }

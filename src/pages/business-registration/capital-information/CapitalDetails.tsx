@@ -387,9 +387,9 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             }}
           />
         )}
-        {status === "in_preview" && (
+        {['in_preview', 'action_required'].includes(status) && (
           <Button
-            value={isLoading?.preview ? <Loader /> : "Save & Complete Preview"}
+            value={isLoading?.preview ? <Loader /> : "Save & Complete Review"}
             primary
             disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
