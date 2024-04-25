@@ -13,11 +13,12 @@ import { integerToWords } from "@/constants/integerToWords";
 import { filterObject, generateUUID } from "@/helpers/strings";
 import validateInputs from "@/helpers/validations";
 import { setCollateralApplications } from "@/states/features/collateralRegistrationSlice";
+import { RootState } from "@/states/store";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
   entry_id: string | null;
@@ -77,7 +78,6 @@ const CollateralForm = ({
 
   const onSubmit = (data: any) => {
     setSubmitSuccessful(true);
-    console.log(">>>>>>>>>>>>>>>>>>>", data);
     setTimeout(() => {
       if (
         Object.keys(searchInfo?.data).length ||
@@ -749,6 +749,7 @@ const CollateralForm = ({
                       field.onChange(e);
                       const words = integerToWords(+e.target.value);
                       setValue("value_in_words", words);
+                      clearErrors("value_in_words");
                     }}
                     type="number"
                   />

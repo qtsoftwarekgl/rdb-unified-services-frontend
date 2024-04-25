@@ -93,9 +93,11 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           setActiveStep={setCollateralActiveStep}
           setActiveTab={setCollateralActiveTab}
         >
-          <p className="flex items-center gap-1">
-            <span className="font-semibold">{loan_amount} Rwf</span>{" "}
-          </p>
+          {loan_amount && (
+            <p className="flex items-center gap-1">
+              <span className="font-semibold">{loan_amount} Rwf</span>{" "}
+            </p>
+          )}
         </PreviewCard>
       }
       {

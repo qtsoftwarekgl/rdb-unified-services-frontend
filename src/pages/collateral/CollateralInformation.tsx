@@ -40,6 +40,7 @@ const CollateralInformation = ({
     control,
     watch,
     setValue,
+    clearErrors,
     formState: { errors },
   } = useForm();
 
@@ -183,6 +184,7 @@ const CollateralInformation = ({
                         field.onChange(e);
                         const words = integerToWords(+e.target.value);
                         setValue("loan_amount_in_words", words);
+                        clearErrors("loan_amount_in_words");
                       }}
                     />
                     {errors?.loan_amount && (

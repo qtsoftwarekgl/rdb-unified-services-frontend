@@ -94,10 +94,6 @@ const CollateralAttachments = ({
       setAttachmentFiles([
         ...attachmentFiles,
         { label: "Notarized AOMA", file: null },
-        {
-          label: "Payment Receipt",
-          file: null,
-        },
       ]);
     }
   }, []);

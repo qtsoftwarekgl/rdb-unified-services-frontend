@@ -74,7 +74,7 @@ const Login = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setUser(data));
+      dispatch(setUser({ email: data.email, name: "Nishimwe Prince" }));
       dispatch(setUserAuthenticated(true));
       if (RDBVerifierAndApproverEmailPattern.test(data.email)) {
         return navigate("/back-office/dashboard");

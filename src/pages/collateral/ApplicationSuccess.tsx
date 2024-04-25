@@ -55,9 +55,9 @@ const ApplicationSuccess: FC<ModalProps> = ({
               </span>
               After downloading it, please notarize the{" "}
               <span className="mr-1 font-semibold">AOMA</span>
-              and perform the payment to resubmit both{" "}
+              and perform the payment to submit{" "}
               <span className="mr-1 font-semibold">
-                the notarized AOMA and the payment receipt
+                the notarized AOMA
               </span>{" "}
               under the attachments section.
             </p>

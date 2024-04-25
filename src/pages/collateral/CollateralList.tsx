@@ -1,12 +1,13 @@
 import Loader from "@/components/Loader";
 import Modal from "@/components/Modal";
+import { ReviewComment } from "@/components/applications-review/AddReviewComments";
 import Button from "@/components/inputs/Button";
 import Input from "@/components/inputs/Input";
 import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 import Table from "@/components/table/Table";
 import { bankData } from "@/constants/authentication";
 import AdminLayout from "@/containers/AdminLayout";
-import { generateUUID } from "@/helpers/strings";
+import { capitalizeString, formatDate, generateUUID } from "@/helpers/strings";
 import {
   setCollateralActiveStep,
   setCollateralActiveTab,
@@ -26,8 +27,18 @@ const CollateralList = () => {
   const { collateral_applications } = useSelector(
     (state: RootState) => state.collateralRegistration
   );
+  const { application_review_comments } = useSelector(
+    (state: RootState) => state.userApplication
+  );
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const hasComments = (applicationId: string) => {
+    return application_review_comments.some(
+      (comment: ReviewComment) =>
+        comment?.entry_id === applicationId && !comment?.checked
+    );
+  };
 
   const applications = collateral_applications
     .filter((app) => app.status)
@@ -77,6 +88,9 @@ const CollateralList = () => {
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
+      cell: ({ row }) => {
+        return capitalizeString(row?.original?.status);
+      },
     },
     { header: "Submission Date", accessorKey: "submission_date" },
     {
@@ -84,20 +98,36 @@ const CollateralList = () => {
       accessorKey: "actions",
       cell: ({ row }) => {
         return (
-          <menu className="flex items-center gap-2">
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setCollateralActiveTab("debtor_information"));
-                dispatch(setCollateralActiveStep("debtor_information"));
-                navigate(
-                  `/admin/collateral?entry_id=${row?.original?.entry_id}`
-                );
-              }}
-              value="View"
-              styled={false}
-              className="cursor-pointer text-primary"
-            />
+          <menu className="flex items-center gap-2 cursor-pointer">
+            {hasComments(row?.original?.entry_id) ? (
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setCollateralActiveTab("debtor_information"));
+                  dispatch(setCollateralActiveStep("debtor_information"));
+                  navigate(
+                    `/admin/collateral?entry_id=${row?.original?.entry_id}`
+                  );
+                }}
+                value="Resolve Comments"
+                styled={false}
+                className="!text-red-500  !truncate hover:underline cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+              />
+            ) : (
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setCollateralActiveTab("debtor_information"));
+                  dispatch(setCollateralActiveStep("debtor_information"));
+                  navigate(
+                    `/admin/collateral?entry_id=${row?.original?.entry_id}`
+                  );
+                }}
+                value="View"
+                styled={false}
+                className="!text-primary !truncate hover:underline cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+              />
+            )}
           </menu>
         );
       },

@@ -1,18 +1,18 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../Modal';
-import { AppDispatch, RootState } from '../../states/store';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import TextArea from '../inputs/TextArea';
-import Button from '../inputs/Button';
-import { FC, useEffect, useRef, useState } from 'react';
-import Loader from '../Loader';
-import { Step, TabType } from '../../states/features/types';
-import moment from 'moment';
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../Modal";
+import { AppDispatch, RootState } from "../../states/store";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import TextArea from "../inputs/TextArea";
+import Button from "../inputs/Button";
+import { FC, useEffect, useRef, useState } from "react";
+import Loader from "../Loader";
+import { Step, TabType } from "../../states/features/types";
+import moment from "moment";
 import {
   setAddReviewCommentsModal,
   setApplicationReviewComments,
   updateReviewComment,
-} from '../../states/features/userApplicationSlice';
+} from "../../states/features/userApplicationSlice";
 
 export type ReviewComment = {
   comment: string;
@@ -50,6 +50,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
   );
   const [isLoading, setIsLoading] = useState(false);
   const [comment, setComment] = useState<ReviewComment | null>(null);
+  const { user } = useSelector((state: RootState) => state.user);
 
   // COMMENT REF
   const commentRef = useRef<HTMLTextAreaElement>(null);
@@ -60,7 +61,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       reset();
       commentRef.current?.blur();
       if (commentRef?.current?.value) {
-        commentRef.current.value = '';
+        commentRef.current.value = "";
       }
       setComment(null);
     } else if (addReviewCommentsModal) {
@@ -90,7 +91,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           business_comment?.step?.name === activeStep?.name
       );
       if (commentExists) {
-        setValue('comment', commentExists?.comment);
+        setValue("comment", commentExists?.comment);
         setComment(commentExists);
         commentRef.current?.focus();
         if (commentRef.current) {
@@ -133,13 +134,14 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
             {
               ...newComment,
               checked: false,
+              reviewer: user,
             },
             ...application_review_comments,
           ])
         );
       }
       if (commentRef?.current?.value) {
-        commentRef.current.value = '';
+        commentRef.current.value = "";
       }
       dispatch(setAddReviewCommentsModal(false));
     }, 1000);
@@ -163,14 +165,14 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           name="comment"
           control={control}
           defaultValue={comment && comment?.comment}
-          rules={{ required: 'Comment is required' }}
+          rules={{ required: "Comment is required" }}
           render={({ field }) => {
             return (
               <label className="flex flex-col w-full gap-2">
                 <TextArea
                   ref={commentRef}
                   required
-                  defaultValue={comment ? comment?.comment : ''}
+                  defaultValue={comment ? comment?.comment : ""}
                   placeholder="Add comment to provide the applicant with more context"
                   label="Comment box"
                   onChange={(e) => {
@@ -194,7 +196,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
               dispatch(setAddReviewCommentsModal(false));
             }}
           />
-          <Button value={isLoading ? <Loader /> : 'Save'} primary submit />
+          <Button value={isLoading ? <Loader /> : "Save"} primary submit />
         </menu>
       </form>
     </Modal>
