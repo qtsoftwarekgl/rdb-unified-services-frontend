@@ -5,6 +5,7 @@ import Button from "@/components/inputs/Button";
 import Input from "@/components/inputs/Input";
 import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 import Table from "@/components/table/Table";
+import { RDBVerifierAndApproverEmailPattern } from "@/constants/Users";
 import { bankData } from "@/constants/authentication";
 import AdminLayout from "@/containers/AdminLayout";
 import { capitalizeString, formatDate, generateUUID } from "@/helpers/strings";
@@ -39,6 +40,11 @@ const CollateralList = () => {
         comment?.entry_id === applicationId && !comment?.checked
     );
   };
+
+  const { user } = useSelector((state: RootState) => state.user);
+  if (RDBVerifierAndApproverEmailPattern.test(user?.email)) {
+    navigate("/admin/review-collaterals");
+  }
 
   const applications = collateral_applications
     .filter((app) => app.status)

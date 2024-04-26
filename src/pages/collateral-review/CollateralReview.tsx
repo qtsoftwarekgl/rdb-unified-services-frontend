@@ -19,7 +19,10 @@ import AoMA from "./AoMA";
 import Attachements from "./Attachments";
 import { generateUUID } from "@/helpers/strings";
 import MortgageHistory from "./MortgageHistory";
-import { setCollateralApplications } from "@/states/features/collateralRegistrationSlice";
+import {
+  setCollateralApplications,
+  setCollateralStatus,
+} from "@/states/features/collateralRegistrationSlice";
 
 const CollateralReview = () => {
   const {
@@ -153,7 +156,11 @@ const CollateralReview = () => {
               first_step="property"
               last_step="mortgage_history"
               redirectUrl="/admin/review-collaterals"
-              setApplication={setCollateralApplications}
+              setApplication={setCollateralStatus}
+              extraProps={{
+                propName: "collateral_id",
+                propValue: collateral_id ?? "",
+              }}
             />
             <AddReviewComments
               entry_id={entry_id}

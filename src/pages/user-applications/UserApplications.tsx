@@ -121,7 +121,7 @@ const UserApplications = () => {
 
   return (
     <UserLayout>
-      <section className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
+      <section className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#fff] rounded-md">
         <menu className="flex items-center justify-between w-full gap-3">
           <h1 className="pl-2 text-lg font-semibold uppercase w-fit text-primary">
             My Applications List

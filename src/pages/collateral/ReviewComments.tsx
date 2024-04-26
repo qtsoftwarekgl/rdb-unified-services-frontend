@@ -24,8 +24,6 @@ const ReviewComments = () => {
       comment?.entry_id === entry_id && comment?.checked !== true
   );
 
-  console.log(my_reviews);
-
   if (my_reviews.length === 0) return null;
 
   return (

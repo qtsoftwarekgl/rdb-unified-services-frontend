@@ -9,12 +9,13 @@ import { TabType } from "@/states/features/types";
 import { RootState } from "@/states/store";
 import { useSelector } from "react-redux";
 import DebtorInformation from "./DebtorInformation";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CollateralInformation from "./CollateralInformation";
 import CollateralAttachments from "./Attachments";
 import PreviewSubmission from "./PreviewSubmission";
 import UserReviewComments from "@/components/applications-review/UserReviewComments";
 import ReviewComments from "./ReviewComments";
+import { RDBVerifierAndApproverEmailPattern } from "@/constants/Users";
 
 const NewCollateral = () => {
   const {

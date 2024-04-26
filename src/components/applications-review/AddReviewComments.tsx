@@ -88,7 +88,8 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
     if (application_review_comments?.length > 0) {
       const commentExists = application_review_comments?.find(
         (business_comment: ReviewComment) =>
-          business_comment?.step?.name === activeStep?.name
+          business_comment?.step?.name === activeStep?.name &&
+          business_comment.entry_id === entry_id
       );
       if (commentExists) {
         setValue("comment", commentExists?.comment);
@@ -104,6 +105,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
     application_review_comments,
     setValue,
     addReviewCommentsModal,
+    entry_id,
   ]);
 
   // HANDLE FORM SUBMIT
@@ -126,6 +128,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           updateReviewComment({
             ...newComment,
             checked: false,
+            reviewer: user,
           })
         );
       } else {

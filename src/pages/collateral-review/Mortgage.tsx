@@ -47,7 +47,6 @@ const Mortgage: FC<Props> = ({ property }) => {
 
   return (
     <section className="flex flex-col gap-8">
-      <ReviewCard header="Amount of the Loan" data={loanData} />
       <section className="flex flex-col w-full gap-3 p-4 border-[.3px] border-primary rounded-md shadow-sm">
         <menu className="flex items-center justify-between w-full gap-3">
           <h2 className="text-lg font-semibold uppercase text-primary">
