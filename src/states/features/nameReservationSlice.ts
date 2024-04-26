@@ -23,7 +23,7 @@ export const nameReservationSlice = createSlice({
         ],
       },
       {
-        no: 1,
+        no: 2,
         label: "Name Reservation",
         name: "name_reservation",
         active: false,
@@ -32,9 +32,24 @@ export const nameReservationSlice = createSlice({
             label: "Name Reservation",
             name: "name_reservation",
             tab_name: "name_reservation",
-            active: true,
+            active: false,
             completed: false,
-          },
+          }
+        ],
+      },
+      {
+        no: 3,
+        label: "Complete",
+        name: "complete",
+        active: false,
+        steps: [
+          {
+            label: "Name Reservation Success",
+            name: "success",
+            tab_name: "complete",
+            active: false,
+            completed: false,
+          }
         ],
       },
     ],
@@ -221,7 +236,10 @@ export const nameReservationSlice = createSlice({
     },
     removeFromReservedNames: (state, action) => {
       state.reservedNames = state.reservedNames?.filter(
-        (reserved) => reserved?.name !== action.payload
+        (reserved: {
+          name: string,
+          entry_id?: string
+        }) => reserved?.name !== action.payload
       );
       localStorage.setItem(
         "reservedNames",

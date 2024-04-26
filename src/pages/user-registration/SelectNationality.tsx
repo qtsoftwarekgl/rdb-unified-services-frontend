@@ -13,15 +13,23 @@ import {
 } from '../../states/features/authSlice';
 import RwandanRegistrationForm from './RwandanRegistrationForm';
 import { validNationalID } from '../../constants/Users';
+import { Controller, useForm } from 'react-hook-form';
 
 interface SelectNationalityProps {
   isOpen: boolean;
 }
 
 const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
+  // REACT HOOK FORM
+  const {
+    control,
+    formState: { errors },
+    watch,
+    trigger,
+  } = useForm();
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [documentType, setDocumentType] = useState<string>('nid');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [documentNo, setDocumentNo] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
@@ -35,12 +43,12 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (documentType === 'passport') {
+    if (watch('document_type') === 'passport') {
       dispatch(setNationalIdDetails(null));
       dispatch(setNationalIdDetails(null));
       dispatch(setRegistrationStep('foreign-registration-form'));
     }
-  }, [dispatch, documentType]);
+  }, [dispatch, watch('document_type')]);
 
   if (!isOpen) return null;
 
@@ -50,25 +58,43 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         className={`flex flex-col items-center gap-6 w-[70%] mx-auto p-6 shadow-md rounded-md max-2xl:w-[75%] max-xl:w-[80%] max-[1000px]:w-[85%] max-[900px]:w-[90%] max-md:w-[95%] max-sm:w-[100%]`}
       >
         <menu className="flex items-start w-full gap-6 max-sm:flex-col">
-          <Select
-            label="Document Type"
-            placeholder="Select document type"
-            required
-            options={[
-              { value: 'nid', label: 'National ID' },
-              { label: 'Passport', value: 'passport' },
-            ]}
-            onChange={(e) => {
-              setDocumentType(e);
+          <Controller
+            name="document_type"
+            control={control}
+            rules={{ required: 'Identification is required' }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-2">
+                  <Select
+                    label="Identification"
+                    placeholder="Select identification"
+                    required
+                    options={[
+                      { value: 'nid', label: 'Rwandese' },
+                      { value: 'local_resident', label: 'Local resident' },
+                      { label: 'Foreigner', value: 'passport' },
+                    ]}
+                    {...field}
+                    onChange={async (e) => {
+                      field.onChange(e);
+                      await trigger('document_type');
+                    }}
+                    defaultValue={'nid'}
+                    labelClassName={`${
+                      (['passport'].includes(watch('document_type')) || !watch('document_type')) &&
+                      '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'
+                    }`}
+                  />
+                  {errors?.document_type && (
+                    <p className="text-red-600 text-[13px] mx-1">
+                      {String(errors?.document_type?.message)}
+                    </p>
+                  )}
+                </label>
+              );
             }}
-            defaultValue={'nid'}
-            value={documentType}
-            labelClassName={`${
-              documentType === 'passport' &&
-              '!w-1/2 mx-auto max-lg:!w-3/5 max-md:!w-2/3 max-sm:!w-full'
-            }`}
           />
-          {documentType === 'nid' && (
+          {['nid', 'local_resident'].includes(watch('document_type')) && (
             <label className="flex flex-col items-start w-full gap-2">
               <Input
                 required
@@ -130,7 +156,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
         </menu>
         <menu
           className={`${
-            documentType !== 'nid'
+            watch('document_type') !== 'nid'
               ? 'hidden'
               : 'flex flex-col gap-1 w-full mx-auto px-2'
           }`}
@@ -162,16 +188,17 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
           <Button
             value="Continue"
             primary
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
+              await trigger();
               if (
                 nationalIdDetails &&
-                documentType === 'nid' &&
+                watch('document_type') === 'nid' &&
                 !nationalIdError
               ) {
                 dispatch(setNationalIdDetails(nationalIdDetails));
                 dispatch(setRegistrationStep('rwandan-registration-form'));
-              } else if (documentType === 'passport') {
+              } else if (watch('document_type') === 'passport') {
                 dispatch(setNationalIdDetails(null));
                 dispatch(setRegistrationStep('foreign-registration-form'));
               }

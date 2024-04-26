@@ -71,6 +71,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           business_comment?.step?.name === activeStep?.name &&
           business_comment?.entry_id === entry_id
       );
+      console.log(commentExists)
       if (commentExists) {
         setComment(commentExists);
       }
@@ -89,7 +90,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       const commentExists = application_review_comments?.find(
         (business_comment: ReviewComment) =>
           business_comment?.step?.name === activeStep?.name &&
-          business_comment.entry_id === entry_id
+        business_comment?.entry_id === entry_id
       );
       if (commentExists) {
         setValue("comment", commentExists?.comment);

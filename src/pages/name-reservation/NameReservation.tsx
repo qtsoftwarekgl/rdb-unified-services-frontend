@@ -11,6 +11,7 @@ import { TabType } from "../../states/features/types";
 import { useLocation } from "react-router-dom";
 import OwnerDetails from "./OwnerDetails";
 import NameReservationSearch from "./NameReservationSearch";
+import NameReservationSuccess from "./NameReservationSuccess";
 
 const NameReservation = () => {
   const {
@@ -42,15 +43,21 @@ const NameReservation = () => {
             >
               {/* OWNER DETAILS */}
               <OwnerDetails
-                isOpen={name_reservation_active_step?.name === "owner_details"}
+                isOpen={name_reservation_active_step?.name === 'owner_details'}
               />
 
               {/* NAME RESERVATION */}
               <NameReservationSearch
+                entry_id={String(entry_id)}
                 isOpen={
-                  name_reservation_active_step?.name === "name_reservation"
+                  name_reservation_active_step?.name === 'name_reservation'
                 }
               />
+
+              {/* NAME RESERVATION SUCCESS */}
+              {name_reservation_active_step?.name === 'success' && (
+                <NameReservationSuccess entry_id={String(entry_id)} />
+              )}
             </Tab>
           );
         })}
