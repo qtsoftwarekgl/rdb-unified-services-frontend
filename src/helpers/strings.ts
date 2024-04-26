@@ -140,5 +140,5 @@ export const validatePassword = (password: string) => {
 };
 
 export const maskPhoneDigits = (phone: string) => {
-  return `XXXX XXX ${phone?.slice(-3)}`;
+  return `${phone.slice(0, 3)}X XXX ${phone?.slice(-3)}`;
 };

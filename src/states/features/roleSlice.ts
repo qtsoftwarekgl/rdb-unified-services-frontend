@@ -9,6 +9,7 @@ export const roleSlice = createSlice({
     editRoleModal: false,
     deleteRoleModal: false,
     rolePermissionsModal: false,
+    assignRolesModal: false
   },
   reducers: {
     setRolesList: (state, action) => {
@@ -29,9 +30,12 @@ export const roleSlice = createSlice({
     setRolePermissionsModal: (state, action) => {
       state.rolePermissionsModal = action.payload;
     },
+    setAssignRolesModal: (state, action) => {
+      state.assignRolesModal = action.payload;
+    }
   },
 });
 
 export default roleSlice.reducer;
 
-export const { setRolesList, setRole, setAddRoleModal, setEditRoleModal, setDeleteRoleModal, setRolePermissionsModal } = roleSlice.actions;
+export const { setRolesList, setRole, setAddRoleModal, setEditRoleModal, setDeleteRoleModal, setRolePermissionsModal, setAssignRolesModal } = roleSlice.actions;

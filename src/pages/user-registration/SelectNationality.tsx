@@ -86,7 +86,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                     }`}
                   />
                   {errors?.document_type && (
-                    <p className="text-red-600 text-[13px] mx-1">
+                    <p className="text-red-600 text-[13px] mx-1 text-center">
                       {String(errors?.document_type?.message)}
                     </p>
                   )}
