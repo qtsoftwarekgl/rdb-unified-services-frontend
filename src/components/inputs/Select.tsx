@@ -5,8 +5,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { FC } from 'react';
+} from "@/components/ui/select";
+import { FC } from "react";
 
 interface SelectProps {
   label?: string | undefined;
@@ -23,19 +23,18 @@ interface SelectProps {
 const Select: FC<SelectProps> = ({
   options = [],
   defaultValue = undefined,
-  placeholder = '',
+  placeholder = "Select here...",
   className = undefined,
-  value = '',
+  value = "",
   onChange,
   label = undefined,
   required = false,
   labelClassName = undefined,
 }) => {
-
   return (
     <label className={`flex flex-col gap-1 w-full ${labelClassName}`}>
       <p className="flex items-center gap-1 text-[14px]">
-        {label} <span className={required ? `text-red-600` : 'hidden'}>*</span>
+        {label} <span className={required ? `text-red-600` : "hidden"}>*</span>
       </p>
       <SelectComponent
         onValueChange={onChange}

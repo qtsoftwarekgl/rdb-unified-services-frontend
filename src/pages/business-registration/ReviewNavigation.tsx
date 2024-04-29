@@ -19,6 +19,10 @@ import {
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 import Loader from "../../components/Loader";
 
+interface ExtraProps {
+  propName: string;
+  propValue: string;
+}
 interface ReviewNavigationProps {
   tabs: Array<TabType>;
   activeStep: Step;
@@ -29,6 +33,7 @@ interface ReviewNavigationProps {
   first_step: string;
   redirectUrl: string;
   setApplication: (object: object) => UnknownAction;
+  extraProps?: ExtraProps;
 }
 
 const ReviewNavigation: FC<ReviewNavigationProps> = ({
@@ -41,6 +46,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
   first_step,
   setApplication,
   redirectUrl,
+  extraProps = { propName: "", propValue: "" },
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -55,6 +61,9 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
     recommend_approval: false,
     approve: false,
   });
+
+  // This can be used when in set application there is extra props to be set based on the type of data you want to update
+  const { propName, propValue } = extraProps;
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -120,6 +129,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                       status: user?.email.includes("infoapprover@rdb")
                         ? "approved"
                         : "action_required",
+                      [propName]: propValue,
                     })
                   );
                   navigate(redirectUrl);

@@ -30,7 +30,7 @@ const Navbar = ({ className }: Props) => {
   const { application_review_comments } = useSelector(
     (state: RootState) => state.userApplication
   );
-    
+
   const unresolvedComments = application_review_comments.filter(
     (comment: ReviewComment) => !comment.checked
   ).length;
@@ -94,11 +94,15 @@ const Navbar = ({ className }: Props) => {
 
   return (
     <header
-      className={`w-[80%] left-[18.5%] mx-auto p-4 py-3 flex items-center h-[10vh] fixed top-0 justify-between z-[1000] bg-background ${className}`}
+      className={`w-[83%] left-[17%] mx-auto px-4 py-3 flex items-center h-[10vh] fixed top-0 ${
+        !["/services"].includes(pathname)
+          ? "justify-end px-14"
+          : "justify-between"
+      }  z-[1000] bg-background ${className}`}
     >
       <figure
         className={`${
-          !["/services"].includes(pathname) && "invisible"
+          !["/services"].includes(pathname) && "hidden"
         } relative rounded-full w-full max-w-[10%]`}
       >
         <img src={rdb_logo} className="w-fit" />

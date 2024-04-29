@@ -109,6 +109,33 @@ export const collateralRegistrationSlice = createSlice({
         JSON.stringify(state.collateral_applications)
       );
     },
+    setCollateralStatus: (state, action) => {
+      const applicationIndex = state.collateral_applications.findIndex(
+        (app) => app.entry_id === action?.payload?.entry_id
+      );
+
+      if (applicationIndex !== -1) {
+        const collateralApplication = {
+          ...state.collateral_applications[
+            applicationIndex
+          ].collateral_infos.find(
+            (collateral) =>
+              collateral.collateral_id === action.payload.collateral_id
+          ),
+        };
+        collateralApplication.status = action.payload.status;
+
+        state.collateral_applications[applicationIndex].collateral_infos = [
+          ...state.collateral_applications[applicationIndex].collateral_infos,
+          collateralApplication,
+        ];
+
+        localStorage.setItem(
+          "collateral_applications",
+          JSON.stringify(state.collateral_applications)
+        );
+      }
+    },
     setCollateralRegistrationTabs: (state, action) => {
       state.collateral_registration_tabs = action.payload;
       localStorage.setItem(
@@ -235,4 +262,5 @@ export const {
   setCollateralCompletedTab,
   setCollateralCompletedStep,
   setCollateralApplications,
+  setCollateralStatus,
 } = collateralRegistrationSlice.actions;

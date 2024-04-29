@@ -91,6 +91,7 @@ export function DataTablePagination<TData>({
           <p className="text-[13px] text-secondary">Go to:</p>
           <input
             type="number"
+            min={1}
             className="placeholder:text-[13px] text-[13px] max-w-[50%] py-1 px-2 w-full border border-[#E5E5E5] outline-none focus:outline-none rounded-md"
             onChange={(e) => {
               e.preventDefault();

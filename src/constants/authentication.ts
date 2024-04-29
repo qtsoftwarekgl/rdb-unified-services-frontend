@@ -112,6 +112,97 @@ export const propertyData = [
   },
 ];
 
+export const vehicleData = [
+  {
+    property_location: "Kigali",
+    property_owner: "Ndahiro Jean",
+    property_nature: "Vehicle",
+    property_description: "Transportation truck",
+    property_value: "10231000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+  {
+    property_location: "Kigali",
+    property_owner: "Musinga Jean",
+    property_nature: "Vehicle",
+    property_description: "Motor Cycle",
+    property_value: "10231000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+  {
+    property_location: "Kigali",
+    property_owner: "Rwema Jean",
+    property_nature: "Vehicle",
+    property_description: "Transportation truck",
+    property_value: "10231000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+  {
+    property_location: "Kigali",
+    property_owner: "Ngeruka Jean",
+    property_nature: "Vehicle",
+    property_description: "Transportation truck",
+    property_value: "10231000",
+    date_of_evaluation: "12/12/2021",
+    evaluator_certificate_number: "123456",
+    evaluator_name: "John Doe",
+    other_owners: [
+      {
+        name: "John Smith",
+        id_number: "1199980040660153",
+        percentage: "50",
+      },
+      {
+        name: "Jane Doe",
+        id_number: "1199980040660151",
+        percentage: "50",
+      },
+    ],
+  },
+];
+
 export const bankData = [
   {
     id: 1,

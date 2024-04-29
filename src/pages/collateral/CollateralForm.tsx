@@ -8,16 +8,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { validPlateNumber, validUPI } from "@/constants/Users";
-import { propertyData } from "@/constants/authentication";
+import { propertyData, vehicleData } from "@/constants/authentication";
 import { integerToWords } from "@/constants/integerToWords";
 import { filterObject, generateUUID } from "@/helpers/strings";
 import validateInputs from "@/helpers/validations";
 import { setCollateralApplications } from "@/states/features/collateralRegistrationSlice";
+import { RootState } from "@/states/store";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
   entry_id: string | null;
@@ -77,7 +78,6 @@ const CollateralForm = ({
 
   const onSubmit = (data: any) => {
     setSubmitSuccessful(true);
-    console.log(">>>>>>>>>>>>>>>>>>>", data);
     setTimeout(() => {
       if (
         Object.keys(searchInfo?.data).length ||
@@ -373,7 +373,11 @@ const CollateralForm = ({
                   });
                   setTimeout(() => {
                     const randomNumber = Math.floor(Math.random() * 4);
-                    let property_details = propertyData[randomNumber];
+                    let property_details =
+                      watch("movable_collateral_type") === "vehicle" ||
+                      watch("movable_collateral_type") === "other"
+                        ? vehicleData[randomNumber]
+                        : propertyData[randomNumber];
                     property_details = {
                       ...property_details,
                       property_nature:
@@ -745,6 +749,7 @@ const CollateralForm = ({
                       field.onChange(e);
                       const words = integerToWords(+e.target.value);
                       setValue("value_in_words", words);
+                      clearErrors("value_in_words");
                     }}
                     type="number"
                   />

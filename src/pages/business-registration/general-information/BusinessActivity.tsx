@@ -15,7 +15,6 @@ import {
   setBusinessCompletedStep,
 } from "../../../states/features/businessRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
-import { Link } from "react-router-dom";
 import Input from "../../../components/inputs/Input";
 import Button from "../../../components/inputs/Button";
 import Loader from "../../../components/Loader";
@@ -63,7 +62,11 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
   const [randomNumber, setRandomNumber] = useState<number>(5);
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
-  const [selectedSector, setSelectedSector] = useState('')
+  const [selectedSector, setSelectedSector] = useState("");
+  const [selectedBusinessLines, setSelectedBusinessLines] = useState<any>([]);
+  const mainExists = selectedBusinessLines?.find(
+    (activity: object) => activity?.main === true
+  );
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
@@ -82,7 +85,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       return;
     }
     if (
-      company_activities?.business_lines?.find(
+      selectedBusinessLines?.find(
         (activity: object) => activity?.main === true
       ) === undefined
     ) {
@@ -92,10 +95,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
         preview: false,
         amend: false,
       });
-      setError("business_lines", {
-        type: "manual",
-        message: "Select a main business line",
-      });
+
       return;
     }
     clearErrors("business_lines");
@@ -111,7 +111,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             ...company_activities,
             vat: data?.vat,
             turnover: data?.turnover,
-            business_lines: company_activities?.business_lines,
+            business_lines: selectedBusinessLines,
             step: "business_activity_vat",
           },
         })
@@ -121,7 +121,10 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       let active_tab = "management";
       let active_step = "board_of_directors";
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
+      if (
+        ["in_preview", "action_required"].includes(status) ||
+        isLoading?.amend
+      ) {
         active_tab = "preview_submission";
         active_step = "preview_submission";
       }
@@ -152,6 +155,12 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
     }
   }, [company_activities, dispatch, setValue]);
 
+  useEffect(() => {
+    if (company_activities?.business_lines) {
+      setSelectedBusinessLines(company_activities?.business_lines);
+    }
+  }, [company_activities]);
+
   if (!isOpen) {
     return null;
   }
@@ -163,7 +172,6 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
           <label className="flex flex-col gap-1 w-[50%] items-start">
             <Select
               label="Select sector"
-              placeholder="Select sector"
               required
               defaultValue={String(businessActivities[0]?.id)}
               options={businessActivities?.map((activity) => {
@@ -174,7 +182,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               })}
               onChange={(e) => {
                 setRandomNumber(Math.floor(Math.random() * 10) + 1);
-                setSelectedSector(e)
+                setSelectedSector(e);
               }}
               value={selectedSector}
             />
@@ -208,32 +216,12 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                             onClick={(e) => {
                               e.preventDefault();
                               if (disableForm) return;
-                              if (
-                                company_activities?.business_lines?.length > 0
-                              ) {
-                                dispatch(
-                                  setUserApplications({
-                                    entry_id,
-                                    company_activities: {
-                                      ...company_activities,
-                                      business_lines: [
-                                        subActivity,
-                                        ...company_activities.business_lines,
-                                      ],
-                                    },
-                                  })
-                                );
-                              } else {
-                                dispatch(
-                                  setUserApplications({
-                                    entry_id,
-                                    company_activities: {
-                                      ...company_activities,
-                                      business_lines: [subActivity],
-                                    },
-                                  })
-                                );
-                              }
+
+                              setSelectedBusinessLines([
+                                ...(selectedBusinessLines ?? []),
+                                subActivity,
+                              ]);
+
                               clearErrors("business_lines");
                             }}
                           />
@@ -253,11 +241,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             <section className="flex flex-col w-full gap-4">
               <h1 className="text-md">Selected business lines</h1>
               <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                {company_activities?.business_lines?.map(
+                {selectedBusinessLines?.map(
                   (business_line: unknown, index: number) => {
-                    const mainExists = company_activities?.business_lines?.find(
-                      (activity: object) => activity?.main === true
-                    );
                     const mainBusinessLine =
                       mainExists?.id === business_line?.id;
                     return (
@@ -269,74 +254,8 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           <p className="text-start">{business_line?.name}</p>
                           {mainExists && mainBusinessLine && (
                             <p className="text-[12px] bg-green-700 text-white p-[3px] px-2 rounded-md shadow-sm flex items-center gap-2">
-                              Main{" "}
-                              <FontAwesomeIcon
-                                icon={faMinus}
-                                className="cursor-pointer text-[12px] ease-in-out duration-300 hover:scale-[1.03] hover:text-white hover:bg-red-700 rounded-full p-[2px] bg-red-700"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  if (disableForm) return;
-                                  dispatch(
-                                    setUserApplications({
-                                      entry_id,
-                                      company_activities: {
-                                        ...company_activities,
-                                        business_lines:
-                                          company_activities?.business_lines?.map(
-                                            (activity: object) => {
-                                              if (
-                                                activity?.id ===
-                                                business_line?.id
-                                              ) {
-                                                return {
-                                                  ...activity,
-                                                  main: false,
-                                                };
-                                              }
-                                              return activity;
-                                            }
-                                          ),
-                                      },
-                                    })
-                                  );
-                                }}
-                              />
+                              Main Activity
                             </p>
-                          )}
-                          {!mainExists && (
-                            <Link
-                              to="#"
-                              className="text-[11px] bg-primary text-white p-1 rounded-md shadow-sm"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                if (disableForm) return;
-                                dispatch(
-                                  setUserApplications({
-                                    entry_id,
-                                    company_activities: {
-                                      ...company_activities,
-                                      business_lines:
-                                        company_activities?.business_lines?.map(
-                                          (activity: object) => {
-                                            if (
-                                              activity?.id === business_line?.id
-                                            ) {
-                                              return {
-                                                ...activity,
-                                                main: true,
-                                              };
-                                            }
-                                            return activity;
-                                          }
-                                        ),
-                                    },
-                                  })
-                                );
-                                clearErrors("business_lines");
-                              }}
-                            >
-                              Set main
-                            </Link>
                           )}
                         </menu>
                         <FontAwesomeIcon
@@ -351,18 +270,13 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                                   return subActivity?.id !== business_line?.id;
                                 }
                               );
-                            dispatch(
-                              setUserApplications({
-                                entry_id,
-                                company_activities: {
-                                  ...company_activities,
-                                  business_lines: updatedSubActivities,
-                                },
-                              })
-                            );
-                            if (
-                              company_activities?.business_lines?.length <= 1
-                            ) {
+                            const mainId = selectedBusinessLines.find(
+                              (business) => business?.main
+                            ).id;
+                            if (mainId == business_line?.id)
+                              setValue("main_business_activity", "");
+                            setSelectedBusinessLines([...updatedSubActivities]);
+                            if (selectedBusinessLines?.length <= 1) {
                               setError("business_lines", {
                                 type: "manual",
                                 message: "Select at least one business line",
@@ -377,11 +291,61 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               </ul>
             </section>
           </menu>
-          {errors.business_lines && (
-            <p className="text-[13px] text-red-500 text-center">
-              {String(errors.business_lines.message)}
-            </p>
-          )}
+          <menu className="w-[50%]">
+            <Controller
+              control={control}
+              name="main_business_activity"
+              rules={{
+                required: "Main business activity is required",
+              }}
+              defaultValue={String(
+                company_activities?.business_lines.find(
+                  (activity: object) => activity?.main === true
+                )?.id ?? ""
+              )}
+              render={({ field }) => {
+                return (
+                  <Select
+                    label="Select main business activity"
+                    required
+                    placeholder="Select here..."
+                    options={selectedBusinessLines?.map((activity) => {
+                      return {
+                        label: activity.name,
+                        value: String(activity.id),
+                      };
+                    })}
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      const updatedActivities = selectedBusinessLines?.map(
+                        (activity: object) => {
+                          if (activity?.id == e) {
+                            return {
+                              ...activity,
+                              main: true,
+                            };
+                          } else {
+                            return {
+                              ...activity,
+                              main: false,
+                            };
+                          }
+                        }
+                      );
+                      setSelectedBusinessLines([...updatedActivities]);
+                      clearErrors("main_business_activity");
+                    }}
+                  />
+                );
+              }}
+            />
+            {errors.main_business_activity && (
+              <p className="text-[13px] text-red-500">
+                {String(errors.main_business_activity.message)}
+              </p>
+            )}
+          </menu>
           <section className="flex flex-col w-full gap-6">
             <h1 className="text-lg font-semibold text-center uppercase">
               VAT Certificate
@@ -405,7 +369,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           checked={watch("vat") === "yes"}
                           {...field}
                           onChange={(e) => {
-                            field.onChange(e.target.value)
+                            field.onChange(e.target.value);
                             clearErrors("vat");
                           }}
                           value={"yes"}
@@ -416,7 +380,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                           checked={watch("vat") === "no"}
                           {...field}
                           onChange={(e) => {
-                            field.onChange(e.target.value)
+                            field.onChange(e.target.value);
                             clearErrors("vat");
                           }}
                           value={"no"}
@@ -498,7 +462,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {["in_preview", "action_required"].includes(status) && (
               <Button
                 value={
                   isLoading?.preview ? <Loader /> : "Save & Complete Review"
@@ -522,7 +486,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               value={isLoading?.submit ? <Loader /> : "Save & Continue"}
               onClick={async () => {
                 await trigger();
-                  if (Object.keys(errors).length > 0) return;
+                if (Object.keys(errors).length > 0) return;
                 setIsLoading({
                   ...isLoading,
                   submit: true,
@@ -534,7 +498,11 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               }}
               submit
               primary
-              disabled={disableForm || Object.keys(errors).length > 0}
+              disabled={
+                disableForm ||
+                selectedBusinessLines?.length === 0 ||
+                Object.keys(errors).length > 0
+              }
             />
           </menu>
         </fieldset>

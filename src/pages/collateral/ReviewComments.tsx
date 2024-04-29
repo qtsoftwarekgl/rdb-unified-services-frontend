@@ -1,5 +1,4 @@
 import { ReviewComment } from "@/components/applications-review/AddReviewComments";
-import { formatDate } from "@/helpers/strings";
 import {
   updateReviewComment,
   updateUserReviewComment,
@@ -24,8 +23,6 @@ const ReviewComments = () => {
     (comment: ReviewComment) =>
       comment?.entry_id === entry_id && comment?.checked !== true
   );
-
-  console.log(my_reviews);
 
   if (my_reviews.length === 0) return null;
 

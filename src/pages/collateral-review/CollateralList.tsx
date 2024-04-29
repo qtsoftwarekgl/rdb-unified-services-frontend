@@ -2,17 +2,12 @@ import Button from "@/components/inputs/Button";
 import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 import Table from "@/components/table/Table";
 import AdminLayout from "@/containers/AdminLayout";
-import {
-  setCollateralActiveStep,
-  setCollateralActiveTab,
-} from "@/states/features/collateralRegistrationSlice";
+import { capitalizeString } from "@/helpers/strings";
 import {
   setCollateralReviewActiveStep,
   setCollateralReviewActiveTab,
 } from "@/states/features/collateralReviewSlice";
 import { RootState } from "@/states/store";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Row } from "@tanstack/react-table";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +27,7 @@ const CollateralList = () => {
         ...collateral,
         creditor_name: loan?.creditor?.name,
         loan_amount: loan?.loan_amount,
+        status: capitalizeString(collateral?.status),
       }))
     );
 
@@ -73,6 +69,7 @@ const CollateralList = () => {
       },
     },
     { header: "Secured Value", accessorKey: "secured_amount" },
+    { header: "Status", accessorKey: "status" },
     {
       header: "Action",
       accessorKey: "actions",
