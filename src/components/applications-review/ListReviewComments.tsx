@@ -40,7 +40,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
         dispatch(setListReviewCommentsModal(false));
       }}
     >
-      <section className="flex w-full flex-col gap-6 mt-6 max-h-[70vh] overflow-y-scroll pr-4">
+      <section className="flex w-full flex-col gap-6 max-h-[70vh] overflow-y-scroll pr-4">
         <h1 className="text-lg font-semibold text-center uppercase text-primary">
           {title}
         </h1>

@@ -52,7 +52,7 @@ const JSX_MODAL: FC<ModalProps> = ({
         <Button
           value={
             <FontAwesomeIcon
-              className="text-[16px] !bg-transparent !px-0 !py-0 border-none w-4 transition-all ease-in-out duration-300 hover:scale-[1.02] rounded-full cursor-pointer"
+              className="text-[15px] w-8 !bg-transparent !px-0 !py-0 border-none transition-all ease-in-out duration-300 hover:scale-[1.02] rounded-full cursor-pointer"
               icon={faX}
             />
           }

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, SetStateAction, useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { faCircleInfo, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -68,7 +68,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
     amend: false,
   });
   const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
-  const [assignedShares, setAssignedShares] = useState<object>({
+  const [assignedShares, setAssignedShares] = useState<{
+    number: number;
+    value: number;
+  }>({
     number: 0,
     value: 0,
   });
@@ -118,7 +121,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
     {
       header: "Action",
       accessorKey: "action",
-      cell: ({ row }) => {
+      cell: ({ row }: {
+        row: {
+          original: business_capital_details;
+        };
+      }) => {
         return (
           <menu className="flex items-center gap-6">
             <FontAwesomeIcon
@@ -126,7 +133,9 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               icon={disableForm ? faCircleInfo : faPenToSquare}
               onClick={(e) => {
                 e.preventDefault();
-                setShareholderShareDetails(row?.original);
+                setShareholderShareDetails(
+                  row?.original as unknown as SetStateAction<null>
+                );
                 clearErrors("total_shares");
                 dispatch(setCapitalDetailsModal(true));
               }}
@@ -171,6 +180,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                     ),
                   })
                 );
+                clearErrors("total_shares");
               }}
             />
           </menu>
@@ -222,11 +232,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       <menu className="flex flex-col w-full gap-2">
         {shareholders?.length > 0 ? (
           <Table
-            header="Shareholders"
             data={
               capital_details?.length > 0
                 ? capital_details?.map(
-                    (shareholder: unknown, index: number) => {
+                    (shareholder: business_capital_details, index: number) => {
                       return {
                         ...shareholder,
                         no: index,
@@ -235,7 +244,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                               shareholder?.last_name || ""
                             }`
                           : shareholder?.company_name,
-                        type: capitalizeString(shareholder?.shareholder_type),
+                        type: capitalizeString(shareholder?.shareholder_type as string),
                         total_shares: shareholder?.shares?.total_shares || 0,
                         total_value: `RWF ${
                           shareholder?.shares?.total_value || 0
@@ -294,7 +303,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             <p>{assignedShares?.number}</p>
           </ul>
           <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Remaining number of assignable shares</h2>
+            <h2>Unassigned shares</h2>
             <p>
               {Number(share_details?.total_shares ?? 0) -
                 Number(assignedShares?.number)}

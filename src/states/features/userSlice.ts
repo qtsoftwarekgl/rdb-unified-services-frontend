@@ -14,6 +14,7 @@ export const userSlice = createSlice({
       : ({} as User),
     isAuthenticated:
       sessionStorage.getItem("isAuthenticated") === "true" || false,
+      usersList: [],
   },
   reducers: {
     setUser: (state, action) => {
@@ -30,9 +31,12 @@ export const userSlice = createSlice({
       state.isAuthenticated = action.payload;
       sessionStorage.setItem("isAuthenticated", JSON.stringify(action.payload));
     },
+    setUsersList: (state, action) => {
+      state.usersList = action.payload;
+    },
   },
 });
 
 export default userSlice.reducer;
 
-export const { setUser, setToken, setUserAuthenticated } = userSlice.actions;
+export const { setUser, setToken, setUserAuthenticated, setUsersList } = userSlice.actions;

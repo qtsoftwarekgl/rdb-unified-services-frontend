@@ -16,6 +16,7 @@ import Select from '../../components/inputs/Select';
 import { userData } from '../../constants/authentication';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
+import { maskPhoneDigits } from '@/helpers/strings';
 
 interface RwandanRegistrationFormProps {
   isOpen: boolean;
@@ -67,7 +68,6 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
     }
   }, [dispatch, isOpen, nationalIdDetails]);
 
-
   return (
     <section
       className={`${
@@ -76,193 +76,207 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
           : 'h-0 opacity-0 pointer-events-none'
       }`}
     >
-      <form className="w-full mx-auto flex flex-col gap-6 max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%] ">
-        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
-          <Controller
-            name="firstName"
-            defaultValue={watch('firstName') || nationalIdDetails?.first_name}
-            control={control}
-            rules={{ required: 'First name is required' }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start w-full gap-1">
-                  <Input
-                    defaultValue={
-                      watch('firstName') || nationalIdDetails?.first_name
-                    }
-                    required
-                    readOnly
-                    placeholder="First name"
-                    label="First name"
-                    {...field}
-                  />
-                  {errors?.firstName && (
-                    <span className="text-sm text-red-500">
-                      {String(errors?.firstName?.message)}
-                    </span>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="lastName"
-            defaultValue={watch('lastName') || nationalIdDetails?.last_name}
-            control={control}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start w-full gap-1">
-                  <Input
-                    readOnly
-                    defaultValue={
-                      watch('lastName') || nationalIdDetails?.lastName
-                    }
-                    placeholder="Last name"
-                    label="Last name"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-        </menu>
-        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
-          <Controller
-            name="dateOfBirth"
-            control={control}
-            defaultValue={
-              watch('dateOfBirth') || nationalIdDetails?.date_of_birth
-            }
-            rules={{ required: 'Select date of birth' }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start w-full gap-1">
-                  <Input
-                    defaultValue={
-                      watch('dateOfBirth') || nationalIdDetails?.date_of_birth
-                    }
-                    required
-                    readOnly
-                    label="Date of birth"
-                    {...field}
-                  />
-                  {errors?.dateOfBirth && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.dateOfBirth?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="gender"
-            control={control}
-            defaultValue={watch('gender') || nationalIdDetails?.gender}
-            rules={{ required: 'Select gender' }}
-            render={({ field }) => {
-              const gender = watch('gender');
-              return (
-                <label className="flex flex-col items-start w-full gap-2">
-                  <p className="flex items-center gap-1 text-[15px]">
-                    Gender<span className="text-red-500">*</span>
+      <form className="w-full mx-auto flex flex-wrap gap-6 max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%] ">
+        <Controller
+          name="firstName"
+          defaultValue={watch('firstName') || nationalIdDetails?.first_name}
+          control={control}
+          rules={{ required: 'First name is required' }}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col items-start w-[48%] gap-1">
+                <Input
+                  defaultValue={
+                    watch('firstName') || nationalIdDetails?.first_name
+                  }
+                  required
+                  readOnly
+                  placeholder="First name"
+                  label="First name"
+                  {...field}
+                />
+                {errors?.firstName && (
+                  <span className="text-sm text-red-500">
+                    {String(errors?.firstName?.message)}
+                  </span>
+                )}
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="middleName"
+          defaultValue={watch('middleName') || nationalIdDetails?.middle_name}
+          control={control}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col items-start w-[48%] gap-1">
+                <Input
+                  readOnly
+                  defaultValue={
+                    watch('middleName') || nationalIdDetails?.middleName
+                  }
+                  placeholder="Middle name"
+                  label="Middle name"
+                  {...field}
+                />
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="lastName"
+          defaultValue={watch('lastName') || nationalIdDetails?.last_name}
+          control={control}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col items-start w-[48%] gap-1">
+                <Input
+                  readOnly
+                  defaultValue={
+                    watch('lastName') || nationalIdDetails?.lastName
+                  }
+                  placeholder="Last name"
+                  label="Last name"
+                  {...field}
+                />
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="dateOfBirth"
+          control={control}
+          defaultValue={
+            watch('dateOfBirth') || nationalIdDetails?.date_of_birth
+          }
+          rules={{ required: 'Select date of birth' }}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col items-start w-[48%] gap-1">
+                <Input
+                  defaultValue={
+                    watch('dateOfBirth') || nationalIdDetails?.date_of_birth
+                  }
+                  required
+                  readOnly
+                  label="Date of birth"
+                  {...field}
+                />
+                {errors?.dateOfBirth && (
+                  <p className="text-sm text-red-500">
+                    {String(errors?.dateOfBirth?.message)}
                   </p>
-                  <menu className="flex items-center gap-4 mt-2">
-                    {gender === 'Male' && (
-                      <Input
-                        type="radio"
-                        label="Male"
-                        checked={watch('gender') === 'Male'}
-                        {...field}
-                      />
-                    )}
-                    {gender === 'Female' && (
-                      <Input
-                        type="radio"
-                        label="Female"
-                        {...field}
-                        checked={watch('gender') === 'Female'}
-                      />
-                    )}
-                  </menu>
-                  {errors?.gender && (
-                    <span className="text-sm text-red-500">
-                      {String(errors?.gender?.message)}
-                    </span>
+                )}
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="gender"
+          control={control}
+          defaultValue={watch('gender') || nationalIdDetails?.gender}
+          rules={{ required: 'Select gender' }}
+          render={({ field }) => {
+            const gender = watch('gender');
+            return (
+              <label className="flex flex-col items-start w-[48%] gap-2">
+                <p className="flex items-center gap-1 text-[15px]">
+                  Gender<span className="text-red-500">*</span>
+                </p>
+                <menu className="flex items-center gap-4 mt-2">
+                  {gender === 'Male' && (
+                    <Input
+                      type="radio"
+                      label="Male"
+                      checked={watch('gender') === 'Male'}
+                      {...field}
+                    />
                   )}
-                </label>
-              );
-            }}
-          />
-        </menu>
-        <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
-          <Controller
-            name="phone"
-            control={control}
-            defaultValue={watch('phone') || nationalIdDetails?.phone}
-            rules={{
-              required: 'Phone number is required',
-            }}
-            render={({ field }) => {
+                  {gender === 'Female' && (
+                    <Input
+                      type="radio"
+                      label="Female"
+                      {...field}
+                      checked={watch('gender') === 'Female'}
+                    />
+                  )}
+                </menu>
+                {errors?.gender && (
+                  <span className="text-sm text-red-500">
+                    {String(errors?.gender?.message)}
+                  </span>
+                )}
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="phone"
+          control={control}
+          defaultValue={watch('phone') || nationalIdDetails?.phone}
+          rules={{
+            required: 'Phone number is required',
+          }}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col w-[48%] gap-1">
+                <Select
+                  placeholder="Select phone number"
+                  required
+                  label="Phone"
+                  options={userData?.slice(0, 3)?.map((user) => {
+                    return {
+                      label: `(+250) ${maskPhoneDigits(user?.phone)}`,
+                      value: user?.phone,
+                    };
+                  })}
+                  {...field}
+                />
+                {errors?.phone && (
+                  <p className="text-sm text-red-500">
+                    {String(errors?.phone?.message)}
+                  </p>
+                )}
+              </label>
+            );
+          }}
+        />
+        <Controller
+          name="email"
+          defaultValue={watch('email') || nationalIdDetails?.email}
+          control={control}
+          rules={{
+            required: 'Email address is required',
+            validate: (value) => {
               return (
-                <label className="flex flex-col w-full gap-1">
-                  <Select
-                  placeholder='Select phone number'
-                    required
-                    label="Phone"
-                    options={userData?.slice(0, 3)?.map((user) => {
-                      return {
-                        label: `(+250) ${user?.phone}`,
-                        value: user?.phone,
-                      };
-                    })}
-                    {...field}
-                  />
-                  {errors?.phone && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.phone?.message)}
-                    </p>
-                  )}
-                </label>
+                validateInputs(String(value), 'email') ||
+                'Invalid email address'
               );
-            }}
-          />
-          <Controller
-            name="email"
-            defaultValue={watch('email') || nationalIdDetails?.email}
-            control={control}
-            rules={{
-              required: 'Email address is required',
-              validate: (value) => {
-                return (
-                  validateInputs(String(value), 'email') ||
-                  'Invalid email address'
-                );
-              },
-            }}
-            render={({ field }) => {
-              return (
-                <label className="flex flex-col items-start w-full gap-1">
-                  <Input
-                    defaultValue={watch('email') || nationalIdDetails?.email}
-                    required
-                    label="Email"
-                    placeholder="name@domain.com"
-                    onChange={async (e: ChangeEvent<HTMLInputElement>) => {
-                      field.onChange(e.target.value);
-                      await trigger('email');
-                    }}
-                  />
-                  {errors?.email && (
-                    <p className="text-sm text-red-500">
-                      {String(errors?.email?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-        </menu>
+            },
+          }}
+          render={({ field }) => {
+            return (
+              <label className="flex flex-col items-start w-[48%] gap-1">
+                <Input
+                  defaultValue={watch('email') || nationalIdDetails?.email}
+                  required
+                  label="Email"
+                  placeholder="name@domain.com"
+                  onChange={async (e: ChangeEvent<HTMLInputElement>) => {
+                    field.onChange(e.target.value);
+                    await trigger('email');
+                  }}
+                />
+                {errors?.email && (
+                  <p className="text-sm text-red-500">
+                    {String(errors?.email?.message)}
+                  </p>
+                )}
+              </label>
+            );
+          }}
+        />
         <p className="flex items-center text-[12px] gap-2 mx-auto">
           <FontAwesomeIcon
             className="p-1 px-2 text-[11px] bg-primary text-white rounded-full"

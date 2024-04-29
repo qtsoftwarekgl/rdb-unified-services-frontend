@@ -48,7 +48,7 @@ const Home = () => {
       }
 
       if (linkMatches.length > 0) {
-        sectionMatches.links.push(linkMatches);
+        sectionMatches.links.push(linkMatches as never);
         if (!section.title.toLowerCase().includes(queryLowerCase)) {
           matches.push(sectionMatches);
         }

@@ -39,6 +39,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
   const { selectReservedNameModal, reservedNames } = useSelector(
     (state: RootState) => state.nameReservation
   );
+  const { user_applications } = useSelector((state: RootState) => state.userApplication);
   const nameReservationRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +74,6 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
     }, 1000);
   };
 
-
   
   return (
     <Modal
@@ -94,18 +94,21 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
               return (
                 <Select
                   placeholder="Select a name"
-                  options={reservedNames?.map((name: {
-                    name: string;
-                    created_at: string;
-                  }) => {
-                    const expiry_date = moment(name?.created_at)
-                      .add(3, "months")
-                      .format("MM/DD/YYYY");
-                    return {
-                      label: `${name?.name} (Expires on ${expiry_date})`,
-                      value: name?.name,
-                    };
-                  })}
+                  options={user_applications
+                    ?.filter(
+                      (app: { type: string; status: string }) =>
+                        app.type === 'name_reservation' &&
+                        app.status === 'approved'
+                    )
+                    ?.map((name: { name: string; created_at: string }) => {
+                      const expiry_date = moment(name?.created_at)
+                        .add(3, 'months')
+                        .format('MM/DD/YYYY');
+                      return {
+                        label: `${name?.name} (Expires on ${expiry_date})`,
+                        value: name?.name,
+                      };
+                    })}
                   {...field}
                 />
               );

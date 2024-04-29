@@ -5,7 +5,7 @@ import Modal from "../../components/Modal";
 
 interface ViewDocumentProps {
   documentUrl: string;
-  setDocumentUrl: Dispatch<SetStateAction<string>>;
+  setDocumentUrl: Dispatch<SetStateAction<string>> | Dispatch<SetStateAction<string | null>>;
 }
 
 const ViewDocument = ({ documentUrl, setDocumentUrl }: ViewDocumentProps) => {

@@ -70,7 +70,7 @@ export function filterObject(
   const cleanedObj: Record<string, string | number | undefined> = {};
   for (const key in obj) {
     const value = obj[key];
-    if (value !== undefined && value !== "") {
+    if (value !== undefined && value !== '') {
       cleanedObj[key] = value;
     }
   }
@@ -111,7 +111,7 @@ export const validatePassword = (password: string) => {
     }
   }
   if (password && /(?=.*[a-z])/.test(password)) {
-    console.log(password)
+    console.log(password);
     const lowercaseCharacter = missingCharacters.find(
       (character) => character.type === 'lowercase'
     );
@@ -137,4 +137,8 @@ export const validatePassword = (password: string) => {
   }
 
   return missingCharacters;
+};
+
+export const maskPhoneDigits = (phone: string) => {
+  return `${phone.slice(0, 3)}X XXX ${phone?.slice(-3)}`;
 };

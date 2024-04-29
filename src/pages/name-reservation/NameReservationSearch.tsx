@@ -5,7 +5,6 @@ import { useState } from "react";
 import Loader from "../../components/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../components/inputs/Button";
-import { useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -13,17 +12,16 @@ import {
   setNameReservationActiveStep,
   setNameReservationActiveTab,
   setNameReservationOwnerDetails,
-  setReservedNames,
 } from "../../states/features/nameReservationSlice";
-import { generateUUID } from "../../helpers/strings";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
 
 type Props = {
   isOpen: boolean;
+  entry_id: string
 };
 
-const NameReservationSearch = ({ isOpen }: Props) => {
+const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -38,9 +36,6 @@ const NameReservationSearch = ({ isOpen }: Props) => {
     (state: RootState) => state.nameReservation
   );
 
-  // NAVIGATE
-  const navigate = useNavigate();
-
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState({
@@ -51,7 +46,6 @@ const NameReservationSearch = ({ isOpen }: Props) => {
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    const entry_id = generateUUID();
     setIsLoading({
       search: false,
       submit: true,
@@ -78,18 +72,8 @@ const NameReservationSearch = ({ isOpen }: Props) => {
           active_step: 'name_reservation',
         })
       );
-      dispatch(
-        setReservedNames({
-          name: data.name,
-          status: 'Approved',
-          created_at: Date.now(),
-          id: entry_id,
-          registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
-        })
-      );
-      dispatch(setNameReservationActiveStep('owner_details'));
-      dispatch(setNameReservationActiveTab('owner_details'));
-      navigate('/services');
+      dispatch(setNameReservationActiveStep('success'));
+      dispatch(setNameReservationActiveTab('complete'));
     }, 1000);
     return data;
   };
