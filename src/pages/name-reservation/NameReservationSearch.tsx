@@ -12,7 +12,6 @@ import {
   setNameReservationActiveStep,
   setNameReservationActiveTab,
   setNameReservationOwnerDetails,
-  setReservedNames,
 } from "../../states/features/nameReservationSlice";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
@@ -71,15 +70,6 @@ const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
           path: `/name-reservation?entry_id=${entry_id}`,
           active_tab: 'name_reservation',
           active_step: 'name_reservation',
-        })
-      );
-      dispatch(
-        setReservedNames({
-          name: data.name,
-          status: 'Approved',
-          created_at: Date.now(),
-          id: entry_id,
-          registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
         })
       );
       dispatch(setNameReservationActiveStep('success'));

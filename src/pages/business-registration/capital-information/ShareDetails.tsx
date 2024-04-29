@@ -129,7 +129,11 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       setValue("company_capital", share_details?.company_capital);
       setValue("total_value", share_details?.total_value);
       setValue("total_shares", share_details?.total_shares);
-      share_details?.shares?.forEach((row: unknown) => {
+      share_details?.shares?.forEach((row: {
+        name: string;
+        no_shares: number;
+        share_value: number;
+      }) => {
         setValue(`${row?.name}_no_shares`, row?.no_shares);
         setValue(`${row?.name}_share_value`, row?.share_value);
         setValue(`${row?.name}_total_value`, row?.no_shares * row?.share_value);
@@ -198,10 +202,11 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                     prefixText="RWF"
                     required
                     label="Total company capital"
+                    labelClassName="!hidden"
                     {...field}
                     readOnly
                   />
-                  <p className="text-secondary text-[12px]">
+                  <p className="text-secondary text-[12px] hidden">
                     The amount is derived from the total value of available
                     shares
                   </p>

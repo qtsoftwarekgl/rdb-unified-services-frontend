@@ -369,6 +369,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
               submit
               primary
               className={`!w-[70%] mx-auto ${disableForm ? 'hidden' : ''}`}
+              disabled={isLoading || Object.keys(errors)?.length > 0}
             />
           )}
         </fieldset>

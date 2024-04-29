@@ -27,6 +27,7 @@ import validateInputs from "../../../helpers/validations";
 import { attachmentFileColumns } from "../../../constants/businessRegistration";
 import Modal from "../../../components/Modal";
 import ViewDocument from "../../user-company-details/ViewDocument";
+import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 
 export interface business_board_of_directors {
   first_name: string;
@@ -61,7 +62,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
     formState: { errors },
   } = useForm();
 
-
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
@@ -76,7 +76,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
     director: false,
     attachment: false,
   });
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const [isLoading, setIsLoading] = useState(false);
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -85,25 +85,26 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   });
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const [showVerifyPhone, setShowVerifyPhone] = useState(false);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    setValue("country", "");
-    setValue("phone", "");
-    setValue("street_name", "");
-    setValue("first_name", "");
-    setValue("middle_name", "");
-    setValue("last_name", "");
+    setValue('country', '');
+    setValue('phone', '');
+    setValue('street_name', '');
+    setValue('first_name', '');
+    setValue('middle_name', '');
+    setValue('last_name', '');
     setSearchMember({
       ...searchMember,
       data: null,
     });
-  }, [setValue, watch("document_type")]);
+  }, [setValue, watch('document_type')]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    clearErrors("position_conflict");
-    clearErrors("board_of_directors");
+    clearErrors('position_conflict');
+    clearErrors('board_of_directors');
 
     setIsLoading(true);
     setTimeout(() => {
@@ -111,8 +112,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          active_step: "senior_management",
-          active_tab: "management",
+          active_step: 'senior_management',
+          active_tab: 'management',
           board_of_directors: [
             {
               ...data,
@@ -121,7 +122,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 size: attachmentFile?.size,
                 type: attachmentFile?.type,
               },
-              step: "board_of_directors",
+              step: 'board_of_directors',
               id: generateUUID(),
             },
             ...board_of_directors,
@@ -135,7 +136,6 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
         error: false,
         data: null,
       });
-      reset();
     }, 1000);
     return data;
   };
@@ -143,24 +143,24 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Position",
-      accessorKey: "position",
+      header: 'Position',
+      accessorKey: 'position',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-fit">
             <FontAwesomeIcon
               className={`${
                 disableForm
-                  ? "text-secondary cursor-default"
-                  : "text-red-600 cursor-pointer"
+                  ? 'text-secondary cursor-default'
+                  : 'text-red-600 cursor-pointer'
               } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
@@ -185,9 +185,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             >
               <section className="flex flex-col gap-6">
                 <h1 className="font-medium text-center uppercase">
-                  Are you sure you want to delete{" "}
-                  {confirmDeleteModal?.first_name}{" "}
-                  {confirmDeleteModal?.last_name || ""}
+                  Are you sure you want to delete{' '}
+                  {confirmDeleteModal?.first_name}{' '}
+                  {confirmDeleteModal?.last_name || ''}
                 </h1>
                 <menu className="flex items-center justify-between gap-3">
                   <Button
@@ -218,8 +218,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       setConfirmDeleteModal({
                         ...confirmDeleteModal,
                         director: false,
-                        first_name: "",
-                        last_name: "",
+                        first_name: '',
+                        last_name: '',
                       });
                     }}
                   />
@@ -235,8 +235,8 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const attachmentColumns = [
     ...attachmentFileColumns,
     {
-      header: "action",
-      accesorKey: "action",
+      header: 'action',
+      accesorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-4">
@@ -289,10 +289,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       setAttachmentFile(null);
-                      setValue("attachment", null);
-                      setError("attachment", {
-                        type: "manual",
-                        message: "Passport is required",
+                      setValue('attachment', null);
+                      setError('attachment', {
+                        type: 'manual',
+                        message: 'Passport is required',
                       });
                       setConfirmDeleteModal({
                         ...confirmDeleteModal,
@@ -340,6 +340,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         },
                       ]}
                       onChange={(e) => {
+                        reset({
+                          position: e,
+                        });
                         if (
                           String(e) === 'chairman' &&
                           board_of_directors?.find(
@@ -812,9 +815,22 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           <section className="flex items-center justify-end w-full">
             <Button
               value={isLoading ? <Loader /> : 'Add board member'}
-              submit
               primary
               disabled={disableForm}
+              onClick={async (e) => {
+                e.preventDefault();
+                await trigger();
+                if (Object.keys(errors).length > 0) return;
+                setIsLoading(true);
+                setTimeout(() => {
+                  setIsLoading(false);
+                  if (watch('document_type') === 'nid') {
+                    setShowVerifyPhone(true);
+                  } else {
+                    handleSubmit(onSubmit)();
+                  }
+                }, 1000);
+              }}
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
@@ -940,6 +956,14 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           setDocumentUrl={setAttachmentPreview}
         />
       )}
+      <OTPVerificationCard
+        isOpen={showVerifyPhone}
+        onClose={async () => {
+          setShowVerifyPhone(false);
+          handleSubmit(onSubmit)();
+        }}
+        phone={watch('phone')}
+      />
     </section>
   );
 };
