@@ -1,4 +1,3 @@
-import { generateUUID } from '@/helpers/strings';
 
 export const defaultSections = [
   {
@@ -6,7 +5,7 @@ export const defaultSections = [
     links: [
       [
         {
-          to: `/name-reservation?entry_id=${generateUUID()}`,
+          to: `/name-reservation`,
           label: 'Name Reservation',
         },
         { to: '/name-availability', label: 'Name Availability Search' },

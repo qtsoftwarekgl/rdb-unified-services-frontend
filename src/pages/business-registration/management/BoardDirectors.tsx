@@ -34,6 +34,7 @@ export interface business_board_of_directors {
   middle_name: string;
   last_name: string;
   id: string;
+  position: string;
 }
 
 interface BoardDirectorsProps {

@@ -26,6 +26,8 @@ import {
 } from "../../../constants/Users";
 import ConfirmModal from "../../../components/confirm-modal/ConfirmModal";
 import ViewDocument from "../../user-company-details/ViewDocument";
+import { business_board_of_directors } from "@/pages/business-registration/management/BoardDirectors";
+import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 
 interface BoardDirectorsProps {
   entry_id: string | null;
@@ -69,6 +71,7 @@ const BoardDirectors = ({
   });
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const [showVerifyPhone, setShowVerifyPhone] = useState(false);
 
   // CLEAR FORM
   useEffect(() => {
@@ -141,7 +144,14 @@ const BoardDirectors = ({
     {
       header: "Action",
       accessorKey: "action",
-      cell: ({ row }) => {
+      cell: ({ row }: {
+        row: {
+          original: {
+            no: number;
+          };
+        };
+      
+      }) => {
         return (
           <menu className="flex items-center">
             <FontAwesomeIcon
@@ -173,7 +183,7 @@ const BoardDirectors = ({
               name="position"
               rules={{
                 required:
-                  status !== "in_preview" ? "Select member's position" : false,
+                  status !== 'in_preview' ? "Select member's position" : false,
               }}
               control={control}
               render={({ field }) => {
@@ -186,35 +196,36 @@ const BoardDirectors = ({
                       required
                       options={[
                         {
-                          value: "chairman",
-                          label: "Chairman",
+                          value: 'chairman',
+                          label: 'Chairman',
                         },
                         {
-                          value: "member",
-                          label: "Member",
+                          value: 'member',
+                          label: 'Member',
                         },
                       ]}
                       onChange={(e) => {
                         if (
-                          String(e) === "chairman" &&
+                          String(e) === 'chairman' &&
                           foreign_board_of_directors?.find(
-                            (director) => director?.position === "chairman"
+                            (director: business_board_of_directors) =>
+                              director?.position === 'chairman'
                           )
                         ) {
-                          setError("position_conflict", {
-                            type: "manual",
+                          setError('position_conflict', {
+                            type: 'manual',
                             message:
-                              "Cannot have more than one chairpeople in a company.",
+                              'Cannot have more than one chairpeople in a company.',
                           });
                           return;
                         }
                         if (
                           errors?.position_conflict &&
-                          String(e) !== "chairman"
+                          String(e) !== 'chairman'
                         ) {
-                          clearErrors("position_conflict");
+                          clearErrors('position_conflict');
                         }
-                        setValue("document_type", "");
+                        setValue('document_type', '');
                         field.onChange(e);
                       }}
                     />
@@ -229,26 +240,26 @@ const BoardDirectors = ({
             />
             <ul
               className={`${
-                watch("position") ? "flex" : "hidden"
+                watch('position') ? 'flex' : 'hidden'
               } items-start w-full gap-6`}
             >
               <Controller
                 name="document_type"
-                rules={{ required: "Select document type" }}
+                rules={{ required: 'Select document type' }}
                 control={control}
                 render={({ field }) => {
                   const options = [
-                    { value: "nid", label: "National ID" },
-                    { label: "Passport", value: "passport" },
+                    { value: 'nid', label: 'National ID' },
+                    { label: 'Passport', value: 'passport' },
                   ];
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
-                        watch("document_type") !== "nid" && "!w-[49%]"
+                        watch('document_type') !== 'nid' && '!w-[49%]'
                       }`}
                     >
                       <Select
-                      placeholder="Select document type"
+                        placeholder="Select document type"
                         options={options}
                         label="Document Type"
                         required
@@ -258,18 +269,18 @@ const BoardDirectors = ({
                   );
                 }}
               />
-              {watch("document_type") === "nid" && (
+              {watch('document_type') === 'nid' && (
                 <Controller
                   control={control}
                   name="document_no"
                   rules={{
-                    required: watch("document_type")
-                      ? "Document number is required"
+                    required: watch('document_type')
+                      ? 'Document number is required'
                       : false,
                     validate: (value) => {
                       return (
-                        validateInputs(value, "nid") ||
-                        "National ID must be 16 characters long"
+                        validateInputs(value, 'nid') ||
+                        'National ID must be 16 characters long'
                       );
                     },
                   }}
@@ -281,14 +292,14 @@ const BoardDirectors = ({
                           suffixIcon={faSearch}
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger("document_no");
+                            await trigger('document_no');
                           }}
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "Document number is required",
+                              setError('document_no', {
+                                type: 'manual',
+                                message: 'Document number is required',
                               });
                               return;
                             }
@@ -318,13 +329,13 @@ const BoardDirectors = ({
                                   loading: false,
                                   error: false,
                                 });
-                                setValue("first_name", userDetails?.first_name);
+                                setValue('first_name', userDetails?.first_name);
                                 setValue(
-                                  "middle_name",
+                                  'middle_name',
                                   userDetails?.middle_name
                                 );
-                                setValue("last_name", userDetails?.last_name);
-                                setValue("gender", userDetails?.gender);
+                                setValue('last_name', userDetails?.last_name);
+                                setValue('gender', userDetails?.gender);
                               }
                             }, 700);
                           }}
@@ -352,15 +363,15 @@ const BoardDirectors = ({
                   }}
                 />
               )}
-              {watch("document_type") === "passport" && (
+              {watch('document_type') === 'passport' && (
                 <Controller
                   name="passport_no"
                   rules={{
-                    required: "Passport number is required",
+                    required: 'Passport number is required',
                     validate: (value) => {
                       return (
-                        validateInputs(value, "passsport") ||
-                        "Invalid passport number"
+                        validateInputs(value, 'passsport') ||
+                        'Invalid passport number'
                       );
                     },
                   }}
@@ -369,7 +380,7 @@ const BoardDirectors = ({
                     return (
                       <label
                         className={`flex flex-col gap-1 w-full items-start ${
-                          watch("document_type") !== "nid" && "!w-[49%]"
+                          watch('document_type') !== 'nid' && '!w-[49%]'
                         }`}
                       >
                         <Input
@@ -392,17 +403,17 @@ const BoardDirectors = ({
           </menu>
           <section
             className={`${
-              (watch("document_type") === "nid" && searchMember?.data) ||
-              watch("document_type") === "passport"
-                ? "flex"
-                : "hidden"
+              (watch('document_type') === 'nid' && searchMember?.data) ||
+              watch('document_type') === 'passport'
+                ? 'flex'
+                : 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
               name="first_name"
               control={control}
               defaultValue={searchMember?.data?.first_name}
-              rules={{ required: "First name is required" }}
+              rules={{ required: 'First name is required' }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -459,17 +470,17 @@ const BoardDirectors = ({
             <Controller
               control={control}
               name="gender"
-              defaultValue={watch("gender") || searchMember?.data?.gender}
-              rules={{ required: "Gender is required" }}
+              defaultValue={watch('gender') || searchMember?.data?.gender}
+              rules={{ required: 'Gender is required' }}
               render={({ field }) => {
                 return (
                   <label className="flex items-center w-full gap-2 py-4">
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {watch("document_type") !== "passport" ? (
+                    {watch('document_type') !== 'passport' ? (
                       <p className="px-2 py-1 rounded-md bg-background">
-                        {searchMember?.data?.gender || watch("gender")}
+                        {searchMember?.data?.gender || watch('gender')}
                       </p>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
@@ -477,7 +488,7 @@ const BoardDirectors = ({
                           type="radio"
                           label="Male"
                           name={field?.name}
-                          value={"Male"}
+                          value={'Male'}
                           onChange={(e) => {
                             field.onChange(e.target.value);
                           }}
@@ -486,7 +497,7 @@ const BoardDirectors = ({
                           type="radio"
                           label="Female"
                           name={field?.name}
-                          value={"Female"}
+                          value={'Female'}
                           onChange={(e) => {
                             field.onChange(e.target.value);
                           }}
@@ -506,16 +517,16 @@ const BoardDirectors = ({
               name="phone"
               control={control}
               rules={{
-                required: watch("phone") ? "Phone number is required" : false,
+                required: watch('phone') ? 'Phone number is required' : false,
                 pattern: {
                   value: /^(?:[0-9] ?){6,14}[0-9]$/,
-                  message: "Invalid phone number",
+                  message: 'Invalid phone number',
                 },
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
-                    {watch("document_type") === "passport" ? (
+                    {watch('document_type') === 'passport' ? (
                       <Input
                         label="Phone number"
                         required
@@ -546,11 +557,11 @@ const BoardDirectors = ({
                 );
               }}
             />
-            {watch("document_type") !== "nid" ? (
+            {watch('document_type') !== 'nid' ? (
               <Controller
                 name="country"
                 control={control}
-                rules={{ required: "Nationality is required" }}
+                rules={{ required: 'Nationality is required' }}
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -559,7 +570,7 @@ const BoardDirectors = ({
                         {...field}
                         label="Country"
                         options={countriesList
-                          ?.filter((country) => country?.code !== "RW")
+                          ?.filter((country) => country?.code !== 'RW')
                           ?.map((country) => {
                             return {
                               ...country,
@@ -597,7 +608,7 @@ const BoardDirectors = ({
                 }}
               />
             )}
-            {watch("document_type") !== "nid" && (
+            {watch('document_type') !== 'nid' && (
               <menu className="flex-col items-start w-full gap-3 my-3 max-md:items-center">
                 <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
                   Passport copy <span className="text-red-600">*</span>
@@ -605,7 +616,7 @@ const BoardDirectors = ({
                 <menu className="flex gap-4">
                   <Controller
                     name="attachment"
-                    rules={{ required: "Passport is required" }}
+                    rules={{ required: 'Passport is required' }}
                     control={control}
                     render={({ field }) => {
                       return (
@@ -649,7 +660,7 @@ const BoardDirectors = ({
                         onClick={(e) => {
                           e.preventDefault();
                           setAttachmentFile(null);
-                          setValue("attachment", null);
+                          setValue('attachment', null);
                         }}
                       />
                     </p>
@@ -667,10 +678,24 @@ const BoardDirectors = ({
           </menu>
           <section className="flex items-center justify-end w-full">
             <Button
-              value={isLoading ? <Loader /> : "Add board member"}
-              submit
+              value={isLoading ? <Loader /> : 'Add board member'}
               primary
               disabled={isFormDisabled}
+              onClick={async (e) => {
+                e.preventDefault();
+                await trigger();
+                if (Object.keys(errors).length > 0) return;
+                setIsLoading(true);
+                setTimeout(() => {
+                  setIsLoading(false);
+                  if (watch('document_type') === 'nid') {
+                    setShowVerifyPhone(true);
+                    return;
+                  } else {
+                    handleSubmit(onSubmit)();
+                  }
+                }, 1000);
+              }}
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
@@ -683,8 +708,8 @@ const BoardDirectors = ({
                 return {
                   ...member,
                   no: index + 1,
-                  name: `${member?.first_name} ${member?.middle_name ?? ""} ${
-                    member?.last_name ?? ""
+                  name: `${member?.first_name} ${member?.middle_name ?? ''} ${
+                    member?.last_name ?? ''
                   }`,
                   position:
                     member?.position && capitalizeString(member?.position),
@@ -708,46 +733,46 @@ const BoardDirectors = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBusinessActiveStep("foreign_business_activity_vat")
+                  setForeignBusinessActiveStep('foreign_business_activity_vat')
                 );
-                dispatch(setForeignBusinessActiveTab("general_information"));
+                dispatch(setForeignBusinessActiveTab('general_information'));
               }}
             />
-            {status === "is_Amending" && (
+            {status === 'is_Amending' && (
               <Button
-                value={"Complete Amendment"}
+                value={'Complete Amendment'}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
+                    setForeignBusinessActiveTab('foreign_preview_submission')
                   );
                 }}
               />
             )}
             {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value={"Save & Complete Review"}
+                value={'Save & Complete Review'}
                 primary
                 onClick={(e) => {
                   e.preventDefault();
                   if (foreign_board_of_directors?.length <= 0) {
-                    setError("board_of_directors", {
-                      type: "manual",
-                      message: "Add at least one board member",
+                    setError('board_of_directors', {
+                      type: 'manual',
+                      message: 'Add at least one board member',
                     });
                     setTimeout(() => {
-                      clearErrors("board_of_directors");
+                      clearErrors('board_of_directors');
                     }, 4000);
                     return;
                   }
                   dispatch(
                     setForeignBusinessCompletedStep(
-                      "foreign_board_of_directors"
+                      'foreign_board_of_directors'
                     )
                   );
 
                   dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
+                    setForeignBusinessActiveTab('foreign_preview_submission')
                   );
                 }}
                 disabled={isFormDisabled}
@@ -760,23 +785,23 @@ const BoardDirectors = ({
               onClick={(e) => {
                 e.preventDefault();
                 if (foreign_board_of_directors?.length <= 0) {
-                  setError("board_of_directors", {
-                    type: "manual",
-                    message: "Add at least one board member",
+                  setError('board_of_directors', {
+                    type: 'manual',
+                    message: 'Add at least one board member',
                   });
                   setTimeout(() => {
-                    clearErrors("board_of_directors");
+                    clearErrors('board_of_directors');
                   }, 4000);
                   return;
                 }
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entry_id, status: 'in_progress' })
                 );
                 dispatch(
-                  setForeignBusinessCompletedStep("foreign_board_of_directors")
+                  setForeignBusinessCompletedStep('foreign_board_of_directors')
                 );
                 dispatch(
-                  setForeignBusinessActiveStep("foreign_senior_management")
+                  setForeignBusinessActiveStep('foreign_senior_management')
                 );
               }}
             />
@@ -810,6 +835,14 @@ const BoardDirectors = ({
         }}
         message="Are you sure you want to delete this member?"
         description="This action cannot be undone"
+      />
+      <OTPVerificationCard
+        isOpen={showVerifyPhone}
+        onClose={() => {
+          setShowVerifyPhone(false);
+          handleSubmit(onSubmit)();
+        }}
+        phone={watch('phone')}
       />
     </section>
   );
