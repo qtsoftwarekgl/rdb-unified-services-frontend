@@ -111,28 +111,17 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       placeholder="Select country of incorporation"
                       {...field}
                       required
-                      defaultValue={
-                        countriesList
-                          ?.filter(
-                            (country) =>
-                              country.code === foreign_company_address?.country
-                          )
-                          ?.map((country) => {
-                            return {
-                              ...country,
-                              label: country.name,
-                              value: country.code,
-                            };
-                          })[0]?.value
-                      }
+                      defaultValue={foreign_company_address?.country}
                       label="Country of Incorporation"
-                      options={countriesList.map((country) => {
-                        return {
-                          ...country,
-                          label: country.name,
-                          value: country.code,
-                        };
-                      })}
+                      options={countriesList
+                        ?.filter((country) => country.code !== 'RW')
+                        .map((country) => {
+                          return {
+                            ...country,
+                            label: country.name,
+                            value: country.code,
+                          };
+                        })}
                       onChange={(e) => {
                         field.onChange(e);
                       }}
@@ -155,11 +144,11 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
-                      label="city"
+                      label="City"
                       defaultValue={
                         watch("city") || foreign_company_address?.city
                       }
-                      placeholder="city"
+                      placeholder="City"
                       {...field}
                     />
                     {errors?.city && (

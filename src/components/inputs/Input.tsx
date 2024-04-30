@@ -76,16 +76,16 @@ const Input: FC<InputProps> = ({
 
   if (['checkbox', 'radio'].includes(type)) {
     return (
-      <label className="flex items-center gap-2">
+      <label className="flex items-center gap-2 text-[13px]">
         <input
           type={type}
           name={name}
           value={value}
           checked={checked}
           onChange={onChange}
-          className={`w-5 h-5 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
+          className={`w-4 h-4 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
-        <span className={`${label ? 'text-[13px]' : 'hidden'}`}>{label}</span>
+        <p className={`${label ? 'flex' : 'hidden'} text-[13px]`}>{label}</p>
       </label>
     );
   }

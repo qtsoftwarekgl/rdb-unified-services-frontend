@@ -1,11 +1,14 @@
+import Loader from '@/components/Loader';
 import Modal from '@/components/Modal';
 import Button from '@/components/inputs/Button';
+import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
 import { users } from '@/constants/Users';
+import { roles } from '@/constants/dashboard';
 import { setAssignRolesModal } from '@/states/features/roleSlice';
 import { setUsersList } from '@/states/features/userSlice';
 import { AppDispatch, RootState } from '@/states/store';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,17 +17,24 @@ const AssignRoles = ({ user_id }: { user_id?: string }) => {
   const {
     control,
     formState: { errors },
-    trigger
+    trigger,
+    watch,
+    setValue,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { assignRolesModal } = useSelector((state: RootState) => state.role);
   const { usersList } = useSelector((state: RootState) => state.user);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     dispatch(setUsersList(users?.slice(0, 10)));
   }, [dispatch]);
+
+  useEffect(() => {
+    setValue('user', user_id);
+  }, [setValue, user_id]);
 
   return (
     <Modal
@@ -34,8 +44,8 @@ const AssignRoles = ({ user_id }: { user_id?: string }) => {
       }}
     >
       <h1 className="text-primary font-semibold uppercase">Assign roles</h1>
-      {!user_id && (
-        <section className="w-full flex flex-col gap-4">
+      <section className="w-full flex flex-col gap-4">
+        {!user_id && (
           <Controller
             control={control}
             name="user"
@@ -72,19 +82,50 @@ const AssignRoles = ({ user_id }: { user_id?: string }) => {
               );
             }}
           />
-          <menu className="w-full flex items-center gap-3 justify-between">
-            <Button
-              value="Cancel"
-              onClick={(e) => {
-                e.preventDefault();
+        )}
+        <AssignRolesModal user_id={watch('user')} />
+        <menu className="w-full flex items-center gap-3 justify-between">
+          <Button
+            value="Cancel"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setAssignRolesModal(false));
+            }}
+          />
+          <Button
+            value={isLoading ? <Loader /> : 'Complete'}
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              setIsLoading(true);
+              setTimeout(() => {
+                setIsLoading(false);
                 dispatch(setAssignRolesModal(false));
-              }}
-            />
-            <Button value={'Continue'} primary />
-          </menu>
-        </section>
-      )}
+              }, 1000);
+            }}
+          />
+        </menu>
+      </section>
     </Modal>
+  );
+};
+
+export const AssignRolesModal = ({ user_id }: { user_id: string }) => {
+  if (!user_id) return null;
+
+  return (
+    <section className="flex flex-col gap-4">
+      <menu className="flex flex-col gap-3">
+        {roles?.slice(0, 5).map((role) => {
+          return (
+            <label key={role?.id} className="flex items-center gap-2">
+              <Input type="checkbox" />
+              <p>{role?.name}</p>
+            </label>
+          );
+        })}
+      </menu>
+    </section>
   );
 };
 

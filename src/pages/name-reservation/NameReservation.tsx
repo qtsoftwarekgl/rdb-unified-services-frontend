@@ -1,17 +1,19 @@
-import { useSelector } from "react-redux";
-import UserLayout from "../../containers/UserLayout";
-import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
-import { RootState } from "../../states/store";
+import { useDispatch, useSelector } from 'react-redux';
+import UserLayout from '../../containers/UserLayout';
+import ProgressNavigation from '../../components/business-registration/ProgressNavigation';
+import { RootState } from '../../states/store';
 import {
   setNameReservationActiveTab,
   setNameReservationActiveStep,
-} from "../../states/features/nameReservationSlice";
-import Tab from "../../components/business-registration/Tab";
-import { TabType } from "../../states/features/types";
-import { useLocation } from "react-router-dom";
-import OwnerDetails from "./OwnerDetails";
-import NameReservationSearch from "./NameReservationSearch";
-import NameReservationSuccess from "./NameReservationSuccess";
+} from '../../states/features/nameReservationSlice';
+import Tab from '../../components/business-registration/Tab';
+import { TabType } from '../../states/features/types';
+import { useLocation, useNavigate } from 'react-router-dom';
+import OwnerDetails from './OwnerDetails';
+import NameReservationSearch from './NameReservationSearch';
+import NameReservationSuccess from './NameReservationSuccess';
+import { useEffect, useState } from 'react';
+import { generateUUID } from '@/helpers/strings';
 
 const NameReservation = () => {
   const {
@@ -21,7 +23,22 @@ const NameReservation = () => {
   } = useSelector((state: RootState) => state.nameReservation);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+
+  // STATE VARIABLES
+  const dispatch = useDispatch();
+  const [entry_id] = useState<string | undefined>(undefined);
+  const entryId = queryParams.get('entry_id');
+
+  // NAVIGATION
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!entryId || entryId === 'null') {
+      navigate(`?entry_id=${generateUUID()}`);
+      dispatch(setNameReservationActiveStep('owner_details'));
+      dispatch(setNameReservationActiveTab('owner_details'));
+    }
+  }, [entryId]);
 
   return (
     <UserLayout>

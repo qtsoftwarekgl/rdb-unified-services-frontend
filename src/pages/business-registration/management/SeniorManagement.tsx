@@ -34,6 +34,7 @@ export interface business_senior_management {
   middle_name: string;
   last_name: string;
   attachment: File | null;
+  position: string;
 }
 
 interface SeniorManagementProps {
