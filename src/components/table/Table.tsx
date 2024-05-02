@@ -36,8 +36,8 @@ interface DataTableProps<TData, TValue> {
 }
 
 export default function Table<TData, TValue>({
-  columns,
-  data,
+  columns = [],
+  data = [],
   rowClickHandler = undefined,
   showFilter = true,
   showPagination = true,

@@ -33,8 +33,8 @@ const Select: FC<SelectProps> = ({
 }) => {
   return (
     <label className={`flex flex-col gap-1 w-full ${labelClassName}`}>
-      <p className="flex items-center gap-1 text-[14px]">
-        {label} <span className={required ? `text-red-600` : "hidden"}>*</span>
+      <p className={label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}>
+        {label} <span className={required ? `text-red-600` : 'hidden'}>*</span>
       </p>
       <SelectComponent
         onValueChange={onChange}
@@ -58,9 +58,9 @@ const Select: FC<SelectProps> = ({
                 <SelectItem
                   key={index}
                   value={option.value}
-                  className="cursor-pointer text-[12px]"
+                  className="cursor-pointer text-[13px] py-1"
                 >
-                  <p className="text-[14px]">{option.label}</p>
+                  <p className="text-[13px]">{option.label}</p>
                 </SelectItem>
               );
             })}
