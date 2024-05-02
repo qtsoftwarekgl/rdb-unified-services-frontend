@@ -5,7 +5,7 @@ import Select from "@/components/inputs/Select";
 import { validNationalID, validTinNumber } from "@/constants/Users";
 import { userData } from "@/constants/authentication";
 import { searchedCompanies } from "@/constants/businessRegistration";
-import { filterObject } from "@/helpers/strings";
+import { filterObject, maskPhoneDigits } from "@/helpers/strings";
 import validateInputs from "@/helpers/validations";
 import {
   setCollateralActiveStep,
@@ -503,7 +503,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
                             options={userData?.slice(0, 3)?.map((user) => {
                               return {
                                 ...user,
-                                label: `(+250) ${user?.phone}`,
+                                label: `(+250) ${maskPhoneDigits(user?.phone)}`,
                                 value: `(+250) ${user?.phone}`,
                               };
                             })}

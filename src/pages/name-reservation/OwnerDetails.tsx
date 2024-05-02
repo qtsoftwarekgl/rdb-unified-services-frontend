@@ -19,6 +19,7 @@ import {
 } from '../../states/features/nameReservationSlice';
 import { validNationalID } from '../../constants/Users';
 import validateInputs from '../../helpers/validations';
+import { maskPhoneDigits } from '@/helpers/strings';
 
 type Props = {
   isOpen: boolean;
@@ -527,7 +528,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
-                            label: `(+250) ${user?.phone}`,
+                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
                             value: user?.phone,
                           };
                         })}

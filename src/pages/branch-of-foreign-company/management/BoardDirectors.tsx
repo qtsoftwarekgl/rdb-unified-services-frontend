@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { capitalizeString } from "../../../helpers/strings";
+import { capitalizeString, maskPhoneDigits } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
@@ -541,7 +541,7 @@ const BoardDirectors = ({
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
-                            label: `(+250) ${user?.phone}`,
+                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
                             value: user?.phone,
                           };
                         })}
