@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Table from "../../../components/table/Table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { capitalizeString, generateUUID } from "../../../helpers/strings";
+import { capitalizeString, generateUUID, maskPhoneDigits } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
@@ -35,6 +35,7 @@ export interface business_board_of_directors {
   last_name: string;
   id: string;
   position: string;
+  document_type: string;
 }
 
 interface BoardDirectorsProps {
@@ -689,7 +690,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
-                            label: `(+250) ${user?.phone}`,
+                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
                             value: user?.phone,
                           };
                         })}
@@ -934,6 +935,21 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   setError('board_of_directors', {
                     type: 'manual',
                     message: 'Add at least one board member',
+                  });
+                  setTimeout(() => {
+                    clearErrors('board_of_directors');
+                  }, 4000);
+                  return;
+                }
+                if (
+                  board_of_directors?.find(
+                    (director: business_board_of_directors) =>
+                      director?.document_type === 'nid'
+                  ) === undefined
+                ) {
+                  setError('board_of_directors', {
+                    type: 'manual',
+                    message: 'Board requires at least one Rwandan local resident in its members',
                   });
                   setTimeout(() => {
                     clearErrors('board_of_directors');

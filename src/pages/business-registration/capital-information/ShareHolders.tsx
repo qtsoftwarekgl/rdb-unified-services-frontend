@@ -28,7 +28,7 @@ import {
   setBusinessCompletedStep,
   setShareholderDetailsModal,
 } from "../../../states/features/businessRegistrationSlice";
-import { capitalizeString, generateUUID } from "../../../helpers/strings";
+import { capitalizeString, generateUUID, maskPhoneDigits } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import moment from "moment";
 import { RDBAdminEmailPattern, validNationalID } from "../../../constants/Users";
@@ -902,7 +902,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
-                            label: `(+250) ${user?.phone}`,
+                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
                             value: user?.phone,
                           };
                         })}

@@ -24,7 +24,7 @@ import { countriesList } from "../../../constants/countries";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../../components/inputs/Button";
 import Table from "../../../components/table/Table";
-import { capitalizeString } from "../../../helpers/strings";
+import { capitalizeString, maskPhoneDigits } from "../../../helpers/strings";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
@@ -911,7 +911,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
-                            label: `(+250) ${user?.phone}`,
+                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
                             value: user?.phone,
                           };
                         })}

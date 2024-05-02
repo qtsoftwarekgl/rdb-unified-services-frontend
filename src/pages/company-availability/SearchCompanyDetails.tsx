@@ -10,6 +10,7 @@ import Button from '../../components/inputs/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { validTinNumber } from '@/constants/authentication';
 
 const SearchCompanyDetails = () => {
   // REACT HOOK FORM
@@ -20,6 +21,7 @@ const SearchCompanyDetails = () => {
     setError,
     clearErrors,
     formState: { errors },
+    trigger
   } = useForm();
 
   // NAVIGATE
@@ -59,7 +61,15 @@ const SearchCompanyDetails = () => {
             <Controller
               name="tin"
               control={control}
-              rules={{ required: 'Company name is required' }}
+              rules={{
+                required: 'Company name is required',
+                validate: (value) => {
+                  return (
+                    (value.length < 9 && 'TIN number must be 9 digits') ||
+                    (value.length > 9 && 'TIN number cannot exceed 9 digits')
+                  );
+                },
+              }}
               render={({ field }) => {
                 return (
                   <label className="w-full flex flex-col gap-2">
@@ -75,11 +85,11 @@ const SearchCompanyDetails = () => {
                         setIsLoading({ ...isLoading, search: true });
                         setTimeout(() => {
                           setIsLoading({ ...isLoading, search: false });
-                          const randomNumber = Math.floor(Math.random() * 30);
+                          const randomNumber = Math.floor(Math.random() * 10);
                           const companyDetails =
                             searchedCompanies[randomNumber];
 
-                          if (!companyDetails) {
+                          if (field.value !== String(validTinNumber)) {
                             setError('tin', {
                               type: 'manual',
                               message: `Company not found`,
@@ -95,17 +105,9 @@ const SearchCompanyDetails = () => {
                         }, 1000);
                       }}
                       placeholder="Enter company TIN number"
-                      onChange={(e) => {
-                        clearErrors('tin');
+                      onChange={async (e) => {
                         field.onChange(e);
-                        if (e.target.value?.length !== 9) {
-                          setError('tin', {
-                            type: 'manual',
-                            message: 'Company TIN number must be 9 characters',
-                          });
-                        } else {
-                          clearErrors('tin');
-                        }
+                        await trigger('tin');
                       }}
                     />
                     {isLoading.search && (
@@ -124,7 +126,13 @@ const SearchCompanyDetails = () => {
             />
           </section>
           <section
-            className={`${isLoading?.data ? 'flex' : 'hidden'} flex-col gap-5`}
+            className={`${
+              isLoading?.data &&
+              !Object.keys(errors).length &&
+              !isLoading?.search
+                ? 'flex'
+                : 'hidden'
+            } flex-col gap-5`}
           >
             <section className="flex flex-col gap-4 w-[40%] mx-auto mt-5">
               <h1 className="uppercase font-semibold text-lg text-primary">
