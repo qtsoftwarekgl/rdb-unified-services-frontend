@@ -11,6 +11,7 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
+  setBusinessPersonDetailsModal,
 } from "../../../states/features/businessRegistrationSlice";
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,6 +29,7 @@ import { attachmentFileColumns } from "../../../constants/businessRegistration";
 import Modal from "../../../components/Modal";
 import ViewDocument from "../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
+import BusinessPersonDetails from "../BusinessPersonDetails";
 
 export interface business_board_of_directors {
   first_name: string;
@@ -88,6 +90,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
+  const [boardOfDirectorsDetails, setBoardOfDirectorsDetails] = useState<business_board_of_directors | null>(null);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -865,7 +868,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              rowClickHandler={undefined}
+              rowClickHandler={(row) => {
+                setBoardOfDirectorsDetails(row?.original);
+              dispatch(setBusinessPersonDetailsModal(true));
+              }}
             />
           </section>
           {errors?.board_of_directors && (
@@ -979,6 +985,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           setDocumentUrl={setAttachmentPreview}
         />
       )}
+      <BusinessPersonDetails personDetails={boardOfDirectorsDetails} />
       <OTPVerificationCard
         isOpen={showVerifyPhone}
         onClose={async () => {

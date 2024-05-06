@@ -405,8 +405,8 @@ const CompanyDetails = () => {
                             shareholder?.last_name || ''
                           }`,
                       type:
-                        shareholder?.shareholder_type &&
-                        capitalizeString(shareholder?.shareholder_type),
+                        shareholder?.type &&
+                        capitalizeString(shareholder?.type),
                       phone: shareholder?.phone || shareholder?.company_phone,
                       country: countriesList?.find(
                         (country) =>

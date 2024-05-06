@@ -29,7 +29,7 @@ export interface business_capital_details {
   shareholder_id: string;
   last_name?: string;
   company_name?: string;
-  shareholder_type?: string;
+  type?: string;
   shares: {
     total_shares?: number;
     total_value?: number;
@@ -244,7 +244,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                               shareholder?.last_name || ""
                             }`
                           : shareholder?.company_name,
-                        type: capitalizeString(shareholder?.shareholder_type as string),
+                        type: capitalizeString(shareholder?.type as string),
                         total_shares: shareholder?.shares?.total_shares || 0,
                         total_value: `RWF ${
                           shareholder?.shares?.total_value || 0

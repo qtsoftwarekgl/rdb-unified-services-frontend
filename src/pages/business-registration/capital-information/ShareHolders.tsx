@@ -26,7 +26,7 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-  setShareholderDetailsModal,
+  setBusinessPersonDetailsModal,
 } from "../../../states/features/businessRegistrationSlice";
 import { capitalizeString, generateUUID, maskPhoneDigits } from "../../../helpers/strings";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
@@ -34,18 +34,18 @@ import moment from "moment";
 import { RDBAdminEmailPattern, validNationalID } from "../../../constants/Users";
 import Modal from "../../../components/Modal";
 import ViewDocument from "../../user-company-details/ViewDocument";
-import ShareholderDetails from "./ShareholderDetails";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
+import BusinessPersonDetails from "../BusinessPersonDetails";
 
 export interface business_shareholders {
-  shareholder_type: string;
+  type: string;
   id: string;
   document_type: string;
   document_no: string;
   first_name: string;
   middle_name: string;
   last_name: string;
-  company_name?: string;
+  company_name?: File
 }
 
 interface ShareHoldersProps {
@@ -321,9 +321,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <Controller
-            name="shareholder_type"
+            name="type"
             control={control}
-            defaultValue={watch('shareholder_type')}
+            defaultValue={watch('type')}
             rules={{ required: 'Select shareholder type' }}
             render={({ field }) => {
               return (
@@ -337,13 +337,13 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                     onChange={(e) => {
                       field.onChange(e);
                       reset({
-                        shareholder_type: e,
+                        type: e,
                       });
                     }}
                   />
-                  {errors?.shareholder_type && (
+                  {errors?.type && (
                     <p className="text-red-600 text-[13px]">
-                      {String(errors?.shareholder_type?.message)}
+                      {String(errors?.type?.message)}
                     </p>
                   )}
                 </label>
@@ -351,7 +351,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             }}
           />
           <ul className={`w-full flex items-start gap-6`}>
-            {watch('shareholder_type') === 'person' && (
+            {watch('type') === 'person' && (
               <Controller
                 name="document_type"
                 rules={{ required: 'Select document type' }}
@@ -387,8 +387,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 }}
               />
             )}
-            {watch('shareholder_type') &&
-              watch('shareholder_type') !== 'person' && (
+            {watch('type') &&
+              watch('type') !== 'person' && (
                 <menu className="flex flex-col w-full gap-6">
                   <Controller
                     control={control}
@@ -443,12 +443,12 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                       control={control}
                       rules={{
                         required:
-                          watch('shareholder_type') !== 'person'
+                          watch('type') !== 'person'
                             ? 'Company code is required'
                             : false,
                         validate: (value) => {
                           if (
-                            watch('shareholder_type') === 'person' ||
+                            watch('type') === 'person' ||
                             watch('rwandan_company') === 'no'
                           )
                             return true;
@@ -551,7 +551,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 </menu>
               )}
             {watch('document_type') === 'nid' &&
-              watch('shareholder_type') === 'person' && (
+              watch('type') === 'person' && (
                 <Controller
                   control={control}
                   name="document_no"
@@ -657,7 +657,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 ? 'flex'
                 : 'hidden'
             } ${
-              watch('shareholder_type') !== 'person' && 'hidden'
+              watch('type') !== 'person' && 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
@@ -706,7 +706,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.first_name}
               rules={{
                 required:
-                  watch('shareholder_type') === 'person'
+                  watch('type') === 'person'
                     ? 'First name is required'
                     : false,
               }}
@@ -772,7 +772,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('shareholder_type') === 'person' &&
+                  watch('type') === 'person' &&
                   watch('document_type') !== 'nid'
                     ? 'Select gender'
                     : false,
@@ -826,7 +826,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('shareholder_type') === 'person' &&
+                  watch('type') === 'person' &&
                   watch('document_type') === 'passport' &&
                   'Nationality is required',
               }}
@@ -881,7 +881,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('shareholder_type') === 'person' &&
+                  watch('type') === 'person' &&
                   'Phone number is required',
               }}
               render={({ field }) => {
@@ -931,7 +931,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 rules={{
                   required:
                     watch('document_type') === 'passport' &&
-                    watch('shareholder_type') === 'person'
+                    watch('type') === 'person'
                       ? 'Passport is required'
                       : false,
                 }}
@@ -973,8 +973,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           </section>
           <section
             className={`${
-              (watch('shareholder_type') &&
-                watch('shareholder_type') !== 'person' &&
+              (watch('type') &&
+                watch('type') !== 'person' &&
                 watch('rwandan_company') === 'no') ||
               (watch('rwandan_company') === 'yes' && searchMember?.data)
                 ? 'flex'
@@ -987,7 +987,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.company_name}
               rules={{
                 required:
-                  watch('shareholder_type') !== 'person'
+                  watch('type') !== 'person'
                     ? 'Company name is required'
                     : false,
               }}
@@ -1033,7 +1033,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('shareholder_type') !== 'person' &&
+                  watch('type') !== 'person' &&
                   watch('rwandan_company') === 'no'
                     ? 'Select country of incorporation'
                     : false,
@@ -1041,7 +1041,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
-                    {watch('shareholder_type') !== 'person' &&
+                    {watch('type') !== 'person' &&
                     watch('rwandan_company') === 'yes' ? (
                       <menu className="flex flex-col gap-2">
                         <p className="flex items-center gap-1 text-[14px]">
@@ -1082,7 +1082,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('shareholder_type') !== 'person' &&
+                  watch('type') !== 'person' &&
                   watch('rwandan_company') === 'no'
                     ? 'Registration date is required'
                     : false,
@@ -1098,7 +1098,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
-                    {watch('shareholder_type') !== 'person' &&
+                    {watch('type') !== 'person' &&
                     watch('rwandan_company') === 'yes' ? (
                       <menu className="flex flex-col gap-2">
                         <p className="flex items-center gap-1 text-[14px]">
@@ -1134,10 +1134,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.email}
               rules={{
                 required:
-                  watch('shareholder_type') !== 'person' &&
+                  watch('type') !== 'person' &&
                   'Email address is required',
                 validate: (value) => {
-                  if (watch('shareholder_type') !== 'person') {
+                  if (watch('type') !== 'person') {
                     return (
                       validateInputs(String(value), 'email') ||
                       'Invalid email address'
@@ -1169,7 +1169,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('shareholder_type') !== 'person'
+                  watch('type') !== 'person'
                     ? 'Company phone number is required'
                     : false,
                 validate: (value) => {
@@ -1232,7 +1232,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           </section>
           <article
             className={`${
-              watch('shareholder_type') ? 'flex' : 'hidden'
+              watch('type') ? 'flex' : 'hidden'
             } w-full items-center justify-end`}
           >
             <Button
@@ -1246,7 +1246,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 setTimeout(() => {
                   setIsLoading(false);
                   if (
-                    watch('shareholder_type') === 'person' &&
+                    watch('type') === 'person' &&
                     watch('document_type') === 'nid'
                   ) {
                     setShowVerifyPhone(true);
@@ -1263,8 +1263,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             </h2>
             <Table
               rowClickHandler={(row) => {
-                dispatch(setShareholderDetailsModal(true));
-                setShareholderDetails(row);
+                dispatch(setBusinessPersonDetailsModal(true));
+                setShareholderDetails(row?.original);
               }}
               data={
                 shareholders?.length > 0
@@ -1277,7 +1277,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                               shareholder?.last_name || ''
                             }`
                           : shareholder?.company_name,
-                        type: capitalizeString(shareholder?.shareholder_type),
+                        type: capitalizeString(shareholder?.type),
                       };
                     })
                   : []
@@ -1285,7 +1285,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              rowClickHandler={undefined}
             />
           </section>
           <menu
@@ -1377,7 +1376,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           setDocumentUrl={setAttachmentPreview}
         />
       )}
-      <ShareholderDetails shareholder={shareholderDetails} />
+      <BusinessPersonDetails personDetails={shareholderDetails} />
       <OTPVerificationCard
         phone={watch('phone')}
         isOpen={showVerifyPhone}

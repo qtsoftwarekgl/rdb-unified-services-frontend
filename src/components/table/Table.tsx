@@ -1,6 +1,7 @@
 import {
   ColumnDef,
   ColumnFiltersState,
+  Row,
   SortingState,
   VisibilityState,
   flexRender,
@@ -108,7 +109,7 @@ export default function Table<TData, TValue>({
                     e.preventDefault();
                     rowClickHandler &&
                       row?.id !== "no" &&
-                      rowClickHandler(row.original);
+                      rowClickHandler(row as Row<TData>["original"]);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

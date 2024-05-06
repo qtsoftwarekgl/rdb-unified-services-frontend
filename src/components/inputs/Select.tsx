@@ -18,6 +18,7 @@ interface SelectProps {
   value?: string | undefined;
   required?: boolean;
   labelClassName?: string | undefined;
+  name?: string | undefined;
 }
 
 const Select: FC<SelectProps> = ({
@@ -30,7 +31,9 @@ const Select: FC<SelectProps> = ({
   label = undefined,
   required = false,
   labelClassName = undefined,
+  name = undefined,
 }) => {
+
   return (
     <label className={`flex flex-col gap-1 w-full ${labelClassName}`}>
       <p className={label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}>
@@ -40,6 +43,7 @@ const Select: FC<SelectProps> = ({
         onValueChange={onChange}
         defaultValue={defaultValue}
         value={value}
+        name={name}
       >
         <SelectTrigger
           className={`w-full focus:ring-transparent ring-0 h-10 ${className}`}
