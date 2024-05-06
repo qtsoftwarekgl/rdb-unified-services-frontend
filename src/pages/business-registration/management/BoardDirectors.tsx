@@ -131,7 +131,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           ],
         })
       );
-      reset();
+      reset({
+        position: '',
+      });
       setAttachmentFile(null);
       setSearchMember({
         loading: false,
@@ -239,7 +241,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
     {
       header: 'action',
       accesorKey: 'action',
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <menu className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -341,7 +343,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           label: 'Member',
                         },
                       ]}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         reset({
                           position: e,
                         });
@@ -356,6 +358,10 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                             message:
                               'Cannot have more than one chairpeople in a company.',
                           });
+                          setTimeout(() => {
+                            clearErrors('position_conflict');
+                          }, 1500);
+                          await trigger('position');
                           setValue('document_type', '');
                           setValue('position', '');
                           return;

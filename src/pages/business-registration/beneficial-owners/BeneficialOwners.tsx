@@ -117,7 +117,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           beneficial_owners: [{ ...data }, ...beneficial_owners],
         })
       );
-      reset();
+      reset({
+        beneficial_type: '',
+      });
       setSearchMember({
         ...searchMember,
         data: null,

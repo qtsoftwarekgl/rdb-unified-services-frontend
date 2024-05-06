@@ -4,6 +4,7 @@ import OTPInputs from '../inputs/OTPInputs';
 import Button from '../inputs/Button';
 import { useState } from 'react';
 import Loader from '../Loader';
+import { maskPhoneDigits } from '@/helpers/strings';
 
 type OTPVerificationCardProps = {
   isOpen: boolean;
@@ -48,7 +49,7 @@ const OTPVerificationCard = ({
         <h1 className="flex text-center text-[14px] uppercase items-center gap-1">
           Enter a verification code sent to{' '}
           <span className="text-[14px] font-semibold uppercase">
-            {String(phone)}
+            {maskPhoneDigits(String(phone))}
           </span>
         </h1>
         <form

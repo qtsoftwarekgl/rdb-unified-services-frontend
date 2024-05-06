@@ -60,7 +60,7 @@ const Select: FC<SelectProps> = ({
                   value={option.value}
                   className="cursor-pointer text-[13px] py-1"
                 >
-                  <p className="text-[13px]">{option.label}</p>
+                  <p className="text-[13px] py-[3px]">{option.label}</p>
                 </SelectItem>
               );
             })}

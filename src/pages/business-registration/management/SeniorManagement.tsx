@@ -134,6 +134,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         loading: false,
         error: false,
       });
+      reset({
+        position: '',
+      });
       setValue('attachment', null);
       setAttachmentFile(null);
       setSearchMember({
@@ -141,7 +144,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         error: false,
         data: null,
       });
-      reset();
     }, 1000);
     return data;
   };
@@ -486,7 +488,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            clearErrors('document_no');
                             await trigger('document_no');
                           }}
                         />
