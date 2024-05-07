@@ -15,6 +15,7 @@ import {
 } from "../../states/features/nameReservationSlice";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
+import { generateUUID } from "@/helpers/strings";
 
 type Props = {
   isOpen: boolean;
@@ -46,6 +47,7 @@ const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
+    const entryId = generateUUID();
     setIsLoading({
       search: false,
       submit: true,
@@ -61,13 +63,13 @@ const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
       dispatch(setNameReservation(null));
       dispatch(
         setUserApplications({
-          entry_id,
+          entry_id: entryId,
           type: 'name_reservation',
           status: 'submitted',
           registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
           created_at: moment().format(),
           name: data.name,
-          path: `/name-reservation?entry_id=${entry_id}`,
+          path: `/name-reservation?entry_id=${entryId}`,
           active_tab: 'name_reservation',
           active_step: 'name_reservation',
         })

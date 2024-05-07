@@ -80,7 +80,7 @@ const BusinessPersonDetails: FC<BusinessPersonDetailsProps> = ({
                   (personDetails?.incorporation_country ||
                     personDetails?.country)
               )?.name
-            }
+              || 'Rwanda'}
           </span>
         </p>
         {personDetails?.type !== 'person' && (

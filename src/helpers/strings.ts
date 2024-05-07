@@ -29,6 +29,7 @@ export const generateUUID = () => {
 
 export const formatCompanyData = (business: any) => {
   if (business?.type === 'name_reservation') {
+    console.log(business)
     return {
       ...business,
       company_name: business?.name || 'N/A',

@@ -12,6 +12,8 @@ export const userApplicationsSlice = createSlice({
       [],
     userReviewCommentsModal: false,
     user_review_comments: [],
+    approveApplicationModal: false,
+    selectedApplication: null,
   },
   reducers: {
     // SET USER APPLICATIONS
@@ -102,6 +104,16 @@ export const userApplicationsSlice = createSlice({
         (app) => app?.entry_id !== action.payload
       );
     },
+
+    // SET APPROVE APPLICATION MODAL
+    setApproveApplicationModal: (state, action) => {
+      state.approveApplicationModal = action.payload;
+    },
+
+    // SET SELECTED APPLICATION
+    setSelectedApplication: (state, action) => {
+      state.selectedApplication = action.payload;
+    },
   },
 });
 
@@ -117,4 +129,6 @@ export const {
   setUserReviewComments,
   updateUserReviewComment,
   deleteUserApplication,
+  setApproveApplicationModal,
+  setSelectedApplication,
 } = userApplicationsSlice.actions;

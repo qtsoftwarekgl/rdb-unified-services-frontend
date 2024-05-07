@@ -36,7 +36,7 @@ const ReviewRegistration = () => {
 
   if (user?.email?.includes('infoverifier@rdb'))
     applications = applications.filter((company) => {
-      return company?.status !== 'pending_approval';
+      return !['approved', 'pending_approval'].includes(company?.status);
     });
 
   if (user?.email?.includes('infoapprover@rdb'))
@@ -51,7 +51,7 @@ const ReviewRegistration = () => {
         data={applications}
         description=""
         actionIcon={faMagnifyingGlass}
-        notDataMessage="No registrations to review"
+        notDataMessage="No registrations to review for now. Enjoy your day!"
         handleClickAction={() => {}}
       />
     </AdminLayout>

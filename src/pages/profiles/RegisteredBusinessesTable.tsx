@@ -15,24 +15,26 @@ const RegisteredBusinessesTable = () => {
   );
 
   const registeredBusinesses = user_applications
-    .filter((app) => app.status === "approved")
+    .filter(
+      (app) => app.status === 'approved' && app.type !== 'name_reservation'
+    )
     .map(formatCompanyData);
 
   const colors = (status: string) => {
-    if (status === "active") {
-      return "bg-[#82ffa3] text-[#0d7b3e]";
+    if (status === 'active') {
+      return 'bg-[#82ffa3] text-[#0d7b3e]';
     }
-    if (status === "closed") {
-      return "bg-[#eac3c3] text-red-500";
+    if (status === 'closed') {
+      return 'bg-[#eac3c3] text-red-500';
     }
-    if (status === "approved") {
-      return "bg-[#cfeaff] text-secondary";
+    if (status === 'approved') {
+      return 'bg-[#cfeaff] text-secondary';
     }
-    if (status === "dormant") {
-      return "bg-[#e4e4e4] text-[#6b6b6b]";
+    if (status === 'dormant') {
+      return 'bg-[#e4e4e4] text-[#6b6b6b]';
     }
-    if (status === "pending") {
-      return "bg-yellow-100 text-yellow-500";
+    if (status === 'pending') {
+      return 'bg-yellow-100 text-yellow-500';
     }
   };
   const colums = [
