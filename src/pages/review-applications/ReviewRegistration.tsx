@@ -36,12 +36,12 @@ const ReviewRegistration = () => {
 
   if (user?.email?.includes('infoverifier@rdb'))
     applications = applications.filter((company) => {
-      return company.status !== 'pending_approval';
+      return company?.status !== 'pending_approval';
     });
 
   if (user?.email?.includes('infoapprover@rdb'))
     applications = applications.filter((company) => {
-      return company.status === capitalizeString('pending_approval');
+      return company.status === 'pending_approval';
     });
 
   return (

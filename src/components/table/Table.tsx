@@ -73,7 +73,9 @@ export default function Table<TData, TValue>({
 
   return (
     <div className="space-y-4 w-full my-4">
-      {showFilter && <TableToolbar table={table} columns={columns} showExport={showExport} />}
+      {showFilter && (
+        <TableToolbar table={table} columns={columns} showExport={showExport} />
+      )}
       <div className="rounded-md border">
         <DataTable>
           <TableHeader className="px-0">
@@ -103,13 +105,13 @@ export default function Table<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className={`p-2 ${rowClickHandler ? "cursor-pointer" : ""}`}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className={`p-2 ${rowClickHandler ? 'cursor-pointer' : ''}`}
                   onClick={(e) => {
                     e.preventDefault();
                     rowClickHandler &&
-                      row?.id !== "no" &&
-                      rowClickHandler(row as Row<TData>["original"]);
+                      row?.id !== 'no' &&
+                      rowClickHandler(row as Row<TData>['original']);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -117,7 +119,11 @@ export default function Table<TData, TValue>({
                       className="text-[13px] p-4"
                       key={cell.id}
                       onClick={(e) => {
-                        if (cell.column.id === "no") {
+                        if (
+                          ['no', 'action', 'checkbox', 'action'].includes(
+                            cell.column.id || cell.column.accessorKey
+                          )
+                        ) {
                           e.preventDefault();
                           e.stopPropagation();
                         }

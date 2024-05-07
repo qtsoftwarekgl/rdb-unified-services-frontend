@@ -223,19 +223,19 @@ export const companyDocuments = [
     documentName: "Certificate of Incorporation",
     documentType: "Certificate",
     issuedDate: "12-06-2022",
-    document_url: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/company_certificate.pdf",
   },
   {
     documentName: "Memorandum of Association",
     documentType: "Certificate",
     issuedDate: "12-06-2022",
-    document_url: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/company_certificate.pdf",
   },
   {
     documentName: "Article of Association",
     documentType: "Certificate",
     issuedDate: "12-06-2022",
-    document_url: "/public/BusinessCrt_202104051447207533.pdf",
+    document_url: "/public/company_certificate.pdf",
   },
   {
     documentName: "Form CAC 7",

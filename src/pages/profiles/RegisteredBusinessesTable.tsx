@@ -1,7 +1,7 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
-import { formatCompanyData, formatDate } from "../../helpers/strings";
+import { capitalizeString, formatCompanyData, formatDate } from "../../helpers/strings";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../states/store";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
@@ -43,6 +43,9 @@ const RegisteredBusinessesTable = () => {
     {
       header: "Company Name",
       accessorKey: "company_name",
+      cell: ({ row }) => {
+        return row?.original?.company_name?.toUpperCase();
+      }
     },
     {
       header: "Status",
@@ -55,7 +58,7 @@ const RegisteredBusinessesTable = () => {
             )}`}
           >
             <span className=" w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-            <span className="text-sm font-light ">{row?.original?.status}</span>
+            <span className="text-sm font-light ">{capitalizeString(row?.original?.status)}</span>
           </span>
         );
       },

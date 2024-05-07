@@ -13,6 +13,7 @@ import { ReviewComment } from "./AddReviewComments";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { faCheckDouble } from "@fortawesome/free-solid-svg-icons";
+import { setBusinessActiveStep, setBusinessActiveTab } from "@/states/features/businessRegistrationSlice";
 
 interface UserReviewCommentsProps {
   active_tab: TabType;
@@ -42,7 +43,13 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
           return (
             <menu
               key={index}
-              className="flex items-center justify-between w-full gap-3 p-2 px-4 rounded-md hover:bg-slate-50"
+              className="flex items-center justify-between w-full gap-3 p-2 px-4 rounded-md hover:bg-slate-50 hover:cursor-pointer"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessActiveTab(comment?.tab?.name));
+                dispatch(setBusinessActiveStep(comment?.step?.name));
+                dispatch(setUserReviewCommentsModal(false));
+              }}
             >
               <ul className="flex flex-col gap-1">
                 <h3 className="font-semibold uppercase text-primary">
@@ -57,6 +64,7 @@ const UserReviewComments: FC<UserReviewCommentsProps> = () => {
                   className="w-3 h-3 p-2 text-white transition-all duration-200 ease-in-out rounded-full cursor-pointer hover:scale-102 bg-primary"
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     dispatch(
                       updateReviewComment({ ...comment, checked: true })
                     );
