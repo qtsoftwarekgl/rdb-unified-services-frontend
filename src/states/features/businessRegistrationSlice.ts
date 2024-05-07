@@ -181,6 +181,8 @@ export const businessRegistrationSlice = createSlice({
     capitalDetailsModal: false,
     confirmDeleteModal: false,
     shareholderDetailsModal: false,
+    beneficialOwnerDetailsModal: false,
+    businessPersonDetailsModal: false,
   },
   reducers: {
     // SET REGISTRATION TABS
@@ -393,6 +395,16 @@ export const businessRegistrationSlice = createSlice({
     state.shareholderDetailsModal = action.payload;
   },
 
+  // SET BENEFICIAL OWNER DETAILS MODAL
+  setBeneficialOwnerDetailsModal: (state, action) => {
+    state.beneficialOwnerDetailsModal = action.payload;
+  },
+
+  // SET PERSON DETAILS MODAL
+  setBusinessPersonDetailsModal: (state, action) => {
+    state.businessPersonDetailsModal = action.payload;
+  },
+
 }});
 
 export default businessRegistrationSlice.reducer;
@@ -408,4 +420,6 @@ export const {
   setCapitalDetailsModal,
   setConfirmDeleteModal,
   setShareholderDetailsModal,
+  setBeneficialOwnerDetailsModal,
+  setBusinessPersonDetailsModal
 } = businessRegistrationSlice.actions;

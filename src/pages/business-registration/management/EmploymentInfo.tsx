@@ -298,7 +298,9 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
             )}
             <Button
               value={isLoading?.submit ? <Loader /> : "Save & Continue"}
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors).length > 0) return;
                 setIsLoading({
                   ...isLoading,
                   submit: true,

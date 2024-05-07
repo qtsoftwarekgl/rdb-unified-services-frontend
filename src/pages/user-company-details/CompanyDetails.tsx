@@ -1,27 +1,29 @@
-import UserLayout from "../../containers/UserLayout";
+import UserLayout from '../../containers/UserLayout';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../components/Accordion";
-import { RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import Table from "../../components/table/Table";
-import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
-import { capitalizeString } from "../../helpers/strings";
-import { countriesList } from "../../constants/countries";
-import Button from "../../components/inputs/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackward } from "@fortawesome/free-solid-svg-icons";
-import { provicesList } from "../../constants/provinces";
-import { districtsList } from "../../constants/districts";
-import { sectorsList } from "../../constants/sectors";
-import { cellsList } from "../../constants/cells";
-import { villagesList } from "../../constants/villages";
+} from '../../components/Accordion';
+import { RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import Table from '../../components/table/Table';
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { setViewedCompany } from '../../states/features/userCompaniesSlice';
+import { capitalizeString } from '../../helpers/strings';
+import { countriesList } from '../../constants/countries';
+import Button from '../../components/inputs/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBackward } from '@fortawesome/free-solid-svg-icons';
+import { provicesList } from '../../constants/provinces';
+import { districtsList } from '../../constants/districts';
+import { sectorsList } from '../../constants/sectors';
+import { cellsList } from '../../constants/cells';
+import { villagesList } from '../../constants/villages';
+import { business_company_details } from '../business-registration/general-information/CompanyDetails';
+import { business_shareholders } from '../business-registration/capital-information/ShareHolders';
 
 const CompanyDetails = () => {
   const { id } = useParams();
@@ -41,7 +43,9 @@ const CompanyDetails = () => {
     if (id) {
       dispatch(
         setViewedCompany(
-          user_applications?.find((business) => business.entry_id === id)
+          user_applications?.find(
+            (business: { entry_id: string }) => business.entry_id === id
+          )
         )
       );
     }
@@ -51,7 +55,7 @@ const CompanyDetails = () => {
     };
   }, [id, dispatch, user_applications]);
 
-  const companyInfo =
+  const companyInfo: business_company_details =
     viewedCompany?.company_details ||
     viewedCompany?.foreign_company_details ||
     null;
@@ -85,54 +89,54 @@ const CompanyDetails = () => {
 
   const managementMemberColumns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Position",
-      accessorKey: "position",
+      header: 'Position',
+      accessorKey: 'position',
     },
     {
-      header: "Phone",
-      accessorKey: "phone",
+      header: 'Phone',
+      accessorKey: 'phone',
     },
   ];
 
   const beneficialOwnersColumns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: 'Phone number',
+      accessorKey: 'phone',
     },
     {
-      header: "Control type",
-      accessorKey: "control_type",
+      header: 'Control type',
+      accessorKey: 'control_type',
     },
     {
-      header: "Ownership type",
-      accessorKey: "ownership_type",
+      header: 'Ownership type',
+      accessorKey: 'ownership_type',
     },
   ];
 
   const shareholdersColumns = [
     {
-      header: "Shareholder",
-      accessorKey: "name",
+      header: 'Shareholder',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: 'Type',
+      accessorKey: 'type',
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: 'Phone number',
+      accessorKey: 'phone',
     },
     {
-      header: "Country",
-      accessorKey: "country",
+      header: 'Country',
+      accessorKey: 'country',
     },
   ];
 
@@ -141,13 +145,13 @@ const CompanyDetails = () => {
       <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f2f2f2] rounded-md">
         <menu className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-medium text-center text-black ">
-            {t("company details")}
+            {t('company details')}
           </h1>
           <Button
             primary
             onClick={(e) => {
               e.preventDefault();
-              navigate("/user-applications");
+              navigate('/user-applications');
             }}
             value={
               <menu className="flex items-center gap-2">
@@ -168,20 +172,20 @@ const CompanyDetails = () => {
                 className="relative border-none"
               >
                 {Object?.entries(companyInfo)
-                  ?.filter(([key]) => key !== "step")
+                  ?.filter(([key]) => key !== 'step')
                   ?.map(([key, value], index: number) => {
                     return (
                       <p key={index} className="flex items-center gap-4 mb-4">
                         <span className="font-semibold">
                           {capitalizeString(key)}:
-                        </span>{" "}
+                        </span>{' '}
                         <span className="font-normal">
                           {String(
-                            typeof value === "object" &&
+                            typeof value === 'object' &&
                               value !== null &&
                               !Array.isArray(value)
-                              ? value?.name
-                              : value ?? ""
+                              ? capitalizeString(value?.name)
+                              : capitalizeString(value) ?? ''
                           )}
                         </span>
                       </p>
@@ -199,13 +203,13 @@ const CompanyDetails = () => {
               </AccordionTrigger>
               <AccordionContent underlineHeader className="border-none">
                 {Object?.entries(companyAddress)
-                  ?.filter(([key]) => key !== "step")
+                  ?.filter(([key]) => key !== 'step')
                   ?.map(([key, value], index: number) => {
                     return (
                       <p key={index} className="flex items-center gap-4 mb-4">
                         <span className="font-semibold">
                           {capitalizeString(key)}:
-                        </span>{" "}
+                        </span>{' '}
                         <span className="font-normal">
                           {String(
                             provicesList.find(
@@ -223,7 +227,7 @@ const CompanyDetails = () => {
                                 (village) => village.code === value
                               )?.name ||
                               value
-                          ) ?? ""}
+                          ) ?? ''}
                         </span>
                       </p>
                     );
@@ -242,26 +246,26 @@ const CompanyDetails = () => {
                 <menu className="flex gap-20 max-sm:flex-col max-sm:gap-8">
                   <menu>
                     <p className="font-semibold">
-                      Register for VAT:{" "}
+                      Register for VAT:{' '}
                       <span className="font-normal">
                         {businessActivities.vat &&
                           capitalizeString(businessActivities.vat)}
                       </span>
                     </p>
                     <p className="font-semibold">
-                      Annual turnover:{" "}
+                      Annual turnover:{' '}
                       <span className="font-normal">
                         {businessActivities?.turnover
                           ? capitalizeString(
                               String(businessActivities?.turnover)
                             )
-                          : "N/A"}
+                          : 'N/A'}
                       </span>
                     </p>
                   </menu>
                   <menu className="flex flex-col gap-3">
                     <h3 className="font-semibold underline text-md">
-                      Business lines:{" "}
+                      Business lines:{' '}
                     </h3>
                     <ul className="flex flex-col gap-2">
                       {businessActivities?.business_lines?.map(
@@ -294,7 +298,9 @@ const CompanyDetails = () => {
                   data={companyManagementMembers.map((member) => {
                     return {
                       ...member,
-                      name: member?.first_name + " " + member?.last_name || "",
+                      name:
+                        member?.first_name + ' ' + (member?.last_name || '') ||
+                        '',
                     };
                   })}
                   className="bg-white"
@@ -313,15 +319,15 @@ const CompanyDetails = () => {
               <AccordionContent underlineHeader className="border-none">
                 <menu className="flex flex-col gap-2">
                   <p className="font-semibold">
-                    Company has employees:{" "}
+                    Company has employees:{' '}
                     <span className="font-normal">
                       {employment_info?.has_employees &&
                         capitalizeString(employment_info?.has_employees)}
                     </span>
                   </p>
-                  {employment_info?.has_employees !== "no" && (
+                  {employment_info?.has_employees !== 'no' && (
                     <p className="font-semibold">
-                      Number of employees:{" "}
+                      Number of employees:{' '}
                       <span className="font-normal">
                         {employment_info?.employees_no}
                       </span>
@@ -329,9 +335,9 @@ const CompanyDetails = () => {
                   )}
                   <p>
                     <span className="font-semibold">
-                      Account reference date:{" "}
+                      Account reference date:{' '}
                       <span className="font-normal">
-                        {employment_info?.reference_date || "N/A"}
+                        {employment_info?.reference_date || 'N/A'}
                       </span>
                     </span>
                   </p>
@@ -349,27 +355,27 @@ const CompanyDetails = () => {
               <AccordionContent underlineHeader className="border-none">
                 <menu className="flex flex-col gap-2">
                   <p className="font-semibold">
-                    Total business capital:{" "}
+                    Total business capital:{' '}
                     <span className="font-normal">
                       RWF {share_details?.company_capital}
                     </span>
                   </p>
                   <p className="font-semibold">
-                    Total assignable shares:{" "}
+                    Total assignable shares:{' '}
                     <span className="font-normal">
                       {share_details?.total_shares}
                     </span>
                   </p>
                   <p className="font-semibold">
-                    Total assignable shares' values:{" "}
+                    Total assignable shares' values:{' '}
                     <span className="font-normal">
                       RWF {share_details?.total_value}
                     </span>
                   </p>
                   <p className="font-semibold">
-                    Remaining capital:{" "}
+                    Remaining capital:{' '}
                     <span className="font-normal">
-                      RWF{" "}
+                      RWF{' '}
                       {Number(share_details?.company_capital) -
                         Number(share_details?.total_value)}
                     </span>
@@ -390,17 +396,17 @@ const CompanyDetails = () => {
                   showFilter={false}
                   showPagination={false}
                   columns={shareholdersColumns}
-                  data={shareholders?.map((shareholder) => {
+                  data={shareholders?.map((shareholder: business_shareholders) => {
                     return {
                       ...shareholder,
                       name: shareholder?.company_name
                         ? shareholder?.company_name
-                        : `${shareholder?.first_name || ""} ${
-                            shareholder?.last_name || ""
+                        : `${shareholder?.first_name || ''} ${
+                            shareholder?.last_name || ''
                           }`,
                       type:
-                        shareholder?.shareholder_type &&
-                        capitalizeString(shareholder?.shareholder_type),
+                        shareholder?.type &&
+                        capitalizeString(shareholder?.type),
                       phone: shareholder?.phone || shareholder?.company_phone,
                       country: countriesList?.find(
                         (country) =>
@@ -431,7 +437,8 @@ const CompanyDetails = () => {
                   data={border_of_directors.map((member) => {
                     return {
                       ...member,
-                      name: member?.first_name + " " + member?.last_name,
+                      name:
+                        member?.first_name + ' ' + (member?.last_name || ''),
                     };
                   })}
                   className="bg-white"
@@ -457,16 +464,14 @@ const CompanyDetails = () => {
                       ...owner,
                       name: owner?.company_name
                         ? owner?.company_name
-                        : `${owner?.first_name || ""} ${
-                            owner?.last_name || ""
+                        : `${owner?.first_name || ''} ${
+                            owner?.last_name || ''
                           }`,
                       phone: owner?.phone || owner?.company_phone,
                       control_type: capitalizeString(owner?.control_type),
                       ownership_type: capitalizeString(owner?.ownership_type),
                     };
                   })}
-                  className="bg-white"
-                  header="Beneficial Owners"
                 />
               </AccordionContent>
             </AccordionItem>

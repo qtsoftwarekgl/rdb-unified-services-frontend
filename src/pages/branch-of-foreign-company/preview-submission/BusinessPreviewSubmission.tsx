@@ -372,7 +372,7 @@ const PreviewSubmission = ({
                 beneficial_owner?.attachment &&
                 Object.keys(beneficial_owner?.attachment).length
               ) {
-                if (beneficial_owner?.beneficial_type === "person") {
+                if (beneficial_owner?.type === "person") {
                   return (
                     <p
                       key={index}

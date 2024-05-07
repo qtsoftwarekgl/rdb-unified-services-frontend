@@ -34,25 +34,6 @@ const Navbar = ({ className }: Props) => {
   const unresolvedComments = application_review_comments.filter(
     (comment: ReviewComment) => !comment.checked
   ).length;
-  // const { user_applications } = useSelector(
-  //   (state: RootState) => state.userApplication
-  // );
-
-  // const countCommentsForUsers = useCallback(() => {
-  //   return application_review_comments.reduce(
-  //     (commentCounts: number, comment: ReviewComment) => {
-  //       // Find the user application corresponding to the comment entry ID
-  //       const userApp = user_applications.find(
-  //         (app) => app?.entry_id === comment?.entry_id && !comment?.checked
-  //       );
-  //       // if (userApp?.owner === user.email) {
-  //       ++commentCounts;
-  //       // }
-  //       return commentCounts;
-  //     },
-  //     0
-  //   );
-  // }, [application_review_comments, user_applications, user.email]);
 
   if (["auth/login", "auth/register"].includes(pathname)) {
     return null;
@@ -188,7 +169,7 @@ const Navbar = ({ className }: Props) => {
                   navigate(`${nav?.link}`);
                   setIsOpen(false);
                 }}
-                className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 rounded-md ${
+                className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 ${
                   ["Theme", "Notifications"].includes(nav?.title)
                     ? "min-[450px]:hidden"
                     : "flex"

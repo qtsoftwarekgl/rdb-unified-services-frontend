@@ -11,6 +11,7 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
+  setBusinessPersonDetailsModal,
 } from "../../../states/features/businessRegistrationSlice";
 import { AppDispatch, RootState } from "../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,6 +29,7 @@ import validateInputs from "../../../helpers/validations";
 import { attachmentFileColumns } from "../../../constants/businessRegistration";
 import ViewDocument from "../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
+import BusinessPersonDetails from "../BusinessPersonDetails";
 
 export interface business_senior_management {
   first_name: string;
@@ -87,6 +89,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
   });
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
+  const [seniorManagementDetails, setSeniorManagementDetails] = useState<business_senior_management | null>(null);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -134,6 +137,9 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         loading: false,
         error: false,
       });
+      reset({
+        position: '',
+      });
       setValue('attachment', null);
       setAttachmentFile(null);
       setSearchMember({
@@ -141,7 +147,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
         error: false,
         data: null,
       });
-      reset();
     }, 1000);
     return data;
   };
@@ -486,7 +491,6 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            clearErrors('document_no');
                             await trigger('document_no');
                           }}
                         />
@@ -854,7 +858,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               columns={columns}
               showFilter={false}
               showPagination={false}
-              rowClickHandler={undefined}
+              rowClickHandler={(row) => {
+                setSeniorManagementDetails(row?.original);
+                dispatch(setBusinessPersonDetailsModal(true));
+              }}
             />
             {errors?.submit && (
               <p className="text-red-500 text-[13px] text-center my-2">
@@ -950,6 +957,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           setDocumentUrl={setAttachmentPreview}
         />
       )}
+      <BusinessPersonDetails personDetails={seniorManagementDetails} />
       <OTPVerificationCard
         phone={watch('phone')}
         isOpen={showVerifyPhone}

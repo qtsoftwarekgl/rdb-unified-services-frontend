@@ -130,7 +130,7 @@ const BusinessActivity = ({
               </p>
             )}
           </label>
-          <Controller
+          {selectedSector && <Controller
             name="business_lines"
             rules={{
               validate: () => {
@@ -338,7 +338,7 @@ const BusinessActivity = ({
                 </section>
               </menu>
             )}
-          />
+          />}
           {errors.business_lines && (
             <p className="text-[13px] text-red-500">
               {String(errors.business_lines.message)}

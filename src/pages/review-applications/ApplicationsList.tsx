@@ -12,6 +12,8 @@ import { Row } from "@tanstack/react-table";
 import RowSelectionCheckbox from "@/components/table/RowSelectionCheckbox";
 import RegistrationApplicationCard from "@/components/cards/RegistrationApplicationCard";
 import { capitalizeString } from "@/helpers/strings";
+import { setApproveApplicationModal, setSelectedApplication } from "@/states/features/userApplicationSlice";
+import ApproveApplication from "./ApproveApplication";
 
 type Props = {
   title: string;
@@ -173,8 +175,13 @@ const ApplicatinsList = ({
 
     if (!company) return;
 
-    dispatch(setBusinessActiveTab("general_information"));
-    dispatch(setBusinessActiveStep("company_details"));
+    if (company?.type !== 'business_registration') {
+      dispatch(setSelectedApplication(company));
+      dispatch(setApproveApplicationModal(true));
+      return;
+    }
+    dispatch(setBusinessActiveTab('general_information'));
+    dispatch(setBusinessActiveStep('company_details'));
 
     navigate(row.original?.path);
   };
@@ -212,11 +219,12 @@ const ApplicatinsList = ({
               ?.filter((column) => column !== "action")}
           />
         ) : (
-          <span className="flex items-center justify-start w-full">
-            <h1 className="uppercase text-primary">{notDataMessage}</h1>
+          <span className="flex items-center justify-center w-full min-h-[20vh]">
+            <h1 className="uppercase text-primary font-semibold">{notDataMessage}</h1>
           </span>
         )}
       </section>
+      <ApproveApplication />
     </section>
   );
 };

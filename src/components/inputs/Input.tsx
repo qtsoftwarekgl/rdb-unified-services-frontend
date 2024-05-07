@@ -198,9 +198,9 @@ const Input: FC<InputProps> = ({
       )}
       <section className="relative w-full">
         {(prefixIcon || prefixText) && (
-          <menu className="relative w-full">
+          <menu className={`${labelClassName} relative w-full`}>
             <label className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-              <Link to={'#'} onClick={prefixIconHandler} className="">
+              <Link to={'#'} onClick={prefixIconHandler} className="text-secondary">
                 {prefixIcon && (
                   <FontAwesomeIcon className="text-current" icon={prefixIcon} />
                 )}
@@ -215,8 +215,8 @@ const Input: FC<InputProps> = ({
               name={name}
               onChange={onChange}
               placeholder={readOnly ? '' : placeholder}
-              className={`py-[7px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
-              ${prefixIcon ? 'ps-10' : ''} ${prefixText ? 'ps-[3.6rem]' : ''} ${
+              className={`py-[7px] px-6 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
+              ${prefixIcon && 'ps-10'} ${prefixText ? 'ps-[3.6rem]' : ''} ${
                 readOnly &&
                 '!border-[.1px] !border-background hover:cursor-default focus:!border-background'
               }`}

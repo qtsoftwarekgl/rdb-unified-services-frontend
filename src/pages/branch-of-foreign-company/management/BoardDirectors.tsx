@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../components/inputs/Select";
 import Loader from "../../../components/Loader";
@@ -788,6 +788,21 @@ const BoardDirectors = ({
                   setError('board_of_directors', {
                     type: 'manual',
                     message: 'Add at least one board member',
+                  });
+                  setTimeout(() => {
+                    clearErrors('board_of_directors');
+                  }, 4000);
+                  return;
+                }
+                if (
+                  foreign_board_of_directors?.find(
+                    (director: business_board_of_directors) =>
+                      director?.document_type === 'nid'
+                  ) === undefined
+                ) {
+                  setError('board_of_directors', {
+                    type: 'manual',
+                    message: 'Board requires at least one Rwandan local resident in its members',
                   });
                   setTimeout(() => {
                     clearErrors('board_of_directors');

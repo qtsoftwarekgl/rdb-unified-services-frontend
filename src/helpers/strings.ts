@@ -6,7 +6,7 @@ export const formatPhone = (phone: string) => {
   return `250${phone?.slice(-9)}`;
 };
 
-export const formatDate = (date: string | Date) => {
+export const formatDate = (date: string | Date | undefined) => {
   if (!date) return '';
   return moment(date).format('DD/MM/YYYY');
 };
@@ -29,6 +29,7 @@ export const generateUUID = () => {
 
 export const formatCompanyData = (business: any) => {
   if (business?.type === 'name_reservation') {
+    console.log(business)
     return {
       ...business,
       company_name: business?.name || 'N/A',

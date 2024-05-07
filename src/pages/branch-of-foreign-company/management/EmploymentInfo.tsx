@@ -170,7 +170,7 @@ const EmploymentInfo = ({
             />
             <Controller
               name="employees_no"
-              defaultValue={foreign_employment_info?.employees_no || 0}
+              defaultValue={foreign_employment_info?.employees_no}
               rules={{
                 required: "Number of employees is required",
                 validate: (value) => {
@@ -187,7 +187,7 @@ const EmploymentInfo = ({
                   <label className="w-[49%] flex flex-col gap-1">
                     <Input
                       label="Number of employees"
-                      defaultValue={foreign_employment_info?.employees_no || 0}
+                      defaultValue={foreign_employment_info?.employees_no}
                       {...field}
                     />
                     {errors?.employees_no && (

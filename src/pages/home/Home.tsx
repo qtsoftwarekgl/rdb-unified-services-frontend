@@ -5,6 +5,7 @@ import BusinessRegistrationServices from "../business-registration/BusinessRegis
 import { useState } from "react";
 import MortgageRegistrationServices from "../business-registration/MortgageRegistrationServices";
 import { defaultSections } from "../../constants/home";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState(1);
@@ -72,22 +73,21 @@ const Home = () => {
     <main className="relative">
       <Navbar className="!w-full !left-0 !px-12" />
       <section className="absolute w-full h-full top-[2vh]">
-        <section className="flex flex-col items-center justify-center w-full gap-8 py-32 bg-primary">
-          <div>
-            <h1 className="text-5xl font-bold leading-tight text-center text-white">
-              Register your
-            </h1>
-            <h1 className="text-5xl font-bold leading-tight text-white">
-              business on a click.
-            </h1>
-          </div>
+        <section className="flex flex-col items-center justify-center gap-6 py-32 bg-primary">
+          <article className="flex flex-col items-center justify-center gap-6 w-[40%]">
+          <h1 className="text-white font-semibold text-3xl">
+            Register your business in a click!
+          </h1>
           <Input
-            className=" !w-[40%] self-center !rounded-full !py-4 !px-8"
+            prefixIcon={faSearch}
+            className="self-center !rounded-lg !py-[10px] !px-8 !border-none focus:!shadow-xl !ps-10"
+            labelClassName="flex items-center justify-center w-full"
             type="text"
-            placeholder="Search service ..."
+            placeholder="Search service..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          </article>
         </section>
         <section className="max-w-[1500px] p-8 mx-auto">
           <nav className="flex items-center gap-4">
@@ -96,18 +96,18 @@ const Home = () => {
               return (
                 <Link
                   key={index}
-                  to={"#"}
-                  className={` w-1/2 rounded text-center p-6 ${
+                  to={'#'}
+                  className={`w-1/2 rounded text-center p-4 py-3 font-medium ${
                     selected
-                      ? "bg-primary text-white shadow-xl"
-                      : "border border-primary"
+                      ? 'bg-primary text-white shadow-xl'
+                      : 'border border-primary'
                   }`}
                   onClick={(e) => {
                     e.preventDefault();
                     setActiveTab(tab.no);
                   }}
                 >
-                  <span className="text-lg font-bold">{tab.name}</span>
+                 {tab.name}
                 </Link>
               );
             })}
