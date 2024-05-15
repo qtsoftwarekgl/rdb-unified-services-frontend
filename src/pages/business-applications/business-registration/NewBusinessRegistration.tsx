@@ -9,16 +9,22 @@ import {
 import { AppDispatch, RootState } from '../../../states/store';
 import Table from '../../../components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRight,
+  faCircle,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
+  setDeleteApplicationModal,
 } from '../../../states/features/businessRegistrationSlice';
 import SelectReservedName from './SelectReservedName';
 import { setSelectReservedNameModal } from '../../../states/features/nameReservationSlice';
-import { deleteUserApplication } from '../../../states/features/userApplicationSlice';
+import { setSelectedApplication } from '../../../states/features/userApplicationSlice';
 import { UnknownAction } from '@reduxjs/toolkit';
+import DeleteBusinessApplication from './DeleteBusinessApplication';
 
 interface NewRegistrationProps {
   description: string;
@@ -44,7 +50,10 @@ export const NewRegistration = ({
   );
 
   const applicationsInProgress = user_applications
-    .filter((app: any) => app.status === 'in_progress')
+    .filter(
+      (app: any) =>
+        app.status === 'in_progress' && app.type === 'business_registration'
+    )
     .map((business: any) => {
       return {
         ...business,
@@ -80,7 +89,12 @@ export const NewRegistration = ({
     return (
       <menu className="flex items-center gap-6 cursor-pointer">
         <Button
-          value="Resume"
+          value={
+            <menu className="flex items-center gap-1 transition-all duration-200 hover:gap-2">
+              <p className="text-[13px]">Resume</p>
+              <FontAwesomeIcon className="text-[13px]" icon={faArrowRight} />
+            </menu>
+          }
           styled={false}
           className="!bg-transparent"
           onClick={(e) => {
@@ -95,12 +109,18 @@ export const NewRegistration = ({
           }}
         />
         <Button
-          value="Delete"
+          value={
+            <menu className="flex items-center gap-1 transition-all duration-200 hover:gap-2">
+              <p className="text-[13px]">Discard</p>
+              <FontAwesomeIcon className="text-[13px]" icon={faTrash} />
+            </menu>
+          }
           styled={false}
           className="!bg-transparent hover:!bg-transparent !text-red-600 hover:!text-red-600 !shadow-none !p-0"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(deleteUserApplication(row?.original?.entry_id));
+            dispatch(setSelectedApplication(row?.original));
+            dispatch(setDeleteApplicationModal(true));
           }}
         />
       </menu>
@@ -235,6 +255,7 @@ export const NewRegistration = ({
         setActiveStep={setActiveStep}
         setActiveTab={setActiveTab}
       />
+      <DeleteBusinessApplication />
     </UserLayout>
   );
 };

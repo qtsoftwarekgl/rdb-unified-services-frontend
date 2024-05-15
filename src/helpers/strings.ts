@@ -29,7 +29,6 @@ export const generateUUID = () => {
 
 export const formatCompanyData = (business: any) => {
   if (business?.type === 'name_reservation') {
-    console.log(business)
     return {
       ...business,
       company_name: business?.name || 'N/A',
@@ -40,7 +39,7 @@ export const formatCompanyData = (business: any) => {
         business?.entry_id?.split('-')[0] || ''
       ).toUpperCase()}`,
       service_name: business?.type,
-      submission_date: moment(business?.created_at).format('DD/MM/YYYY'),
+      submission_date: formatDate(business?.created_at),
       path: business?.path,
       active_tab: business?.active_tab,
       active_step: business?.active_step,
@@ -58,7 +57,7 @@ export const formatCompanyData = (business: any) => {
       business?.entry_id?.split('-')[0] || ''
     ).toUpperCase()}`,
     service_name: business?.type,
-    submission_date: moment(business?.created_at).format('DD/MM/YYYY'),
+    submission_date: formatDate(business?.created_at),
     path: business?.path,
     active_tab: business?.active_tab,
     active_step: business?.active_step,

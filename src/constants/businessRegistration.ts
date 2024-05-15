@@ -591,17 +591,17 @@ export const personnelTypes = [
     value: "legal_entity",
   },
   {
-    label: "Trust",
-    value: "trust",
+    value: "partnership",
+    label: "Partnership",
   },
   {
-    value: "foundation",
-    label: "Foundation",
+    value: "company",
+    label: "Company",
   },
   {
-    value: "partnership_company",
-    label: "Partnership Company",
-  },
+    value: "ngo",
+    label: "NGO",
+  }
 ];
 
 export const ownerRelationships = [

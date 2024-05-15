@@ -133,7 +133,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
         error: false,
         data: null,
       });
-      reset();
+      reset({
+        shareholder_type: '',
+      });
     }, 1000);
   };
 

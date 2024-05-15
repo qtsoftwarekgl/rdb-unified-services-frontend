@@ -1,17 +1,18 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import Button from '../../../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import Loader from "../../../../components/Loader";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
+} from '../../../../states/features/businessRegistrationSlice';
+import Loader from '../../../../components/Loader';
+import { setUserApplications } from '../../../../states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
+import moment from 'moment';
 
 export interface business_employment_info {
   has_employees: string;
@@ -41,7 +42,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
     formState: { errors },
     setValue,
     watch,
-    trigger
+    trigger,
   } = useForm();
 
   // STATE VARIABLES
@@ -57,10 +58,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
   // SET DEFAULT VALUES
   useEffect(() => {
     if (employment_info) {
-      setValue("has_employees", employment_info?.has_employees);
-      setValue("hiring_date", employment_info?.hiring_date);
-      setValue("employees_no", employment_info?.employees_no);
-      setValue("reference_date", employment_info?.reference_date);
+      setValue('has_employees', employment_info?.has_employees);
+      setValue('hiring_date', employment_info?.hiring_date);
+      setValue('employees_no', employment_info?.employees_no);
+      setValue('reference_date', employment_info?.reference_date);
     }
   }, [employment_info, setValue]);
 
@@ -70,25 +71,28 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: "capital_information",
-          active_step: "share_details",
+          active_tab: 'capital_information',
+          active_step: 'share_details',
           employment_info: {
             ...data,
-            step: "employment_info",
+            step: 'employment_info',
           },
         })
       );
 
       // SET ACTIVE TAB AND STEP
-      let active_tab = "capital_information";
-      let active_step = "share_details";
+      let active_tab = 'capital_information';
+      let active_step = 'share_details';
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
-        active_tab = "preview_submission";
-        active_step = "preview_submission";
+      if (
+        ['in_preview', 'action_required'].includes(status) ||
+        isLoading?.amend
+      ) {
+        active_tab = 'preview_submission';
+        active_step = 'preview_submission';
       }
 
-      dispatch(setBusinessCompletedStep("employment_info"));
+      dispatch(setBusinessCompletedStep('employment_info'));
       dispatch(setBusinessActiveStep(active_step));
       dispatch(setBusinessActiveTab(active_tab));
 
@@ -108,26 +112,53 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset disabled={disableForm} className="flex flex-col w-full gap-6">
           <Controller
+            name="reference_date"
+            control={control}
+            rules={{
+              required: 'Account reference date is required',
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-[49%] flex flex-col gap-1">
+                  <Input
+                    type="date"
+                    required
+                    label="Account reference date"
+                    {...field}
+                    value={moment(`12/31/${new Date().getFullYear()}`).format(
+                      'YYYY-MM-DD'
+                    )}
+                  />
+                  {errors?.reference_date && (
+                    <p className="text-red-600 text-[13px]">
+                      {String(errors?.reference_date?.message)}
+                    </p>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
             name="has_employees"
             control={control}
             defaultValue={employment_info?.has_employees}
-            rules={{ required: "Select a choice" }}
+            rules={{ required: 'Select a choice' }}
             render={({ field }) => {
               return (
                 <menu className="flex flex-col w-full gap-3">
                   <h4 className="flex items-center gap-1 text-[15px]">
-                    Does the company have employees?{" "}
+                    Does the company have employees?{' '}
                     <span className="text-red-600">*</span>
                   </h4>
                   <ul className="flex items-center gap-6">
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch("has_employees") === "yes"}
+                      checked={watch('has_employees') === 'yes'}
                       name={field?.name}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setValue(field?.name, "yes");
+                          setValue(field?.name, 'yes');
                         }
                       }}
                     />
@@ -135,10 +166,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                       type="radio"
                       label="No"
                       name={field?.name}
-                      checked={watch("has_employees") === "no"}
+                      checked={watch('has_employees') === 'no'}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setValue(field?.name, "no");
+                          setValue(field?.name, 'no');
                         }
                       }}
                     />
@@ -154,7 +185,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
           />
           <menu
             className={`${
-              watch("has_employees") === "yes" ? "flex" : "hidden"
+              watch('has_employees') === 'yes' ? 'flex' : 'hidden'
             } w-full items-start gap-5 flex-wrap`}
           >
             <Controller
@@ -163,8 +194,8 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               defaultValue={employment_info?.hiring_date}
               rules={{
                 required:
-                  watch("has_employees") === "yes"
-                    ? "Hiring date is required"
+                  watch('has_employees') === 'yes'
+                    ? 'Hiring date is required'
                     : false,
               }}
               render={({ field }) => {
@@ -191,14 +222,14 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               defaultValue={employment_info?.employees_no}
               rules={{
                 required:
-                  watch("has_employees") === "yes"
-                    ? "Number of employees is required"
+                  watch('has_employees') === 'yes'
+                    ? 'Number of employees is required'
                     : false,
                 validate: (value) => {
-                  if (watch("has_employees") === "yes") {
-                    if (!value) return "Number of employees is required";
+                  if (watch('has_employees') === 'yes') {
+                    if (!value) return 'Number of employees is required';
                     if (value < 1)
-                      return "Number of employees must be greater than 0";
+                      return 'Number of employees must be greater than 0';
                   }
                 },
               }}
@@ -207,45 +238,18 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 return (
                   <label className="w-[49%] flex flex-col gap-1">
                     <Input
-                    required
+                      required
                       label="Number of employees"
                       defaultValue={employment_info?.employees_no}
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger('employees_no')
+                        await trigger('employees_no');
                       }}
                     />
                     {errors?.employees_no && (
                       <p className="text-red-600 text-[13px]">
                         {String(errors?.employees_no?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="reference_date"
-              control={control}
-              rules={{
-                required:
-                  watch("has_employees") === "yes"
-                    ? "Account reference date is required"
-                    : false,
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="w-[49%] flex flex-col gap-1">
-                    <Input
-                      type="date"
-                      required
-                      label="Account reference date"
-                      {...field}
-                    />
-                    {errors?.reference_date && (
-                      <p className="text-red-600 text-[13px]">
-                        {String(errors?.reference_date?.message)}
                       </p>
                     )}
                   </label>
@@ -261,12 +265,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep("senior_management"));
+                dispatch(setBusinessActiveStep('senior_management'));
               }}
             />
-            {status === "is_Amending" && (
+            {status === 'is_Amending' && (
               <Button
-                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
                 onClick={() => {
                   setIsLoading({
                     ...isLoading,
@@ -281,7 +285,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
             {['in_preview', 'action_required'].includes(status) && (
               <Button
                 value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
+                  isLoading?.preview ? <Loader /> : 'Save & Complete Review'
                 }
                 onClick={() => {
                   setIsLoading({
@@ -297,7 +301,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               />
             )}
             <Button
-              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
+              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
               onClick={async () => {
                 await trigger();
                 if (Object.keys(errors).length > 0) return;
@@ -308,7 +312,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entry_id, status: 'in_progress' })
                 );
               }}
               submit

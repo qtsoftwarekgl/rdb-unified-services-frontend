@@ -174,7 +174,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   return (
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
-      {business_application?.company_details && (
+      {(business_application?.company_details ||
+        business_application?.status === 'in_review') && (
         <PreviewCard
           entry_id={business_application?.entry_id}
           header="Company Details"
@@ -183,18 +184,19 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           setActiveStep={setBusinessActiveStep}
           setActiveTab={setBusinessActiveTab}
         >
-          {Object?.entries(business_application?.company_details)
-            ?.filter(([key]) => key !== 'step')
-            ?.map(([key, value], index: number) => {
-              return (
-                <p key={index} className="flex items-center gap-2">
-                  <span className="">{capitalizeString(key)}:</span>{' '}
-                  <span className="font-bold">
-                    {String(value) && capitalizeString(String(value))}
-                  </span>
-                </p>
-              );
-            })}
+          {business_application?.company_details &&
+            Object?.entries(business_application?.company_details)
+              ?.filter(([key]) => key !== 'step')
+              ?.map(([key, value], index: number) => {
+                return (
+                  <p key={index} className="flex items-center gap-2">
+                    <span className="">{capitalizeString(key)}:</span>{' '}
+                    <span className="font-bold">
+                      {String(value) && capitalizeString(String(value))}
+                    </span>
+                  </p>
+                );
+              })}
         </PreviewCard>
       )}
 

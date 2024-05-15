@@ -183,6 +183,7 @@ export const businessRegistrationSlice = createSlice({
     shareholderDetailsModal: false,
     beneficialOwnerDetailsModal: false,
     businessPersonDetailsModal: false,
+    deleteApplicationModal: false,
   },
   reducers: {
     // SET REGISTRATION TABS
@@ -287,6 +288,7 @@ export const businessRegistrationSlice = createSlice({
         'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
+      
     },
 
     // SET COMPLETED STEP
@@ -405,6 +407,11 @@ export const businessRegistrationSlice = createSlice({
     state.businessPersonDetailsModal = action.payload;
   },
 
+  // SET DELETE APPLICATION MODAL
+  setDeleteApplicationModal: (state, action) => {
+    state.deleteApplicationModal = action.payload;
+  }
+
 }});
 
 export default businessRegistrationSlice.reducer;
@@ -421,5 +428,6 @@ export const {
   setConfirmDeleteModal,
   setShareholderDetailsModal,
   setBeneficialOwnerDetailsModal,
-  setBusinessPersonDetailsModal
+  setBusinessPersonDetailsModal,
+  setDeleteApplicationModal
 } = businessRegistrationSlice.actions;
