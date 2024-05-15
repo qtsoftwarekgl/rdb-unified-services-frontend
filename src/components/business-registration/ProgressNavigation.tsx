@@ -59,7 +59,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
             } ${tab?.active && 'bg-primary text-white !rounded-md'}`}
           >
             <h1 className="text-[14px] tab-name">{tab?.label}</h1>
-            {(countUnresolvedTabComments(tab) > 0 ||
+            {!/info|admin/.test(user.email) && (countUnresolvedTabComments(tab) > 0 ||
                 countCheckedTabComments(tab) > 0) && (
                 <menu
                   onClick={(e) => {
