@@ -22,8 +22,8 @@ import { districtsList } from '../../constants/districts';
 import { sectorsList } from '../../constants/sectors';
 import { cellsList } from '../../constants/cells';
 import { villagesList } from '../../constants/villages';
-import { business_company_details } from '../business-registration/general-information/CompanyDetails';
-import { business_shareholders } from '../business-registration/capital-information/ShareHolders';
+import { business_company_details } from '../business-applications/business-registration/general-information/CompanyDetails';
+import { business_shareholders } from '../business-applications/business-registration/capital-information/ShareHolders';
 
 const CompanyDetails = () => {
   const { id } = useParams();

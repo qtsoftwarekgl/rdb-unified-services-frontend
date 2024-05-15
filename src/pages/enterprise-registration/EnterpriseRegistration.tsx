@@ -17,7 +17,7 @@ import Attachments from "./Attachements";
 import Preview from "./Preview";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
-import ReviewNavigation from "../business-registration/ReviewNavigation";
+import ReviewNavigation from "../business-applications/business-registration/ReviewNavigation";
 import AddReviewComments from "../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../constants/Users";

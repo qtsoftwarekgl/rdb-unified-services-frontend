@@ -137,7 +137,7 @@ const BusinessActivity = ({
           {(selectedSector || enterprise_business_lines) && (
             <menu className="flex items-start w-full gap-6">
               <section className="flex flex-col w-full gap-4">
-                <h1 className="text-md">Select business line</h1>
+                <h1 className="text-md">Select business activity</h1>
                 <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                   {businessSubActivities
                     ?.slice(0, randomNumber)
@@ -162,7 +162,7 @@ const BusinessActivity = ({
                                   setError('business_lines', {
                                     type: 'manual',
                                     message:
-                                      'You can only select a maximum of 3 business lines',
+                                      'You can only select a maximum of 3 business activities',
                                   });
                                   setTimeout(() => {
                                     clearErrors('business_lines');
@@ -191,7 +191,7 @@ const BusinessActivity = ({
                 </ul>
               </section>
               <section className="flex flex-col w-full gap-4">
-                <h1 className="text-md">Selected business lines</h1>
+                <h1 className="text-md">Selected business activities</h1>
                 <ul className="w-full gap-5 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                   {selectedBusinessLines?.map(
                     (business_line: unknown, index: number) => {
