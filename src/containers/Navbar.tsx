@@ -27,11 +27,11 @@ const Navbar = ({ className }: Props) => {
 
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
 
-  const unresolvedComments = application_review_comments.filter(
+  const unresolvedComments = applicationReviewComments.filter(
     (comment: ReviewComment) => !comment.checked
   ).length;
 

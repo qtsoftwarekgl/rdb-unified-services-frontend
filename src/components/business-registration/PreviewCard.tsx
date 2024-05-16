@@ -7,7 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UnknownAction } from '@reduxjs/toolkit';
 import {
   setAddReviewCommentsModal,
+  setApplicationReviewComment,
   setUserApplications,
+  setUserReviewStepCommentModal,
 } from '../../states/features/userApplicationSlice';
 import Button from '../inputs/Button';
 import { RDBAdminEmailPattern } from '@/constants/Users';
@@ -41,25 +43,23 @@ const PreviewCard: FC<PreviewCardProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const [commentExists, setCommentExists] = useState<boolean>(false);
+  const [existingComments, setExistingComments] = useState<Array<object>>([]);
+  const [showCommentActions, setShowCommentActions] = useState<boolean>(false);
 
   // CHECK IF CURRENT CARD HAS COMMENTS
   useEffect(() => {
-    const countComments = application_review_comments.filter(
-      (comment: ReviewComment) =>
-        comment?.step.name === stepName &&
-        comment?.tab.name === tabName &&
-        comment?.entry_id === entry_id
-    ).length;
-    if (countComments > 0) {
-      setCommentExists(true);
-    } else {
-      setCommentExists(false);
-    }
-  }, [application_review_comments, entry_id, stepName, tabName]);
+    setExistingComments(
+      applicationReviewComments.filter(
+        (comment: ReviewComment) =>
+          comment?.step.name === stepName &&
+          comment?.tab.name === tabName &&
+          comment?.entry_id === entry_id
+      )
+    );
+  }, [applicationReviewComments, entry_id, stepName, tabName]);
 
   return (
     <section className="flex flex-col w-full gap-3 p-4 border-[.3px] border-primary rounded-md shadow-sm">
@@ -73,7 +73,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
         >
           {header}
         </Link>
-        <menu className="flex items-center gap-4">
+        <menu className="flex items-center gap-4 relative">
           {!RDBAdminEmailPattern.test(user?.email) && (
             <FontAwesomeIcon
               icon={faPenToSquare}
@@ -93,21 +93,57 @@ const PreviewCard: FC<PreviewCardProps> = ({
             value={
               <menu className="flex items-center gap-2">
                 <p className="text-[12px]">
-                  {commentExists ? 'Comment added. Click to update' : 'Add comment'}
+                  {!existingComments?.length && 'Add comment'}
+                  {existingComments?.length > 0 &&
+                    `${existingComments?.length} comment`}
                 </p>
                 <FontAwesomeIcon
                   className="text-[12px]"
-                  icon={commentExists ? solidFaMessage : faMessage}
+                  icon={existingComments?.length ? solidFaMessage : faMessage}
                 />
               </menu>
             }
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setAddReviewCommentsModal(true));
-              dispatch(setApplicationReviewStepName(stepName));
-              dispatch(setApplicationReviewTabName(tabName));
+              setShowCommentActions(!showCommentActions);
             }}
           />
+          {showCommentActions && (
+            <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
+              <Link
+                to={'#'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setUserReviewStepCommentModal(true));
+                  dispatch(
+                    setApplicationReviewComment(
+                      applicationReviewComments?.find(
+                        (comment: ReviewComment) =>
+                          comment?.step?.name === stepName
+                      )
+                    )
+                  );
+                  setShowCommentActions(false);
+                }}
+                className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
+              >
+                View
+              </Link>
+              <Link
+                to={'#'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setAddReviewCommentsModal(true));
+                  dispatch(setApplicationReviewStepName(stepName));
+                  dispatch(setApplicationReviewTabName(tabName));
+                  setShowCommentActions(false);
+                }}
+                className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
+              >
+                Update
+              </Link>
+            </ul>
+          )}
         </menu>
       </menu>
       <section className="flex flex-col w-full gap-3 my-2">{children}</section>

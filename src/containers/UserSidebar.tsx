@@ -28,7 +28,7 @@ const UserSidebar = () => {
   const { viewedCompany } = useSelector(
     (state: RootState) => state.userCompanies
   );
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
 
@@ -139,7 +139,7 @@ const UserSidebar = () => {
   }, [dispatch, screenWidth]);
 
   // UNRESOLVED COMMENTS
-  const unresolvedComments = application_review_comments.filter(
+  const unresolvedComments = applicationReviewComments.filter(
     (comment: ReviewComment) => !comment.checked
   ).length;
 
@@ -188,11 +188,12 @@ const UserSidebar = () => {
 
                 <menu className="flex items-center gap-2">
                   <p className="text-[14px]">{isOpen ? nav?.title : null}</p>
-                  {nav?.path === '/user-applications' && (
-                    <p className="text-[13px] bg-red-600 h-[20px] w-[20px] rounded-full text-center flex items-center justify-center text-white">
-                      {unresolvedComments}
-                    </p>
-                  )}
+                  {nav?.path === '/user-applications' &&
+                    unresolvedComments > 0 && (
+                      <p className="text-[13px] bg-red-600 h-[20px] w-[20px] rounded-full text-center flex items-center justify-center text-white">
+                        {unresolvedComments}
+                      </p>
+                    )}
                 </menu>
               </Link>
             );

@@ -1,4 +1,4 @@
-import { faPlus, faWrench } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
 import UserLayout from "../../containers/UserLayout";
@@ -22,7 +22,7 @@ const UserApplications = () => {
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
 
@@ -51,7 +51,7 @@ const UserApplications = () => {
   };
 
   const columns = [
-    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Registration Number', accessorKey: 'company_code' },
     { header: 'Company Name', accessorKey: 'company_name' },
     {
       header: 'Service Name',
@@ -111,7 +111,7 @@ const UserApplications = () => {
   }
 
   const hasComments = (applicationId: string) => {
-    return application_review_comments.some(
+    return applicationReviewComments.some(
       (comment: ReviewComment) =>
         comment?.entry_id === applicationId && !comment?.checked
     );

@@ -52,7 +52,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
   const { user } = useSelector((state: RootState) => state.user);
@@ -110,7 +110,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
         <ul className="flex items-center gap-3">
-          {application_review_comments?.filter(
+          {applicationReviewComments?.filter(
             (comment: ReviewComment) => comment?.entry_id === entry_id
           )?.length > 0 ? (
             <Button
@@ -151,7 +151,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               primary={activeStep?.name.includes(last_step)}
               disabled={
                 !activeStep?.name.includes(last_step) ||
-                application_review_comments?.filter(
+                applicationReviewComments?.filter(
                   (comment: ReviewComment) => comment?.entry_id === entry_id
                 )?.length > 0
               }

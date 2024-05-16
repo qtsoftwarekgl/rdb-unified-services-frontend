@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 
 const ReviewComments = () => {
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
   const { search } = useLocation();
@@ -19,7 +19,7 @@ const ReviewComments = () => {
   const entry_id = queryParams.get("entry_id");
   const dispatch = useDispatch();
 
-  const my_reviews = application_review_comments.filter(
+  const my_reviews = applicationReviewComments.filter(
     (comment: ReviewComment) =>
       comment?.entry_id === entry_id && comment?.checked !== true
   );

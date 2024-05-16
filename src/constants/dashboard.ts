@@ -497,35 +497,35 @@ export const userApplications = [
 
 export const registeredBusinesses = [
   {
-    company_code: "C001",
+    reference_no: "C001",
     company_name: "Company 1",
     status: "Active",
     createdAt: "2022-10-10, 10:00",
     id: "1",
   },
   {
-    company_code: "C002",
+    reference_no: "C002",
     company_name: "Company 2",
     status: "Approved",
     createdAt: "2022-10-10, 10:00",
     id: "2",
   },
   {
-    company_code: "C003",
+    reference_no: "C003",
     company_name: "Company 3",
     status: "Closed",
     createdAt: "2022-10-10, 10:00",
     id: "3",
   },
   {
-    company_code: "C004",
+    reference_no: "C004",
     company_name: "Company 4",
     status: "Pending",
     createdAt: "2022-10-10, 10:00",
     id: "4",
   },
   {
-    company_code: "C005",
+    reference_no: "C005",
     company_name: "Company 5",
     status: "Dormant",
     createdAt: "2022-10-10, 10:00",

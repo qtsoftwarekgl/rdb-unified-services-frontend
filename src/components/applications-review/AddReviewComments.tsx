@@ -45,7 +45,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { addReviewCommentsModal, application_review_comments } = useSelector(
+  const { addReviewCommentsModal, applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -56,8 +56,8 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
 
   // SET DEFAULT VALUE
   useEffect(() => {
-    if (application_review_comments?.length > 0) {
-      const commentExists = application_review_comments?.find(
+    if (applicationReviewComments?.length > 0) {
+      const commentExists = applicationReviewComments?.find(
         (business_comment: ReviewComment) =>
           business_comment?.step?.name === activeStep?.name &&
           business_comment?.entry_id === entry_id
@@ -69,7 +69,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
     }
   }, [
     activeStep?.name,
-    application_review_comments,
+    applicationReviewComments,
     setValue,
     addReviewCommentsModal,
     entry_id,
@@ -106,7 +106,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
               checked: false,
               reviewer: user,
             },
-            ...application_review_comments,
+            ...applicationReviewComments,
           ])
         );
       }

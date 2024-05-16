@@ -21,7 +21,7 @@ import ReviewNavigation from "../business-applications/business-registration/Rev
 import AddReviewComments from "../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../constants/Users";
-import UserReviewComments from "../../components/applications-review/UserReviewComments";
+import UserReviewTabComments from "../../components/applications-review/UserReviewTabComments";
 
 const EnterpriseRegistration = () => {
   const {
@@ -138,7 +138,7 @@ const EnterpriseRegistration = () => {
               </Tab>
             );
           })}
-          <UserReviewComments active_tab={enterprise_registration_active_tab} />
+          <UserReviewTabComments active_tab={enterprise_registration_active_tab} />
           {/* REVIEW APPLICATION SECTION */}
           {RDBAdminEmailPattern.test(user?.email) && (
             <>

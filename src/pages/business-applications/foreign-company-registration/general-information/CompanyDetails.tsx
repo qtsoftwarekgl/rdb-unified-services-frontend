@@ -24,7 +24,7 @@ import { RDBAdminEmailPattern } from "../../../../constants/Users";
 interface CompanyDetailsProps {
   entry_id: string | null;
   company_details: any;
-  status?: string;
+  status: string;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({

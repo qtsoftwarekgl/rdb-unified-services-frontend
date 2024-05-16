@@ -28,14 +28,14 @@ const CollateralList = () => {
   const { collateral_applications } = useSelector(
     (state: RootState) => state.collateralRegistration
   );
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const hasComments = (applicationId: string) => {
-    return application_review_comments.some(
+    return applicationReviewComments.some(
       (comment: ReviewComment) =>
         comment?.entry_id === applicationId && !comment?.checked
     );

@@ -25,7 +25,7 @@ import ReviewNavigation from "../business-registration/ReviewNavigation";
 import AddReviewComments from "../../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
-import UserReviewComments from "../../../components/applications-review/UserReviewComments";
+import UserReviewTabComments from "../../../components/applications-review/UserReviewTabComments";
 
 const ForeignBranchRegistration = () => {
   const {
@@ -184,7 +184,7 @@ const ForeignBranchRegistration = () => {
             }
           )}
         </menu>
-        <UserReviewComments active_tab={foreign_business_active_tab} />
+        <UserReviewTabComments active_tab={foreign_business_active_tab} />
         {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <ReviewNavigation

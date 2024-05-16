@@ -61,7 +61,7 @@ const ApplicatinsList = ({
   };
 
   const columns = [
-    { header: "Company Code", accessorKey: "reg_number" },
+    { header: "Company Code", accessorKey: "company_code" },
     { header: "Company/Enterprise Name", accessorKey: "company_name" },
     {
       header: "Company/Enterprise Type",

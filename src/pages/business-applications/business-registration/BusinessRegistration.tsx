@@ -26,12 +26,13 @@ import { useEffect } from 'react';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import ReviewNavigation from './ReviewNavigation';
 import { RDBAdminEmailPattern } from '../../../constants/Users';
-import UserReviewComments from '../../../components/applications-review/UserReviewComments';
+import UserReviewTabComments from '../../../components/applications-review/UserReviewTabComments';
 import { Step, TabType } from '../../../states/features/types';
 import {
   setApplicationReviewStepName,
   setApplicationReviewTabName,
 } from '@/states/features/applicationReviewSlice';
+import UserReviewStepComment from '@/components/applications-review/UserReviewStepComment';
 
 const BusinessRegistration = () => {
   // CATCH PROGRESS ID
@@ -95,8 +96,7 @@ const BusinessRegistration = () => {
     } else {
       navigate('/business-registration/new');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, entry_id, navigate]);
+  }, [dispatch, entry_id, navigate, status, user?.email]);
 
   return (
     <UserLayout>
@@ -273,7 +273,8 @@ const BusinessRegistration = () => {
           </>
         )}
       </main>
-      <UserReviewComments active_tab={business_active_tab} />
+      <UserReviewTabComments active_tab={business_active_tab} />
+      <UserReviewStepComment />
     </UserLayout>
   );
 };

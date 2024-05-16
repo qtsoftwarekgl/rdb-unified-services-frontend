@@ -444,7 +444,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   />
                   {watch('rwandan_company') === 'yes' && (
                     <Controller
-                      name="company_code"
+                      name="reference_no"
                       control={control}
                       rules={{
                         required:
@@ -475,7 +475,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               suffixIconHandler={async (e) => {
                                 e.preventDefault();
                                 if (!field.value) {
-                                  setError('company_code', {
+                                  setError('reference_no', {
                                     type: 'manual',
                                     message:
                                       'Company code is required to search',
@@ -501,7 +501,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                                       loading: false,
                                       error: true,
                                     });
-                                    setError('company_code', {
+                                    setError('reference_no', {
                                       type: 'manual',
                                       message: 'Company not found',
                                     });
@@ -534,18 +534,18 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               }}
                               onChange={async (e) => {
                                 field.onChange(e);
-                                clearErrors('company_code');
-                                await trigger('company_code');
+                                clearErrors('reference_no');
+                                await trigger('reference_no');
                               }}
                             />
-                            {searchMember?.loading && !errors?.company_code && (
+                            {searchMember?.loading && !errors?.reference_no && (
                               <p className="flex items-center gap-[2px] text-[13px]">
                                 <Loader size={4} /> Validating company code
                               </p>
                             )}
-                            {errors?.company_code && (
+                            {errors?.reference_no && (
                               <p className="text-red-500 text-[13px]">
-                                {String(errors?.company_code?.message)}
+                                {String(errors?.reference_no?.message)}
                               </p>
                             )}
                           </label>
@@ -1170,8 +1170,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               }}
             />
             <Controller
-              name="company_code"
-              defaultValue={searchMember?.data?.company_code}
+              name="reference_no"
+              defaultValue={searchMember?.data?.reference_no}
               control={control}
               render={({ field }) => {
                 return (

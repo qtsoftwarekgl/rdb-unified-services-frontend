@@ -5,8 +5,8 @@ import { TabType } from "../../states/features/types";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { ReviewComment } from "../applications-review/AddReviewComments";
 import {
-  setUserReviewComments,
-  setUserReviewCommentsModal,
+  setUserReviewTabComments,
+  setUserReviewTabCommentsModal,
 } from "../../states/features/userApplicationSlice";
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { application_review_comments } = useSelector(
+  const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
   const { search } = useLocation();
@@ -26,7 +26,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   const { user } = useSelector((state: RootState) => state.user);
 
   const countUnresolvedTabComments = (tab: TabType) => {
-    return application_review_comments.filter(
+    return applicationReviewComments.filter(
       (comment: ReviewComment) =>
         comment?.tab.name === tab?.name &&
         comment?.entry_id === entry_id &&
@@ -35,7 +35,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   };
 
   const countCheckedTabComments = (tab: TabType) => {
-    return application_review_comments.filter(
+    return applicationReviewComments.filter(
       (comment: ReviewComment) =>
         comment?.tab.name === tab?.name &&
         comment?.entry_id === entry_id &&
@@ -65,16 +65,16 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    const tabComments = application_review_comments.filter(
+                    const tabComments = applicationReviewComments.filter(
                       (comment: ReviewComment) =>
                         comment?.tab.name === tab?.name &&
                         comment?.entry_id === entry_id
                     );
-                    dispatch(setUserReviewComments(tabComments));
-                    dispatch(setUserReviewCommentsModal(true));
+                    dispatch(setUserReviewTabComments(tabComments));
+                    dispatch(setUserReviewTabCommentsModal(true));
                   }}
                   className={`flex items-center text-[12px] w-2 h-2 p-3 text-white justify-center transition-all rounded-full cursor-pointer hover:scale-102 ${
-                    countCheckedTabComments(tab) > 0
+                    countUnresolvedTabComments(tab) <= 0
                       ? 'bg-secondary'
                       : 'bg-red-500'
                   }`}

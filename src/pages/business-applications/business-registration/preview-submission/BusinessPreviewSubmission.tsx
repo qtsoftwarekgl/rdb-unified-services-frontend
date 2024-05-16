@@ -40,6 +40,9 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { previewUrl } from "../../../../constants/authentication";
 import { setIsAmending } from "../../../../states/features/amendmentSlice";
 import BusinessPersonDetails from "../BusinessPersonDetails";
+import { ReviewComment } from "@/components/applications-review/AddReviewComments";
+import { TabType } from "@/states/features/types";
+import { RDBAdminEmailPattern } from "@/constants/Users";
 
 interface business_application {
   entry_id: string;
@@ -74,7 +77,18 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   const { user } = useSelector((state: RootState) => state.user);
   const [attachmentPreview, setAttachmentPreview] = useState<string>("");
   const [businessPersonDetails, setBusinessPersonDetails] = useState<
-    business_beneficial_owners | business_shareholders | null>(null);
+    business_beneficial_owners | business_shareholders | null
+  >(null);
+  const { applicationReviewComments } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+
+  // UNRESOLVED COMMENTS
+  const unresolvedApplicationComments = applicationReviewComments.filter(
+      (comment: ReviewComment) =>
+        comment?.entry_id === business_application?.entry_id &&
+        !comment?.checked
+    ).length;
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -834,6 +848,15 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           </menu>
         </section>
       </PreviewCard>
+      {(unresolvedApplicationComments > 0 &&
+        !RDBAdminEmailPattern.test(user?.email)) && (
+          <menu className="flex items-center justify-center w-full">
+            <p className="text-[12px] text-red-600 text-center font-medium">
+              You have unresolved comments. Please attend to them before
+              submitting.
+            </p>
+          </menu>
+        )}
       <menu
         className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
       >
@@ -848,7 +871,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         <Button
           value={isLoading ? <Loader /> : 'Submit'}
           primary
-          disabled={user.email.includes('info@rdb')}
+          disabled={
+            RDBAdminEmailPattern.test(user?.email) ||
+            unresolvedApplicationComments > 0
+          }
           onClick={(e) => {
             e.preventDefault();
             setIsLoading(true);

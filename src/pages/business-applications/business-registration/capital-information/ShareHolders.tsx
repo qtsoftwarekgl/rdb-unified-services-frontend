@@ -441,7 +441,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   />
                   {watch('rwandan_company') === 'yes' && (
                     <Controller
-                      name="company_code"
+                      name="reference_no"
                       control={control}
                       rules={{
                         required:
@@ -471,7 +471,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                               suffixIconHandler={async (e) => {
                                 e.preventDefault();
                                 if (!field.value) {
-                                  setError('company_code', {
+                                  setError('reference_no', {
                                     type: 'manual',
                                     message:
                                       'Company code is required to search',
@@ -497,7 +497,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                                       loading: false,
                                       error: true,
                                     });
-                                    setError('company_code', {
+                                    setError('reference_no', {
                                       type: 'manual',
                                       message: 'Company not found',
                                     });
@@ -531,18 +531,18 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                               }}
                               onChange={async (e) => {
                                 field.onChange(e);
-                                clearErrors('company_code');
-                                await trigger('company_code');
+                                clearErrors('reference_no');
+                                await trigger('reference_no');
                               }}
                             />
-                            {searchMember?.loading && !errors?.company_code && (
+                            {searchMember?.loading && !errors?.reference_no && (
                               <p className="flex items-center gap-[2px] text-[13px]">
                                 <Loader size={4} /> Validating company code
                               </p>
                             )}
-                            {errors?.company_code && (
+                            {errors?.reference_no && (
                               <p className="text-red-500 text-[13px]">
-                                {String(errors?.company_code?.message)}
+                                {String(errors?.reference_no?.message)}
                               </p>
                             )}
                           </label>
@@ -1014,8 +1014,8 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               }}
             />
             <Controller
-              name="company_code"
-              defaultValue={searchMember?.data?.company_code}
+              name="reference_no"
+              defaultValue={searchMember?.data?.reference_no}
               control={control}
               render={({ field }) => {
                 return (

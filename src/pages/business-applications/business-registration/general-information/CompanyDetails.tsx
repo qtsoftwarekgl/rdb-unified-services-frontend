@@ -282,6 +282,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       })}
                       defaultValue={company_details?.category}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger(field?.name)
+                      }}
                     />
                     {errors?.category && (
                       <p className="text-xs text-red-500">
@@ -315,6 +319,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger(field?.name)
+                      }}
                     />
                     {errors?.type && (
                       <p className="text-xs text-red-500">
@@ -346,6 +354,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         };
                       })}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger(field?.name)
+                      }}
                     />
                     {errors?.position && (
                       <p className="text-xs text-red-500">
@@ -371,6 +383,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="Yes"
                       checked={watch("articles_of_association") === "yes"}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e.target.value);
+                        await trigger(field?.name)
+                      }}
                       value={"yes"}
                     />
                     <Input
@@ -378,6 +394,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       label="No"
                       checked={watch("articles_of_association") === "no"}
                       {...field}
+                      onChange={async (e) => {
+                        field.onChange(e.target.value);
+                        await trigger(field?.name)
+                      }}
                       value={"no"}
                     />
                     {errors?.articles_of_association && (
@@ -446,7 +466,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 disableForm ||
                 Object.keys(errors).length > 0
               }
-              onClick={() => {
+              onClick={async () => {
+                await trigger();
+                if (Object.keys(errors)?.length) {
+                  return;
+                }
                 setIsLoading({
                   ...isLoading,
                   submit: true,
