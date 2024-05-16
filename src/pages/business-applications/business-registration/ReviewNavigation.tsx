@@ -114,7 +114,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           )?.length > 0 ? (
             <Button
               value={
-                isLoading?.complete_review ? <Loader /> : "Complete review"
+                isLoading?.complete_review ? <Loader /> : "Request changes"
               }
               primary
               disabled={!activeStep?.name.includes(last_step)}

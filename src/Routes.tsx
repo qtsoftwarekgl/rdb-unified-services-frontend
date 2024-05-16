@@ -42,9 +42,9 @@ import Amalgamation from "./pages/business-applications/amalgamation/Amalgamate"
 import AmendCompanyDetails from "./pages/business-applications/amend-company-details/AmendCompanyDetails";
 import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
-import ForeignBranchSplashPage from "./pages/business-applications/branch-of-foreign-company/SplashPage";
+import ForeignBranchSplashPage from "./pages/business-applications/foreign-company-registration/SplashPage";
 import SearchCompanyAvailability from "./pages/business-applications/company-availability/SearchCompanyAvailability";
-import ForeignBranchRegistration from "./pages/business-applications/branch-of-foreign-company/ForeignBranchRegistration";
+import ForeignBranchRegistration from "./pages/business-applications/foreign-company-registration/ForeignBranchRegistration";
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
 import SearchCompanyDetails from "./pages/business-applications/company-availability/SearchCompanyDetails";
 import CompanyRestoration from "./pages/business-applications/company-restoration/CompanyRestoration";
@@ -123,7 +123,7 @@ const Routes = () => {
           />
           <Route path="/name-reservation" element={<NameReservation />} />
           <Route
-            path="/branch-of-foreign-company"
+            path="/foreign-company-registration"
             element={<ForeignBranchSplashPage />}
           />
           <Route

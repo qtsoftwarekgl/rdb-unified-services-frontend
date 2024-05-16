@@ -1,4 +1,10 @@
-import React, { FC, LegacyRef, forwardRef, ChangeEvent } from 'react';
+import {
+  FC,
+  LegacyRef,
+  ChangeEvent,
+  useEffect,
+  useRef,
+} from 'react';
 
 interface TextAreaProps {
   cols?: number;
@@ -13,9 +19,10 @@ interface TextAreaProps {
   onBlur?: () => void | undefined;
   label?: string | JSX.Element;
   ref?: LegacyRef<HTMLTextAreaElement> | undefined;
+  value?: string | number | readonly string[] | undefined;
 }
 
-const TextArea: FC<TextAreaProps> = forwardRef<HTMLTextAreaElement, TextAreaProps>(({
+const TextArea: FC<TextAreaProps> = ({
   cols = 50,
   rows = 5,
   className = '',
@@ -27,7 +34,15 @@ const TextArea: FC<TextAreaProps> = forwardRef<HTMLTextAreaElement, TextAreaProp
   readonly = false,
   onBlur,
   label = null,
-}, ref) => {
+  value,
+}) => {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!defaultValue && !value && ref?.current) {
+      ref.current.value = '';
+    }
+  }, [defaultValue, value]);
 
   return (
     <label className="flex flex-col gap-[6px] item-start w-full">
@@ -41,6 +56,7 @@ const TextArea: FC<TextAreaProps> = forwardRef<HTMLTextAreaElement, TextAreaProp
         cols={cols}
         rows={rows}
         ref={ref}
+        value={value}
         readOnly={readonly}
         placeholder={placeholder}
         className={`border-[1.5px] border-opacity-50 text-[15px] placeholder:text-[13px] border-secondary flex items-center justify-center px-4 py-[8px] w-full focus:border-[1.3px] focus:outline-none focus:border-primary rounded-md ${
@@ -52,8 +68,6 @@ const TextArea: FC<TextAreaProps> = forwardRef<HTMLTextAreaElement, TextAreaProp
       ></textarea>
     </label>
   );
-});
-
-TextArea.displayName = 'TextArea';
+};
 
 export default TextArea;

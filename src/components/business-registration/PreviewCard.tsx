@@ -1,14 +1,23 @@
 import { faMessage, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { faMessage as solidFaMessage } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { UnknownAction } from '@reduxjs/toolkit';
-import { setAddReviewCommentsModal, setUserApplications } from '../../states/features/userApplicationSlice';
+import {
+  setAddReviewCommentsModal,
+  setUserApplications,
+} from '../../states/features/userApplicationSlice';
 import Button from '../inputs/Button';
 import { RDBAdminEmailPattern } from '@/constants/Users';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import {
+  setApplicationReviewStepName,
+  setApplicationReviewTabName,
+} from '@/states/features/applicationReviewSlice';
+import { ReviewComment } from '../applications-review/AddReviewComments';
 
 interface PreviewCardProps {
   header: string;
@@ -32,6 +41,25 @@ const PreviewCard: FC<PreviewCardProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
+  const { application_review_comments } = useSelector(
+    (state: RootState) => state.userApplication
+  );
+  const [commentExists, setCommentExists] = useState<boolean>(false);
+
+  // CHECK IF CURRENT CARD HAS COMMENTS
+  useEffect(() => {
+    const countComments = application_review_comments.filter(
+      (comment: ReviewComment) =>
+        comment?.step.name === stepName &&
+        comment?.tab.name === tabName &&
+        comment?.entry_id === entry_id
+    ).length;
+    if (countComments > 0) {
+      setCommentExists(true);
+    } else {
+      setCommentExists(false);
+    }
+  }, [application_review_comments, entry_id, stepName, tabName]);
 
   return (
     <section className="flex flex-col w-full gap-3 p-4 border-[.3px] border-primary rounded-md shadow-sm">
@@ -64,13 +92,20 @@ const PreviewCard: FC<PreviewCardProps> = ({
             styled={false}
             value={
               <menu className="flex items-center gap-2">
-                <p className="text-[12px]">Add comment</p>
-                <FontAwesomeIcon className="text-[12px]" icon={faMessage} />
+                <p className="text-[12px]">
+                  {commentExists ? 'Comment added. Click to update' : 'Add comment'}
+                </p>
+                <FontAwesomeIcon
+                  className="text-[12px]"
+                  icon={commentExists ? solidFaMessage : faMessage}
+                />
               </menu>
             }
             onClick={(e) => {
               e.preventDefault();
               dispatch(setAddReviewCommentsModal(true));
+              dispatch(setApplicationReviewStepName(stepName));
+              dispatch(setApplicationReviewTabName(tabName));
             }}
           />
         </menu>
@@ -82,7 +117,8 @@ const PreviewCard: FC<PreviewCardProps> = ({
             styled={false}
             onClick={(e) => {
               e.preventDefault();
-            
+              dispatch(setActiveStep(stepName));
+              dispatch(setActiveTab(tabName));
             }}
             value={
               <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-300">

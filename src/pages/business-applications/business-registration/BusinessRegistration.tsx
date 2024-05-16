@@ -1,39 +1,43 @@
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
-import UserLayout from "../../../containers/UserLayout";
-import ProgressNavigation from "../../../components/business-registration/ProgressNavigation";
-import { useLocation, useNavigate } from "react-router-dom";
-import Tab from "../../../components/business-registration/Tab";
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
+import UserLayout from '../../../containers/UserLayout';
+import ProgressNavigation from '../../../components/business-registration/ProgressNavigation';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Tab from '../../../components/business-registration/Tab';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from "../../../states/features/businessRegistrationSlice";
-import CompanyDetails from "./general-information/CompanyDetails";
-import CompanyAddress from "./general-information/CompanyAddress";
-import BusinessActivity from "./general-information/BusinessActivity";
-import BoardDirectors from "./management/BoardDirectors";
-import SeniorManagement from "./management/SeniorManagement";
-import EmploymentInfo from "./management/EmploymentInfo";
-import ShareDetails from "./capital-information/ShareDetails";
-import ShareHolders from "./capital-information/ShareHolders";
-import CapitalDetails from "./capital-information/CapitalDetails";
-import BeneficialOwners from "./beneficial-owners/BeneficialOwners";
-import CompanyAttachments from "./attachments/CompanyAttachments";
-import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
-import AddReviewComments from "../../../components/applications-review/AddReviewComments";
-import ListReviewComments from "../../../components/applications-review/ListReviewComments";
-import { useEffect } from "react";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import ReviewNavigation from "./ReviewNavigation";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
-import UserReviewComments from "../../../components/applications-review/UserReviewComments";
-import { TabType } from "../../../states/features/types";
+} from '../../../states/features/businessRegistrationSlice';
+import CompanyDetails from './general-information/CompanyDetails';
+import CompanyAddress from './general-information/CompanyAddress';
+import BusinessActivity from './general-information/BusinessActivity';
+import BoardDirectors from './management/BoardDirectors';
+import SeniorManagement from './management/SeniorManagement';
+import EmploymentInfo from './management/EmploymentInfo';
+import ShareDetails from './capital-information/ShareDetails';
+import ShareHolders from './capital-information/ShareHolders';
+import CapitalDetails from './capital-information/CapitalDetails';
+import BeneficialOwners from './beneficial-owners/BeneficialOwners';
+import CompanyAttachments from './attachments/CompanyAttachments';
+import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
+import AddReviewComments from '../../../components/applications-review/AddReviewComments';
+import ListReviewComments from '../../../components/applications-review/ListReviewComments';
+import { useEffect } from 'react';
+import { setUserApplications } from '../../../states/features/userApplicationSlice';
+import ReviewNavigation from './ReviewNavigation';
+import { RDBAdminEmailPattern } from '../../../constants/Users';
+import UserReviewComments from '../../../components/applications-review/UserReviewComments';
+import { Step, TabType } from '../../../states/features/types';
+import {
+  setApplicationReviewStepName,
+  setApplicationReviewTabName,
+} from '@/states/features/applicationReviewSlice';
 
 const BusinessRegistration = () => {
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entry_id = queryParams.get('entry_id');
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -55,17 +59,26 @@ const BusinessRegistration = () => {
       owner: string;
     }) => app?.entry_id === entry_id
   );
+  const { applicationReviewStepName, applicationReviewTabName } = useSelector(
+    (state: RootState) => state.applicationReview
+  );
 
   // NAVIGATION
   const navigate = useNavigate();
 
+  // UPDATE APPLICATION REVIEW STEP AND TAB
+  useEffect(() => {
+    dispatch(setApplicationReviewStepName(business_active_step?.name));
+    dispatch(setApplicationReviewTabName(business_active_tab?.name));
+  }, [dispatch, business_active_step, business_active_tab]);
+
   // APPLICATION STATUS
-  let status = businessApplication?.status || "in_progress";
+  let status = businessApplication?.status || 'in_progress';
   if (businessApplication) {
     status = businessApplication.status;
   }
   if (RDBAdminEmailPattern.test(user?.email)) {
-    status = "in_review";
+    status = 'in_review';
   }
 
   useEffect(() => {
@@ -75,12 +88,12 @@ const BusinessRegistration = () => {
           entry_id,
           status,
           path: `/business-registration?entry_id=${entry_id}`,
-          type: "business_registration",
+          type: 'business_registration',
           owner: user?.email,
         })
       );
     } else {
-      navigate("/business-registration/new");
+      navigate('/business-registration/new');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, entry_id, navigate]);
@@ -103,28 +116,28 @@ const BusinessRegistration = () => {
                 active_tab={business_active_tab}
               >
                 {/* COMPANY DETAILS */}
-                {business_active_step?.name === "company_details" && (
+                {business_active_step?.name === 'company_details' && (
                   <CompanyDetails
                     entry_id={entry_id}
-                    isOpen={business_active_step?.name === "company_details"}
+                    isOpen={business_active_step?.name === 'company_details'}
                     company_details={businessApplication?.company_details}
                     status={status}
                   />
                 )}
                 {/* COMPANY ADDRESS */}
-                {business_active_step?.name === "company_address" && (
+                {business_active_step?.name === 'company_address' && (
                   <CompanyAddress
-                    isOpen={business_active_step?.name === "company_address"}
+                    isOpen={business_active_step?.name === 'company_address'}
                     company_address={businessApplication?.company_address}
                     entry_id={entry_id}
                     status={status}
                   />
                 )}
                 {/* BUSINESS ACTIVITY */}
-                {business_active_step?.name === "business_activity_vat" && (
+                {business_active_step?.name === 'business_activity_vat' && (
                   <BusinessActivity
                     isOpen={
-                      business_active_step?.name === "business_activity_vat"
+                      business_active_step?.name === 'business_activity_vat'
                     }
                     company_activities={businessApplication?.company_activities}
                     entry_id={entry_id}
@@ -133,9 +146,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* BOARD OF DIRECTORS */}
-                {business_active_step?.name === "board_of_directors" && (
+                {business_active_step?.name === 'board_of_directors' && (
                   <BoardDirectors
-                    isOpen={business_active_step?.name === "board_of_directors"}
+                    isOpen={business_active_step?.name === 'board_of_directors'}
                     board_of_directors={businessApplication?.board_of_directors}
                     entry_id={entry_id}
                     status={status}
@@ -143,9 +156,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* SENIOR MANAGEMENT */}
-                {business_active_step?.name === "senior_management" && (
+                {business_active_step?.name === 'senior_management' && (
                   <SeniorManagement
-                    isOpen={business_active_step?.name === "senior_management"}
+                    isOpen={business_active_step?.name === 'senior_management'}
                     senior_management={businessApplication?.senior_management}
                     entry_id={entry_id}
                     status={status}
@@ -153,9 +166,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* EMPLOYMENT INFO */}
-                {business_active_step?.name === "employment_info" && (
+                {business_active_step?.name === 'employment_info' && (
                   <EmploymentInfo
-                    isOpen={business_active_step?.name === "employment_info"}
+                    isOpen={business_active_step?.name === 'employment_info'}
                     employment_info={businessApplication?.employment_info}
                     entry_id={entry_id}
                     status={status}
@@ -163,9 +176,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* SHARE DETAILS */}
-                {business_active_step?.name === "share_details" && (
+                {business_active_step?.name === 'share_details' && (
                   <ShareDetails
-                    isOpen={business_active_step?.name === "share_details"}
+                    isOpen={business_active_step?.name === 'share_details'}
                     share_details={businessApplication?.share_details}
                     entry_id={entry_id}
                     status={status}
@@ -173,9 +186,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* SHAREHOLDERS */}
-                {business_active_step?.name === "shareholders" && (
+                {business_active_step?.name === 'shareholders' && (
                   <ShareHolders
-                    isOpen={business_active_step?.name === "shareholders"}
+                    isOpen={business_active_step?.name === 'shareholders'}
                     shareholders={businessApplication?.shareholders}
                     entry_id={entry_id}
                     status={status}
@@ -183,9 +196,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* CAPITAL DETAILS */}
-                {business_active_step?.name === "capital_details" && (
+                {business_active_step?.name === 'capital_details' && (
                   <CapitalDetails
-                    isOpen={business_active_step?.name === "capital_details"}
+                    isOpen={business_active_step?.name === 'capital_details'}
                     capital_details={businessApplication?.capital_details}
                     entry_id={entry_id}
                     share_details={businessApplication?.share_details}
@@ -195,9 +208,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* BENEFICIAL OWNERS */}
-                {business_active_step?.name === "beneficial_owners" && (
+                {business_active_step?.name === 'beneficial_owners' && (
                   <BeneficialOwners
-                    isOpen={business_active_step?.name === "beneficial_owners"}
+                    isOpen={business_active_step?.name === 'beneficial_owners'}
                     beneficial_owners={businessApplication?.beneficial_owners}
                     entry_id={entry_id}
                     status={status}
@@ -205,9 +218,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* ATTACHMENTS */}
-                {business_active_step?.name === "attachments" && (
+                {business_active_step?.name === 'attachments' && (
                   <CompanyAttachments
-                    isOpen={business_active_step?.name === "attachments"}
+                    isOpen={business_active_step?.name === 'attachments'}
                     company_attachments={
                       businessApplication?.company_attachments
                     }
@@ -218,9 +231,9 @@ const BusinessRegistration = () => {
                 )}
 
                 {/* PREVIEW AND SUBMISSINO */}
-                {business_active_step?.name === "preview_submission" && (
+                {business_active_step?.name === 'preview_submission' && (
                   <PreviewSubmission
-                    isOpen={business_active_step?.name === "preview_submission"}
+                    isOpen={business_active_step?.name === 'preview_submission'}
                     business_application={businessApplication}
                     status={status}
                   />
@@ -244,8 +257,12 @@ const BusinessRegistration = () => {
             />
             <AddReviewComments
               entry_id={entry_id}
-              activeStep={business_active_step}
-              activeTab={business_active_tab}
+              activeStep={business_registration_tabs
+                ?.flatMap((tab: TabType) => tab?.steps)
+                ?.find((step: Step) => step?.name === applicationReviewStepName)}
+              activeTab={business_registration_tabs?.find(
+                (tab: TabType) => tab?.name === applicationReviewTabName
+              )}
             />
             <ListReviewComments
               entry_id={entry_id}

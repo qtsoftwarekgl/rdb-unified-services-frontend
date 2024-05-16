@@ -18,6 +18,7 @@ import userApplicationSlice from "./features/userApplicationSlice";
 import { rootApi } from "./api/api";
 import collateralRegistrationSlice from "./features/collateralRegistrationSlice";
 import collateralReviewSlice from "./features/collateralReviewSlice";
+import applicationReviewSlice from "./features/applicationReviewSlice";
 
 export const store = configureStore({
   reducer: {
@@ -40,6 +41,7 @@ export const store = configureStore({
     userApplication: userApplicationSlice,
     collateralRegistration: collateralRegistrationSlice,
     collateralReview: collateralReviewSlice,
+    applicationReview: applicationReviewSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(rootApi.middleware);

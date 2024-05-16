@@ -17,8 +17,8 @@ export const defaultSections = [
           label: 'Domestic Business Registration',
         },
         {
-          to: '/branch-of-foreign-company',
-          label: 'Branch of Foreign Company',
+          to: '/foreign-company-registration',
+          label: 'Foreign Company Registration',
         },
         {
           to: '/enterprise-registration/new',

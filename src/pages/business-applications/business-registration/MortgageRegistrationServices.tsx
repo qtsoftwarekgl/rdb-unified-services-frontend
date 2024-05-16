@@ -36,7 +36,7 @@ const MortgageRegistrationServices = () => {
                 <Link to="/change-particulars">
                   <span>Change of Particulars</span>
                 </Link>
-                <Link to="/branch-of-foreign-company">
+                <Link to="/foreign-company-registration">
                   <span>Transfer of Mortgage</span>
                 </Link>
                 <Link to="/transfer-mortgage">
