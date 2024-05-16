@@ -78,8 +78,8 @@ const ApplicatinsList = ({
   // TABLE COLUMNS
   const columns = [
     {
-      id: "no",
-      accessorKey: "no",
+      id: 'no',
+      accessorKey: 'no',
       header: ({ table }) => {
         return <RowSelectionCheckbox isHeader table={table} />;
       },
@@ -94,17 +94,24 @@ const ApplicatinsList = ({
         return <RowSelectionCheckbox row={row} />;
       },
     },
-    { header: "Company Code", accessorKey: "reg_number", id: "company_code" },
     {
-      id: "company_name",
-      header: "Company/Enterprise Name",
-      accessorKey: "company_name",
+      header: 'Reference No',
+      accessorKey: 'reference_no',
+      id: 'reference_no',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+    },
+    {
+      id: 'company_name',
+      header: 'Company/Enterprise Name',
+      accessorKey: 'company_name',
       enableFiltering: true,
     },
     {
-      id: "service_name",
-      header: "Application Type",
-      accessorKey: "service_name",
+      id: 'service_name',
+      header: 'Application Type',
+      accessorKey: 'service_name',
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
@@ -118,9 +125,9 @@ const ApplicatinsList = ({
       },
     },
     {
-      id: "status",
-      header: "Application Status",
-      accessorKey: "status",
+      id: 'status',
+      header: 'Application Status',
+      accessorKey: 'status',
       cell: renderStatusCell,
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
@@ -128,16 +135,26 @@ const ApplicatinsList = ({
       enableFiltering: true,
     },
     {
-      id: "date",
-      header: "Registration Date",
-      accessorKey: "submission_date",
+      id: 'assignee',
+      header: 'Assignee',
+      accessorKey: 'assignee',
+      cell: () => `RDB Verifier`,
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+      enableFiltering: true,
+    },
+    {
+      id: 'date',
+      header: 'Registration Date',
+      accessorKey: 'createdAt',
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       enableSorting: false,
       cell: renderActionCell,
     },
@@ -156,7 +173,7 @@ const ApplicatinsList = ({
       status: "pending_approval",
     },
     {
-      label: "Action required from client",
+      label: "Requested for action",
       value: 18,
       status: "action_required",
     },

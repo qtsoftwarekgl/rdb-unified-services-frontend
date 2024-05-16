@@ -9,7 +9,7 @@ import NotFound from "./pages/NotFound";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
-import BusinessRegistration from "./pages/business-registration/BusinessRegistration";
+import BusinessRegistration from "./pages/business-applications/business-registration/BusinessRegistration";
 import AdminRoutes from "./outlets/AdminRoutes";
 import ListUsers from "./pages/users-management/ListUsers";
 import ListRoles from "./pages/roles-management/ListRoles";
@@ -30,31 +30,31 @@ import UserApplications from "./pages/user-applications/UserApplications";
 import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
 import CompanyHistory from "./pages/user-company-details/CompanyHistory";
 import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
-import NewBusinessRegistration from "./pages/business-registration/NewBusinessRegistration";
+import NewBusinessRegistration from "./pages/business-applications/business-registration/NewBusinessRegistration";
 import EnterpriseRegistration from "./pages/enterprise-registration/EnterpriseRegistration";
 import NewEnterpriseRegistration from "./pages/enterprise-registration/NewEnterpriseRegistration";
 import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
-import CessationToDormant from "./pages/cessation-dormancy/CessationToDormant";
+import CessationToDormant from "./pages/business-applications/cessation-dormancy/CessationToDormant";
 import InstitutionRegistration from "./pages/user-registration/InstitutionRegistration";
 import InstitutionRegistrationSuccess from "./pages/user-registration/InstitutionRegistrationSuccess";
 import TransferRegistration from "./pages/transfer-registration/TransferRegistration";
-import Amalgamation from "./pages/amalgamation/Amalgamate";
-import AmendCompanyDetails from "./pages/amend-company-details/AmendCompanyDetails";
+import Amalgamation from "./pages/business-applications/amalgamation/Amalgamate";
+import AmendCompanyDetails from "./pages/business-applications/amend-company-details/AmendCompanyDetails";
 import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
-import ForeignBranchSplashPage from "./pages/branch-of-foreign-company/SplashPage";
-import SearchCompanyAvailability from "./pages/company-availability/SearchCompanyAvailability";
-import ForeignBranchRegistration from "./pages/branch-of-foreign-company/ForeignBranchRegistration";
+import ForeignBranchSplashPage from "./pages/business-applications/foreign-company-registration/SplashPage";
+import SearchCompanyAvailability from "./pages/business-applications/company-availability/SearchCompanyAvailability";
+import ForeignBranchRegistration from "./pages/business-applications/foreign-company-registration/ForeignCompanyRegistration";
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
-import SearchCompanyDetails from "./pages/company-availability/SearchCompanyDetails";
-import CompanyRestoration from "./pages/company-restoration/CompanyRestoration";
-import CloseCompany from "./pages/company-closure/CloseCompany";
-import CompanyDormancy from "./pages/company-dormancy/CompanyDormancy";
+import SearchCompanyDetails from "./pages/business-applications/company-availability/SearchCompanyDetails";
+import CompanyRestoration from "./pages/business-applications/company-restoration/CompanyRestoration";
+import CloseCompany from "./pages/business-applications/company-closure/CloseCompany";
+import CompanyDormancy from "./pages/business-applications/company-dormancy/CompanyDormancy";
 import ReviewRegistration from "./pages/review-applications/ReviewRegistration";
 import LandingPage from "./pages/home/LandingPage";
 import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
-import CollateralList from "./pages/collateral/CollateralList";
-import NewCollateral from "./pages/collateral/NewCollateral";
+import CollateralList from "./pages/business-applications/collateral/CollateralList";
+import NewCollateral from "./pages/business-applications/collateral/NewCollateral";
 import CollateralListReview from "./pages/collateral-review/CollateralList";
 import CollateralReview from "./pages/collateral-review/CollateralReview";
 
@@ -123,7 +123,7 @@ const Routes = () => {
           />
           <Route path="/name-reservation" element={<NameReservation />} />
           <Route
-            path="/branch-of-foreign-company"
+            path="/foreign-company-registration"
             element={<ForeignBranchSplashPage />}
           />
           <Route

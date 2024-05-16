@@ -13,6 +13,7 @@ import {
 } from '../../states/features/userApplicationSlice';
 import { FC } from 'react';
 import { UnknownAction } from '@reduxjs/toolkit';
+import { Link } from 'react-router-dom';
 
 interface ListReviewCommentsProps {
   entry_id: string | null;
@@ -29,7 +30,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { listReviewCommentsModal, application_review_comments } = useSelector(
+  const { listReviewCommentsModal, applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
 
@@ -40,11 +41,11 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
         dispatch(setListReviewCommentsModal(false));
       }}
     >
-      <section className="flex w-full flex-col gap-6 max-h-[70vh] overflow-y-scroll pr-4">
+      <section className="flex w-full flex-col gap-6 max-h-[70vh] overflow-y-scroll">
         <h1 className="text-lg font-semibold text-center uppercase text-primary">
           {title}
         </h1>
-        {application_review_comments
+        {applicationReviewComments
           ?.filter((review: ReviewComment) => review?.entry_id === entry_id)
           ?.map((comment: ReviewComment, index: number) => {
             return (
@@ -65,7 +66,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
                     {comment?.step?.label}
                   </h3>
                   <p className="text-[14px] font-normal">{comment.comment}</p>
-                  <p className="text-sm">{formatDate(comment.created_at)}</p>
+                  <p className="text-sm">{formatDate(comment.createdAt)}</p>
                 </ul>
                 <ul
                   className={`${
@@ -90,7 +91,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
                       e.preventDefault();
                       dispatch(
                         setApplicationReviewComments(
-                          application_review_comments.filter(
+                          applicationReviewComments.filter(
                             (business_comment: ReviewComment) =>
                               business_comment !== comment
                           )
@@ -99,27 +100,29 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
                     }}
                   />
                 </ul>
-                <ul
+                <Link
+                  to={'#'}
                   className={`${
                     comment?.checked ? 'flex' : 'hidden'
-                  } items-center gap-2`}
-                >
-                  <FontAwesomeIcon
-                    icon={faCircleCheck}
-                    className="bg-primary w-6 h-6 rounded-full cursor-pointer text-white transition-all hover:scale-[1.02]"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      dispatch(
-                        setApplicationReviewComments(
-                          application_review_comments?.filter(
-                            (business_comment: ReviewComment) =>
-                              business_comment !== comment
-                          )
+                  } items-center gap-2 text-[12px] text-white bg-green-600 p-1 px-2 rounded-md shadow-sm transition-all duration-150 ease-in-out hover:scale-[1.02]`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(
+                      setApplicationReviewComments(
+                        applicationReviewComments?.filter(
+                          (business_comment: ReviewComment) =>
+                            business_comment !== comment
                         )
-                      );
-                    }}
+                      )
+                    );
+                  }}
+                >
+                  Approve
+                  <FontAwesomeIcon
+                    className="text-[12px]"
+                    icon={faCircleCheck}
                   />
-                </ul>
+                </Link>
               </menu>
             );
           })}

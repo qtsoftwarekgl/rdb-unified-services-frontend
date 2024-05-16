@@ -57,7 +57,7 @@ const ListInstitutions = () => {
     {
       id: 'date',
       header: 'Date Added',
-      accessorKey: 'created_at',
+      accessorKey: 'createdAt',
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       }
@@ -114,14 +114,14 @@ const ListInstitutions = () => {
               name: string;
               email: string;
               type: string;
-              created_at: string;
+              createdAt: string;
             }, index) => {
               return {
                 ...institution,
                 no: index + 1,
                 name: institution?.name,
                 email: institution?.email,
-                created_at: formatDate(institution?.created_at),
+                createdAt: formatDate(institution?.createdAt),
               };
             })}
             columns={columns}

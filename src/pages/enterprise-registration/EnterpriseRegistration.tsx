@@ -17,11 +17,11 @@ import Attachments from "./Attachements";
 import Preview from "./Preview";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
-import ReviewNavigation from "../business-registration/ReviewNavigation";
+import ReviewNavigation from "../business-applications/business-registration/ReviewNavigation";
 import AddReviewComments from "../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../constants/Users";
-import UserReviewComments from "../../components/applications-review/UserReviewComments";
+import UserReviewTabComments from "../../components/applications-review/UserReviewTabComments";
 
 const EnterpriseRegistration = () => {
   const {
@@ -64,7 +64,7 @@ const EnterpriseRegistration = () => {
       setUserApplications({
         entry_id,
         status,
-        created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        createdAt: moment(Date.now()).format("DD/MM/YYYY"),
         path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
         owner: user?.email,
@@ -138,7 +138,7 @@ const EnterpriseRegistration = () => {
               </Tab>
             );
           })}
-          <UserReviewComments active_tab={enterprise_registration_active_tab} />
+          <UserReviewTabComments active_tab={enterprise_registration_active_tab} />
           {/* REVIEW APPLICATION SECTION */}
           {RDBAdminEmailPattern.test(user?.email) && (
             <>

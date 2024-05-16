@@ -33,7 +33,7 @@ const AddInstitution = () => {
       dispatch(
         updateInstitutionsList({
           ...data,
-          created_at: new Date().toLocaleDateString(),
+          createdAt: new Date().toLocaleDateString(),
         })
       );
       dispatch(setAddInstitutionModal(false));

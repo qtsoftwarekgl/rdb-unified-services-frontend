@@ -13,7 +13,7 @@ export const formatDate = (date: string | Date | undefined) => {
 
 export const capitalizeString = (string: string) => {
   if (!string) return '';
-  const words = string.split('_');
+  const words = string?.split('_');
   const capitalizedWords =
     words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
@@ -29,18 +29,18 @@ export const generateUUID = () => {
 
 export const formatCompanyData = (business: any) => {
   if (business?.type === 'name_reservation') {
-    console.log(business)
     return {
       ...business,
       company_name: business?.name || 'N/A',
       status: business?.status,
       id: business?.id || Math.floor(Math.random() * 9000) + 1000,
       entry_id: business?.entry_id,
-      reg_number: `REG-${(
+      reference_no: `REG-${(
         business?.entry_id?.split('-')[0] || ''
       ).toUpperCase()}`,
       service_name: business?.type,
-      submission_date: moment(business?.created_at).format('DD/MM/YYYY'),
+      createdAt: formatDate(business?.createdAt),
+      updatedAt: formatDate(business?.updatedAt),
       path: business?.path,
       active_tab: business?.active_tab,
       active_step: business?.active_step,
@@ -54,11 +54,12 @@ export const formatCompanyData = (business: any) => {
     status: business?.status,
     id: business?.id || Math.floor(Math.random() * 9000) + 1000,
     entry_id: business?.entry_id,
-    reg_number: `REG-${(
+    reference_no: `REG-${(
       business?.entry_id?.split('-')[0] || ''
     ).toUpperCase()}`,
     service_name: business?.type,
-    submission_date: moment(business?.created_at).format('DD/MM/YYYY'),
+    createdAt: formatDate(business?.createdAt),
+    updatedAt: formatDate(business?.updatedAt),
     path: business?.path,
     active_tab: business?.active_tab,
     active_step: business?.active_step,
@@ -78,67 +79,6 @@ export function filterObject(
 
   return cleanedObj;
 }
-
-export const validatePassword = (password: string) => {
-  const missingCharacters = [
-    {
-      message: 'Uppercase letter',
-      type: 'uppercase',
-      color: 'red',
-    },
-    {
-      message: 'Lowercase letter',
-      type: 'lowercase',
-      color: 'red',
-    },
-    {
-      message: 'Numeral character',
-      type: 'number',
-      color: 'red',
-    },
-    {
-      message: 'Special characters',
-      type: 'special',
-      color: 'red',
-    },
-  ];
-
-  if (password && /(?=.*[A-Z])/.test(password)) {
-    const uppercaseCharacter = missingCharacters.find(
-      (character) => character.type === 'uppercase'
-    );
-    if (uppercaseCharacter) {
-      uppercaseCharacter.color = 'green';
-    }
-  }
-  if (password && /(?=.*[a-z])/.test(password)) {
-    console.log(password);
-    const lowercaseCharacter = missingCharacters.find(
-      (character) => character.type === 'lowercase'
-    );
-    if (lowercaseCharacter) {
-      lowercaseCharacter.color = 'green';
-    }
-  }
-  if (password && /(?=.*\d)/.test(password)) {
-    const numeralCharacter = missingCharacters.find(
-      (character) => character.type === 'number'
-    );
-    if (numeralCharacter) {
-      numeralCharacter.color = 'green';
-    }
-  }
-  if (password && /(?=.*[^\w\s])/.test(password)) {
-    const specialCharacter = missingCharacters.find(
-      (character) => character.type === 'special'
-    );
-    if (specialCharacter) {
-      specialCharacter.color = 'green';
-    }
-  }
-
-  return missingCharacters;
-};
 
 export const maskPhoneDigits = (phone: string) => {
   return `${phone.slice(0, 3)}X XXX ${phone?.slice(-3)}`;

@@ -10,7 +10,7 @@ import { faEyeSlash, faEye, faCircle, faCircleCheck } from '@fortawesome/free-re
 import { useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
-import { validatePassword } from '@/helpers/strings';
+import { validatePassword } from '@/helpers/validations';
 
 const ResetPasswordNew = () => {
 

@@ -113,7 +113,7 @@ const ListRoles = () => {
     {
       id: 'date',
       header: 'Date Added',
-      accessorKey: 'created_at',
+      accessorKey: 'createdAt',
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
@@ -189,14 +189,14 @@ const ListRoles = () => {
                 role: {
                   name: string;
                   status: string;
-                  created_at: string;
+                  createdAt: string;
                 },
                 index
               ) => {
                 return {
                   ...role,
                   no: index + 1,
-                  created_at: formatDate(role?.created_at),
+                  createdAt: formatDate(role?.createdAt),
                   status: role?.status || 'active',
                 };
               }

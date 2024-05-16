@@ -12,12 +12,13 @@ import institutionSlice from "./features/institutionSlice";
 import localeSlice from "./features/localeSlice";
 import userCompaniesSlice from "./features/userCompaniesSlice";
 import enterpriseRegistrationSlice from "./features/enterpriseRegistrationSlice";
-import foreignBranchRegistrationSlice from "./features/foreignBranchRegistrationSlice";
+import foreignCompanyRegistrationSlice from "./features/foreignCompanyRegistrationSlice";
 import nameReservationSlice from "./features/nameReservationSlice";
 import userApplicationSlice from "./features/userApplicationSlice";
 import { rootApi } from "./api/api";
 import collateralRegistrationSlice from "./features/collateralRegistrationSlice";
 import collateralReviewSlice from "./features/collateralReviewSlice";
+import applicationReviewSlice from "./features/applicationReviewSlice";
 
 export const store = configureStore({
   reducer: {
@@ -35,11 +36,12 @@ export const store = configureStore({
     locale: localeSlice,
     userCompanies: userCompaniesSlice,
     enterpriseRegistration: enterpriseRegistrationSlice,
-    foreignBranchRegistration: foreignBranchRegistrationSlice,
+    foreignCompanyRegistration: foreignCompanyRegistrationSlice,
     nameReservation: nameReservationSlice,
     userApplication: userApplicationSlice,
     collateralRegistration: collateralRegistrationSlice,
     collateralReview: collateralReviewSlice,
+    applicationReview: applicationReviewSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(rootApi.middleware);

@@ -67,7 +67,7 @@ const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
           type: 'name_reservation',
           status: 'submitted',
           registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
-          created_at: moment().format(),
+          createdAt: moment().format(),
           name: data.name,
           path: `/name-reservation?entry_id=${entryId}`,
           active_tab: 'name_reservation',

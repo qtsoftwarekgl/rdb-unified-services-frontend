@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import Input from "../../components/inputs/Input";
 import Navbar from "../../containers/Navbar";
-import BusinessRegistrationServices from "../business-registration/BusinessRegistrationServices";
+import BusinessRegistrationServices from "../business-applications/business-registration/BusinessRegistrationServices";
 import { useState } from "react";
-import MortgageRegistrationServices from "../business-registration/MortgageRegistrationServices";
+import MortgageRegistrationServices from "../business-applications/business-registration/MortgageRegistrationServices";
 import { defaultSections } from "../../constants/home";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 

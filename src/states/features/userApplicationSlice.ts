@@ -7,13 +7,15 @@ export const userApplicationsSlice = createSlice({
       JSON.parse(String(localStorage.getItem("user_applications"))) || [],
     addReviewCommentsModal: false,
     listReviewCommentsModal: false,
-    application_review_comments:
-      JSON.parse(String(localStorage.getItem("application_review_comments"))) ||
+    applicationReviewComments:
+      JSON.parse(String(localStorage.getItem("applicationReviewComments"))) ||
       [],
-    userReviewCommentsModal: false,
-    user_review_comments: [],
+    userReviewTabCommentsModal: false,
+    userReviewStepCommentModal: false,
+    userReviewComments: [],
     approveApplicationModal: false,
     selectedApplication: null,
+    applicationReviewComment: {},
   },
   reducers: {
     // SET USER APPLICATIONS
@@ -39,10 +41,10 @@ export const userApplicationsSlice = createSlice({
 
     // SET ACTION COMMENTS
     setApplicationReviewComments: (state, action) => {
-      state.application_review_comments = action.payload;
+      state.applicationReviewComments = action.payload;
       localStorage.setItem(
-        "application_review_comments",
-        JSON.stringify(state.application_review_comments)
+        "applicationReviewComments",
+        JSON.stringify(state.applicationReviewComments)
       );
     },
 
@@ -58,7 +60,7 @@ export const userApplicationsSlice = createSlice({
 
     // UPDATE REVIEW COMMENT
     updateReviewComment: (state, action) => {
-      const updatedComments = [...state.application_review_comments];
+      const updatedComments = [...state.applicationReviewComments];
       const commentIndex = updatedComments?.findIndex(
         (comment) =>
           comment?.step?.name === action.payload?.step?.name &&
@@ -66,9 +68,9 @@ export const userApplicationsSlice = createSlice({
       );
       if (commentIndex !== -1) {
         updatedComments[commentIndex] = action.payload;
-        state.application_review_comments = updatedComments;
+        state.applicationReviewComments = updatedComments;
         localStorage.setItem(
-          "application_review_comments",
+          "applicationReviewComments",
           JSON.stringify(updatedComments)
         );
       }
@@ -76,7 +78,7 @@ export const userApplicationsSlice = createSlice({
 
     // UPDATE USER REVIEW COMMENT
     updateUserReviewComment: (state, action) => {
-      const updatedComments = [...state.user_review_comments];
+      const updatedComments = [...state.userReviewComments];
       const commentIndex = updatedComments?.findIndex(
         (comment) =>
           comment?.step?.name === action.payload?.step?.name &&
@@ -84,18 +86,18 @@ export const userApplicationsSlice = createSlice({
       );
       if (commentIndex !== -1) {
         updatedComments[commentIndex] = action.payload;
-        state.user_review_comments = updatedComments;
+        state.userReviewComments = updatedComments;
       }
     },
 
     // SET USER REVIEW COMMENTS MODAL
-    setUserReviewCommentsModal: (state, action) => {
-      state.userReviewCommentsModal = action.payload;
+    setUserReviewTabCommentsModal: (state, action) => {
+      state.userReviewTabCommentsModal = action.payload;
     },
 
     // SET USER REVIEW COMMENTS
-    setUserReviewComments: (state, action) => {
-      state.user_review_comments = action.payload;
+    setUserReviewTabComments: (state, action) => {
+      state.userReviewComments = action.payload;
     },
 
     // DELETE USER APPLICATION
@@ -114,7 +116,17 @@ export const userApplicationsSlice = createSlice({
     setSelectedApplication: (state, action) => {
       state.selectedApplication = action.payload;
     },
+
+    // SET USER REVIEW STEP COMMENTS MODAL
+    setUserReviewStepCommentModal: (state, action) => {
+      state.userReviewStepCommentModal = action.payload;
   },
+
+  // SET APPLICATION
+  setApplicationReviewComment: (state, action) => {
+    state.applicationReviewComment = action.payload;
+  },
+},
 });
 
 export default userApplicationsSlice.reducer;
@@ -125,10 +137,12 @@ export const {
   setListReviewCommentsModal,
   setApplicationReviewComments,
   updateReviewComment,
-  setUserReviewCommentsModal,
-  setUserReviewComments,
+  setUserReviewTabCommentsModal,
+  setUserReviewTabComments,
   updateUserReviewComment,
   deleteUserApplication,
   setApproveApplicationModal,
   setSelectedApplication,
+  setUserReviewStepCommentModal,
+  setApplicationReviewComment,
 } = userApplicationsSlice.actions;

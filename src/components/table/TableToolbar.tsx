@@ -76,8 +76,8 @@ export default function TableToolbar<TData, TValue>({
   };
 
   return (
-    <section className="flex items-center justify-between gap-4">
-      <nav className="flex items-center flex-1 w-full space-x-2">
+    <section className="flex items-start justify-between gap-4 w-full">
+      <nav className="flex items-center flex-1 min-w-[50%] space-x-2">
         <menu className="flex items-center w-full gap-0">
           <Select
             value={searchType}
@@ -128,6 +128,7 @@ export default function TableToolbar<TData, TValue>({
           />
         </menu>
       </nav>
+      <menu className="w-full flex items-center gap-2 flex-wrap">
       {Array.from(columns)
         ?.filter((column) => column?.filterFn)
         ?.map((column) => {
@@ -160,6 +161,7 @@ export default function TableToolbar<TData, TValue>({
             />
           );
         })}
+      </menu>
       {showExport && <Button
         variant="outline"
         className="flex items-center gap-2 font-normal"

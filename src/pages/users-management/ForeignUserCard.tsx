@@ -10,7 +10,7 @@ type User = {
   last_name: string;
   email: string;
   application_status: "approved" | "rejected" | "submitted";
-  created_at: string;
+  createdAt: string;
   country: string;
   gender: string;
   address: string;
@@ -106,7 +106,7 @@ const UserCard = ({ user, setUserToView }: Props) => {
             </div>
             <div className="flex text-base font-semibold ">
               <h1 className="w-1/2 text-secondary">Applied on</h1>
-              <p className="w-1/2 text-gray-300">{user.created_at}</p>
+              <p className="w-1/2 text-gray-300">{user.createdAt}</p>
             </div>
           </div>
           <div className="flex flex-col gap-4">

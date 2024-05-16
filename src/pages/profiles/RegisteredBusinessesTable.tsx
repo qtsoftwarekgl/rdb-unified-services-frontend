@@ -40,7 +40,7 @@ const RegisteredBusinessesTable = () => {
   const colums = [
     {
       header: "Company Code",
-      accessorKey: "reg_number",
+      accessorKey: "company_code",
     },
     {
       header: "Company Name",
@@ -67,7 +67,7 @@ const RegisteredBusinessesTable = () => {
     },
     {
       header: "Registered Date",
-      accessorKey: "submission_date",
+      accessorKey: "createdAt",
     },
     {
       header: "Action",

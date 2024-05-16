@@ -80,7 +80,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/237x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "10/1/2023",
+    createdAt: "10/1/2023",
   },
   {
     id: "07a0f7c7-b8ae-4081-af8d-5a8ddbc4ea4b",
@@ -91,7 +91,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/233x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "5/30/2023",
+    createdAt: "5/30/2023",
   },
   {
     id: "bc0a3d76-bbed-4ba3-870d-64aabb75d4e9",
@@ -102,7 +102,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/195x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "5/30/2023",
+    createdAt: "5/30/2023",
   },
   {
     id: "50d500e6-14af-417a-8071-1926fe0b7680",
@@ -113,7 +113,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/137x100.png/ff4444/ffffff",
     role: "verifier",
-    created_at: "9/1/2023",
+    createdAt: "9/1/2023",
   },
   {
     id: "082539a4-011c-494c-b123-32cc1daf27ff",
@@ -124,7 +124,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/183x100.png/dddddd/000000",
     role: "applicant",
-    created_at: "5/17/2023",
+    createdAt: "5/17/2023",
   },
   {
     id: "76573188-f393-4493-9f04-2f85facbdd50",
@@ -135,7 +135,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/159x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "9/9/2023",
+    createdAt: "9/9/2023",
   },
   {
     id: "2a6fe52c-cfee-48c4-b418-1a75ac814049",
@@ -146,7 +146,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/165x100.png/cc0000/ffffff",
     role: "admin",
-    created_at: "6/7/2023",
+    createdAt: "6/7/2023",
   },
   {
     id: "a5141f01-e0fa-46ff-b88d-2ccb7520764d",
@@ -157,7 +157,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/115x100.png/dddddd/000000",
     role: "admin",
-    created_at: "2/21/2024",
+    createdAt: "2/21/2024",
   },
   {
     id: "b21120e8-334c-4b62-a85c-70670b6edb07",
@@ -168,7 +168,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/169x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "3/1/2023",
+    createdAt: "3/1/2023",
   },
   {
     id: "381dec9c-4e8f-4724-88f9-6307075f1ce6",
@@ -179,7 +179,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/183x100.png/cc0000/ffffff",
     role: "admin",
-    created_at: "4/8/2023",
+    createdAt: "4/8/2023",
   },
   {
     id: "8fcc523e-a0d4-4f7d-a528-17720e8a553a",
@@ -190,7 +190,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/182x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "9/14/2023",
+    createdAt: "9/14/2023",
   },
   {
     id: "429f9be6-28ba-4d4c-aa24-8608a7f053d7",
@@ -201,7 +201,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/155x100.png/dddddd/000000",
     role: "applicant",
-    created_at: "3/1/2023",
+    createdAt: "3/1/2023",
   },
   {
     id: "ad9e6c51-822e-4d37-8c0f-38a0cd9e275b",
@@ -212,7 +212,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/139x100.png/dddddd/000000",
     role: "approver",
-    created_at: "7/19/2023",
+    createdAt: "7/19/2023",
   },
   {
     id: "a3afcf31-d373-4878-957b-711eccf1cfee",
@@ -223,7 +223,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/101x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "1/1/2024",
+    createdAt: "1/1/2024",
   },
   {
     id: "b44a7d2d-33c7-4efb-8299-b7e31f9fb421",
@@ -234,7 +234,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/126x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "6/24/2023",
+    createdAt: "6/24/2023",
   },
   {
     id: "7467f9a6-edc7-47ee-abd5-9dd3d2ec328a",
@@ -245,7 +245,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/248x100.png/ff4444/ffffff",
     role: "approver",
-    created_at: "6/14/2023",
+    createdAt: "6/14/2023",
   },
   {
     id: "2e45aca3-6336-4019-91c1-7b882903c94a",
@@ -256,7 +256,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/113x100.png/dddddd/000000",
     role: "admin",
-    created_at: "4/20/2023",
+    createdAt: "4/20/2023",
   },
   {
     id: "fd236569-a703-4ca3-9e78-1d3fc96796c8",
@@ -267,7 +267,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/122x100.png/dddddd/000000",
     role: "admin",
-    created_at: "8/1/2023",
+    createdAt: "8/1/2023",
   },
   {
     id: "26ebcee9-e5b3-4bd6-903d-04b491edac96",
@@ -278,7 +278,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/105x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "1/16/2024",
+    createdAt: "1/16/2024",
   },
   {
     id: "8b25fc48-fa4b-4fca-bdaf-5cfa27eb885a",
@@ -289,7 +289,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/158x100.png/5fa2dd/ffffff",
     role: "applicant",
-    created_at: "5/9/2023",
+    createdAt: "5/9/2023",
   },
   {
     id: "e7299216-f9fb-43ad-b26d-3ef9689fe26c",
@@ -300,7 +300,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/143x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "5/12/2023",
+    createdAt: "5/12/2023",
   },
   {
     id: "662cbba9-47a6-4d98-b19d-38a101646044",
@@ -311,7 +311,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/130x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "1/13/2024",
+    createdAt: "1/13/2024",
   },
   {
     id: "d757c4a1-ec31-4759-95df-50794f90c73e",
@@ -322,7 +322,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/223x100.png/cc0000/ffffff",
     role: "admin",
-    created_at: "12/4/2023",
+    createdAt: "12/4/2023",
   },
   {
     id: "bfebf76c-30e3-4674-ae67-1ea06431b7b0",
@@ -333,7 +333,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/240x100.png/5fa2dd/ffffff",
     role: "approver",
-    created_at: "3/20/2023",
+    createdAt: "3/20/2023",
   },
   {
     id: "052c9fc9-2f94-4ce3-952b-2a29c4fca06d",
@@ -344,7 +344,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/226x100.png/cc0000/ffffff",
     role: "applicant",
-    created_at: "11/6/2023",
+    createdAt: "11/6/2023",
   },
   {
     id: "413d27d2-40a8-4ee1-8f12-40bedcbc0022",
@@ -355,7 +355,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/225x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "8/9/2023",
+    createdAt: "8/9/2023",
   },
   {
     id: "78d1c3ce-5e2b-431b-9f7a-0c92c9742c23",
@@ -366,7 +366,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/218x100.png/dddddd/000000",
     role: "approver",
-    created_at: "4/20/2023",
+    createdAt: "4/20/2023",
   },
   {
     id: "9a02a499-6b54-4bb4-92fc-ab4f9daea2e0",
@@ -377,7 +377,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/228x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "5/30/2023",
+    createdAt: "5/30/2023",
   },
   {
     id: "a74015b8-a68e-4bd5-8d13-c24b89032ac0",
@@ -388,7 +388,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/111x100.png/cc0000/ffffff",
     role: "applicant",
-    created_at: "10/28/2023",
+    createdAt: "10/28/2023",
   },
   {
     id: "ec02d7a3-9e74-4c26-8240-cabb97c51696",
@@ -399,7 +399,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/217x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "8/5/2023",
+    createdAt: "8/5/2023",
   },
   {
     id: "c17350c0-70f6-4d44-b0d6-cea7f4eebd53",
@@ -410,7 +410,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/215x100.png/ff4444/ffffff",
     role: "verifier",
-    created_at: "9/20/2023",
+    createdAt: "9/20/2023",
   },
   {
     id: "a35e5497-27c7-47d2-ae4d-2ad5eeb0efe2",
@@ -421,7 +421,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/183x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "3/28/2023",
+    createdAt: "3/28/2023",
   },
   {
     id: "b08476d9-d816-4a8f-b9ef-86e9df48a22a",
@@ -432,7 +432,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/197x100.png/dddddd/000000",
     role: "applicant",
-    created_at: "1/14/2024",
+    createdAt: "1/14/2024",
   },
   {
     id: "979e5428-021d-448e-914c-05614487a383",
@@ -443,7 +443,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/205x100.png/dddddd/000000",
     role: "approver",
-    created_at: "6/24/2023",
+    createdAt: "6/24/2023",
   },
   {
     id: "bc504f6b-1b68-473a-b65c-a93493406d2c",
@@ -454,7 +454,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/219x100.png/dddddd/000000",
     role: "admin",
-    created_at: "4/10/2023",
+    createdAt: "4/10/2023",
   },
   {
     id: "da7d8265-24a2-4901-9704-c5e30c89266f",
@@ -465,7 +465,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/190x100.png/dddddd/000000",
     role: "approver",
-    created_at: "6/7/2023",
+    createdAt: "6/7/2023",
   },
   {
     id: "b508eb2f-1caf-4f23-8ffe-9777be13beff",
@@ -476,7 +476,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/232x100.png/ff4444/ffffff",
     role: "applicant",
-    created_at: "4/30/2023",
+    createdAt: "4/30/2023",
   },
   {
     id: "62b65278-40e1-4242-b7fe-f3b62e465b78",
@@ -487,7 +487,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/226x100.png/ff4444/ffffff",
     role: "applicant",
-    created_at: "2/21/2024",
+    createdAt: "2/21/2024",
   },
   {
     id: "8eb1981f-ef34-441c-a41f-90e540d18242",
@@ -498,7 +498,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/116x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "6/25/2023",
+    createdAt: "6/25/2023",
   },
   {
     id: "cfc1482b-daba-4219-be2b-9d82a403fb6b",
@@ -509,7 +509,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/224x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "9/21/2023",
+    createdAt: "9/21/2023",
   },
   {
     id: "1d8f2312-7dff-4288-b1e0-d01dd6ac6bc3",
@@ -520,7 +520,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/227x100.png/5fa2dd/ffffff",
     role: "approver",
-    created_at: "11/11/2023",
+    createdAt: "11/11/2023",
   },
   {
     id: "203c2ca6-cf06-4264-8bd7-1cd0b59789dc",
@@ -531,7 +531,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/240x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "8/10/2023",
+    createdAt: "8/10/2023",
   },
   {
     id: "ec5c4f33-1053-4296-97c1-7162b09c1cd6",
@@ -542,7 +542,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/178x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "8/19/2023",
+    createdAt: "8/19/2023",
   },
   {
     id: "16ccbc7f-acea-44ed-a0ba-b942d1523b45",
@@ -553,7 +553,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/158x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "4/16/2023",
+    createdAt: "4/16/2023",
   },
   {
     id: "42063ab5-2569-4958-8a11-9dec414a3060",
@@ -564,7 +564,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/229x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "1/19/2024",
+    createdAt: "1/19/2024",
   },
   {
     id: "458ffbba-e831-44ac-bbf3-91a32df2f1c4",
@@ -575,7 +575,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/141x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "12/6/2023",
+    createdAt: "12/6/2023",
   },
   {
     id: "0b5f90d7-5ebd-4ae5-8bfc-b0dec6750454",
@@ -586,7 +586,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/168x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "5/14/2023",
+    createdAt: "5/14/2023",
   },
   {
     id: "6cc3f341-d68b-467a-90a7-e8ee03da8047",
@@ -597,7 +597,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/180x100.png/dddddd/000000",
     role: "approver",
-    created_at: "9/5/2023",
+    createdAt: "9/5/2023",
   },
   {
     id: "5ac4d1bc-7500-4295-8d93-2c702ee5e2e7",
@@ -608,7 +608,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/119x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "2/25/2024",
+    createdAt: "2/25/2024",
   },
   {
     id: "68c8965b-8658-45f3-9b4b-a3cf0cb53cc8",
@@ -619,7 +619,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/227x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "4/15/2023",
+    createdAt: "4/15/2023",
   },
   {
     id: "7fa1adb9-eb80-4649-a12c-1171a72d023e",
@@ -630,7 +630,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/206x100.png/5fa2dd/ffffff",
     role: "applicant",
-    created_at: "10/12/2023",
+    createdAt: "10/12/2023",
   },
   {
     id: "9285855a-9ca3-41dc-b759-54655003d016",
@@ -641,7 +641,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/248x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "8/21/2023",
+    createdAt: "8/21/2023",
   },
   {
     id: "3f5331dc-fd36-4c29-b0b1-48650e453d89",
@@ -652,7 +652,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/231x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "8/22/2023",
+    createdAt: "8/22/2023",
   },
   {
     id: "125ef024-b681-4647-ab8b-2537a901c602",
@@ -663,7 +663,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/233x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "8/30/2023",
+    createdAt: "8/30/2023",
   },
   {
     id: "d296f6aa-6b90-4cf5-8322-aab1b286a416",
@@ -674,7 +674,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/119x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "2/28/2024",
+    createdAt: "2/28/2024",
   },
   {
     id: "e67aaa84-a330-46c3-a4fd-f451cb6a5e56",
@@ -685,7 +685,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/137x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "2/3/2024",
+    createdAt: "2/3/2024",
   },
   {
     id: "3b5672ec-8235-4b41-8127-a7a79cdf2544",
@@ -696,7 +696,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/122x100.png/5fa2dd/ffffff",
     role: "approver",
-    created_at: "1/3/2024",
+    createdAt: "1/3/2024",
   },
   {
     id: "64bbe276-e3ce-4e75-b702-4a1813c6869a",
@@ -707,7 +707,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/134x100.png/ff4444/ffffff",
     role: "applicant",
-    created_at: "11/23/2023",
+    createdAt: "11/23/2023",
   },
   {
     id: "4b2919c6-4b55-4d52-840e-d21c78d93d4a",
@@ -718,7 +718,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/149x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "12/3/2023",
+    createdAt: "12/3/2023",
   },
   {
     id: "9c577914-c5d3-49ed-835e-dc39ff0a9c8b",
@@ -729,7 +729,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/158x100.png/dddddd/000000",
     role: "approver",
-    created_at: "7/5/2023",
+    createdAt: "7/5/2023",
   },
   {
     id: "09ed8e42-af35-45af-855c-c822c60968f7",
@@ -740,7 +740,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/157x100.png/dddddd/000000",
     role: "approver",
-    created_at: "4/1/2023",
+    createdAt: "4/1/2023",
   },
   {
     id: "2a65d18a-9d7d-4f72-ba75-e2d7f6737292",
@@ -751,7 +751,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/170x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "4/14/2023",
+    createdAt: "4/14/2023",
   },
   {
     id: "fbe6d26c-d9a9-44e2-8b52-987ed0e7db29",
@@ -762,7 +762,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/217x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "4/19/2023",
+    createdAt: "4/19/2023",
   },
   {
     id: "bcfa374b-affc-44e8-a945-c025e7afc88b",
@@ -773,7 +773,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/171x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "1/1/2024",
+    createdAt: "1/1/2024",
   },
   {
     id: "2f3855ac-c95e-467b-96cb-8a35c2bd3caa",
@@ -784,7 +784,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/220x100.png/cc0000/ffffff",
     role: "applicant",
-    created_at: "10/9/2023",
+    createdAt: "10/9/2023",
   },
   {
     id: "515c2287-4915-4cf9-8388-966460e73d96",
@@ -795,7 +795,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/217x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "4/14/2023",
+    createdAt: "4/14/2023",
   },
   {
     id: "61c359f0-45d8-46cc-83ee-7363ab6add5a",
@@ -806,7 +806,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/105x100.png/cc0000/ffffff",
     role: "admin",
-    created_at: "10/7/2023",
+    createdAt: "10/7/2023",
   },
   {
     id: "d9c38807-1b53-4b71-826d-0dfef02928dd",
@@ -817,7 +817,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/160x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "5/2/2023",
+    createdAt: "5/2/2023",
   },
   {
     id: "c430c4d2-798d-4409-bcd0-0df743e27649",
@@ -828,7 +828,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/155x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "10/13/2023",
+    createdAt: "10/13/2023",
   },
   {
     id: "2fc0517e-dedb-4b02-97fe-1aa4f30f7716",
@@ -839,7 +839,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/159x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "7/6/2023",
+    createdAt: "7/6/2023",
   },
   {
     id: "45127e71-0462-4384-808b-e0259bbd98b3",
@@ -850,7 +850,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/203x100.png/dddddd/000000",
     role: "applicant",
-    created_at: "5/22/2023",
+    createdAt: "5/22/2023",
   },
   {
     id: "0362b64b-2e1d-4f0a-bb46-d545e8617a7d",
@@ -861,7 +861,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/164x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "4/4/2023",
+    createdAt: "4/4/2023",
   },
   {
     id: "ce1d69f7-5bdd-4cb5-ab8b-5ca4874c9abe",
@@ -872,7 +872,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/175x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "4/29/2023",
+    createdAt: "4/29/2023",
   },
   {
     id: "cb12bde4-4c47-4b57-ae57-bf0ec4f9f012",
@@ -883,7 +883,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/146x100.png/ff4444/ffffff",
     role: "verifier",
-    created_at: "2/12/2024",
+    createdAt: "2/12/2024",
   },
   {
     id: "c6ab30c0-efbc-4f32-8678-aa4c28965f64",
@@ -894,7 +894,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/177x100.png/ff4444/ffffff",
     role: "verifier",
-    created_at: "2/28/2024",
+    createdAt: "2/28/2024",
   },
   {
     id: "f9e09154-9f3b-4c66-80f3-3b8a77a0bfbf",
@@ -905,7 +905,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/108x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "1/1/2024",
+    createdAt: "1/1/2024",
   },
   {
     id: "4fb34895-9261-491c-9ce2-c052784f1583",
@@ -916,7 +916,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/173x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "6/23/2023",
+    createdAt: "6/23/2023",
   },
   {
     id: "3d3059ef-3bc2-4f5c-8552-8a169b065ccb",
@@ -927,7 +927,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/111x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "8/21/2023",
+    createdAt: "8/21/2023",
   },
   {
     id: "f1fbafd3-be5d-4e72-abb1-b4784190d917",
@@ -938,7 +938,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/219x100.png/cc0000/ffffff",
     role: "admin",
-    created_at: "9/22/2023",
+    createdAt: "9/22/2023",
   },
   {
     id: "11a787e5-0c75-41ac-8465-2b169fd437fe",
@@ -949,7 +949,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/218x100.png/ff4444/ffffff",
     role: "approver",
-    created_at: "5/3/2023",
+    createdAt: "5/3/2023",
   },
   {
     id: "282bf2fb-2de5-4613-ae7c-0c3f95a52847",
@@ -960,7 +960,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/103x100.png/5fa2dd/ffffff",
     role: "approver",
-    created_at: "12/18/2023",
+    createdAt: "12/18/2023",
   },
   {
     id: "01feaac1-0e50-485d-8eb7-e42790e24f21",
@@ -971,7 +971,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/166x100.png/ff4444/ffffff",
     role: "approver",
-    created_at: "10/15/2023",
+    createdAt: "10/15/2023",
   },
   {
     id: "5e53d02c-6c3d-40eb-a6f3-4b2c4e9119ac",
@@ -982,7 +982,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/140x100.png/dddddd/000000",
     role: "approver",
-    created_at: "2/9/2024",
+    createdAt: "2/9/2024",
   },
   {
     id: "7489af41-92a9-4a9f-b3b9-9e3c2866f5de",
@@ -993,7 +993,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/171x100.png/dddddd/000000",
     role: "admin",
-    created_at: "2/16/2024",
+    createdAt: "2/16/2024",
   },
   {
     id: "ee8e6d2f-c92a-48f3-b6ff-ef780ce5683f",
@@ -1004,7 +1004,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/164x100.png/ff4444/ffffff",
     role: "approver",
-    created_at: "3/7/2023",
+    createdAt: "3/7/2023",
   },
   {
     id: "14a20f98-7a4c-4be5-aae6-9508e020a72d",
@@ -1015,7 +1015,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/177x100.png/5fa2dd/ffffff",
     role: "verifier",
-    created_at: "7/11/2023",
+    createdAt: "7/11/2023",
   },
   {
     id: "3bc3aee2-ae45-46c5-9036-4483a637948f",
@@ -1026,7 +1026,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/162x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "9/24/2023",
+    createdAt: "9/24/2023",
   },
   {
     id: "ae7d80f8-f61a-4ce7-bcdd-87688d40e241",
@@ -1037,7 +1037,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/175x100.png/cc0000/ffffff",
     role: "applicant",
-    created_at: "8/24/2023",
+    createdAt: "8/24/2023",
   },
   {
     id: "b71a365e-35aa-4126-b1bc-87013c87842c",
@@ -1048,7 +1048,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/186x100.png/dddddd/000000",
     role: "verifier",
-    created_at: "3/29/2023",
+    createdAt: "3/29/2023",
   },
   {
     id: "e0e8af36-3f9c-41ea-9b12-f023d411922f",
@@ -1059,7 +1059,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/191x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "4/7/2023",
+    createdAt: "4/7/2023",
   },
   {
     id: "16a74006-3159-4a68-a671-5ab4860aa634",
@@ -1070,7 +1070,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/249x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "8/7/2023",
+    createdAt: "8/7/2023",
   },
   {
     id: "b8b566cb-b5ab-498a-80f4-8d9ba88e2de3",
@@ -1081,7 +1081,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/112x100.png/cc0000/ffffff",
     role: "verifier",
-    created_at: "3/6/2023",
+    createdAt: "3/6/2023",
   },
   {
     id: "86055108-deac-44bf-926b-9f61781e78f3",
@@ -1092,7 +1092,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/175x100.png/5fa2dd/ffffff",
     role: "approver",
-    created_at: "7/27/2023",
+    createdAt: "7/27/2023",
   },
   {
     id: "85b546e5-f548-40e1-94c3-37e1858b4fe8",
@@ -1103,7 +1103,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/101x100.png/cc0000/ffffff",
     role: "approver",
-    created_at: "8/1/2023",
+    createdAt: "8/1/2023",
   },
   {
     id: "bac5baa4-e430-40c8-83b1-d6842a2e1f92",
@@ -1114,7 +1114,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/186x100.png/ff4444/ffffff",
     role: "admin",
-    created_at: "12/1/2023",
+    createdAt: "12/1/2023",
   },
   {
     id: "2b027dce-77b4-48a2-8b5e-309b69268301",
@@ -1125,7 +1125,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/170x100.png/dddddd/000000",
     role: "approver",
-    created_at: "6/5/2023",
+    createdAt: "6/5/2023",
   },
   {
     id: "87f4dbff-a55e-4e88-8524-3d5e430c15da",
@@ -1136,7 +1136,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/234x100.png/5fa2dd/ffffff",
     role: "admin",
-    created_at: "7/24/2023",
+    createdAt: "7/24/2023",
   },
   {
     id: "ab9da37d-4494-4f04-be74-4c66e323d4bf",
@@ -1147,7 +1147,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/129x100.png/cc0000/ffffff",
     role: "applicant",
-    created_at: "12/4/2023",
+    createdAt: "12/4/2023",
   },
   {
     id: "d4b0b6dc-88f2-46cb-9073-acc35a8b2e92",
@@ -1158,7 +1158,7 @@ export const users = [
     status: "active",
     image: "http://dummyimage.com/228x100.png/ff4444/ffffff",
     role: "applicant",
-    created_at: "9/15/2023",
+    createdAt: "9/15/2023",
   },
   {
     id: "46bec431-dd3a-4326-b654-1381f5c30adb",
@@ -1169,7 +1169,7 @@ export const users = [
     status: "inactive",
     image: "http://dummyimage.com/151x100.png/5fa2dd/ffffff",
     role: "applicant",
-    created_at: "12/10/2023",
+    createdAt: "12/10/2023",
   },
 ];
 
@@ -1214,7 +1214,7 @@ export const columns = [
   },
   {
     header: "Date Added",
-    accessorKey: "created_at",
+    accessorKey: "createdAt",
   },
   {
     header: "",

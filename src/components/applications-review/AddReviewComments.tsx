@@ -1,24 +1,24 @@
-import { useDispatch, useSelector } from "react-redux";
-import Modal from "../Modal";
-import { AppDispatch, RootState } from "../../states/store";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import TextArea from "../inputs/TextArea";
-import Button from "../inputs/Button";
-import { FC, useEffect, useRef, useState } from "react";
-import Loader from "../Loader";
-import { Step, TabType } from "../../states/features/types";
-import moment from "moment";
+import { useDispatch, useSelector } from 'react-redux';
+import Modal from '../Modal';
+import { AppDispatch, RootState } from '../../states/store';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import TextArea from '../inputs/TextArea';
+import Button from '../inputs/Button';
+import { FC, useEffect, useState } from 'react';
+import Loader from '../Loader';
+import { Step, TabType } from '../../states/features/types';
+import moment from 'moment';
 import {
   setAddReviewCommentsModal,
   setApplicationReviewComments,
   updateReviewComment,
-} from "../../states/features/userApplicationSlice";
+} from '../../states/features/userApplicationSlice';
 
 export type ReviewComment = {
   comment: string;
   step: Step;
   tab: TabType;
-  created_at: string;
+  createdAt: string;
   entry_id?: string | null;
   checked?: boolean;
 };
@@ -45,65 +45,31 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { addReviewCommentsModal, application_review_comments } = useSelector(
+  const { addReviewCommentsModal, applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [comment, setComment] = useState<ReviewComment | null>(null);
+  const [comment, setComment] = useState<ReviewComment | null | undefined>(
+    null || undefined
+  );
   const { user } = useSelector((state: RootState) => state.user);
 
-  // COMMENT REF
-  const commentRef = useRef<HTMLTextAreaElement>(null);
-
-  // RESET FORM ON MODAL CLOSE
+  // SET DEFAULT VALUE
   useEffect(() => {
-    if (!addReviewCommentsModal) {
-      reset();
-      commentRef.current?.blur();
-      if (commentRef?.current?.value) {
-        commentRef.current.value = "";
-      }
-      setComment(null);
-    } else if (addReviewCommentsModal) {
-      commentRef.current?.focus();
-      const commentExists = application_review_comments?.find(
+    if (applicationReviewComments?.length > 0) {
+      const commentExists = applicationReviewComments?.find(
         (business_comment: ReviewComment) =>
           business_comment?.step?.name === activeStep?.name &&
           business_comment?.entry_id === entry_id
       );
-      console.log(commentExists)
       if (commentExists) {
+        setValue('comment', commentExists?.comment);
         setComment(commentExists);
       }
     }
   }, [
     activeStep?.name,
-    application_review_comments,
-    reset,
-    addReviewCommentsModal,
-    entry_id,
-  ]);
-
-  // SET DEFAULT VALUE
-  useEffect(() => {
-    if (application_review_comments?.length > 0) {
-      const commentExists = application_review_comments?.find(
-        (business_comment: ReviewComment) =>
-          business_comment?.step?.name === activeStep?.name &&
-        business_comment?.entry_id === entry_id
-      );
-      if (commentExists) {
-        setValue("comment", commentExists?.comment);
-        setComment(commentExists);
-        commentRef.current?.focus();
-        if (commentRef.current) {
-          commentRef.current.value = commentExists?.comment;
-        }
-      }
-    }
-  }, [
-    activeStep?.name,
-    application_review_comments,
+    applicationReviewComments,
     setValue,
     addReviewCommentsModal,
     entry_id,
@@ -122,7 +88,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           name: activeTab?.name,
           label: activeTab?.label,
         },
-        created_at: moment().format(),
+        createdAt: moment().format(),
       };
       if (comment) {
         dispatch(
@@ -140,13 +106,14 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
               checked: false,
               reviewer: user,
             },
-            ...application_review_comments,
+            ...applicationReviewComments,
           ])
         );
       }
-      if (commentRef?.current?.value) {
-        commentRef.current.value = "";
-      }
+      setValue('comment', '');
+      reset({
+        comment: '',
+      });
       dispatch(setAddReviewCommentsModal(false));
     }, 1000);
   };
@@ -155,6 +122,10 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
     <Modal
       isOpen={addReviewCommentsModal}
       onClose={() => {
+        setTimeout(() => {
+          setValue('comment', '');
+          setComment(null);
+        }, 500);
         dispatch(setAddReviewCommentsModal(false));
       }}
     >
@@ -169,16 +140,15 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           name="comment"
           control={control}
           defaultValue={comment && comment?.comment}
-          rules={{ required: "Comment is required" }}
+          rules={{ required: 'Comment is required' }}
           render={({ field }) => {
             return (
               <label className="flex flex-col w-full gap-2">
                 <TextArea
-                  ref={commentRef}
                   required
-                  defaultValue={comment ? comment?.comment : ""}
                   placeholder="Add comment to provide the applicant with more context"
                   label="Comment box"
+                  {...field}
                   onChange={(e) => {
                     field.onChange(e);
                   }}
@@ -197,10 +167,14 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
             value="Cancel"
             onClick={(e) => {
               e.preventDefault();
+              setTimeout(() => {
+                setValue('comment', '');
+                setComment(null);
+              }, 500);
               dispatch(setAddReviewCommentsModal(false));
             }}
           />
-          <Button value={isLoading ? <Loader /> : "Save"} primary submit />
+          <Button value={isLoading ? <Loader /> : 'Save'} primary submit />
         </menu>
       </form>
     </Modal>

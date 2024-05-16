@@ -50,10 +50,10 @@ const SuperAdminDashboard = () => {
     },
     {
       header: 'Date Added',
-      accessorKey: 'created_at',
+      accessorKey: 'createdAt',
       cell: ({ row }) => {
         return (
-          <p className="text-[13px]">{formatDate(row?.original?.created_at)}</p>
+          <p className="text-[13px]">{formatDate(row?.original?.createdAt)}</p>
         );
       },
     },

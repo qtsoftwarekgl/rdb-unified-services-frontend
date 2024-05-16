@@ -28,7 +28,7 @@ const ListRolePermissions = () => {
     },
     {
       header: 'Date Added',
-      accessorKey: 'created_at',
+      accessorKey: 'createdAt',
     },
   ];
 
@@ -48,7 +48,7 @@ const ListRolePermissions = () => {
             return {
               ...permission,
               no: index + 1,
-              created_at: formatDate(permission?.created_at),
+              createdAt: formatDate(permission?.createdAt),
             };
           })}
           columns={columns}

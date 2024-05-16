@@ -5,7 +5,7 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
-import { NewRegistration } from "../business-registration/NewBusinessRegistration";
+import { NewRegistration } from "../business-applications/business-registration/NewBusinessRegistration";
 import { useEffect } from "react";
 
 const NewEnterpriseRegistration = () => {
