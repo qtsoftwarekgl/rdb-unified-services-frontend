@@ -26,7 +26,7 @@ const NameReservationSuccess = ({ entry_id }: NameReservationProps) => {
 
       <p className="text-center text-[14px]">
         The name will be reserved for three months (expiring on{' '}
-        {formatDate(reservedName?.created_at)}) extendable to another three
+        {formatDate(reservedName?.createdAt)}) extendable to another three
         months only once. After that period expires and the name has not been
         utilized, it will be released again for public usage. You will receive a
         reminder notification 10 days before the expiry date in your email

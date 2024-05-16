@@ -100,8 +100,8 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
                         app.type === 'name_reservation' &&
                         app.status === 'approved'
                     )
-                    ?.map((name: { name: string; created_at: string }) => {
-                      const expiry_date = moment(name?.created_at)
+                    ?.map((name: { name: string; createdAt: string }) => {
+                      const expiry_date = moment(name?.createdAt)
                         .add(3, 'months')
                         .format('MM/DD/YYYY');
                       return {

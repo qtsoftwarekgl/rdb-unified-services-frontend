@@ -116,7 +116,7 @@ const ListUsers = () => {
     {
       id: 'date',
       header: 'Date Added',
-      accessorKey: 'created_at',
+      accessorKey: 'createdAt',
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
@@ -174,7 +174,7 @@ const ListUsers = () => {
                 ...user,
                 no: index + 1,
                 name: `${user?.first_name} ${user?.last_name}`,
-                created_at: formatDate(user?.created_at),
+                createdAt: formatDate(user?.createdAt),
               };
             })}
             columns={columns}

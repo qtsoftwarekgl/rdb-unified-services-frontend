@@ -36,7 +36,7 @@ const ApplicationSuccess: FC<ModalProps> = ({
       setCollateralApplications({
         entry_id,
         isAOMADownloaded: true,
-        created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        createdAt: moment(Date.now()).format("DD/MM/YYYY"),
         status: "Pending Notarized AOMA and Payment Receipt",
       })
     );

@@ -35,7 +35,7 @@ const ApproveApplication = () => {
         <p>
           Expires at:{' '}
           {formatDate(
-            String(moment(selectedApplication?.created_at).add(3, 'M'))
+            String(moment(selectedApplication?.createdAt).add(3, 'M'))
           )}
         </p>
 

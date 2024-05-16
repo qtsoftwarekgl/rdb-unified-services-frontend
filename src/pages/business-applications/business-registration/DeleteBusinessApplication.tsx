@@ -41,7 +41,7 @@ const DeleteBusinessApplication = () => {
         </p>
         <p>
           Date Started:{' '}
-          {selectedApplication?.created_at
+          {selectedApplication?.createdAt
             ? moment().format('DD/MM/YYYY H:mm')
             : moment().format('DD/MM/YYYY H:mm')}
         </p>

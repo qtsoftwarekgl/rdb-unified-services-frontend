@@ -8,7 +8,7 @@ import {
   RegistrationTab,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-} from "../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../states/features/foreignCompanyRegistrationSlice";
 import CompanyDetails from "./general-information/CompanyDetails";
 import CompanyAddress from "./general-information/CompanyAddress";
 import BusinessActivity from "./general-information/BusinessActivity";
@@ -32,7 +32,7 @@ const ForeignBranchRegistration = () => {
     foreign_business_registration_tabs,
     foreign_business_active_step,
     foreign_business_active_tab,
-  } = useSelector((state: RootState) => state.foreignBranchRegistration);
+  } = useSelector((state: RootState) => state.foreignCompanyRegistration);
 
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
@@ -68,7 +68,7 @@ const ForeignBranchRegistration = () => {
         status,
         type: "foreign_branch",
         path: `/foreign-branch-registration?entry_id=${entry_id}`,
-        created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        createdAt: moment(Date.now()).format("DD/MM/YYYY"),
         owner: user?.email,
       })
     );
@@ -97,14 +97,14 @@ const ForeignBranchRegistration = () => {
                 >
                   {isActiveTab && (
                     <>
-                      {activeStepName === "company_details" && (
+                      {activeStepName === 'company_details' && (
                         <CompanyDetails
                           entry_id={entry_id}
                           company_details={current_application?.company_details}
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_company_address" && (
+                      {activeStepName === 'foreign_company_address' && (
                         <CompanyAddress
                           entry_id={entry_id}
                           foreign_company_address={
@@ -113,7 +113,7 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_business_activity_vat" && (
+                      {activeStepName === 'foreign_business_activity_vat' && (
                         <BusinessActivity
                           entry_id={entry_id}
                           foreign_company_activities={
@@ -122,7 +122,7 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_board_of_directors" && (
+                      {activeStepName === 'foreign_board_of_directors' && (
                         <BoardDirectors
                           entry_id={entry_id}
                           foreign_board_of_directors={
@@ -132,7 +132,7 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_senior_management" && (
+                      {activeStepName === 'foreign_senior_management' && (
                         <SeniorManagement
                           entry_id={entry_id}
                           foreign_senior_management={
@@ -141,7 +141,7 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_employment_info" && (
+                      {activeStepName === 'foreign_employment_info' && (
                         <EmploymentInfo
                           entry_id={entry_id}
                           foreign_employment_info={
@@ -150,7 +150,7 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_beneficial_owners" && (
+                      {activeStepName === 'foreign_beneficial_owners' && (
                         <BeneficialOwners
                           entry_id={entry_id}
                           foreign_beneficial_owners={
@@ -159,7 +159,7 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === "foreign_attachments" && (
+                      {activeStepName === 'foreign_attachments' && (
                         <CompanyAttachments
                           entry_id={entry_id}
                           foreign_company_attachments={
@@ -170,7 +170,7 @@ const ForeignBranchRegistration = () => {
                           }
                         />
                       )}
-                      {activeStepName === "foreign_preview_submission" && (
+                      {activeStepName === 'foreign_preview_submission' && (
                         <PreviewSubmission
                           entry_id={entry_id}
                           current_application={current_application}

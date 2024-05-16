@@ -72,7 +72,7 @@ const ApplicatinsList = ({
       accessorKey: "status",
       cell: renderStatusCell,
     },
-    { header: "Registration Date", accessorKey: "submission_date" },
+    { header: "Registration Date", accessorKey: "createdAt" },
     {
       header: "Action",
       accessorKey: "action",

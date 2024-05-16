@@ -57,4 +57,65 @@ export const validateInputs = (value: string, type: string) => {
   return true;
 };
 
+export const validatePassword = (password: string) => {
+  const missingCharacters = [
+    {
+      message: 'Uppercase letter',
+      type: 'uppercase',
+      color: 'red',
+    },
+    {
+      message: 'Lowercase letter',
+      type: 'lowercase',
+      color: 'red',
+    },
+    {
+      message: 'Numeral character',
+      type: 'number',
+      color: 'red',
+    },
+    {
+      message: 'Special characters',
+      type: 'special',
+      color: 'red',
+    },
+  ];
+
+  if (password && /(?=.*[A-Z])/.test(password)) {
+    const uppercaseCharacter = missingCharacters.find(
+      (character) => character.type === 'uppercase'
+    );
+    if (uppercaseCharacter) {
+      uppercaseCharacter.color = 'green';
+    }
+  }
+  if (password && /(?=.*[a-z])/.test(password)) {
+    console.log(password);
+    const lowercaseCharacter = missingCharacters.find(
+      (character) => character.type === 'lowercase'
+    );
+    if (lowercaseCharacter) {
+      lowercaseCharacter.color = 'green';
+    }
+  }
+  if (password && /(?=.*\d)/.test(password)) {
+    const numeralCharacter = missingCharacters.find(
+      (character) => character.type === 'number'
+    );
+    if (numeralCharacter) {
+      numeralCharacter.color = 'green';
+    }
+  }
+  if (password && /(?=.*[^\w\s])/.test(password)) {
+    const specialCharacter = missingCharacters.find(
+      (character) => character.type === 'special'
+    );
+    if (specialCharacter) {
+      specialCharacter.color = 'green';
+    }
+  }
+
+  return missingCharacters;
+};
+
 export default validateInputs;

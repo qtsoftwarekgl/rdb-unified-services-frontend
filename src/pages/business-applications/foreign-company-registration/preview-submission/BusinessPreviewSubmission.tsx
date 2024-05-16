@@ -8,7 +8,7 @@ import {
   setForeignBusinessCompletedStep,
   setForeignBusinessRegistrationTabs,
   foreign_business_registration_tabs_initial_state,
-} from "../../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { capitalizeString } from "../../../../helpers/strings";
 import Table from "../../../../components/table/Table";
 import { countriesList } from "../../../../constants/countries";

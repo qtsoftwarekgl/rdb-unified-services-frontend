@@ -1,4 +1,4 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faWrench } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
 import UserLayout from "../../containers/UserLayout";
@@ -15,6 +15,8 @@ import {
 } from "../../states/features/businessRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
+import { Row } from "@tanstack/react-table";
+import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -28,43 +30,72 @@ const UserApplications = () => {
   const navigate = useNavigate();
 
   const registeredBusinesses = user_applications
+    ?.filter((app) =>
+      ['submitted', 'approved', 'rejected', 'action_required'].includes(
+        app.status
+      )
+    )
     .map(formatCompanyData)
     .reverse();
 
   const colors = (status: string) => {
-    const colorMap = {
+    const colorMap: { [key: string]: string } = {
       verified: "bg-[#82ffa3] text-[#0d7b3e]",
       rejected: "bg-[#eac3c3] text-red-500",
       approved: "bg-[#cfeaff] text-secondary",
-      "request for action": "bg-[#e4e4e4] text-[#6b6b6b]",
+      action_required: "bg-red-500 text-white",
       submitted: "bg-[#e8ffef] text-black",
+      in_progress: "bg-[#f7f7f7] text-black",
     };
     return colorMap[status] || "";
   };
 
   const columns = [
-    { header: "Registration Number", accessorKey: "reg_number" },
-    { header: "Company Name", accessorKey: "company_name" },
+    { header: 'Registration Number', accessorKey: 'reg_number' },
+    { header: 'Company Name', accessorKey: 'company_name' },
     {
-      header: "Service Name",
-      accessorKey: "service_name",
-      cell: ({ row }) => (
+      header: 'Service Name',
+      accessorKey: 'service_name',
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: {
+            service_name: string;
+          };
+        };
+      }) => (
         <span className="text-[13px]">
-          {capitalizeString(row.original?.service_name) || "N/A"}
+          {capitalizeString(row.original?.service_name) || 'N/A'}
         </span>
       ),
     },
-    { header: "Status", accessorKey: "status", cell: renderStatusCell },
-    { header: "Submission Date", accessorKey: "submission_date" },
     {
-      header: "Action",
-      accessorKey: "actions",
+      id: 'status',
+      header: 'Status',
+      accessorKey: 'status',
+      cell: renderStatusCell,
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+    },
+    { header: 'Date Added', accessorKey: 'createdAt' },
+    {
+      id: 'action',
+      header: 'Action',
+      accessorKey: 'actions',
       enableSorting: false,
       cell: renderActionCell,
     },
   ];
 
-  function renderStatusCell({ row }) {
+  function renderStatusCell({ row }: {
+    row: {
+      original: {
+        status: string;
+      };
+    };
+  }) {
     return (
       <span
         className={`px-3 py-1 rounded-full flex w-fit items-center ${colors(
@@ -72,7 +103,7 @@ const UserApplications = () => {
         )}`}
       >
         <span className="w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-        <span className="text-sm font-light ">
+        <span className="text-[12px] font-light ">
           {capitalizeString(row?.original.status)}
         </span>
       </span>
@@ -86,33 +117,67 @@ const UserApplications = () => {
     );
   };
 
-  const handleEditClick = (row) => {
+  const handleEditClick = (row: {
+    original: {
+      path: string;
+      entry_id: string;
+    };
+  }) => {
     dispatch(setBusinessActiveTab("general_information"));
     dispatch(setBusinessActiveStep("company_details"));
     navigate(row.original?.path);
   };
 
-  function renderActionCell({ row }) {
+  function renderActionCell({
+    row,
+  }: {
+    row: {
+      original: {
+        entry_id: string;
+      };
+    };
+  }) {
     return (
-      <menu className="flex items-center gap-2 cursor-pointer">
+      <menu className="flex items-start flex-col gap-2 w-full">
         <Button
+          styled={false}
+          value={
+            <menu className="flex items-center gap-1 transition-all duration-300 bg-secondary p-1 px-2 rounded-md">
+              <FontAwesomeIcon
+                className="text-[12px] text-white"
+                icon={faEye}
+              />
+              <p className="text-[12px] text-white">View details</p>
+            </menu>
+          }
           onClick={(e) => {
             e.preventDefault();
             navigate(`/company-details/${row?.original?.entry_id}`);
           }}
-          value="View"
-          styled={false}
-          className="cursor-pointer hover:underline text-primary"
         />
         {hasComments(row?.original?.entry_id) && (
           <Button
             onClick={(e) => {
               e.preventDefault();
-              handleEditClick(row);
+              handleEditClick(
+                row as {
+                  original: {
+                    path: string;
+                    entry_id: string;
+                  };
+                }
+              );
             }}
-            value="Resolve Comments"
+            value={
+              <menu className="flex items-center gap-1 transition-all duration-300 bg-primary p-1 px-2 w-full rounded-md">
+                <FontAwesomeIcon
+                  className="text-[12px] text-white"
+                  icon={faPenToSquare}
+                />
+                <p className="text-[12px] text-white">Make changes</p>
+              </menu>
+            }
             styled={false}
-            className="!text-red-500  !truncate hover:underline cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
           />
         )}
       </menu>
@@ -136,11 +201,11 @@ const UserApplications = () => {
                   business_registration_tabs_initial_state
                 )
               );
-              dispatch(setBusinessActiveTab("general_information"));
-              dispatch(setBusinessActiveStep("company_details"));
+              dispatch(setBusinessActiveTab('general_information'));
+              dispatch(setBusinessActiveStep('company_details'));
             }}
             value={
-              <menu className="flex items-center gap-2">
+              <menu className="flex text-[14px] items-center gap-2">
                 <FontAwesomeIcon icon={faPlus} />
                 New application
               </menu>
@@ -148,7 +213,17 @@ const UserApplications = () => {
           />
         </menu>
         {user_applications?.length > 0 ? (
-          <Table columns={columns} data={registeredBusinesses} />
+          <Table
+            columns={columns}
+            data={registeredBusinesses}
+            rowClickHandler={(row: {
+              original: {
+                entry_id: string;
+              }
+            }) => {
+              navigate(`/company-details/${row?.original?.entry_id}`);
+            }}
+          />
         ) : (
           <span className="flex items-center justify-start w-full">
             <h1 className="uppercase text-primary">

@@ -65,7 +65,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
                     {comment?.step?.label}
                   </h3>
                   <p className="text-[14px] font-normal">{comment.comment}</p>
-                  <p className="text-sm">{formatDate(comment.created_at)}</p>
+                  <p className="text-sm">{formatDate(comment.createdAt)}</p>
                 </ul>
                 <ul
                   className={`${

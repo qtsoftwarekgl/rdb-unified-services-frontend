@@ -41,7 +41,7 @@ const ForeignUsers = () => {
     },
     {
       header: 'Date Applied',
-      accessorKey: 'created_at',
+      accessorKey: 'createdAt',
     },
     {
       header: 'Country',

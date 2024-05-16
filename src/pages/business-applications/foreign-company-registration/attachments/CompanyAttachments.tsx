@@ -9,7 +9,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from "../../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
 import { setUserApplications } from "../../../../states/features/userApplicationSlice";

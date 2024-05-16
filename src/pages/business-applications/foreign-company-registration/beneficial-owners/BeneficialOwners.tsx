@@ -41,7 +41,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from '@/states/features/foreignBranchRegistrationSlice';
+} from '@/states/features/foreignCompanyRegistrationSlice';
 
 export interface business_beneficial_owners {
   no: number;
@@ -55,7 +55,6 @@ export interface business_beneficial_owners {
 }
 
 interface BeneficialOwnersProps {
-  isOpen: boolean;
   foreign_beneficial_owners: any[];
   entry_id: string | null;
   status: string;

@@ -44,7 +44,7 @@ import ForeignUsers from "./pages/users-management/ForeignUsers";
 import NameReservation from "./pages/name-reservation/NameReservation";
 import ForeignBranchSplashPage from "./pages/business-applications/foreign-company-registration/SplashPage";
 import SearchCompanyAvailability from "./pages/business-applications/company-availability/SearchCompanyAvailability";
-import ForeignBranchRegistration from "./pages/business-applications/foreign-company-registration/ForeignBranchRegistration";
+import ForeignBranchRegistration from "./pages/business-applications/foreign-company-registration/ForeignCompanyRegistration";
 import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
 import SearchCompanyDetails from "./pages/business-applications/company-availability/SearchCompanyDetails";
 import CompanyRestoration from "./pages/business-applications/company-restoration/CompanyRestoration";

@@ -17,7 +17,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from "../../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 

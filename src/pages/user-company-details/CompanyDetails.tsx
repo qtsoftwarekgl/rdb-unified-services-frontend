@@ -185,7 +185,9 @@ const CompanyDetails = () => {
                               value !== null &&
                               !Array.isArray(value)
                               ? capitalizeString(value?.name)
-                              : capitalizeString(value) ?? ''
+                              : typeof value === 'string'
+                              ? capitalizeString(value)
+                              : ''
                           )}
                         </span>
                       </p>

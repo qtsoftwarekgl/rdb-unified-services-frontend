@@ -8,7 +8,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from '../../../../states/features/foreignBranchRegistrationSlice';
+} from '../../../../states/features/foreignCompanyRegistrationSlice';
 import Loader from '../../../../components/Loader';
 import { setUserApplications } from '../../../../states/features/userApplicationSlice';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';

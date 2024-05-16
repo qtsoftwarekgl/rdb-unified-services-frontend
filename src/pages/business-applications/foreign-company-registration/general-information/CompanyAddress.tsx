@@ -11,7 +11,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from "../../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Select from "../../../../components/inputs/Select";
 import { countriesList } from "../../../../constants/countries";
 import { setUserApplications } from "../../../../states/features/userApplicationSlice";

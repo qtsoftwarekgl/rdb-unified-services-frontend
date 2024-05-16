@@ -54,7 +54,7 @@ const CollateralList = () => {
         loan_amount: app?.loan_amount,
         debtor: app?.debtor_info?.debtor_names,
         status: app?.status,
-        submission_date: app?.created_at,
+        createdAt: app?.createdAt,
         entry_id: app?.entry_id,
       };
     });
@@ -98,7 +98,7 @@ const CollateralList = () => {
         return capitalizeString(row?.original?.status);
       },
     },
-    { header: "Submission Date", accessorKey: "submission_date" },
+    { header: "Date Added", accessorKey: "createdAt" },
     {
       header: "Action",
       accessorKey: "actions",

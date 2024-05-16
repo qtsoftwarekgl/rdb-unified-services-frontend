@@ -57,7 +57,7 @@ export const NewRegistration = ({
     .map((business: any) => {
       return {
         ...business,
-        created_at: formatDate(business?.created_at),
+        createdAt: formatDate(business?.createdAt),
         company_name: business?.company_details?.name,
         status: capitalizeString(business?.status),
         id:
@@ -150,7 +150,7 @@ export const NewRegistration = ({
         );
       },
     },
-    { header: 'Submission Date', accessorKey: 'created_at' },
+    { header: 'Date Added', accessorKey: 'createdAt' },
     {
       header: 'Action',
       accessorKey: 'actions',

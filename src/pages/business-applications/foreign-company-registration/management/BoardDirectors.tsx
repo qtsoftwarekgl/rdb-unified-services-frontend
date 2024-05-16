@@ -1,45 +1,45 @@
-import { useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../../components/inputs/Select';
-import Loader from '../../../../components/Loader';
-import Input from '../../../../components/inputs/Input';
-import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
-import { userData } from '../../../../constants/authentication';
-import { countriesList } from '../../../../constants/countries';
-import Button from '../../../../components/inputs/Button';
+import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../../components/inputs/Select";
+import Loader from "../../../../components/Loader";
+import Input from "../../../../components/inputs/Input";
+import { faSearch, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { userData } from "../../../../constants/authentication";
+import { countriesList } from "../../../../constants/countries";
+import validateInputs from "../../../../helpers/validations";
+import Button from "../../../../components/inputs/Button";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from '../../../../states/features/foreignBranchRegistrationSlice';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../../../components/table/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString, maskPhoneDigits } from '../../../../helpers/strings';
-import { setUserApplications } from '../../../../states/features/userApplicationSlice';
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Table from "../../../../components/table/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { capitalizeString, maskPhoneDigits } from "../../../../helpers/strings";
+import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
   validNationalID,
-} from '../../../../constants/Users';
-import ConfirmModal from '../../../../components/confirm-modal/ConfirmModal';
-import ViewDocument from '../../../user-company-details/ViewDocument';
-import validateInputs from '../../../../helpers/validations';
-import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import { business_senior_management } from '@/pages/business-applications/business-registration/management/SeniorManagement';
+} from "../../../../constants/Users";
+import ConfirmModal from "../../../../components/confirm-modal/ConfirmModal";
+import ViewDocument from "../../../user-company-details/ViewDocument";
+import { business_board_of_directors } from "@/pages/business-applications/business-registration/management/BoardDirectors";
+import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 
-interface SeniorManagementProps {
+interface BoardDirectorsProps {
   entry_id: string | null;
-  foreign_senior_management: any;
+  foreign_board_of_directors: any;
   status?: string;
 }
 
-const SeniorManagement = ({
+const BoardDirectors = ({
   entry_id,
-  foreign_senior_management,
+  foreign_board_of_directors,
   status,
-}: SeniorManagementProps) => {
+}: BoardDirectorsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -50,7 +50,7 @@ const SeniorManagement = ({
     clearErrors,
     reset,
     trigger,
-    formState: { errors, isSubmitSuccessful },
+    formState: { isSubmitSuccessful, errors },
   } = useForm();
 
   // STATE VARIABLES
@@ -58,64 +58,75 @@ const SeniorManagement = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user.email);
-  const [isLoading, setIsLoading] = useState(false);
-  const [confirmModalData, setConfirmModalData] = useState({});
-  const [previewAttachment, setPreviewAttachment] = useState<string>('');
   const [confirmModal, setConfirmModal] = useState(false);
+  const [confirmModalData, setConfirmModalData] = useState({});
+  const [previewAttachment, setPreviewAttachment] = useState<string>("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
     data: null,
   });
+  const { user } = useSelector((state: RootState) => state.user);
+  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
 
   // CLEAR FORM
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
+      setAttachmentFile(null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
     }
   }, [isSubmitSuccessful, reset]);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch('document_type') === 'passport') {
-      setValue('country', '');
-      setValue('phone', '');
-      setValue('street_name', '');
-      setValue('first_name', '');
-      setValue('middle_name', '');
-      setValue('last_name', '');
-      setValue('gender', '');
-    }
-  }, [setValue, watch('document_type')]);
+    setValue("country", "");
+    setValue("phone", "");
+    setValue("street_name", "");
+    setValue("first_name", "");
+    setValue("middle_name", "");
+    setValue("last_name", "");
+    setSearchMember({
+      ...searchMember,
+      data: null,
+    });
+  }, [setValue, watch("document_type")]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
+    clearErrors("position_conflict");
+    clearErrors("board_of_directors");
     setTimeout(() => {
-      setIsLoading(false);
-      clearErrors('submit');
       dispatch(
         setUserApplications({
           entry_id,
-          foreign_senior_management: [
+          foreign_board_of_directors: [
             {
               ...data,
-              attachment: {
-                name: attachmentFile?.name,
-                size: attachmentFile?.size,
-                type: attachmentFile?.type,
-              },
-              step: 'foreign_senior_management',
+              attachment: attachmentFile?.name,
+              step: "foreign_board_of_directors",
             },
-            ...foreign_senior_management,
+            ...foreign_board_of_directors,
           ],
         })
       );
+      setIsLoading(false);
+      setValue("attachment", null);
+      setSearchMember({
+        loading: false,
+        error: false,
+        data: null,
+      });
       reset();
-      setValue('attachment', null);
     }, 1000);
     return data;
   };
@@ -123,31 +134,32 @@ const SeniorManagement = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Position',
-      accessorKey: 'position',
+      header: "Position",
+      accessorKey: "position",
     },
     {
-      header: 'Action',
-      accessorKey: 'action',
-      cell: ({
-        row,
-      }: {
+      header: "Action",
+      accessorKey: "action",
+      cell: ({ row }: {
         row: {
-          original: object;
+          original: {
+            no: number;
+          };
         };
+      
       }) => {
         return (
-          <menu className="flex items-center gap-6">
+          <menu className="flex items-center">
             <FontAwesomeIcon
               className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                if (status === 'is_Amending') return;
+                if (isFormDisabled) return;
                 setConfirmModalData(row?.original);
                 setConfirmModal(true);
               }}
@@ -169,36 +181,51 @@ const SeniorManagement = ({
             <h3 className="font-medium uppercase text-md">Add members</h3>
             <Controller
               name="position"
-              rules={{ required: "Select member's position" }}
+              rules={{
+                required:
+                  status !== 'in_preview' ? "Select member's position" : false,
+              }}
               control={control}
               render={({ field }) => {
-                const options = [
-                  {
-                    value: 'md/gm',
-                    label: 'MD / GM',
-                  },
-                  {
-                    value: 'secretary',
-                    label: 'Secretary',
-                  },
-                  {
-                    value: 'accountant',
-                    label: 'Accountant',
-                  },
-                  {
-                    value: 'auditor',
-                    label: 'Auditor',
-                  },
-                ];
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
-                      label="Select position"
-                      required
-                      options={options}
                       {...field}
+                      label="Select position"
                       placeholder="Select position"
+                      required
+                      options={[
+                        {
+                          value: 'chairman',
+                          label: 'Chairman',
+                        },
+                        {
+                          value: 'member',
+                          label: 'Member',
+                        },
+                      ]}
                       onChange={(e) => {
+                        if (
+                          String(e) === 'chairman' &&
+                          foreign_board_of_directors?.find(
+                            (director: business_board_of_directors) =>
+                              director?.position === 'chairman'
+                          )
+                        ) {
+                          setError('position_conflict', {
+                            type: 'manual',
+                            message:
+                              'Cannot have more than one chairpeople in a company.',
+                          });
+                          return;
+                        }
+                        if (
+                          errors?.position_conflict &&
+                          String(e) !== 'chairman'
+                        ) {
+                          clearErrors('position_conflict');
+                        }
+                        setValue('document_type', '');
                         field.onChange(e);
                       }}
                     />
@@ -232,10 +259,10 @@ const SeniorManagement = ({
                       }`}
                     >
                       <Select
+                        placeholder="Select document type"
                         options={options}
                         label="Document Type"
                         required
-                        placeholder="Select document type"
                         {...field}
                       />
                     </label>
@@ -263,6 +290,10 @@ const SeniorManagement = ({
                         <Input
                           required
                           suffixIcon={faSearch}
+                          onChange={async (e) => {
+                            field.onChange(e);
+                            await trigger('document_no');
+                          }}
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
@@ -282,11 +313,9 @@ const SeniorManagement = ({
                                 field?.value.trim() === validNationalID
                                   ? Math.floor(Math.random() * 10)
                                   : Math.floor(Math.random() * 11) + 11;
-                              const userDetails = userData[index];
 
-                              if (
-                                String(field?.value) !== String(validNationalID)
-                              ) {
+                              const userDetails = userData[index];
+                              if (!userDetails) {
                                 setSearchMember({
                                   ...searchMember,
                                   data: null,
@@ -306,17 +335,13 @@ const SeniorManagement = ({
                                   userDetails?.middle_name
                                 );
                                 setValue('last_name', userDetails?.last_name);
-                                setValue('gender', userDetails?.data?.gender);
+                                setValue('gender', userDetails?.gender);
                               }
                             }, 700);
                           }}
                           label="ID Document No"
                           suffixIconPrimary
                           placeholder="1 XXXX X XXXXXXX X XX"
-                          onChange={async (e) => {
-                            field.onChange(e);
-                            await trigger('document_no');
-                          }}
                         />
                         {searchMember?.loading && (
                           <span className="flex items-center gap-[2px] text-[13px]">
@@ -340,9 +365,15 @@ const SeniorManagement = ({
               )}
               {watch('document_type') === 'passport' && (
                 <Controller
-                  name="document_no"
+                  name="passport_no"
                   rules={{
                     required: 'Passport number is required',
+                    validate: (value) => {
+                      return (
+                        validateInputs(value, 'passsport') ||
+                        'Invalid passport number'
+                      );
+                    },
                   }}
                   control={control}
                   render={({ field }) => {
@@ -358,9 +389,9 @@ const SeniorManagement = ({
                           label="Passport number"
                           {...field}
                         />
-                        {errors?.document_no && (
+                        {errors?.passport_no && (
                           <span className="text-sm text-red-500">
-                            {String(errors?.document_no?.message)}
+                            {String(errors?.passport_no?.message)}
                           </span>
                         )}
                       </label>
@@ -440,12 +471,7 @@ const SeniorManagement = ({
               control={control}
               name="gender"
               defaultValue={watch('gender') || searchMember?.data?.gender}
-              rules={{
-                required:
-                  watch('document_type') === 'passport'
-                    ? 'Select gender'
-                    : false,
-              }}
+              rules={{ required: 'Gender is required' }}
               render={({ field }) => {
                 return (
                   <label className="flex items-center w-full gap-2 py-4">
@@ -453,32 +479,28 @@ const SeniorManagement = ({
                       Gender<span className="text-red-500">*</span>
                     </p>
                     {watch('document_type') !== 'passport' ? (
-                      <menu className="flex items-center gap-4">
-                        <p className="px-2 py-1 rounded-md bg-background">
-                          {searchMember?.data?.gender || watch('gender')}
-                        </p>
-                      </menu>
+                      <p className="px-2 py-1 rounded-md bg-background">
+                        {searchMember?.data?.gender || watch('gender')}
+                      </p>
                     ) : (
                       <menu className="flex items-center gap-4 mt-2">
                         <Input
                           type="radio"
                           label="Male"
-                          {...field}
-                          onChange={async (e) => {
-                            field.onChange(e.target.value);
-                            await trigger('gender');
-                          }}
+                          name={field?.name}
                           value={'Male'}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
                         />
                         <Input
                           type="radio"
                           label="Female"
-                          {...field}
-                          onChange={async (e) => {
-                            field.onChange(e.target.value);
-                            await trigger('gender');
-                          }}
+                          name={field?.name}
                           value={'Female'}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                          }}
                         />
                       </menu>
                     )}
@@ -495,7 +517,11 @@ const SeniorManagement = ({
               name="phone"
               control={control}
               rules={{
-                required: 'Phone number is required',
+                required: watch('phone') ? 'Phone number is required' : false,
+                pattern: {
+                  value: /^(?:[0-9] ?){6,14}[0-9]$/,
+                  message: 'Invalid phone number',
+                },
               }}
               render={({ field }) => {
                 return (
@@ -540,19 +566,20 @@ const SeniorManagement = ({
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
                       <Select
-                        {...field}
                         placeholder="Select country"
+                        {...field}
                         label="Country"
-                        options={countriesList?.map((country) => {
-                          return {
-                            ...country,
-                            label: country.name,
-                            value: country?.code,
-                          };
-                        })}
-                        onChange={async (e) => {
+                        options={countriesList
+                          ?.filter((country) => country?.code !== 'RW')
+                          ?.map((country) => {
+                            return {
+                              ...country,
+                              label: country.name,
+                              value: country?.code,
+                            };
+                          })}
+                        onChange={(e) => {
                           field.onChange(e);
-                          await trigger('country');
                         }}
                       />
                       {errors?.country && (
@@ -581,8 +608,8 @@ const SeniorManagement = ({
                 }}
               />
             )}
-            {watch('document_type') === 'passport' && (
-              <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
+            {watch('document_type') !== 'nid' && (
+              <menu className="flex-col items-start w-full gap-3 my-3 max-md:items-center">
                 <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
                   Passport copy <span className="text-red-600">*</span>
                 </h3>
@@ -642,13 +669,22 @@ const SeniorManagement = ({
               </menu>
             )}
           </section>
+          <menu className="flex items-center justify-center w-full">
+            {errors?.position_conflict && (
+              <p className="text-red-600 text-[14px] text-center">
+                {String(errors?.position_conflict?.message)}
+              </p>
+            )}
+          </menu>
           <section className="flex items-center justify-end w-full">
             <Button
-              value={isLoading ? <Loader /> : 'Add position'}
+              value={isLoading ? <Loader /> : 'Add board member'}
+              primary
+              disabled={isFormDisabled}
               onClick={async (e) => {
                 e.preventDefault();
                 await trigger();
-                if (Object.keys(errors).length) return;
+                if (Object.keys(errors).length > 0) return;
                 setIsLoading(true);
                 setTimeout(() => {
                   setIsLoading(false);
@@ -660,38 +696,35 @@ const SeniorManagement = ({
                   }
                 }, 1000);
               }}
-              primary
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
             <h2 className="text-lg font-semibold uppercase text-primary">
-              Management Members
+              Board Members
             </h2>
             <Table
               rowClickHandler={undefined}
-              data={foreign_senior_management?.map(
-                (member: business_senior_management, index: number) => {
-                  return {
-                    ...member,
-                    no: index + 1,
-                    name: `${member?.first_name} ${member?.middle_name ?? ''} ${
-                      member?.last_name ?? ''
-                    }`,
-                    position:
-                      member?.position && capitalizeString(member?.position),
-                  };
-                }
-              )}
+              data={foreign_board_of_directors?.map((member, index) => {
+                return {
+                  ...member,
+                  no: index + 1,
+                  name: `${member?.first_name} ${member?.middle_name ?? ''} ${
+                    member?.last_name ?? ''
+                  }`,
+                  position:
+                    member?.position && capitalizeString(member?.position),
+                };
+              })}
               columns={columns}
               showFilter={false}
               showPagination={false}
             />
-            {errors?.submit && (
-              <p className="text-red-500 text-[15px] text-center">
-                {String(errors?.submit?.message)}
-              </p>
-            )}
           </section>
+          {errors?.board_of_directors && (
+            <p className="text-red-600 text-[13px] text-center">
+              {String(errors?.board_of_directors?.message)}
+            </p>
+          )}
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -700,8 +733,9 @@ const SeniorManagement = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_board_of_directors')
+                  setForeignBusinessActiveStep('foreign_business_activity_vat')
                 );
+                dispatch(setForeignBusinessActiveTab('general_information'));
               }}
             />
             {status === 'is_Amending' && (
@@ -717,11 +751,11 @@ const SeniorManagement = ({
             )}
             {['in_preview', 'action_required'].includes(status) && (
               <Button
-                value="Save & Complete Review"
+                value={'Save & Complete Review'}
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!foreign_senior_management?.length) {
+                  if (foreign_board_of_directors?.length <= 0) {
                     setError('board_of_directors', {
                       type: 'manual',
                       message: 'Add at least one board member',
@@ -732,37 +766,57 @@ const SeniorManagement = ({
                     return;
                   }
                   dispatch(
-                    setForeignBusinessCompletedStep('foreign_senior_management')
+                    setForeignBusinessCompletedStep(
+                      'foreign_board_of_directors'
+                    )
                   );
+
                   dispatch(
                     setForeignBusinessActiveTab('foreign_preview_submission')
                   );
                 }}
+                disabled={isFormDisabled}
               />
             )}
             <Button
               value="Save & Continue"
               primary
+              disabled={isFormDisabled}
               onClick={(e) => {
                 e.preventDefault();
-                if (!foreign_senior_management?.length) {
-                  setError('submit', {
+                if (foreign_board_of_directors?.length <= 0) {
+                  setError('board_of_directors', {
                     type: 'manual',
-                    message: 'Add at least one member',
+                    message: 'Add at least one board member',
                   });
                   setTimeout(() => {
-                    clearErrors('submit');
-                  }, 5000);
+                    clearErrors('board_of_directors');
+                  }, 4000);
+                  return;
+                }
+                if (
+                  foreign_board_of_directors?.find(
+                    (director: business_board_of_directors) =>
+                      director?.document_type === 'nid'
+                  ) === undefined
+                ) {
+                  setError('board_of_directors', {
+                    type: 'manual',
+                    message: 'Board requires at least one Rwandan local resident in its members',
+                  });
+                  setTimeout(() => {
+                    clearErrors('board_of_directors');
+                  }, 4000);
                   return;
                 }
                 dispatch(
                   setUserApplications({ entry_id, status: 'in_progress' })
                 );
                 dispatch(
-                  setForeignBusinessCompletedStep('foreign_senior_management')
+                  setForeignBusinessCompletedStep('foreign_board_of_directors')
                 );
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_employment_info')
+                  setForeignBusinessActiveStep('foreign_senior_management')
                 );
               }}
             />
@@ -786,7 +840,7 @@ const SeniorManagement = ({
           dispatch(
             setUserApplications({
               entry_id,
-              foreign_senior_management: foreign_senior_management?.filter(
+              foreign_board_of_directors: foreign_board_of_directors?.filter(
                 (_: unknown, index: number) => {
                   return index !== confirmModalData?.no - 1;
                 }
@@ -798,15 +852,15 @@ const SeniorManagement = ({
         description="This action cannot be undone"
       />
       <OTPVerificationCard
-        phone={watch('phone')}
         isOpen={showVerifyPhone}
         onClose={() => {
           setShowVerifyPhone(false);
           handleSubmit(onSubmit)();
         }}
+        phone={watch('phone')}
       />
     </section>
   );
 };
 
-export default SeniorManagement;
+export default BoardDirectors;

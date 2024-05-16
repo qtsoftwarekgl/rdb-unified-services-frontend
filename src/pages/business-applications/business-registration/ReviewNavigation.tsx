@@ -18,6 +18,7 @@ import {
 } from "../../../states/features/userApplicationSlice";
 import { ReviewComment } from "../../../components/applications-review/AddReviewComments";
 import Loader from "../../../components/Loader";
+import moment from "moment";
 
 interface ExtraProps {
   propName: string;
@@ -165,6 +166,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                       status: user?.email?.includes("infoverifier@rdb")
                         ? "pending_approval"
                         : "approved",
+                        updatedAt: moment().format(),
                     })
                   );
                   navigate(redirectUrl);

@@ -102,41 +102,49 @@ export default function Table<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className={`p-2 ${rowClickHandler ? 'cursor-pointer' : ''}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    rowClickHandler &&
-                      row?.id !== 'no' &&
-                      rowClickHandler(row as Row<TData>['original']);
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      className="text-[13px] p-4"
-                      key={cell.id}
-                      onClick={(e) => {
-                        if (
-                          ['no', 'action', 'checkbox', 'action'].includes(
-                            cell.column.id || cell.column.accessorKey
-                          )
-                        ) {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }
-                      }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className={`p-2 ${rowClickHandler ? 'cursor-pointer' : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      rowClickHandler &&
+                        row?.id !== 'no' &&
+                        rowClickHandler(row as Row<TData>['original']);
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const preventAction = [
+                        'no',
+                        'action',
+                        'checkbox',
+                        'actions',
+                      ].includes(cell.column.id || cell.column.accessorKey);
+                      return (
+                        <TableCell
+                          className={`${
+                            preventAction ? '!cursor-auto' : ''
+                          } text-[13px] p-4`}
+                          key={cell.id}
+                          onClick={(e) => {
+                            if (preventAction) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }
+                          }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell

@@ -6,7 +6,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessRegistrationTabs,
-} from "../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../states/features/foreignCompanyRegistrationSlice";
 import { useDispatch } from "react-redux";
 
 const ForeignBranchSplashPage = () => {

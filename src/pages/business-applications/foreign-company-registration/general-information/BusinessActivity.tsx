@@ -13,7 +13,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from "../../../../states/features/foreignBranchRegistrationSlice";
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "react-router-dom";
 import Input from "../../../../components/inputs/Input";

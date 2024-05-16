@@ -64,7 +64,7 @@ const EnterpriseRegistration = () => {
       setUserApplications({
         entry_id,
         status,
-        created_at: moment(Date.now()).format("DD/MM/YYYY"),
+        createdAt: moment(Date.now()).format("DD/MM/YYYY"),
         path: `/enterprise-registration?entry_id=${entry_id}`,
         type: "enterprise",
         owner: user?.email,

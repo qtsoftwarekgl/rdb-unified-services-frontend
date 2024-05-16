@@ -130,7 +130,7 @@ const ApplicatinsList = ({
     {
       id: "date",
       header: "Registration Date",
-      accessorKey: "submission_date",
+      accessorKey: "createdAt",
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
@@ -156,7 +156,7 @@ const ApplicatinsList = ({
       status: "pending_approval",
     },
     {
-      label: "Action required from client",
+      label: "Requested for action",
       value: 18,
       status: "action_required",
     },

@@ -67,7 +67,7 @@ const RegisteredBusinessesTable = () => {
     },
     {
       header: "Registered Date",
-      accessorKey: "submission_date",
+      accessorKey: "createdAt",
     },
     {
       header: "Action",

@@ -11,8 +11,8 @@ const AmendCompanyDetails = () => {
 
   const sortBySubmissionDate = (a, b) => {
     return (
-      new Date(b?.submission_date).getTime() -
-      new Date(a?.submission_date).getTime()
+      new Date(b?.createdAt).getTime() -
+      new Date(a?.createdAt).getTime()
     );
   };
 

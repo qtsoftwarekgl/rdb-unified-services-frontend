@@ -18,7 +18,7 @@ export type ReviewComment = {
   comment: string;
   step: Step;
   tab: TabType;
-  created_at: string;
+  createdAt: string;
   entry_id?: string | null;
   checked?: boolean;
 };
@@ -88,7 +88,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
           name: activeTab?.name,
           label: activeTab?.label,
         },
-        created_at: moment().format(),
+        createdAt: moment().format(),
       };
       if (comment) {
         dispatch(

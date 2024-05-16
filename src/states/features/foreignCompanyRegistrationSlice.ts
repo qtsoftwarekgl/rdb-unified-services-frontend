@@ -128,8 +128,8 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     },
   ];
 
-export const foreignBranchRegistrationSlice = createSlice({
-  name: "foreignBranchRegistration",
+export const foreignCompanyRegistrationSlice = createSlice({
+  name: "foreignCompanyRegistration",
   initialState: {
     foreign_business_registration_tabs:
       JSON.parse(
@@ -341,7 +341,7 @@ export const foreignBranchRegistrationSlice = createSlice({
   },
 });
 
-export default foreignBranchRegistrationSlice.reducer;
+export default foreignCompanyRegistrationSlice.reducer;
 
 export const {
   setForeignBusinessActiveTab,
@@ -349,4 +349,4 @@ export const {
   setForeignBusinessCompletedStep,
   removeForeignBusinessCompletedStep,
   setForeignBusinessRegistrationTabs,
-} = foreignBranchRegistrationSlice.actions;
+} = foreignCompanyRegistrationSlice.actions;
