@@ -64,7 +64,7 @@ export const NewRegistration = ({
           business?.id ||
           business?.entry_id ||
           Math.floor(Math.random() * 9000) + 1000,
-        company_code: `REG-${(
+        reference_no: `REG-${(
           business?.entry_id?.split('-')[0] || ''
         ).toUpperCase()}`,
         service_name: capitalizeString(business?.type),
@@ -128,7 +128,7 @@ export const NewRegistration = ({
   }
 
   const businessRegistrationApplicationColumns = [
-    { header: 'Registration Number', accessorKey: 'company_code' },
+    { header: 'Registration Number', accessorKey: 'reference_no' },
     { header: 'Company Name', accessorKey: 'company_name' },
     { header: 'Service Name', accessorKey: 'service_name' },
     {

@@ -43,13 +43,12 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import Modal from "../../../../components/Modal";
 import ViewDocument from "../../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
-import BeneficialOwnerDetails from "./BeneficialOwnerDetails";
 import BusinessPersonDetails from "../BusinessPersonDetails";
+import TextArea from "@/components/inputs/TextArea";
 
 export interface business_beneficial_owners {
   no: number;
   name: string;
-  type: string;
   ownership_type: string;
   control_type: string;
   first_name: string;
@@ -89,8 +88,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
-    null
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>(
+  []
   );
   const [searchMember, setSearchMember] = useState({
     loading: false,
@@ -128,6 +127,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
       reset({
         type: '',
       });
+      setAttachmentFiles([]);
       setSearchMember({
         ...searchMember,
         data: null,
@@ -247,7 +247,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
     {
       header: 'action',
       accesorKey: 'action',
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -280,7 +280,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             >
               <section className="flex flex-col gap-6">
                 <h1 className="font-medium text-center uppercase">
-                  Are you sure you want to delete {attachmentFile?.name}
+                  Delete {row?.original?.name}
                 </h1>
                 <menu className="flex items-center justify-between gap-3">
                   <Button
@@ -298,7 +298,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     danger
                     onClick={(e) => {
                       e.preventDefault();
-                      setAttachmentFile(null);
+                      setAttachmentFiles(
+                        attachmentFiles?.filter(
+                          (file) => file?.name !== row?.original?.name
+                        )
+                      );
                       setValue('attachment', null);
                       setError('attachment', {
                         type: 'manual',
@@ -391,6 +395,52 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 }}
               />
             )}
+            <menu className="flex flex-col gap-4">
+            {watch('type') && watch('type') === 'legal_entity' && (
+                  <menu className="flex flex-col gap-4">
+                    <Controller
+                      name="description"
+                      rules={{
+                        required:
+                          watch('type') === 'legal_entity'
+                            ? 'Add more information'
+                            : false,
+                      }}
+                      control={control}
+                      render={({ field }) => {
+                        return (
+                          <label className="flex flex-col gap-1 w-full">
+                            <TextArea
+                              label="Description"
+                              required
+                              placeholder="Add more information"
+                              {...field}
+                            />
+                            {errors?.description && (
+                              <p className="text-red-600 text-[13px]">
+                                {String(errors?.description?.message)}
+                              </p>
+                            )}
+                          </label>
+                        );
+                      }}
+                    />
+                    <label className="flex flex-col gap-2">
+                      <p className="text-[13px] text-secondary">
+                        Add supporting documents (optional)
+                      </p>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="application/pdf"
+                        onChange={(e) => {
+                          const files = e?.target?.files;
+                          setAttachmentFiles([...attachmentFiles, ...files]);
+                        }}
+                      />
+                    </label>
+                  </menu>
+                )}
             {watch('type') &&
               watch('type') !== 'person' && (
                 <menu className="flex flex-col w-full gap-6">
@@ -469,7 +519,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       }}
                       render={({ field }) => {
                         return (
-                          <label className="flex flex-col gap-1 w-[49%]">
+                          <label className="flex flex-col gap-1 w-full">
                             <Input
                               label="Company/Entreprise Code"
                               placeholder="Company code"
@@ -558,6 +608,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   )}
                 </menu>
               )}
+            </menu>
             {watch('document_type') === 'nid' &&
               watch('type') === 'person' && (
                 <Controller
@@ -964,22 +1015,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         className="!w-fit max-sm:!w-full self-start"
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
-                          setAttachmentFile(e?.target?.files?.[0]);
+                          setAttachmentFiles((prev) => [...prev, e?.target?.files?.[0]]);
                           clearErrors('attachment');
                           setValue('attachment', e?.target?.files?.[0]);
                         }}
                       />
-                      <ul className="flex flex-col items-center w-full gap-3">
-                        {attachmentFile && (
-                          <Table
-                            rowClickHandler={undefined}
-                            columns={attachmentColumns}
-                            data={[attachmentFile]}
-                            showPagination={false}
-                            showFilter={false}
-                          />
-                        )}
-                      </ul>
                       {errors?.attachment && (
                         <p className="text-sm text-red-500">
                           {String(errors?.attachment?.message)}
@@ -1538,6 +1578,17 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               />
             </section>
           </menu>
+          <ul className="flex flex-col items-center w-full gap-3">
+                        {attachmentFiles?.length > 0 && (
+                          <Table
+                            rowClickHandler={undefined}
+                            columns={attachmentColumns}
+                            data={attachmentFiles}
+                            showPagination={false}
+                            showFilter={false}
+                          />
+                        )}
+                      </ul>
           <menu className="flex items-center justify-end w-full">
             <Button
               value={isLoading ? <Loader /> : 'Add beneficial owner'}

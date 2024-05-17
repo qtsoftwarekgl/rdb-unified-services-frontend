@@ -51,7 +51,7 @@ const UserApplications = () => {
   };
 
   const columns = [
-    { header: 'Registration Number', accessorKey: 'company_code' },
+    { header: 'Registration Number', accessorKey: 'reference_no' },
     { header: 'Company Name', accessorKey: 'company_name' },
     {
       header: 'Service Name',

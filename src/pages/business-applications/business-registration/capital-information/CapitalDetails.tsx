@@ -240,8 +240,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                         ...shareholder,
                         no: index,
                         name: shareholder?.first_name
-                          ? `${shareholder?.first_name || ""} ${
-                              shareholder?.last_name || ""
+                          ? `${shareholder?.first_name || ''} ${
+                              shareholder?.last_name || ''
                             }`
                           : shareholder?.company_name,
                         type: capitalizeString(shareholder?.type as string),
@@ -257,6 +257,13 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             columns={columns}
             showFilter={false}
             showPagination={false}
+            rowClickHandler={(row) => {
+              setShareholderShareDetails(
+                row?.original as unknown as SetStateAction<null>
+              );
+              clearErrors('total_shares');
+              dispatch(setCapitalDetailsModal(true));
+            }}
           />
         ) : (
           <menu className="flex flex-col gap-2">
@@ -269,10 +276,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               className="hover:underline"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveTab("capital_information"));
-                dispatch(removeBusinessCompletedStep("capital_details"));
-                dispatch(dispatch(removeBusinessCompletedStep("shareholders")));
-                dispatch(setBusinessActiveStep("shareholders"));
+                dispatch(setBusinessActiveTab('capital_information'));
+                dispatch(removeBusinessCompletedStep('capital_details'));
+                dispatch(dispatch(removeBusinessCompletedStep('shareholders')));
+                dispatch(setBusinessActiveStep('shareholders'));
               }}
             />
           </menu>
@@ -324,7 +331,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               Remaning value of assignable shares
             </h2>
             <p className="underline">
-              RWF{" "}
+              RWF{' '}
               {Number(share_details?.total_value ?? 0) -
                 Number(assignedShares?.value)}
             </p>
@@ -339,20 +346,20 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           disabled={disableForm}
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setBusinessActiveStep("shareholders"));
-            dispatch(setBusinessActiveTab("capital_information"));
+            dispatch(setBusinessActiveStep('shareholders'));
+            dispatch(setBusinessActiveTab('capital_information'));
           }}
         />
-        {status === "is_Amending" && (
+        {status === 'is_Amending' && (
           <Button
             disabled={disableForm || Object.keys(errors).length > 0}
-            value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
+            value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
             onClick={(e) => {
               e.preventDefault();
 
               // SET ACTIVE TAB AND STEP
-              const active_tab = "preview_submission";
-              const active_step = "preview_submission";
+              const active_tab = 'preview_submission';
+              const active_step = 'preview_submission';
 
               // CHECK FOR SHAREHOLDERS WITH 0 SHARES
               if (
@@ -360,10 +367,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   (shareholder) => shareholder?.shares?.total_shares === 0
                 )?.length > 0
               ) {
-                setError("total_shares", {
-                  type: "manual",
+                setError('total_shares', {
+                  type: 'manual',
                   message:
-                    "Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.",
+                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
                 });
                 return;
               }
@@ -381,8 +388,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   preview: false,
                   amend: false,
                 });
-                clearErrors("total_shares");
-                dispatch(setBusinessCompletedStep("capital_details"));
+                clearErrors('total_shares');
+                dispatch(setBusinessCompletedStep('capital_details'));
                 dispatch(setBusinessActiveStep(active_step));
                 dispatch(setBusinessActiveTab(active_tab));
                 dispatch(
@@ -398,15 +405,15 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         )}
         {['in_preview', 'action_required'].includes(status) && (
           <Button
-            value={isLoading?.preview ? <Loader /> : "Save & Complete Review"}
+            value={isLoading?.preview ? <Loader /> : 'Save & Complete Review'}
             primary
             disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
               e.preventDefault();
 
               // SET ACTIVE TAB AND STEP
-              const active_tab = "preview_submission";
-              const active_step = "preview_submission";
+              const active_tab = 'preview_submission';
+              const active_step = 'preview_submission';
 
               // CHECK FOR SHAREHOLDERS WITH 0 SHARES
               if (
@@ -414,10 +421,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   (shareholder) => shareholder?.shares?.total_shares === 0
                 )?.length > 0
               ) {
-                setError("total_shares", {
-                  type: "manual",
+                setError('total_shares', {
+                  type: 'manual',
                   message:
-                    "Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.",
+                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
                 });
                 return;
               }
@@ -435,8 +442,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   preview: false,
                   amend: false,
                 });
-                clearErrors("total_shares");
-                dispatch(setBusinessCompletedStep("capital_details"));
+                clearErrors('total_shares');
+                dispatch(setBusinessCompletedStep('capital_details'));
                 dispatch(setBusinessActiveStep(active_step));
                 dispatch(setBusinessActiveTab(active_tab));
                 dispatch(
@@ -451,7 +458,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           />
         )}
         <Button
-          value={isLoading?.submit ? <Loader /> : "Save & Continue"}
+          value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
           primary
           disabled={disableForm || Object.keys(errors).length > 0}
           onClick={(e) => {
@@ -462,10 +469,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 (shareholder) => shareholder?.shares?.total_shares === 0
               )?.length > 0
             ) {
-              setError("total_shares", {
-                type: "manual",
+              setError('total_shares', {
+                type: 'manual',
                 message:
-                  "Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.",
+                  'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
               });
               return;
             }
@@ -482,15 +489,15 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 submit: false,
                 preview: false,
               });
-              clearErrors("total_shares");
-              dispatch(setBusinessCompletedStep("capital_details"));
-              dispatch(setBusinessActiveStep("beneficial_owners"));
-              dispatch(setBusinessActiveTab("beneficial_owners"));
+              clearErrors('total_shares');
+              dispatch(setBusinessCompletedStep('capital_details'));
+              dispatch(setBusinessActiveStep('beneficial_owners'));
+              dispatch(setBusinessActiveTab('beneficial_owners'));
               dispatch(
                 setUserApplications({
                   entry_id,
-                  active_step: "beneficial_owners",
-                  active_tab: "beneficial_owners",
+                  active_step: 'beneficial_owners',
+                  active_tab: 'beneficial_owners',
                 })
               );
             }, 1000);
