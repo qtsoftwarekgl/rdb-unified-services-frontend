@@ -41,7 +41,7 @@ const UserReviewStepComment = () => {
         </h1>
         <p className="text-[14px]">{applicationReviewComment?.comment}</p>
         <p className="text-[12px] text-secondary">
-          Date added: {formatDate(applicationReviewComment?.created_at)}
+          Date added: {formatDate(applicationReviewComment?.createdAt)}
         </p>
       </menu>
       <menu className={`w-full flex items-center gap-3 justify-between`}>
@@ -74,6 +74,7 @@ const UserReviewStepComment = () => {
                   })
                 );
               }, 1000);
+              dispatch(setUserReviewStepCommentModal(false));
             }}
           />
         ) : (

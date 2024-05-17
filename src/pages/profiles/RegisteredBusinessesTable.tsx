@@ -104,7 +104,6 @@ const RegisteredBusinessesTable = () => {
           return {
             ...business,
             no: index + 1,
-            createdAt: formatDate(business?.createdAt),
           };
         })}
         className="bg-white rounded-2xl"

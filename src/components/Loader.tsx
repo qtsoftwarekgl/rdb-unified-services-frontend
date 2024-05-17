@@ -5,7 +5,7 @@ interface LoaderProps {
   size?: number;
 }
 
-const Loader: FC<LoaderProps> = ({ color = 'primary', size = 6 }) => {
+const Loader: FC<LoaderProps> = ({ color = 'primary', size = 4 }) => {
   return (
     <figure role="status">
       <svg
