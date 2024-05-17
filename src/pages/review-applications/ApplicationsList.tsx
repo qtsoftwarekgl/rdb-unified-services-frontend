@@ -197,8 +197,8 @@ const ApplicatinsList = ({
       dispatch(setApproveApplicationModal(true));
       return;
     }
-    dispatch(setBusinessActiveTab('general_information'));
-    dispatch(setBusinessActiveStep('company_details'));
+    dispatch(setBusinessActiveTab('preview_submission'));
+    dispatch(setBusinessActiveStep('preview_submission'));
 
     navigate(row.original?.path);
   };

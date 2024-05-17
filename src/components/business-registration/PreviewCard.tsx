@@ -61,6 +61,14 @@ const PreviewCard: FC<PreviewCardProps> = ({
     );
   }, [applicationReviewComments, entry_id, stepName, tabName]);
 
+  // ADD/UPDATE COMMENT
+  const handleAddComment = () => {
+    dispatch(setAddReviewCommentsModal(true));
+    dispatch(setApplicationReviewStepName(stepName));
+    dispatch(setApplicationReviewTabName(tabName));
+    setShowCommentActions(false);
+  };
+
   return (
     <section className="flex flex-col w-full gap-3 p-4 border-[.3px] border-primary rounded-md shadow-sm">
       <menu className="flex items-center justify-between w-full gap-3">
@@ -88,7 +96,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
               className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
             />
           )}
-          <Button
+          {RDBAdminEmailPattern.test(user?.email) && <Button
             styled={false}
             value={
               <menu className="flex items-center gap-2">
@@ -105,9 +113,11 @@ const PreviewCard: FC<PreviewCardProps> = ({
             }
             onClick={(e) => {
               e.preventDefault();
-              setShowCommentActions(!showCommentActions);
+              existingComments?.length <= 0
+                ? handleAddComment()
+                : setShowCommentActions(!showCommentActions);
             }}
-          />
+          />}
           {showCommentActions && (
             <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
               <Link
@@ -133,10 +143,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setAddReviewCommentsModal(true));
-                  dispatch(setApplicationReviewStepName(stepName));
-                  dispatch(setApplicationReviewTabName(tabName));
-                  setShowCommentActions(false);
+                  handleAddComment();
                 }}
                 className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
               >
