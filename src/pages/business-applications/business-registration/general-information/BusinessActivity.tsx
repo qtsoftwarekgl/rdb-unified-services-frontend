@@ -203,7 +203,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                     ?.slice(0, randomNumber)
                     .map((subActivity) => {
                       const subActivityExists =
-                        company_activities?.business_lines?.find(
+                        selectedBusinessLines?.find(
                           (activity: object) => activity?.id === subActivity?.id
                         );
                       return (

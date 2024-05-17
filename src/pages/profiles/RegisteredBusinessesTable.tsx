@@ -1,7 +1,7 @@
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Table from "../../components/table/Table";
-import { capitalizeString, formatCompanyData, formatDate } from "../../helpers/strings";
+import { capitalizeString, formatCompanyData } from "../../helpers/strings";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../states/store";
 import { setViewedCompany } from "../../states/features/userCompaniesSlice";
@@ -40,7 +40,7 @@ const RegisteredBusinessesTable = () => {
   const colums = [
     {
       header: "Company Code",
-      accessorKey: "company_code",
+      accessorKey: "reference_no",
     },
     {
       header: "Company Name",

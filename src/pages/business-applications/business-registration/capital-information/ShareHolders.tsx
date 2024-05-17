@@ -36,6 +36,7 @@ import Modal from "../../../../components/Modal";
 import ViewDocument from "../../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 import BusinessPersonDetails from "../BusinessPersonDetails";
+import TextArea from "@/components/inputs/TextArea";
 
 export interface business_shareholders {
   type: string;
@@ -76,9 +77,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
-    null
-  );
   const { user } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
@@ -92,6 +90,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
     attachment: false,
   });
   const [attachmentPreview, setAttachmentPreview] = useState<string>('');
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
@@ -112,11 +111,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           shareholders: [
             {
               ...data,
-              attachment: {
-                name: attachmentFile?.name,
-                size: attachmentFile?.size,
-                type: attachmentFile?.type,
-              },
+              attachments: JSON.stringify(attachmentFiles),
               step: 'shareholders',
               no: shareholders?.length - 1,
               id: generateUUID(),
@@ -127,7 +122,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
       );
       setIsLoading(false);
       reset();
-      setAttachmentFile(null);
+      setAttachmentFiles([]);
       setSearchMember({
         loading: false,
         error: false,
@@ -244,7 +239,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
     {
       header: 'action',
       accesorKey: 'action',
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -277,7 +272,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             >
               <section className="flex flex-col gap-6">
                 <h1 className="font-medium text-center uppercase">
-                  Are you sure you want to delete {attachmentFile?.name}
+                  Delete {row?.original?.name}
                 </h1>
                 <menu className="flex items-center justify-between gap-3">
                   <Button
@@ -295,7 +290,11 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                     danger
                     onClick={(e) => {
                       e.preventDefault();
-                      setAttachmentFile(null);
+                      setAttachmentFiles(
+                        attachmentFiles?.filter(
+                          (file) => file?.name !== row?.original?.name
+                        )
+                      );
                       setValue('attachment', null);
                       setError('attachment', {
                         type: 'manual',
@@ -389,268 +388,316 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                 }}
               />
             )}
-            {watch('type') &&
-              watch('type') !== 'person' && (
-                <menu className="flex flex-col w-full gap-6">
-                  <Controller
-                    control={control}
-                    name="rwandan_company"
-                    rules={{ required: 'Select Rwandan company status' }}
-                    render={({ field }) => {
-                      return (
-                        <menu className="flex flex-col gap-2">
-                          <p className="flex items-center gap-2 text-[15px]">
-                            Is the company based in Rwanda?
-                            <span className="text-red-600">*</span>
-                          </p>
-                          <menu className="flex items-center w-full gap-6">
-                            <Input
-                              type="radio"
-                              label="Yes"
-                              checked={watch('rwandan_company') === 'yes'}
-                              {...field}
-                              value="yes"
-                              onChange={(e) => {
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: null,
-                                });
-                                field.onChange(e.target.value);
-                              }}
-                            />
-                            <Input
-                              type="radio"
-                              label="No"
-                              checked={watch('rwandan_company') === 'no'}
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e.target.value);
-                                setValue('incorporation_country', '');
-                              }}
-                              value={'no'}
-                            />
-                            {errors?.rwandan_company && (
-                              <p className="text-[13px] text-red-500">
-                                {String(errors?.rwandan_company.message)}
-                              </p>
-                            )}
-                          </menu>
-                        </menu>
-                      );
-                    }}
-                  />
-                  {watch('rwandan_company') === 'yes' && (
+            {watch('type') && (
+              <menu className="flex flex-col gap-4 w-[49%]">
+                {watch('type') && watch('type') === 'legal_entity' && (
+                  <menu className="flex flex-col gap-4">
                     <Controller
-                      name="reference_no"
-                      control={control}
+                      name="description"
                       rules={{
                         required:
-                          watch('type') !== 'person'
-                            ? 'Company code is required'
+                          watch('type') === 'legal_entity'
+                            ? 'Add more information'
                             : false,
-                        validate: (value) => {
-                          if (
-                            watch('type') === 'person' ||
-                            watch('rwandan_company') === 'no'
-                          )
-                            return true;
-                          return (
-                            validateInputs(value, 'tin') ||
-                            'Company code must be 9 characters long'
-                          );
-                        },
                       }}
+                      control={control}
                       render={({ field }) => {
                         return (
-                          <label className="flex flex-col gap-1 w-[49%]">
-                            <Input
-                              label="Company/Entreprise Code"
-                              placeholder="Company code"
-                              suffixIcon={faSearch}
-                              suffixIconPrimary
-                              suffixIconHandler={async (e) => {
-                                e.preventDefault();
-                                if (!field.value) {
-                                  setError('reference_no', {
-                                    type: 'manual',
-                                    message:
-                                      'Company code is required to search',
-                                  });
-                                  return;
-                                }
-                                setSearchMember({
-                                  ...searchMember,
-                                  loading: true,
-                                  error: false,
-                                });
-                                setTimeout(() => {
-                                  const randomNumber = Math.floor(
-                                    Math.random() * 16
-                                  );
-                                  const userDetails =
-                                    searchedCompanies[randomNumber];
-
-                                  if (field?.value !== String(validTinNumber)) {
-                                    setSearchMember({
-                                      ...searchMember,
-                                      data: null,
-                                      loading: false,
-                                      error: true,
-                                    });
-                                    setError('reference_no', {
-                                      type: 'manual',
-                                      message: 'Company not found',
-                                    });
-                                  } else {
-                                    clearErrors();
-                                    setSearchMember({
-                                      ...searchMember,
-                                      data: userDetails,
-                                      loading: false,
-                                      error: false,
-                                    });
-                                    setValue(
-                                      'company_name',
-                                      userDetails?.company_name
-                                    );
-                                    setValue('email', userDetails?.email);
-                                    setValue(
-                                      'gender',
-                                      userDetails?.data?.gender
-                                    );
-                                    setValue('phone', userDetails?.data?.phone);
-                                    setValue('incorporation_country', 'RW');
-                                    setValue(
-                                      'registration_date',
-                                      moment()
-                                        .subtract(1, 'years')
-                                        .format('YYYY-MM-DD')
-                                    );
-                                  }
-                                }, 700);
-                              }}
-                              onChange={async (e) => {
-                                field.onChange(e);
-                                clearErrors('reference_no');
-                                await trigger('reference_no');
-                              }}
+                          <label className="flex flex-col gap-1 w-full">
+                            <TextArea
+                              label="Description"
+                              required
+                              placeholder="Add more information"
+                              {...field}
                             />
-                            {searchMember?.loading && !errors?.reference_no && (
-                              <p className="flex items-center gap-[2px] text-[13px]">
-                                <Loader size={4} /> Validating company code
-                              </p>
-                            )}
-                            {errors?.reference_no && (
-                              <p className="text-red-500 text-[13px]">
-                                {String(errors?.reference_no?.message)}
+                            {errors?.description && (
+                              <p className="text-red-600 text-[13px]">
+                                {String(errors?.description?.message)}
                               </p>
                             )}
                           </label>
                         );
                       }}
                     />
-                  )}
-                </menu>
-              )}
-            {watch('document_type') === 'nid' &&
-              watch('type') === 'person' && (
-                <Controller
-                  control={control}
-                  name="document_no"
-                  rules={{
-                    required: watch('document_type')
-                      ? 'Document number is required'
-                      : false,
-                    validate: (value) => {
-                      return (
-                        validateInputs(value, 'nid') ||
-                        'National ID must be 16 characters long'
-                      );
-                    },
-                  }}
-                  render={({ field }) => {
-                    return (
-                      <label className="flex flex-col items-start w-full gap-2">
-                        <Input
-                          required
-                          suffixIcon={faSearch}
-                          suffixIconHandler={async (e) => {
-                            e.preventDefault();
-                            if (!field.value) {
-                              setError('document_no', {
-                                type: 'manual',
-                                message: 'Document number is required',
-                              });
-                              return;
-                            }
-                            setSearchMember({
-                              ...searchMember,
-                              loading: true,
-                              error: false,
-                            });
-                            setTimeout(() => {
-                              const randomNumber = Math.floor(
-                                Math.random() * 16
-                              );
-                              const userDetails = userData[randomNumber];
+                    <label className="flex flex-col gap-2">
+                      <p className="text-[13px] text-secondary">
+                        Add supporting documents (optional)
+                      </p>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="application/pdf"
+                        onChange={(e) => {
+                          const files = e?.target?.files;
+                          setAttachmentFiles([...attachmentFiles, ...files]);
+                        }}
+                      />
+                    </label>
+                  </menu>
+                )}
+                {watch('type') && watch('type') !== 'person' && (
+                  <menu className="flex flex-col w-full gap-6">
+                    <Controller
+                      control={control}
+                      name="rwandan_company"
+                      rules={{ required: 'Select Rwandan company status' }}
+                      render={({ field }) => {
+                        return (
+                          <menu className="flex flex-col gap-2">
+                            <p className="flex items-center gap-2 text-[15px]">
+                              Is the company based in Rwanda?
+                              <span className="text-red-600">*</span>
+                            </p>
+                            <menu className="flex items-center w-full gap-6">
+                              <Input
+                                type="radio"
+                                label="Yes"
+                                checked={watch('rwandan_company') === 'yes'}
+                                {...field}
+                                value="yes"
+                                onChange={(e) => {
+                                  setSearchMember({
+                                    ...searchMember,
+                                    data: null,
+                                  });
+                                  field.onChange(e.target.value);
+                                }}
+                              />
+                              <Input
+                                type="radio"
+                                label="No"
+                                checked={watch('rwandan_company') === 'no'}
+                                {...field}
+                                onChange={(e) => {
+                                  field.onChange(e.target.value);
+                                  setValue('incorporation_country', '');
+                                }}
+                                value={'no'}
+                              />
+                              {errors?.rwandan_company && (
+                                <p className="text-[13px] text-red-500">
+                                  {String(errors?.rwandan_company.message)}
+                                </p>
+                              )}
+                            </menu>
+                          </menu>
+                        );
+                      }}
+                    />
+                    {watch('rwandan_company') === 'yes' && (
+                      <Controller
+                        name="reference_no"
+                        control={control}
+                        rules={{
+                          required:
+                            watch('type') !== 'person'
+                              ? 'Company code is required'
+                              : false,
+                          validate: (value) => {
+                            if (
+                              watch('type') === 'person' ||
+                              watch('rwandan_company') === 'no'
+                            )
+                              return true;
+                            return (
+                              validateInputs(value, 'tin') ||
+                              'Company code must be 9 characters long'
+                            );
+                          },
+                        }}
+                        render={({ field }) => {
+                          return (
+                            <label className="flex flex-col gap-1 w-full">
+                              <Input
+                                label="Company/Entreprise Code"
+                                placeholder="Company code"
+                                suffixIcon={faSearch}
+                                suffixIconPrimary
+                                suffixIconHandler={async (e) => {
+                                  e.preventDefault();
+                                  if (!field.value) {
+                                    setError('reference_no', {
+                                      type: 'manual',
+                                      message:
+                                        'Company code is required to search',
+                                    });
+                                    return;
+                                  }
+                                  setSearchMember({
+                                    ...searchMember,
+                                    loading: true,
+                                    error: false,
+                                  });
+                                  setTimeout(() => {
+                                    const randomNumber = Math.floor(
+                                      Math.random() * 16
+                                    );
+                                    const userDetails =
+                                      searchedCompanies[randomNumber];
 
-                              if (field.value !== String(validNationalID)) {
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: null,
-                                  loading: false,
-                                  error: true,
-                                });
-                              } else {
-                                clearErrors();
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: userDetails,
-                                  loading: false,
-                                  error: false,
-                                });
-                                setValue('first_name', userDetails?.first_name);
-                                setValue(
-                                  'middle_name',
-                                  userDetails?.middle_name
-                                );
-                                setValue('last_name', userDetails?.last_name);
-                                setValue('gender', userDetails?.data?.gender);
-                                setValue('phone', userDetails?.data?.phone);
-                              }
-                            }, 700);
-                          }}
-                          label="ID Document No"
-                          suffixIconPrimary
-                          placeholder="1 XXXX X XXXXXXX X XX"
-                          onChange={async (e) => {
-                            field.onChange(e);
-                            clearErrors('document_no');
-                            await trigger('document_no');
-                          }}
-                        />
-                        {searchMember?.loading &&
-                          !errors?.document_no &&
-                          !searchMember?.error && (
-                            <span className="flex items-center gap-[2px] text-[13px]">
-                              <Loader size={4} /> Validating document
-                            </span>
-                          )}
-                        {searchMember?.error && !searchMember?.loading && (
-                          <span className="text-red-600 text-[13px]">
-                            Invalid document number
+                                    if (
+                                      field?.value !== String(validTinNumber)
+                                    ) {
+                                      setSearchMember({
+                                        ...searchMember,
+                                        data: null,
+                                        loading: false,
+                                        error: true,
+                                      });
+                                      setError('reference_no', {
+                                        type: 'manual',
+                                        message: 'Company not found',
+                                      });
+                                    } else {
+                                      clearErrors();
+                                      setSearchMember({
+                                        ...searchMember,
+                                        data: userDetails,
+                                        loading: false,
+                                        error: false,
+                                      });
+                                      setValue(
+                                        'company_name',
+                                        userDetails?.company_name
+                                      );
+                                      setValue('email', userDetails?.email);
+                                      setValue(
+                                        'gender',
+                                        userDetails?.data?.gender
+                                      );
+                                      setValue(
+                                        'phone',
+                                        userDetails?.data?.phone
+                                      );
+                                      setValue('incorporation_country', 'RW');
+                                      setValue(
+                                        'registration_date',
+                                        moment()
+                                          .subtract(1, 'years')
+                                          .format('YYYY-MM-DD')
+                                      );
+                                    }
+                                  }, 700);
+                                }}
+                                onChange={async (e) => {
+                                  field.onChange(e);
+                                  clearErrors('reference_no');
+                                  await trigger('reference_no');
+                                }}
+                              />
+                              {searchMember?.loading &&
+                                !errors?.reference_no && (
+                                  <p className="flex items-center gap-[2px] text-[13px]">
+                                    <Loader size={4} /> Validating company code
+                                  </p>
+                                )}
+                              {errors?.reference_no && (
+                                <p className="text-red-500 text-[13px]">
+                                  {String(errors?.reference_no?.message)}
+                                </p>
+                              )}
+                            </label>
+                          );
+                        }}
+                      />
+                    )}
+                  </menu>
+                )}
+              </menu>
+            )}
+            {watch('document_type') === 'nid' && watch('type') === 'person' && (
+              <Controller
+                control={control}
+                name="document_no"
+                rules={{
+                  required: watch('document_type')
+                    ? 'Document number is required'
+                    : false,
+                  validate: (value) => {
+                    return (
+                      validateInputs(value, 'nid') ||
+                      'National ID must be 16 characters long'
+                    );
+                  },
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-full gap-2">
+                      <Input
+                        required
+                        suffixIcon={faSearch}
+                        suffixIconHandler={async (e) => {
+                          e.preventDefault();
+                          if (!field.value) {
+                            setError('document_no', {
+                              type: 'manual',
+                              message: 'Document number is required',
+                            });
+                            return;
+                          }
+                          setSearchMember({
+                            ...searchMember,
+                            loading: true,
+                            error: false,
+                          });
+                          setTimeout(() => {
+                            const randomNumber = Math.floor(Math.random() * 16);
+                            const userDetails = userData[randomNumber];
+
+                            if (field.value !== String(validNationalID)) {
+                              setSearchMember({
+                                ...searchMember,
+                                data: null,
+                                loading: false,
+                                error: true,
+                              });
+                            } else {
+                              clearErrors();
+                              setSearchMember({
+                                ...searchMember,
+                                data: userDetails,
+                                loading: false,
+                                error: false,
+                              });
+                              setValue('first_name', userDetails?.first_name);
+                              setValue('middle_name', userDetails?.middle_name);
+                              setValue('last_name', userDetails?.last_name);
+                              setValue('gender', userDetails?.data?.gender);
+                              setValue('phone', userDetails?.data?.phone);
+                            }
+                          }, 700);
+                        }}
+                        label="ID Document No"
+                        suffixIconPrimary
+                        placeholder="1 XXXX X XXXXXXX X XX"
+                        onChange={async (e) => {
+                          field.onChange(e);
+                          clearErrors('document_no');
+                          await trigger('document_no');
+                        }}
+                      />
+                      {searchMember?.loading &&
+                        !errors?.document_no &&
+                        !searchMember?.error && (
+                          <span className="flex items-center gap-[2px] text-[13px]">
+                            <Loader size={4} /> Validating document
                           </span>
                         )}
-                        {errors?.document_no && (
-                          <p className="text-red-500 text-[13px]">
-                            {String(errors?.document_no?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-              )}
+                      {searchMember?.error && !searchMember?.loading && (
+                        <span className="text-red-600 text-[13px]">
+                          Invalid document number
+                        </span>
+                      )}
+                      {errors?.document_no && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.document_no?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
           </ul>
           <section
             className={`${
@@ -708,9 +755,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.first_name}
               rules={{
                 required:
-                  watch('type') === 'person'
-                    ? 'First name is required'
-                    : false,
+                  watch('type') === 'person' ? 'First name is required' : false,
               }}
               render={({ field }) => {
                 return (
@@ -774,8 +819,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('type') === 'person' &&
-                  watch('document_type') !== 'nid'
+                  watch('type') === 'person' && watch('document_type') !== 'nid'
                     ? 'Select gender'
                     : false,
               }}
@@ -883,8 +927,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') === 'person' &&
-                  'Phone number is required',
+                  watch('type') === 'person' && 'Phone number is required',
               }}
               render={({ field }) => {
                 return (
@@ -947,21 +990,14 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         className="!w-fit max-sm:!w-full self-start"
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
-                          setAttachmentFile(e?.target?.files?.[0]);
+                          setAttachmentFiles([
+                            ...attachmentFiles,
+                            e?.target?.files?.[0],
+                          ]);
                           clearErrors('attachment');
                           setValue('attachment', e?.target?.files?.[0]);
                         }}
                       />
-                      <ul className="flex flex-col items-center w-full gap-3">
-                        {attachmentFile && (
-                          <Table
-                            columns={attachmentColumns}
-                            data={[attachmentFile]}
-                            showPagination={false}
-                            showFilter={false}
-                          />
-                        )}
-                      </ul>
                       {errors?.attachment && (
                         <p className="text-sm text-red-500">
                           {String(errors?.attachment?.message)}
@@ -1136,8 +1172,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               defaultValue={searchMember?.data?.email}
               rules={{
                 required:
-                  watch('type') !== 'person' &&
-                  'Email address is required',
+                  watch('type') !== 'person' && 'Email address is required',
                 validate: (value) => {
                   if (watch('type') !== 'person') {
                     return (
@@ -1232,6 +1267,16 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               }}
             />
           </section>
+          <ul className="flex flex-col items-center w-full gap-3">
+            {attachmentFiles?.length > 0 && (
+              <Table
+                columns={attachmentColumns}
+                data={[...attachmentFiles]}
+                showPagination={false}
+                showFilter={false}
+              />
+            )}
+          </ul>
           <article
             className={`${
               watch('type') ? 'flex' : 'hidden'

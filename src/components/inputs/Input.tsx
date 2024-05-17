@@ -99,7 +99,7 @@ const Input: FC<InputProps> = ({
         <button
           type="button"
           onClick={handleClick}
-          className={`!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm py-2 w-full text-[12px] text-center max-[800px]:!text-[14px] px-8 rounded-md cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${className}`}
+          className={`!bg-primary !text-white hover:!bg-primary hover:!text-white !shadow-sm py-[5px] w-full text-[12px] text-center max-[800px]:!text-[14px] px-8 rounded-md cursor-pointer ease-in-out duration-400 hover:scale-[1.005] ${className}`}
         >
           Choose file{multiple ? 's' : ''}
         </button>

@@ -158,21 +158,23 @@ const Navbar = ({ className }: Props) => {
       </nav>
       <NavDropdown isOpen={isOpen}>
         <menu className="flex flex-col gap-1 rounded-md">
-          {navDropdown.map((nav, index) => {
+          {navDropdown.map((nav, index, arr) => {
             return (
               <Link
                 to={nav?.link}
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (nav?.title === "Logout") sessionStorage.clear();
+                  if (nav?.title === 'Logout') sessionStorage.clear();
                   navigate(`${nav?.link}`);
                   setIsOpen(false);
                 }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 ${
-                  ["Theme", "Notifications"].includes(nav?.title)
-                    ? "min-[450px]:hidden"
-                    : "flex"
+                  ['Theme', 'Notifications'].includes(nav?.title)
+                    ? 'min-[450px]:hidden'
+                    : 'flex'
+                } ${index === 0 && 'rounded-t-md'} ${
+                  index === arr.length - 1 && 'rounded-b-md'
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
@@ -196,7 +198,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
     <menu
       className={`${
         isOpen ? "translate-y-0" : "translate-y-[-400px]"
-      } ease-in-out duration-500 z-[10000] absolute top-[10vh] right-[2.5%] w-[220px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
+      } ease-in-out duration-500 z-[10000] absolute top-[12vh] right-[8%] w-[250px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}
     </menu>
