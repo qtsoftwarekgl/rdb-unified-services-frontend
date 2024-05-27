@@ -1,26 +1,26 @@
-import { FC, SetStateAction, useEffect, useState } from "react";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { faCircleInfo, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Table from "../../../../components/table/Table";
-import { capitalizeString, generateUUID } from "../../../../helpers/strings";
+import { FC, SetStateAction, useEffect, useState } from 'react';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { faCircleInfo, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Table from '../../../../components/table/Table';
+import { capitalizeString, generateUUID } from '../../../../helpers/strings';
 import {
   removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setCapitalDetailsModal,
-} from "../../../../states/features/businessRegistrationSlice";
-import CapitalDetailsModal from "./CapitalDetailsModal";
-import Button from "../../../../components/inputs/Button";
-import Loader from "../../../../components/Loader";
-import { useForm } from "react-hook-form";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { business_share_details } from "./ShareDetails";
-import { business_shareholders } from "./ShareHolders";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
+} from '../../../../states/features/businessRegistrationSlice';
+import CapitalDetailsModal from './CapitalDetailsModal';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
+import { useForm } from 'react-hook-form';
+import { setUserApplications } from '../../../../states/features/userApplicationSlice';
+import { business_share_details } from './ShareDetails';
+import { business_shareholders } from './ShareHolders';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
 
 export interface business_capital_details {
   no: number;
@@ -103,25 +103,27 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: 'Type',
+      accessorKey: 'type',
     },
     {
-      header: "Number of shares",
-      accessorKey: "total_shares",
+      header: 'Number of shares',
+      accessorKey: 'total_shares',
     },
     {
-      header: "Total value",
-      accessorKey: "total_value",
+      header: 'Total value',
+      accessorKey: 'total_value',
     },
     {
-      header: "Action",
-      accessorKey: "action",
-      cell: ({ row }: {
+      header: 'Action',
+      accessorKey: 'action',
+      cell: ({
+        row,
+      }: {
         row: {
           original: business_capital_details;
         };
@@ -136,15 +138,15 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 setShareholderShareDetails(
                   row?.original as unknown as SetStateAction<null>
                 );
-                clearErrors("total_shares");
+                clearErrors('total_shares');
                 dispatch(setCapitalDetailsModal(true));
               }}
             />
             <FontAwesomeIcon
               className={`${
                 disableForm
-                  ? "text-secondary cursor-default"
-                  : "text-red-600 cursor-pointer"
+                  ? 'text-secondary cursor-default'
+                  : 'text-red-600 cursor-pointer'
               } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
@@ -180,7 +182,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                     ),
                   })
                 );
-                clearErrors("total_shares");
+                clearErrors('total_shares');
               }}
             />
           </menu>
@@ -338,83 +340,134 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           </ul>
         </menu>
       </section>
-      <menu
-        className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-      >
-        <Button
-          value="Back"
-          disabled={disableForm}
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(setBusinessActiveStep('shareholders'));
-            dispatch(setBusinessActiveTab('capital_information'));
-          }}
-        />
-        {status === 'is_Amending' && (
+      {['in_progress', 'is_amending', 'in_preview', 'action_required'].includes(
+        status
+      ) && (
+        <menu
+          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
           <Button
-            disabled={disableForm || Object.keys(errors).length > 0}
-            value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+            value="Back"
+            disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
+              dispatch(setBusinessActiveStep('shareholders'));
+              dispatch(setBusinessActiveTab('capital_information'));
+            }}
+          />
+          {status === 'is_amending' && (
+            <Button
+              disabled={disableForm || Object.keys(errors).length > 0}
+              value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+              onClick={(e) => {
+                e.preventDefault();
 
-              // SET ACTIVE TAB AND STEP
-              const active_tab = 'preview_submission';
-              const active_step = 'preview_submission';
+                // SET ACTIVE TAB AND STEP
+                const active_tab = 'preview_submission';
+                const active_step = 'preview_submission';
 
-              // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-              if (
-                capital_details?.filter(
-                  (shareholder) => shareholder?.shares?.total_shares === 0
-                )?.length > 0
-              ) {
-                setError('total_shares', {
-                  type: 'manual',
-                  message:
-                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-                });
-                return;
-              }
-              setIsLoading({
-                ...isLoading,
-                submit: false,
-                preview: false,
-                amend: true,
-              });
-
-              setTimeout(() => {
+                // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+                if (
+                  capital_details?.filter(
+                    (shareholder) => shareholder?.shares?.total_shares === 0
+                  )?.length > 0
+                ) {
+                  setError('total_shares', {
+                    type: 'manual',
+                    message:
+                      'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+                  });
+                  return;
+                }
                 setIsLoading({
                   ...isLoading,
                   submit: false,
                   preview: false,
-                  amend: false,
+                  amend: true,
                 });
-                clearErrors('total_shares');
-                dispatch(setBusinessCompletedStep('capital_details'));
-                dispatch(setBusinessActiveStep(active_step));
-                dispatch(setBusinessActiveTab(active_tab));
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    active_step,
-                    active_tab,
-                  })
-                );
-              }, 1000);
-            }}
-          />
-        )}
-        {['in_preview', 'action_required'].includes(status) && (
+
+                setTimeout(() => {
+                  setIsLoading({
+                    ...isLoading,
+                    submit: false,
+                    preview: false,
+                    amend: false,
+                  });
+                  clearErrors('total_shares');
+                  dispatch(setBusinessCompletedStep('capital_details'));
+                  dispatch(setBusinessActiveStep(active_step));
+                  dispatch(setBusinessActiveTab(active_tab));
+                  dispatch(
+                    setUserApplications({
+                      entry_id,
+                      active_step,
+                      active_tab,
+                    })
+                  );
+                }, 1000);
+              }}
+            />
+          )}
+          {['in_preview', 'action_required'].includes(status) && (
+            <Button
+              value={isLoading?.preview ? <Loader /> : 'Save & Complete Review'}
+              primary
+              disabled={disableForm || Object.keys(errors).length > 0}
+              onClick={(e) => {
+                e.preventDefault();
+
+                // SET ACTIVE TAB AND STEP
+                const active_tab = 'preview_submission';
+                const active_step = 'preview_submission';
+
+                // CHECK FOR SHAREHOLDERS WITH 0 SHARES
+                if (
+                  capital_details?.filter(
+                    (shareholder) => shareholder?.shares?.total_shares === 0
+                  )?.length > 0
+                ) {
+                  setError('total_shares', {
+                    type: 'manual',
+                    message:
+                      'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
+                  });
+                  return;
+                }
+                setIsLoading({
+                  ...isLoading,
+                  amend: false,
+                  submit: false,
+                  preview: true,
+                });
+
+                setTimeout(() => {
+                  setIsLoading({
+                    ...isLoading,
+                    submit: false,
+                    preview: false,
+                    amend: false,
+                  });
+                  clearErrors('total_shares');
+                  dispatch(setBusinessCompletedStep('capital_details'));
+                  dispatch(setBusinessActiveStep(active_step));
+                  dispatch(setBusinessActiveTab(active_tab));
+                  dispatch(
+                    setUserApplications({
+                      entry_id,
+                      active_step,
+                      active_tab,
+                    })
+                  );
+                }, 1000);
+              }}
+            />
+          )}
           <Button
-            value={isLoading?.preview ? <Loader /> : 'Save & Complete Review'}
+            value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
             primary
             disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
               e.preventDefault();
-
-              // SET ACTIVE TAB AND STEP
-              const active_tab = 'preview_submission';
-              const active_step = 'preview_submission';
-
               // CHECK FOR SHAREHOLDERS WITH 0 SHARES
               if (
                 capital_details?.filter(
@@ -431,8 +484,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               setIsLoading({
                 ...isLoading,
                 amend: false,
-                submit: false,
-                preview: true,
+                submit: true,
+                preview: false,
               });
 
               setTimeout(() => {
@@ -440,70 +493,43 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   ...isLoading,
                   submit: false,
                   preview: false,
-                  amend: false,
                 });
                 clearErrors('total_shares');
                 dispatch(setBusinessCompletedStep('capital_details'));
-                dispatch(setBusinessActiveStep(active_step));
-                dispatch(setBusinessActiveTab(active_tab));
+                dispatch(setBusinessActiveStep('beneficial_owners'));
+                dispatch(setBusinessActiveTab('beneficial_owners'));
                 dispatch(
                   setUserApplications({
                     entry_id,
-                    active_step,
-                    active_tab,
+                    active_step: 'beneficial_owners',
+                    active_tab: 'beneficial_owners',
                   })
                 );
               }, 1000);
             }}
           />
-        )}
-        <Button
-          value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-          primary
-          disabled={disableForm || Object.keys(errors).length > 0}
-          onClick={(e) => {
-            e.preventDefault();
-            // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-            if (
-              capital_details?.filter(
-                (shareholder) => shareholder?.shares?.total_shares === 0
-              )?.length > 0
-            ) {
-              setError('total_shares', {
-                type: 'manual',
-                message:
-                  'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-              });
-              return;
-            }
-            setIsLoading({
-              ...isLoading,
-              amend: false,
-              submit: true,
-              preview: false,
-            });
-
-            setTimeout(() => {
-              setIsLoading({
-                ...isLoading,
-                submit: false,
-                preview: false,
-              });
-              clearErrors('total_shares');
-              dispatch(setBusinessCompletedStep('capital_details'));
+        </menu>
+      )}
+      {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+        <menu className="flex items-center gap-3 justify-between">
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('shareholders'));
+            }}
+          />
+          <Button
+            value="Next"
+            primary
+            onClick={(e) => {
+              e.preventDefault();
               dispatch(setBusinessActiveStep('beneficial_owners'));
               dispatch(setBusinessActiveTab('beneficial_owners'));
-              dispatch(
-                setUserApplications({
-                  entry_id,
-                  active_step: 'beneficial_owners',
-                  active_tab: 'beneficial_owners',
-                })
-              );
-            }, 1000);
-          }}
-        />
-      </menu>
+            }}
+          />
+        </menu>
+      )}
     </section>
   );
 };

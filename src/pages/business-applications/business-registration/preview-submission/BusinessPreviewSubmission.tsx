@@ -1,7 +1,7 @@
-import { FC, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../states/store";
-import PreviewCard from "../../../../components/business-registration/PreviewCard";
+import { FC, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../states/store';
+import PreviewCard from '../../../../components/business-registration/PreviewCard';
 import {
   business_registration_tabs_initial_state,
   setBusinessActiveStep,
@@ -9,42 +9,44 @@ import {
   setBusinessCompletedStep,
   setBusinessPersonDetailsModal,
   setBusinessRegistrationTabs,
-} from "../../../../states/features/businessRegistrationSlice";
-import { capitalizeString, formatDate } from "../../../../helpers/strings";
-import Table from "../../../../components/table/Table";
-import { countriesList } from "../../../../constants/countries";
-import Button from "../../../../components/inputs/Button";
-import { useLocation, useNavigate } from "react-router-dom";
-import Loader from "../../../../components/Loader";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { business_company_details } from "../general-information/CompanyDetails";
-import { business_company_address } from "../general-information/CompanyAddress";
-import { business_company_activities } from "../general-information/BusinessActivity";
-import { business_board_of_directors } from "../management/BoardDirectors";
-import { business_senior_management } from "../management/SeniorManagement";
-import { business_employment_info } from "../management/EmploymentInfo";
-import { business_share_details } from "../capital-information/ShareDetails";
-import { business_shareholders } from "../capital-information/ShareHolders";
-import { business_beneficial_owners } from "../beneficial-owners/BeneficialOwners";
-import { business_company_attachments } from "../attachments/CompanyAttachments";
-import { business_capital_details } from "../capital-information/CapitalDetails";
-import moment from "moment";
-import { provicesList } from "../../../../constants/provinces";
-import { districtsList } from "../../../../constants/districts";
-import { sectorsList } from "../../../../constants/sectors";
-import { cellsList } from "../../../../constants/cells";
-import { villagesList } from "../../../../constants/villages";
-import ViewDocument from "../../../user-company-details/ViewDocument";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { previewUrl } from "../../../../constants/authentication";
-import { setIsAmending } from "../../../../states/features/amendmentSlice";
-import BusinessPersonDetails from "../BusinessPersonDetails";
-import { ReviewComment } from "@/components/applications-review/AddReviewComments";
-import { TabType } from "@/states/features/types";
-import { RDBAdminEmailPattern } from "@/constants/Users";
+} from '../../../../states/features/businessRegistrationSlice';
+import { capitalizeString, formatDate } from '../../../../helpers/strings';
+import Table from '../../../../components/table/Table';
+import { countriesList } from '../../../../constants/countries';
+import Button from '../../../../components/inputs/Button';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Loader from '../../../../components/Loader';
+import {
+  setListReviewCommentsModal,
+  setUserApplications,
+} from '../../../../states/features/userApplicationSlice';
+import { business_company_details } from '../general-information/CompanyDetails';
+import { business_company_address } from '../general-information/CompanyAddress';
+import { business_company_activities } from '../general-information/BusinessActivity';
+import { business_board_of_directors } from '../management/BoardDirectors';
+import { business_senior_management } from '../management/SeniorManagement';
+import { business_employment_info } from '../management/EmploymentInfo';
+import { business_share_details } from '../capital-information/ShareDetails';
+import { business_shareholders } from '../capital-information/ShareHolders';
+import { business_beneficial_owners } from '../beneficial-owners/BeneficialOwners';
+import { business_company_attachments } from '../attachments/CompanyAttachments';
+import { business_capital_details } from '../capital-information/CapitalDetails';
+import moment from 'moment';
+import { provicesList } from '../../../../constants/provinces';
+import { districtsList } from '../../../../constants/districts';
+import { sectorsList } from '../../../../constants/sectors';
+import { cellsList } from '../../../../constants/cells';
+import { villagesList } from '../../../../constants/villages';
+import ViewDocument from '../../../user-company-details/ViewDocument';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { previewUrl } from '../../../../constants/authentication';
+import { setIsAmending } from '../../../../states/features/amendmentSlice';
+import BusinessPersonDetails from '../BusinessPersonDetails';
+import { ReviewComment } from '@/components/applications-review/AddReviewComments';
+import { RDBAdminEmailPattern } from '@/constants/Users';
 
-interface business_application {
+export interface business_application {
   entry_id: string;
   type: string;
   company_details: business_company_details;
@@ -59,6 +61,9 @@ interface business_application {
   beneficial_owners: business_beneficial_owners[];
   company_attachments: business_company_attachments;
   status: string;
+  review: {
+    note?: string;
+  };
 }
 
 interface PreviewSubmissionProps {
@@ -75,7 +80,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
-  const [attachmentPreview, setAttachmentPreview] = useState<string>("");
+  const [attachmentPreview, setAttachmentPreview] = useState<string>('');
   const [businessPersonDetails, setBusinessPersonDetails] = useState<
     business_beneficial_owners | business_shareholders | null
   >(null);
@@ -85,10 +90,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
   // UNRESOLVED COMMENTS
   const unresolvedApplicationComments = applicationReviewComments.filter(
-      (comment: ReviewComment) =>
-        comment?.entry_id === business_application?.entry_id &&
-        !comment?.checked
-    ).length;
+    (comment: ReviewComment) =>
+      comment?.entry_id === business_application?.entry_id && !comment?.checked
+  ).length;
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -96,92 +100,92 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   // TABLE COLUMNS
   const managementColumns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: 'Phone number',
+      accessorKey: 'phone',
     },
     {
-      header: "Position",
-      accessorKey: "position",
+      header: 'Position',
+      accessorKey: 'position',
     },
     {
-      header: "Country",
-      accessorKey: "country",
+      header: 'Country',
+      accessorKey: 'country',
     },
   ];
 
   const shareholdersColumns = [
     {
-      header: "Shareholder",
-      accessorKey: "name",
+      header: 'Shareholder',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: 'Type',
+      accessorKey: 'type',
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: 'Phone number',
+      accessorKey: 'phone',
     },
     {
-      header: "Country",
-      accessorKey: "country",
+      header: 'Country',
+      accessorKey: 'country',
     },
   ];
 
   const capitalDetailsColumns = [
     {
-      header: "Shareholder",
-      accessorKey: "name",
+      header: 'Shareholder',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: 'Type',
+      accessorKey: 'type',
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: 'Phone number',
+      accessorKey: 'phone',
     },
     {
-      header: "Total shares",
-      accessorKey: "total_shares",
+      header: 'Total shares',
+      accessorKey: 'total_shares',
     },
     {
-      header: "Total value",
-      accessorKey: "total_value",
+      header: 'Total value',
+      accessorKey: 'total_value',
     },
     {
-      header: "Country",
-      accessorKey: "country",
+      header: 'Country',
+      accessorKey: 'country',
     },
   ];
 
   const beneficialOwnersColumns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: 'Phone number',
+      accessorKey: 'phone',
     },
     {
-      header: "Control type",
-      accessorKey: "control_type",
+      header: 'Control type',
+      accessorKey: 'control_type',
     },
     {
-      header: "Ownership type",
-      accessorKey: "ownership_type",
+      header: 'Ownership type',
+      accessorKey: 'ownership_type',
     },
   ];
 
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entry_id = queryParams.get('entry_id');
 
   if (!isOpen) return null;
 
@@ -191,6 +195,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {(business_application?.company_details ||
         business_application?.status === 'in_review') && (
         <PreviewCard
+          status={business_application.status}
           entry_id={business_application?.entry_id}
           header="Company Details"
           tabName="general_information"
@@ -217,6 +222,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* COMPANY ADDRESS */}
       {business_application?.company_address && (
         <PreviewCard
+          status={business_application.status}
           entry_id={business_application?.entry_id}
           header="Company Address"
           tabName="general_information"
@@ -253,6 +259,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* COMPANY ACTIVITIES */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Business Activities & VAT"
         tabName="general_information"
@@ -295,6 +302,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Board of Directors"
         tabName="management"
@@ -334,6 +342,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* SENIOR MANAGEMENT */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Senior Management"
         tabName="management"
@@ -373,6 +382,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* EMPLOYMENT INFO */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Employment Information"
         tabName="management"
@@ -411,6 +421,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* SHARE DETAILS */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Share Details"
         tabName="capital_information"
@@ -448,6 +459,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* SHAREHOLDERS */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Shareholders"
         tabName="capital_information"
@@ -491,6 +503,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* CAPITAL DETAILS */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Capital Details"
         tabName="capital_information"
@@ -536,6 +549,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* BENEFICIAL OWNERS */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Beneficial Owners"
         tabName="beneficial_owners"
@@ -571,6 +585,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* ATTACHMENTS */}
       <PreviewCard
+        status={business_application.status}
         entry_id={business_application?.entry_id}
         header="Attachments"
         tabName="attachments"
@@ -848,8 +863,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           </menu>
         </section>
       </PreviewCard>
-      {(unresolvedApplicationComments > 0 &&
-        !RDBAdminEmailPattern.test(user?.email)) && (
+      {unresolvedApplicationComments > 0 &&
+        !RDBAdminEmailPattern.test(user?.email) && (
           <menu className="flex items-center justify-center w-full">
             <p className="text-[12px] text-red-600 text-center font-medium">
               You have unresolved comments. Please attend to them before
@@ -857,70 +872,146 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             </p>
           </menu>
         )}
-      <menu
-        className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-      >
-        <Button
-          value="Back"
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(setBusinessActiveStep('attachments'));
-            dispatch(setBusinessActiveTab('attachments'));
-          }}
-        />
-        <Button
-          value={isLoading ? <Loader /> : 'Submit'}
-          primary
-          disabled={
-            RDBAdminEmailPattern.test(user?.email) ||
-            unresolvedApplicationComments > 0
-          }
-          onClick={(e) => {
-            e.preventDefault();
-            setIsLoading(true);
-            setTimeout(() => {
-              setIsLoading(false);
+      {['in_progress', 'action_required', 'in_preview', 'is_amending'].includes(
+        business_application?.status
+      ) && (
+        <menu
+          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'));
+            }}
+          />
+          <Button
+            value={isLoading ? <Loader /> : 'Submit'}
+            primary
+            disabled={
+              RDBAdminEmailPattern.test(user?.email) ||
+              unresolvedApplicationComments > 0
+            }
+            onClick={(e) => {
+              e.preventDefault();
+              setIsLoading(true);
+              setTimeout(() => {
+                setIsLoading(false);
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    type: 'business_registration',
+                    company_details: business_application?.company_details,
+                    company_address: business_application?.company_address,
+                    company_activities:
+                      business_application?.company_activities,
+                    board_of_directors:
+                      business_application?.board_of_directors,
+                    senior_management: business_application?.senior_management,
+                    employment_info: business_application?.employment_info,
+                    share_details: business_application?.share_details,
+                    shareholders: business_application?.shareholders,
+                    capital_details: business_application?.capital_details,
+                    beneficial_owners: business_application?.beneficial_owners,
+                    company_attachments:
+                      business_application?.company_attachments,
+                    path: `/business-registration/?entry_id=${entry_id}`,
+                    status:
+                      business_application?.status === 'action_required'
+                        ? 're_submitted'
+                        : 'submitted',
+                    createdAt: moment().format(),
+                    updateAt: moment().format(),
+                  })
+                );
+                dispatch(setBusinessCompletedStep('preview_submission'));
+                dispatch(setBusinessActiveTab('general_information'));
+                dispatch(setBusinessActiveStep('company_details'));
+                dispatch(
+                  setBusinessRegistrationTabs(
+                    business_registration_tabs_initial_state
+                  )
+                );
+                dispatch(setIsAmending(false));
+                navigate('/success', {
+                  state: { redirectUrl: '/user-applications' },
+                });
+              }, 1000);
+            }}
+          />
+        </menu>
+      )}
+      {['in_review', 'is_approved', 'pending_approval'].includes(
+        business_application.status
+      ) && (
+        <menu className="flex items-center gap-3 justify-between">
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'));
+            }}
+          />
+          <Button
+            value={'View all comments'}
+            className="!bg-secondary !text-white !border-none"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setListReviewCommentsModal(true));
+            }}
+          />
+          <Button
+            value={
+              user.email.includes('infoverifier@rdb')
+                ? 'Recommend for rejection'
+                : 'Reject'
+            }
+            danger
+            onClick={(e) => {
+              e.preventDefault();
               dispatch(
                 setUserApplications({
-                  entry_id,
-                  type: 'business_registration',
-                  company_details: business_application?.company_details,
-                  company_address: business_application?.company_address,
-                  company_activities: business_application?.company_activities,
-                  board_of_directors: business_application?.board_of_directors,
-                  senior_management: business_application?.senior_management,
-                  employment_info: business_application?.employment_info,
-                  share_details: business_application?.share_details,
-                  shareholders: business_application?.shareholders,
-                  capital_details: business_application?.capital_details,
-                  beneficial_owners: business_application?.beneficial_owners,
-                  company_attachments:
-                    business_application?.company_attachments,
-                  path: `/business-registration/?entry_id=${entry_id}`,
-                  status:
-                    business_application?.status === 'action_required'
-                      ? 're_submitted'
-                      : 'submitted',
-                  createdAt: moment().format(),
-                  updateAt: moment().format(),
+                  entry_id: business_application?.entry_id,
+                  status: user.email.includes('infoverifier@rdb')
+                    ? 'pending_approval'
+                    : 'rejected',
+                  review: {
+                    note: 'Recommend for rejection',
+                  },
                 })
               );
-              dispatch(setBusinessCompletedStep('preview_submission'));
-              dispatch(setBusinessActiveTab('general_information'));
-              dispatch(setBusinessActiveStep('company_details'));
+              navigate('/admin/review-applications');
+            }}
+          />
+          <Button
+            value={
+              unresolvedApplicationComments > 0
+                ? 'Request changes'
+                : user.email.includes('infoverifier@rdb')
+                ? 'Recommend for approval'
+                : 'Approve'
+            }
+            primary
+            onClick={(e) => {
+              e.preventDefault();
               dispatch(
-                setBusinessRegistrationTabs(
-                  business_registration_tabs_initial_state
-                )
+                setUserApplications({
+                  entry_id: business_application?.entry_id,
+                  status:
+                    unresolvedApplicationComments > 0
+                      ? 'action_required'
+                      : user.email.includes('infoverifier@rdb')
+                      ? 'pending_approval'
+                      : 'approved',
+                })
               );
-              dispatch(setIsAmending(false));
-              navigate('/success', {
-                state: { redirectUrl: '/user-applications' },
-              });
-            }, 1000);
-          }}
-        />
-      </menu>
+              navigate('/admin/review-applications');
+            }}
+          />
+        </menu>
+      )}
       {attachmentPreview && (
         <ViewDocument
           documentUrl={attachmentPreview}

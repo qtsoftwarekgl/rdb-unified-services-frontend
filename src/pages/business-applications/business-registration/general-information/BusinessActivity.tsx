@@ -202,10 +202,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                   {businessSubActivities
                     ?.slice(0, randomNumber)
                     .map((subActivity) => {
-                      const subActivityExists =
-                        selectedBusinessLines?.find(
-                          (activity: object) => activity?.id === subActivity?.id
-                        );
+                      const subActivityExists = selectedBusinessLines?.find(
+                        (activity: object) => activity?.id === subActivity?.id
+                      );
                       return (
                         <li
                           key={subActivity.id}
@@ -434,77 +433,104 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               )}
             </menu>
           </section>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('company_address'));
-              }}
-            />
-            {status === 'is_Amending' && (
+          {[
+            'in_progress',
+            'in_preview',
+            'action_required',
+            'is_amending',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                submit
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
-                disabled={Object.keys(errors).length > 0 || disableForm}
+                value="Back"
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('company_address'));
+                }}
+              />
+              {status === 'is_amending' && (
+                <Button
+                  submit
+                  value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                  disabled={Object.keys(errors).length > 0 || disableForm}
+                  onClick={async () => {
+                    await trigger();
+                    if (Object.keys(errors).length > 0) return;
+                    setIsLoading({
+                      ...isLoading,
+                      preview: false,
+                      submit: false,
+                      amend: true,
+                    });
+                  }}
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value={
+                    isLoading?.preview ? <Loader /> : 'Save & Complete Review'
+                  }
+                  onClick={() => {
+                    setIsLoading({
+                      ...isLoading,
+                      submit: false,
+                      preview: true,
+                    });
+                    dispatch(
+                      setUserApplications({ entry_id, status: 'in_preview' })
+                    );
+                  }}
+                  submit
+                  primary
+                  disabled={disableForm || Object.keys(errors).length > 0}
+                />
+              )}
+              <Button
+                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
                 onClick={async () => {
                   await trigger();
                   if (Object.keys(errors).length > 0) return;
                   setIsLoading({
                     ...isLoading,
+                    submit: true,
                     preview: false,
-                    submit: false,
-                    amend: true,
-                  });
-                }}
-              />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
-              <Button
-                value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Review'
-                }
-                onClick={() => {
-                  setIsLoading({
-                    ...isLoading,
-                    submit: false,
-                    preview: true,
                   });
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_preview' })
+                    setUserApplications({ entry_id, status: 'in_progress' })
                   );
                 }}
                 submit
                 primary
-                disabled={disableForm || Object.keys(errors).length > 0}
+                disabled={
+                  disableForm ||
+                  selectedBusinessLines?.length === 0 ||
+                  Object.keys(errors).length > 0
+                }
               />
-            )}
-            <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors).length > 0) return;
-                setIsLoading({
-                  ...isLoading,
-                  submit: true,
-                  preview: false,
-                });
-                dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
-                );
-              }}
-              submit
-              primary
-              disabled={
-                disableForm ||
-                selectedBusinessLines?.length === 0 ||
-                Object.keys(errors).length > 0
-              }
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value={'Back'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('company_address'));
+                }}
+              />
+              <Button
+                value={'Next'}
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('board_of_directors'));
+                  dispatch(setBusinessActiveTab('management'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
     </section>

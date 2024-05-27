@@ -154,8 +154,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               name="name"
               control={control}
-              defaultValue={company_details?.name || watch("name")}
-              rules={{ required: "Company name is required" }}
+              defaultValue={company_details?.name || watch('name')}
+              rules={{ required: 'Company name is required' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
@@ -177,10 +177,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                           loading: false,
                         });
-                        setError("name", {
-                          type: "manual",
+                        setError('name', {
+                          type: 'manual',
                           message:
-                            "Check if company name is available before proceeding",
+                            'Check if company name is available before proceeding',
                         });
                       }}
                       suffixIconHandler={(e) => {
@@ -188,7 +188,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                         if (!field?.value) {
                           return;
                         }
-                        clearErrors("name");
+                        clearErrors('name');
                         setSearchCompany({
                           ...searchCompany,
                           loading: true,
@@ -196,8 +196,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                           success: false,
                         });
                         setTimeout(() => {
-                          if (field?.value?.toLowerCase() === "xyz") {
-                            setValue("name", searchCompany.name);
+                          if (field?.value?.toLowerCase() === 'xyz') {
+                            setValue('name', searchCompany.name);
                             setSearchCompany({
                               ...searchCompany,
                               loading: false,
@@ -217,12 +217,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     />
                     <menu
                       className={`flex flex-col gap-1 w-full my-1 ${
-                        !Object.values(searchCompany).includes(true) && "hidden"
+                        !Object.values(searchCompany).includes(true) && 'hidden'
                       }`}
                     >
                       <article
                         className={`${
-                          searchCompany.loading ? "flex" : "hidden"
+                          searchCompany.loading ? 'flex' : 'hidden'
                         } text-[12px] items-center`}
                       >
                         <Loader size={4} /> Checking if "{searchCompany.name}"
@@ -231,8 +231,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       <p
                         className={`${
                           searchCompany.error && searchCompany?.name
-                            ? "flex"
-                            : "hidden"
+                            ? 'flex'
+                            : 'hidden'
                         } text-[12px] items-center text-red-500 gap-2`}
                       >
                         {searchCompany.name} is already taken. Please try
@@ -240,10 +240,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       </p>
                       <p
                         className={`${
-                          searchCompany.success ? "flex" : "hidden"
+                          searchCompany.success ? 'flex' : 'hidden'
                         } text-[12px] items-center gap-2 text-green-600`}
                       >
-                        {searchCompany.name} is available{" "}
+                        {searchCompany.name} is available{' '}
                         <span className="w-fit">
                           <FontAwesomeIcon
                             icon={faCheck}
@@ -265,7 +265,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               control={control}
               name="category"
               defaultValue={company_details?.category}
-              rules={{ required: "Select company category" }}
+              rules={{ required: 'Select company category' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -284,7 +284,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger(field?.name)
+                        await trigger(field?.name);
                       }}
                     />
                     {errors?.category && (
@@ -302,7 +302,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               control={control}
               name="type"
               defaultValue={company_details?.type}
-              rules={{ required: "Select company type" }}
+              rules={{ required: 'Select company type' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -321,7 +321,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger(field?.name)
+                        await trigger(field?.name);
                       }}
                     />
                     {errors?.type && (
@@ -337,7 +337,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               control={control}
               name="position"
               defaultValue={company_details?.position}
-              rules={{ required: "Select your position" }}
+              rules={{ required: 'Select your position' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -356,7 +356,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger(field?.name)
+                        await trigger(field?.name);
                       }}
                     />
                     {errors?.position && (
@@ -374,31 +374,31 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             <Controller
               control={control}
               name="articles_of_association"
-              rules={{ required: "Select one of the choices provided" }}
+              rules={{ required: 'Select one of the choices provided' }}
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch("articles_of_association") === "yes"}
+                      checked={watch('articles_of_association') === 'yes'}
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e.target.value);
-                        await trigger(field?.name)
+                        await trigger(field?.name);
                       }}
-                      value={"yes"}
+                      value={'yes'}
                     />
                     <Input
                       type="radio"
                       label="No"
-                      checked={watch("articles_of_association") === "no"}
+                      checked={watch('articles_of_association') === 'no'}
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e.target.value);
-                        await trigger(field?.name)
+                        await trigger(field?.name);
                       }}
-                      value={"no"}
+                      value={'no'}
                     />
                     {errors?.articles_of_association && (
                       <p className="text-xs text-red-500">
@@ -410,34 +410,59 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               }}
             />
           </menu>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              disabled={disableForm}
-              value="Back"
-              route="/business-registration/new"
-            />
-            {status === "is_Amending" && (
+          {['in_progress', 'in_preview', 'action_required', 'is_amending'].includes(
+            status
+          ) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                value={"Complete Amendment"}
-                submit
-                onClick={() => {
-                  setIsLoading({
-                    ...isLoading,
-                    preview: true,
-                    submit: false,
-                    amend: false,
-                  });
-                }}
+                disabled={disableForm}
+                value="Back"
+                route="/business-registration/new"
               />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
+              {status === 'is_amending' && (
+                <Button
+                  value={'Complete Amendment'}
+                  submit
+                  onClick={() => {
+                    setIsLoading({
+                      ...isLoading,
+                      preview: true,
+                      submit: false,
+                      amend: false,
+                    });
+                  }}
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value={
+                    isLoading?.preview ? <Loader /> : 'Save & Complete Review'
+                  }
+                  submit
+                  primary={!searchCompany?.error}
+                  disabled={
+                    searchCompany?.error ||
+                    disableForm ||
+                    Object.keys(errors).length > 0
+                  }
+                  onClick={async () => {
+                    await trigger();
+                    if (Object.keys(errors)?.length) {
+                      return;
+                    }
+                    setIsLoading({
+                      ...isLoading,
+                      preview: true,
+                      submit: false,
+                      amend: false,
+                    });
+                  }}
+                />
+              )}
               <Button
-                value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
-                }
-                submit
+                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
                 primary={!searchCompany?.error}
                 disabled={
                   searchCompany?.error ||
@@ -451,38 +476,30 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   }
                   setIsLoading({
                     ...isLoading,
-                    preview: true,
-                    submit: false,
-                    amend: false,
+                    submit: true,
+                    preview: false,
                   });
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_progress' })
+                  );
                 }}
+                submit
               />
-            )}
-            <Button
-              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
-              primary={!searchCompany?.error}
-              disabled={
-                searchCompany?.error ||
-                disableForm ||
-                Object.keys(errors).length > 0
-              }
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors)?.length) {
-                  return;
-                }
-                setIsLoading({
-                  ...isLoading,
-                  submit: true,
-                  preview: false,
-                });
-                dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
-                );
-              }}
-              submit
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+            <menu className="flex items-center w-full gap-3 justify-between">
+              <Button
+                value="Back"
+                route="/business-registration/new"
+                disabled
+              />
+              <Button value={'Next'} primary onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessActiveStep('company_address'));
+              }} />
+            </menu>
+          )}
         </fieldset>
       </form>
     </section>

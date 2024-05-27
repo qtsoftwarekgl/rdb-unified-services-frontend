@@ -29,6 +29,7 @@ interface PreviewCardProps {
   stepName: string;
   tabName: string;
   entry_id?: string | null;
+  status: string;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
@@ -39,6 +40,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   stepName,
   tabName,
   entry_id,
+  status,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -70,7 +72,13 @@ const PreviewCard: FC<PreviewCardProps> = ({
   };
 
   return (
-    <section className="flex flex-col w-full gap-3 p-4 border-[.3px] border-primary rounded-md shadow-sm">
+    <section
+      className={`flex flex-col w-full gap-3 p-4 rounded-md shadow-sm ${
+        existingComments?.filter((comment) => !comment.checked)?.length > 0
+          ? 'border-red-600 border-[1px]'
+          : 'border-primary border-[.3px]'
+      }`}
+    >
       <menu className="flex items-center justify-between w-full gap-3">
         <Link
           to={'#'}
@@ -96,28 +104,30 @@ const PreviewCard: FC<PreviewCardProps> = ({
               className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
             />
           )}
-          {RDBAdminEmailPattern.test(user?.email) && <Button
-            styled={false}
-            value={
-              <menu className="flex items-center gap-2">
-                <p className="text-[12px]">
-                  {!existingComments?.length && 'Add comment'}
-                  {existingComments?.length > 0 &&
-                    `${existingComments?.length} comment`}
-                </p>
-                <FontAwesomeIcon
-                  className="text-[12px]"
-                  icon={existingComments?.length ? solidFaMessage : faMessage}
-                />
-              </menu>
-            }
-            onClick={(e) => {
-              e.preventDefault();
-              existingComments?.length <= 0
-                ? handleAddComment()
-                : setShowCommentActions(!showCommentActions);
-            }}
-          />}
+          {RDBAdminEmailPattern.test(user?.email) && (
+            <Button
+              styled={false}
+              value={
+                <menu className="flex items-center gap-2">
+                  <p className="text-[12px]">
+                    {!existingComments?.length && 'Add comment'}
+                    {existingComments?.length > 0 &&
+                      `${existingComments?.length} comment`}
+                  </p>
+                  <FontAwesomeIcon
+                    className="text-[12px]"
+                    icon={existingComments?.length ? solidFaMessage : faMessage}
+                  />
+                </menu>
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                existingComments?.length <= 0
+                  ? handleAddComment()
+                  : setShowCommentActions(!showCommentActions);
+              }}
+            />
+          )}
           {showCommentActions && (
             <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
               <Link
@@ -172,6 +182,29 @@ const PreviewCard: FC<PreviewCardProps> = ({
           />
         </menu>
       )}
+      {!RDBAdminEmailPattern.test(user?.email) &&
+        existingComments?.filter((comment) => !comment.checked)?.length > 0 &&
+        status === 'action_required' && (
+          <menu className="flex items-center w-full justify-center">
+            <Button
+              styled={false}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setActiveStep(stepName));
+                dispatch(setActiveTab(tabName));
+              }}
+              value={
+                <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-300 bg-red-600 p-1 px-2 rounded-md">
+                  <p className="text-[13px] text-white">View comments</p>
+                  <FontAwesomeIcon
+                    className="text-[13px] text-white"
+                    icon={faArrowRight}
+                  />
+                </menu>
+              }
+            />
+          </menu>
+        )}
     </section>
   );
 };

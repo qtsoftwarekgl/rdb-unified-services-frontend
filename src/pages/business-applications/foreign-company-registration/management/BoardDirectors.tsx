@@ -738,7 +738,7 @@ const BoardDirectors = ({
                 dispatch(setForeignBusinessActiveTab('general_information'));
               }}
             />
-            {status === 'is_Amending' && (
+            {status === 'is_amending' && (
               <Button
                 value={'Complete Amendment'}
                 onClick={(e) => {

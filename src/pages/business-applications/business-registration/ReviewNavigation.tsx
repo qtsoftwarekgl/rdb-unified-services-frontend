@@ -3,22 +3,22 @@ import {
   faChevronCircleLeft,
   faChevronCircleRight,
   faX,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../../components/inputs/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
-import { Step, TabType } from "../../../states/features/types";
-import { Link, useNavigate } from "react-router-dom";
-import { FC, useState } from "react";
-import { UnknownAction } from "@reduxjs/toolkit";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../../components/inputs/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
+import { Step, TabType } from '../../../states/features/types';
+import { Link, useNavigate } from 'react-router-dom';
+import { FC, useState } from 'react';
+import { UnknownAction } from '@reduxjs/toolkit';
 import {
   setAddReviewCommentsModal,
   setListReviewCommentsModal,
-} from "../../../states/features/userApplicationSlice";
-import { ReviewComment } from "../../../components/applications-review/AddReviewComments";
-import Loader from "../../../components/Loader";
-import moment from "moment";
+} from '../../../states/features/userApplicationSlice';
+import { ReviewComment } from '../../../components/applications-review/AddReviewComments';
+import Loader from '../../../components/Loader';
+import moment from 'moment';
 
 interface ExtraProps {
   propName: string;
@@ -47,7 +47,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
   first_step,
   setApplication,
   redirectUrl,
-  extraProps = { propName: "", propValue: "" },
+  extraProps = { propName: '', propValue: '' },
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -78,10 +78,10 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
     const nextStep = steps?.[activeStepIndex + 1];
     const prevStep = steps?.[activeStepIndex - 1];
 
-    if (direction === "next") {
+    if (direction === 'next') {
       dispatch(setActiveStep(nextStep?.name));
       dispatch(setActiveTab(nextStep?.tab_name));
-    } else if (direction === "prev") {
+    } else if (direction === 'prev') {
       dispatch(setActiveStep(prevStep?.name));
       dispatch(setActiveTab(prevStep?.tab_name));
     }
@@ -100,13 +100,13 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               return;
             }
             e.preventDefault();
-            handleNavigation("prev");
+            handleNavigation('prev');
           }}
           className={`${
             activeStep?.name.includes(first_step) ||
             activeStep?.name === first_step
-              ? "text-secondary !cursor-default hover:scale-[1]"
-              : "flex"
+              ? 'text-secondary !cursor-default hover:scale-[1]'
+              : 'flex'
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
         <ul className="flex items-center gap-3">
@@ -115,7 +115,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           )?.length > 0 ? (
             <Button
               value={
-                isLoading?.complete_review ? <Loader /> : "Request changes"
+                isLoading?.complete_review ? <Loader /> : 'Request changes'
               }
               primary
               disabled={!activeStep?.name.includes(last_step)}
@@ -127,9 +127,9 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   dispatch(
                     setApplication({
                       entry_id,
-                      status: user?.email.includes("infoapprover@rdb")
-                        ? "approved"
-                        : "action_required",
+                      status: user?.email.includes('infoapprover@rdb')
+                        ? 'approved'
+                        : 'action_required',
                       [propName]: propValue,
                     })
                   );
@@ -142,10 +142,10 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               value={
                 isLoading?.recommend_approval ? (
                   <Loader />
-                ) : user?.email?.includes("infoverifier@rdb") ? (
-                  "Recommend approval"
+                ) : user?.email?.includes('infoverifier@rdb') ? (
+                  'Recommend for approval'
                 ) : (
-                  "Approve"
+                  'Approve'
                 )
               }
               primary={activeStep?.name.includes(last_step)}
@@ -163,10 +163,10 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   dispatch(
                     setApplication({
                       entry_id,
-                      status: user?.email?.includes("infoverifier@rdb")
-                        ? "pending_approval"
-                        : "approved",
-                        updatedAt: moment().format(),
+                      status: user?.email?.includes('infoverifier@rdb')
+                        ? 'pending_approval'
+                        : 'approved',
+                      updatedAt: moment().format(),
                     })
                   );
                   navigate(redirectUrl);
@@ -175,7 +175,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
             />
           )}
           <Button
-            value={isLoading?.decline ? <Loader color="red-600" /> : "Decline"}
+            value={isLoading?.decline ? <Loader color="red-600" /> : 'Decline'}
             danger
             onClick={(e) => {
               e.preventDefault();
@@ -185,7 +185,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                 dispatch(
                   setApplication({
                     entry_id,
-                    status: "rejected",
+                    status: 'rejected',
                   })
                 );
                 navigate(redirectUrl);
@@ -214,17 +214,17 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
           )}
           <section
             className={`${
-              activeStep?.name.includes(last_step) && "hidden"
+              activeStep?.name.includes(last_step) && 'hidden'
             } flex flex-col gap-2`}
           >
             <menu
               className={`${
-                showMenu ? "flex" : "hidden"
+                showMenu ? 'flex' : 'hidden'
               } flex-col gap-1 absolute bottom-[80px] right-2 bg-background shadow-md rounded-sm`}
             >
               <Link
                 className={`hover:bg-primary bg-white hover:text-white p-2`}
-                to={"#"}
+                to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setListReviewCommentsModal(true));
@@ -237,7 +237,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
             <FontAwesomeIcon
               icon={showMenu ? faX : faBars}
               className={`${
-                showMenu ? "text-[13px] px-[9px]" : "text-[14px]"
+                showMenu ? 'text-[13px] px-[9px]' : 'text-[14px]'
               } p-2 cursor-pointer ease-in-out duration-200 hover:scale-[1.02] bg-primary text-white rounded-full`}
               onClick={(e) => {
                 e.preventDefault();
@@ -253,12 +253,12 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               return;
             }
             e.preventDefault();
-            handleNavigation("next");
+            handleNavigation('next');
           }}
           className={`${
             activeStep?.name.includes(last_step)
-              ? "text-secondary !cursor-default hover:scale-[1]"
-              : "flex"
+              ? 'text-secondary !cursor-default hover:scale-[1]'
+              : 'flex'
           } text-3xl text-primary ease-in-out duration-200 hover:scale-[1.02] cursor-pointer`}
         />
       </menu>

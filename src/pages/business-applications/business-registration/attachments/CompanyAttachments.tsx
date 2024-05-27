@@ -1,27 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FC, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import Button from "../../../../components/inputs/Button";
-import Loader from "../../../../components/Loader";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { business_company_details } from "../general-information/CompanyDetails";
-import Table from "../../../../components/table/Table";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import ViewDocument from "../../../user-company-details/ViewDocument";
-import { previewUrl } from "../../../../constants/authentication";
-import { capitalizeString } from "../../../../helpers/strings";
-import Modal from "../../../../components/Modal";
+} from '../../../../states/features/businessRegistrationSlice';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
+import { setUserApplications } from '../../../../states/features/userApplicationSlice';
+import { business_company_details } from '../general-information/CompanyDetails';
+import Table from '../../../../components/table/Table';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import ViewDocument from '../../../user-company-details/ViewDocument';
+import { previewUrl } from '../../../../constants/authentication';
+import { capitalizeString } from '../../../../helpers/strings';
+import Modal from '../../../../components/Modal';
 
 export interface business_company_attachments {
   name: string;
@@ -68,7 +68,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     FileList | Array<File> | unknown
   >([]);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const [confirmDeleteModal, setConfirmDeleteModal] = useState<{
     attachment: boolean;
     first_name?: string;
@@ -76,7 +76,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     row_name: string;
   }>({
     attachment: false,
-    row_name: "",
+    row_name: '',
   });
 
   // SET DEFAULT ATTACHMENTS
@@ -124,7 +124,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     setIsLoading({
       submit: isLoading?.isSubmitting ? true : false,
       amend:
-        status === "is_Amending" && !isLoading?.isSubmitting ? true : false,
+        status === 'is_amending' && !isLoading?.isSubmitting ? true : false,
       isSubmitting: false,
     });
 
@@ -132,8 +132,8 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
       dispatch(
         setUserApplications({
           entry_id,
-          active_tab: "preview_submission",
-          active_step: "preview_submission",
+          active_tab: 'preview_submission',
+          active_step: 'preview_submission',
           company_attachments: {
             articles_of_association: {
               name: data?.articles_of_association?.name,
@@ -156,9 +156,9 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
           },
         })
       );
-      dispatch(setBusinessCompletedStep("attachments"));
-      dispatch(setBusinessActiveStep("preview_submission"));
-      dispatch(setBusinessActiveTab("preview_submission"));
+      dispatch(setBusinessCompletedStep('attachments'));
+      dispatch(setBusinessActiveStep('preview_submission'));
+      dispatch(setBusinessActiveTab('preview_submission'));
       setIsLoading({
         submit: false,
         amend: false,
@@ -170,24 +170,24 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   // TABLE COLUMNS
   const columns = [
     {
-      header: "File name",
-      accessorKey: "name",
+      header: 'File name',
+      accessorKey: 'name',
     },
     {
-      header: "File size",
-      accessorKey: "size",
+      header: 'File size',
+      accessorKey: 'size',
     },
     {
-      header: "File type",
-      accessorKey: "type",
+      header: 'File type',
+      accessorKey: 'type',
     },
     {
-      header: "File source",
-      accessorKey: "source",
+      header: 'File source',
+      accessorKey: 'source',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -262,16 +262,16 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                             row?.original?.name
                         )
                       );
-                      if (row?.original?.source === "Articles Of Association") {
-                        setError("articles_of_association", {
-                          type: "manual",
-                          message: "Upload company articles of association",
+                      if (row?.original?.source === 'Articles Of Association') {
+                        setError('articles_of_association', {
+                          type: 'manual',
+                          message: 'Upload company articles of association',
                         });
                       }
-                      if (row?.original?.source === "Resolution") {
-                        setError("resolution", {
-                          type: "manual",
-                          message: "Resolution is required",
+                      if (row?.original?.source === 'Resolution') {
+                        setError('resolution', {
+                          type: 'manual',
+                          message: 'Resolution is required',
                         });
                       }
                       setConfirmDeleteModal({
@@ -297,9 +297,9 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
         <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <section
             className={`${
-              company_details?.articles_of_association === "yes"
-                ? "flex"
-                : "hidden"
+              company_details?.articles_of_association === 'yes'
+                ? 'flex'
+                : 'hidden'
             } w-full flex flex-col gap-3`}
           >
             <h1 className="text-lg font-medium uppercase">Company Details</h1>
@@ -307,10 +307,10 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               name="articles_of_association"
               rules={{
                 required:
-                  company_details?.articles_of_association === "yes" &&
-                  !watch("articles_of_association") &&
+                  company_details?.articles_of_association === 'yes' &&
+                  !watch('articles_of_association') &&
                   !company_attachments?.length
-                    ? "Upload company articles of association"
+                    ? 'Upload company articles of association'
                     : false,
               }}
               control={control}
@@ -319,7 +319,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                   <label className="flex flex-col w-full gap-2">
                     <ul className="flex items-center justify-between w-full gap-3">
                       <p className="flex items-center w-full gap-1">
-                        Article of association{" "}
+                        Article of association{' '}
                         <span className="text-red-600">*</span>
                       </p>
                       <Input
@@ -331,18 +331,18 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                         onChange={(e) => {
                           e.preventDefault();
                           setValue(
-                            "articles_of_association",
+                            'articles_of_association',
                             e?.target?.files && {
                               name: e?.target?.files[0]?.name,
                               size: e?.target?.files[0]?.size,
                               type: e?.target?.files[0]?.type,
                             }
                           );
-                          clearErrors("articles_of_association");
+                          clearErrors('articles_of_association');
                           setAttachmentFiles([
                             {
                               file: e?.target?.files[0],
-                              source: "articles_of_association",
+                              source: 'articles_of_association',
                             },
                             ...attachmentFiles,
                           ]);
@@ -367,7 +367,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               name="resolution"
               rules={{
                 required: !company_attachments?.resolution
-                  ? "Resolution is required"
+                  ? 'Resolution is required'
                   : false,
               }}
               control={control}
@@ -376,7 +376,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                   <label className="flex flex-col w-full gap-3">
                     <ul className="flex items-center justify-between w-full gap-3">
                       <p className="w-full">
-                        Resolution attachment{" "}
+                        Resolution attachment{' '}
                         <span className="text-red-600">*</span>
                       </p>
                       <Input
@@ -386,18 +386,18 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                         onChange={(e) => {
                           field.onChange(e);
                           setValue(
-                            "resolution",
+                            'resolution',
                             e?.target?.files && {
                               name: e?.target?.files[0]?.name,
                               size: e?.target?.files[0]?.size,
                               type: e?.target?.files[0]?.type,
                             }
                           );
-                          clearErrors("resolution");
+                          clearErrors('resolution');
                           setAttachmentFiles([
                             {
                               file: e?.target?.files[0],
-                              source: "resolution",
+                              source: 'resolution',
                             },
                             ...attachmentFiles,
                           ]);
@@ -438,19 +438,19 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                                 name: file?.name,
                                 size: file?.size,
                                 type: file?.type,
-                                source: "shareholder_attachments",
+                                source: 'shareholder_attachments',
                               };
                             }
                           );
                           setValue(
-                            "shareholder_attachments",
+                            'shareholder_attachments',
                             JSON.stringify(files)
                           );
                           setAttachmentFiles([
                             ...Array.from(e.target.files).map((file: File) => {
                               return {
                                 file,
-                                source: "shareholder_attachments",
+                                source: 'shareholder_attachments',
                               };
                             }),
                             ...attachmentFiles,
@@ -484,17 +484,17 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                                 name: file?.name,
                                 size: file?.size,
                                 type: file?.type,
-                                source: "others",
+                                source: 'others',
                               };
                             }
                           );
-                          setValue("attachments", JSON.stringify(files));
+                          setValue('attachments', JSON.stringify(files));
                           setAttachmentFiles([
                             ...Array.from(e?.target?.files).map(
                               (file: File) => {
                                 return {
                                   file,
-                                  source: "others",
+                                  source: 'others',
                                 };
                               }
                             ),
@@ -529,38 +529,66 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               />
             )}
           </menu>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep("beneficial_owners"));
-                dispatch(setBusinessActiveTab("beneficial_owners"));
-              }}
-            />
-            {status === "is_Amending" && (
+          {[
+            'in_progress',
+            'is_amending',
+            'in_preview',
+            'action_required',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                disabled={disableForm || Object.keys(errors).length > 0}
-                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
-                submit
+                value="Back"
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('beneficial_owners'));
+                  dispatch(setBusinessActiveTab('beneficial_owners'));
+                }}
               />
-            )}
-            <Button
-              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
-              primary
-              submit
-              onClick={() => {
-                setIsLoading({
-                  ...isLoading,
-                  isSubmitting: true,
-                });
-              }}
-              disabled={disableForm || Object.keys(errors).length > 0}
-            />
-          </menu>
+              {status === 'is_amending' && (
+                <Button
+                  disabled={disableForm || Object.keys(errors).length > 0}
+                  value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                  submit
+                />
+              )}
+              <Button
+                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+                primary
+                submit
+                onClick={() => {
+                  setIsLoading({
+                    ...isLoading,
+                    isSubmitting: true,
+                  });
+                }}
+                disabled={disableForm || Object.keys(errors).length > 0}
+              />
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('beneficial_owners'));
+                  dispatch(setBusinessActiveTab('beneficial_owners'));
+                }}
+              />
+              <Button
+                value="Next"
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('preview_submission'));
+                  dispatch(setBusinessActiveTab('preview_submission'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
       {attachmentPreview && (

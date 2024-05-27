@@ -160,7 +160,11 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
     {
       header: 'Action',
       accessorKey: 'action',
-      cell: ({ row }) => {
+      cell: ({ row }: {
+        row: {
+          original: business_board_of_directors;
+        };
+      }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-fit">
             <FontAwesomeIcon
@@ -870,7 +874,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               showPagination={false}
               rowClickHandler={(row) => {
                 setBoardOfDirectorsDetails(row?.original);
-              dispatch(setBusinessPersonDetailsModal(true));
+                dispatch(setBusinessPersonDetailsModal(true));
               }}
             />
           </section>
@@ -879,44 +883,72 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               {String(errors?.board_of_directors?.message)}
             </p>
           )}
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('business_activity_vat'));
-                dispatch(setBusinessActiveTab('general_information'));
-              }}
-            />
-            {status === 'is_Amending' && (
+          {[
+            'in_progress',
+            'action_required',
+            'in_preview',
+            'is_amending',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                submit
-                value={'Complete Amendment'}
-                disabled={Object.keys(errors).length > 0 || disableForm}
+                value="Back"
+                disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (board_of_directors?.length <= 0) {
-                    setError('board_of_directors', {
-                      type: 'manual',
-                      message: 'Add at least one board member',
-                    });
-                    setTimeout(() => {
-                      clearErrors('board_of_directors');
-                    }, 4000);
-                    return;
-                  }
-                  dispatch(setBusinessCompletedStep('board_of_directors'));
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                  dispatch(setBusinessActiveStep('preview_submission'));
+                  dispatch(setBusinessActiveStep('business_activity_vat'));
+                  dispatch(setBusinessActiveTab('general_information'));
                 }}
               />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
+              {status === 'is_amending' && (
+                <Button
+                  submit
+                  value={'Complete Amendment'}
+                  disabled={Object.keys(errors).length > 0 || disableForm}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (board_of_directors?.length <= 0) {
+                      setError('board_of_directors', {
+                        type: 'manual',
+                        message: 'Add at least one board member',
+                      });
+                      setTimeout(() => {
+                        clearErrors('board_of_directors');
+                      }, 4000);
+                      return;
+                    }
+                    dispatch(setBusinessCompletedStep('board_of_directors'));
+                    dispatch(setBusinessActiveTab('preview_submission'));
+                    dispatch(setBusinessActiveStep('preview_submission'));
+                  }}
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value="Save & Complete Review"
+                  primary
+                  disabled={disableForm || Object.keys(errors).length > 0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (board_of_directors?.length <= 0) {
+                      setError('board_of_directors', {
+                        type: 'manual',
+                        message: 'Add at least one board member',
+                      });
+                      setTimeout(() => {
+                        clearErrors('board_of_directors');
+                      }, 4000);
+                      return;
+                    }
+                    dispatch(setBusinessCompletedStep('board_of_directors'));
+                    dispatch(setBusinessActiveTab('preview_submission'));
+                    dispatch(setBusinessActiveStep('preview_submission'));
+                  }}
+                />
+              )}
               <Button
-                value="Save & Complete Review"
+                value="Save & Continue"
                 primary
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
@@ -931,52 +963,52 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     }, 4000);
                     return;
                   }
+                  if (
+                    board_of_directors?.find(
+                      (director: business_board_of_directors) =>
+                        director?.document_type === 'nid'
+                    ) === undefined
+                  ) {
+                    setError('board_of_directors', {
+                      type: 'manual',
+                      message:
+                        'Board requires at least one Rwandan local resident in its members',
+                    });
+                    setTimeout(() => {
+                      clearErrors('board_of_directors');
+                    }, 4000);
+                    return;
+                  }
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_progress' })
+                  );
                   dispatch(setBusinessCompletedStep('board_of_directors'));
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                  dispatch(setBusinessActiveStep('preview_submission'));
+                  dispatch(setBusinessActiveTab('management'));
+                  dispatch(setBusinessActiveStep('senior_management'));
                 }}
               />
-            )}
-            <Button
-              value="Save & Continue"
-              primary
-              disabled={disableForm || Object.keys(errors).length > 0}
-              onClick={(e) => {
-                e.preventDefault();
-                if (board_of_directors?.length <= 0) {
-                  setError('board_of_directors', {
-                    type: 'manual',
-                    message: 'Add at least one board member',
-                  });
-                  setTimeout(() => {
-                    clearErrors('board_of_directors');
-                  }, 4000);
-                  return;
-                }
-                if (
-                  board_of_directors?.find(
-                    (director: business_board_of_directors) =>
-                      director?.document_type === 'nid'
-                  ) === undefined
-                ) {
-                  setError('board_of_directors', {
-                    type: 'manual',
-                    message: 'Board requires at least one Rwandan local resident in its members',
-                  });
-                  setTimeout(() => {
-                    clearErrors('board_of_directors');
-                  }, 4000);
-                  return;
-                }
-                dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
-                );
-                dispatch(setBusinessCompletedStep('board_of_directors'));
-                dispatch(setBusinessActiveTab('management'));
-                dispatch(setBusinessActiveStep('senior_management'));
-              }}
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('business_activity_vat'));
+                  dispatch(setBusinessActiveTab('general_information'));
+                }}
+                 />
+              <Button
+                value="Next"
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('senior_management'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
       {attachmentPreview && (

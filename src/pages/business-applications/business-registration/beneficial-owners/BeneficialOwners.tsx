@@ -396,53 +396,52 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               />
             )}
             <menu className="flex flex-col gap-4">
-            {watch('type') && watch('type') === 'legal_entity' && (
-                  <menu className="flex flex-col gap-4">
-                    <Controller
-                      name="description"
-                      rules={{
-                        required:
-                          watch('type') === 'legal_entity'
-                            ? 'Add more information'
-                            : false,
-                      }}
-                      control={control}
-                      render={({ field }) => {
-                        return (
-                          <label className="flex flex-col gap-1 w-full">
-                            <TextArea
-                              label="Description"
-                              required
-                              placeholder="Add more information"
-                              {...field}
-                            />
-                            {errors?.description && (
-                              <p className="text-red-600 text-[13px]">
-                                {String(errors?.description?.message)}
-                              </p>
-                            )}
-                          </label>
-                        );
+              {watch('type') && watch('type') === 'legal_entity' && (
+                <menu className="flex flex-col gap-4">
+                  <Controller
+                    name="description"
+                    rules={{
+                      required:
+                        watch('type') === 'legal_entity'
+                          ? 'Add more information'
+                          : false,
+                    }}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <label className="flex flex-col gap-1 w-full">
+                          <TextArea
+                            label="Description"
+                            required
+                            placeholder="Add more information"
+                            {...field}
+                          />
+                          {errors?.description && (
+                            <p className="text-red-600 text-[13px]">
+                              {String(errors?.description?.message)}
+                            </p>
+                          )}
+                        </label>
+                      );
+                    }}
+                  />
+                  <label className="flex flex-col gap-2">
+                    <p className="text-[13px] text-secondary">
+                      Add supporting documents (optional)
+                    </p>
+                    <Input
+                      type="file"
+                      multiple
+                      accept="application/pdf"
+                      onChange={(e) => {
+                        const files = e?.target?.files;
+                        setAttachmentFiles([...attachmentFiles, ...files]);
                       }}
                     />
-                    <label className="flex flex-col gap-2">
-                      <p className="text-[13px] text-secondary">
-                        Add supporting documents (optional)
-                      </p>
-                      <Input
-                        type="file"
-                        multiple
-                        accept="application/pdf"
-                        onChange={(e) => {
-                          const files = e?.target?.files;
-                          setAttachmentFiles([...attachmentFiles, ...files]);
-                        }}
-                      />
-                    </label>
-                  </menu>
-                )}
-            {watch('type') &&
-              watch('type') !== 'person' && (
+                  </label>
+                </menu>
+              )}
+              {watch('type') && watch('type') !== 'person' && (
                 <menu className="flex flex-col w-full gap-6">
                   <Controller
                     control={control}
@@ -609,104 +608,98 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 </menu>
               )}
             </menu>
-            {watch('document_type') === 'nid' &&
-              watch('type') === 'person' && (
-                <Controller
-                  control={control}
-                  name="document_no"
-                  rules={{
-                    required: watch('document_type')
-                      ? 'Document number is required'
-                      : false,
-                    validate: (value) => {
-                      return (
-                        validateInputs(value, 'nid') ||
-                        'National ID must be 16 characters long'
-                      );
-                    },
-                  }}
-                  render={({ field }) => {
+            {watch('document_type') === 'nid' && watch('type') === 'person' && (
+              <Controller
+                control={control}
+                name="document_no"
+                rules={{
+                  required: watch('document_type')
+                    ? 'Document number is required'
+                    : false,
+                  validate: (value) => {
                     return (
-                      <label className="flex flex-col items-start w-full gap-2">
-                        <Input
-                          required
-                          suffixIcon={faSearch}
-                          suffixIconHandler={async (e) => {
-                            e.preventDefault();
-                            if (!field.value) {
-                              setError('document_no', {
-                                type: 'manual',
-                                message: 'Document number is required',
-                              });
-                              return;
-                            }
-                            setSearchMember({
-                              ...searchMember,
-                              loading: true,
-                              error: false,
+                      validateInputs(value, 'nid') ||
+                      'National ID must be 16 characters long'
+                    );
+                  },
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-full gap-2">
+                      <Input
+                        required
+                        suffixIcon={faSearch}
+                        suffixIconHandler={async (e) => {
+                          e.preventDefault();
+                          if (!field.value) {
+                            setError('document_no', {
+                              type: 'manual',
+                              message: 'Document number is required',
                             });
-                            setTimeout(() => {
-                              const randomNumber = Math.floor(
-                                Math.random() * 10
-                              );
-                              const userDetails = userData[randomNumber];
+                            return;
+                          }
+                          setSearchMember({
+                            ...searchMember,
+                            loading: true,
+                            error: false,
+                          });
+                          setTimeout(() => {
+                            const randomNumber = Math.floor(Math.random() * 10);
+                            const userDetails = userData[randomNumber];
 
-                              if (field?.value !== String(validNationalID)) {
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: null,
-                                  loading: false,
-                                  error: true,
-                                });
-                              } else {
-                                clearErrors();
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: userDetails,
-                                  loading: false,
-                                  error: false,
-                                });
-                                setValue('first_name', userDetails?.first_name);
-                                setValue(
-                                  'middle_name',
-                                  userDetails?.middle_name
-                                );
-                                setValue('last_name', userDetails?.last_name);
-                                setValue('gender', userDetails?.data?.gender);
-                              }
-                            }, 700);
-                          }}
-                          label="ID Document No"
-                          suffixIconPrimary
-                          placeholder="1 XXXX X XXXXXXX X XX"
-                          onChange={async (e) => {
-                            field.onChange(e);
-                            clearErrors('document_no');
-                            await trigger('document_no');
-                          }}
-                        />
-                        {searchMember?.loading &&
-                          !errors?.document_no &&
-                          !searchMember?.error && (
-                            <span className="flex items-center gap-[2px] text-[13px]">
-                              <Loader size={4} /> Validating document
-                            </span>
-                          )}
-                        {searchMember?.error && !searchMember?.loading && (
-                          <span className="text-red-600 text-[13px]">
-                            Invalid document number
+                            if (field?.value !== String(validNationalID)) {
+                              setSearchMember({
+                                ...searchMember,
+                                data: null,
+                                loading: false,
+                                error: true,
+                              });
+                            } else {
+                              clearErrors();
+                              setSearchMember({
+                                ...searchMember,
+                                data: userDetails,
+                                loading: false,
+                                error: false,
+                              });
+                              setValue('first_name', userDetails?.first_name);
+                              setValue('middle_name', userDetails?.middle_name);
+                              setValue('last_name', userDetails?.last_name);
+                              setValue('gender', userDetails?.data?.gender);
+                            }
+                          }, 700);
+                        }}
+                        label="ID Document No"
+                        suffixIconPrimary
+                        placeholder="1 XXXX X XXXXXXX X XX"
+                        onChange={async (e) => {
+                          field.onChange(e);
+                          clearErrors('document_no');
+                          await trigger('document_no');
+                        }}
+                      />
+                      {searchMember?.loading &&
+                        !errors?.document_no &&
+                        !searchMember?.error && (
+                          <span className="flex items-center gap-[2px] text-[13px]">
+                            <Loader size={4} /> Validating document
                           </span>
                         )}
-                        {errors?.document_no && (
-                          <p className="text-red-500 text-[13px]">
-                            {String(errors?.document_no?.message)}
-                          </p>
-                        )}
-                      </label>
-                    );
-                  }}
-                />
-              )}
+                      {searchMember?.error && !searchMember?.loading && (
+                        <span className="text-red-600 text-[13px]">
+                          Invalid document number
+                        </span>
+                      )}
+                      {errors?.document_no && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.document_no?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
           </ul>
           <section
             className={`${
@@ -770,9 +763,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.first_name}
               rules={{
                 required:
-                  watch('type') === 'person'
-                    ? 'First name is required'
-                    : false,
+                  watch('type') === 'person' ? 'First name is required' : false,
               }}
               render={({ field }) => {
                 return (
@@ -836,8 +827,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('type') === 'person' &&
-                  watch('document_type') !== 'nid'
+                  watch('type') === 'person' && watch('document_type') !== 'nid'
                     ? 'Select gender'
                     : false,
               }}
@@ -915,10 +905,10 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                             value: country?.code,
                           };
                         })}
-                        {...field}
+                      {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger('country')
+                        await trigger('country');
                       }}
                     />
                     {errors?.country && (
@@ -951,8 +941,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') === 'person' &&
-                  'Phone number is required',
+                  watch('type') === 'person' && 'Phone number is required',
               }}
               render={({ field }) => {
                 return (
@@ -1015,7 +1004,10 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         className="!w-fit max-sm:!w-full self-start"
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
-                          setAttachmentFiles((prev) => [...prev, e?.target?.files?.[0]]);
+                          setAttachmentFiles((prev) => [
+                            ...prev,
+                            e?.target?.files?.[0],
+                          ]);
                           clearErrors('attachment');
                           setValue('attachment', e?.target?.files?.[0]);
                         }}
@@ -1145,8 +1137,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch('address') === 'no' &&
-                  watch('type') === 'person'
+                  watch('address') === 'no' && watch('type') === 'person'
                     ? 'Phone number is required'
                     : false,
               }}
@@ -1335,8 +1326,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.email}
               rules={{
                 required:
-                  watch('type') !== 'person' &&
-                  'Email address is required',
+                  watch('type') !== 'person' && 'Email address is required',
                 validate: (value) => {
                   if (watch('type') !== 'person') {
                     return (
@@ -1579,16 +1569,16 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             </section>
           </menu>
           <ul className="flex flex-col items-center w-full gap-3">
-                        {attachmentFiles?.length > 0 && (
-                          <Table
-                            rowClickHandler={undefined}
-                            columns={attachmentColumns}
-                            data={attachmentFiles}
-                            showPagination={false}
-                            showFilter={false}
-                          />
-                        )}
-                      </ul>
+            {attachmentFiles?.length > 0 && (
+              <Table
+                rowClickHandler={undefined}
+                columns={attachmentColumns}
+                data={attachmentFiles}
+                showPagination={false}
+                showFilter={false}
+              />
+            )}
+          </ul>
           <menu className="flex items-center justify-end w-full">
             <Button
               value={isLoading ? <Loader /> : 'Add beneficial owner'}
@@ -1621,7 +1611,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
         <Table
           rowClickHandler={(row) => {
             setBeneficialOwnerDetails(row?.original);
-          dispatch(setBusinessPersonDetailsModal(true))
+            dispatch(setBusinessPersonDetailsModal(true));
           }}
           data={
             beneficial_owners?.length > 0
@@ -1655,76 +1645,101 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           showPagination={false}
         />
       </section>
-      <menu
-        className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-      >
-        <Button
-          value="Back"
-          disabled={disableForm}
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(setBusinessActiveStep('capital_details'));
-            dispatch(setBusinessActiveTab('capital_information'));
-          }}
-        />
-        {status === 'is_Amending' && (
+      {['in_progress', 'action_required', 'in_preview', 'is_amending'].includes(
+        status
+      ) && (
+        <menu
+          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
           <Button
-            value={'Complete Amendment'}
+            value="Back"
+            disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessCompletedStep('beneficial_owners'));
-              dispatch(setBusinessActiveStep('preview_submission'));
-              dispatch(setBusinessActiveTab('preview_submission'));
-              dispatch(
-                setUserApplications({
-                  entry_id,
-                  active_tab: 'preview_submission',
-                  active_step: 'preview_submission',
-                })
-              );
+              dispatch(setBusinessActiveStep('capital_details'));
+              dispatch(setBusinessActiveTab('capital_information'));
             }}
           />
-        )}
-        {['in_preview', 'action_required'].includes(status) && (
+          {status === 'is_amending' && (
+            <Button
+              value={'Complete Amendment'}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessCompletedStep('beneficial_owners'));
+                dispatch(setBusinessActiveStep('preview_submission'));
+                dispatch(setBusinessActiveTab('preview_submission'));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_tab: 'preview_submission',
+                    active_step: 'preview_submission',
+                  })
+                );
+              }}
+            />
+          )}
+          {['in_preview', 'action_required'].includes(status) && (
+            <Button
+              value="Save & Complete Review"
+              disabled={disableForm}
+              primary
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setBusinessCompletedStep('beneficial_owners'));
+                dispatch(setBusinessActiveStep('preview_submission'));
+                dispatch(setBusinessActiveTab('preview_submission'));
+                dispatch(
+                  setUserApplications({
+                    entry_id,
+                    active_tab: 'preview_submission',
+                    active_step: 'preview_submission',
+                  })
+                );
+              }}
+            />
+          )}
           <Button
-            value="Save & Complete Review"
+            value="Save & Continue"
             disabled={disableForm}
             primary
             onClick={(e) => {
               e.preventDefault();
               dispatch(setBusinessCompletedStep('beneficial_owners'));
-              dispatch(setBusinessActiveStep('preview_submission'));
-              dispatch(setBusinessActiveTab('preview_submission'));
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'));
               dispatch(
                 setUserApplications({
                   entry_id,
-                  active_tab: 'preview_submission',
-                  active_step: 'preview_submission',
+                  active_tab: 'attachments',
+                  active_step: 'attachments',
+                  status: 'in_progress',
                 })
               );
             }}
           />
-        )}
-        <Button
-          value="Save & Continue"
-          disabled={disableForm}
-          primary
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(setBusinessCompletedStep('beneficial_owners'));
-            dispatch(setBusinessActiveStep('attachments'));
-            dispatch(setBusinessActiveTab('attachments'));
-            dispatch(
-              setUserApplications({
-                entry_id,
-                active_tab: 'attachments',
-                active_step: 'attachments',
-                status: 'in_progress',
-              })
-            );
-          }}
-        />
-      </menu>
+        </menu>
+      )}
+      {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+        <menu className="flex items-center gap-3 justify-between">
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('capital_details'));
+              dispatch(setBusinessActiveTab('capital_information'));
+            }}
+          />
+          <Button
+            value="Next"
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'));
+            }}
+          />
+        </menu>
+      )}
       {attachmentPreview && (
         <ViewDocument
           documentUrl={attachmentPreview}

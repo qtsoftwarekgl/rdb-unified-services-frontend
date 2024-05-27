@@ -147,7 +147,7 @@ const SeniorManagement = ({
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                if (status === 'is_Amending') return;
+                if (status === 'is_amending') return;
                 setConfirmModalData(row?.original);
                 setConfirmModal(true);
               }}
@@ -704,7 +704,7 @@ const SeniorManagement = ({
                 );
               }}
             />
-            {status === 'is_Amending' && (
+            {status === 'is_amending' && (
               <Button
                 value={'Complete Amendment'}
                 onClick={(e) => {

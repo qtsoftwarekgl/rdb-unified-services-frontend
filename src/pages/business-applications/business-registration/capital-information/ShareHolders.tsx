@@ -1334,87 +1334,115 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               showPagination={false}
             />
           </section>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('share_details'));
-                dispatch(setBusinessActiveTab('capital_information'));
-              }}
-            />
-            {status === 'is_Amending' && (
+          {[
+            'in_progress',
+            'is_amending',
+            'in_preview',
+            'action_required',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                value={'Complete Amendment'}
+                value="Back"
+                disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-
-                  // SET ACTIVE TAB AND STEP
-                  const active_tab = 'preview_submission';
-                  const active_step = 'preview_submission';
-
-                  dispatch(setBusinessCompletedStep('shareholders'));
-                  dispatch(setBusinessActiveStep(active_step));
-                  dispatch(setBusinessActiveTab(active_tab));
-                  dispatch(
-                    setUserApplications({
-                      entry_id,
-                      active_tab,
-                      active_step,
-                    })
-                  );
+                  dispatch(setBusinessActiveStep('share_details'));
+                  dispatch(setBusinessActiveTab('capital_information'));
                 }}
               />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
+              {status === 'is_amending' && (
+                <Button
+                  value={'Complete Amendment'}
+                  onClick={(e) => {
+                    e.preventDefault();
+
+                    // SET ACTIVE TAB AND STEP
+                    const active_tab = 'preview_submission';
+                    const active_step = 'preview_submission';
+
+                    dispatch(setBusinessCompletedStep('shareholders'));
+                    dispatch(setBusinessActiveStep(active_step));
+                    dispatch(setBusinessActiveTab(active_tab));
+                    dispatch(
+                      setUserApplications({
+                        entry_id,
+                        active_tab,
+                        active_step,
+                      })
+                    );
+                  }}
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value="Save & Complete Review"
+                  primary
+                  disabled={disableForm}
+                  onClick={(e) => {
+                    e.preventDefault();
+
+                    // SET ACTIVE TAB AND STEP
+                    const active_tab = 'preview_submission';
+                    const active_step = 'preview_submission';
+
+                    dispatch(setBusinessCompletedStep('shareholders'));
+                    dispatch(setBusinessActiveStep(active_step));
+                    dispatch(setBusinessActiveTab(active_tab));
+                    dispatch(
+                      setUserApplications({
+                        entry_id,
+                        active_tab,
+                        active_step,
+                      })
+                    );
+                  }}
+                />
+              )}
               <Button
-                value="Save & Complete Review"
+                value="Save & Continue"
                 primary
                 disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
 
-                  // SET ACTIVE TAB AND STEP
-                  const active_tab = 'preview_submission';
-                  const active_step = 'preview_submission';
-
                   dispatch(setBusinessCompletedStep('shareholders'));
-                  dispatch(setBusinessActiveStep(active_step));
-                  dispatch(setBusinessActiveTab(active_tab));
+                  dispatch(setBusinessActiveStep('capital_details'));
+                  dispatch(setBusinessActiveTab('capital_information'));
                   dispatch(
                     setUserApplications({
                       entry_id,
-                      active_tab,
-                      active_step,
+                      active_tab: 'capital_information',
+                      active_step: 'capital_details',
+                      status: 'in_progress',
                     })
                   );
                 }}
               />
-            )}
-            <Button
-              value="Save & Continue"
-              primary
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-
-                dispatch(setBusinessCompletedStep('shareholders'));
-                dispatch(setBusinessActiveStep('capital_details'));
-                dispatch(setBusinessActiveTab('capital_information'));
-                dispatch(
-                  setUserApplications({
-                    entry_id,
-                    active_tab: 'capital_information',
-                    active_step: 'capital_details',
-                    status: 'in_progress',
-                  })
-                );
-              }}
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(
+            status
+          ) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('share_details'));
+                }}
+              />
+              <Button
+                value="Next"
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('capital_details'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
       {attachmentPreview && (

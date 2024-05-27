@@ -2,9 +2,7 @@ import { FC, ReactNode, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faCaretDown,
-  faCaretUp,
-  faCheck,
+  faCheck
 } from '@fortawesome/free-solid-svg-icons';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,11 +10,12 @@ import { UnknownAction } from '@reduxjs/toolkit';
 import { Step, TabType } from '../../states/features/types';
 import { ReviewComment } from '../applications-review/AddReviewComments';
 import {
+  setAddReviewCommentsModal,
   setApplicationReviewComment,
   setUserReviewStepCommentModal,
-  updateReviewComment,
-  updateUserReviewComment,
 } from '@/states/features/userApplicationSlice';
+import { RDBAdminEmailPattern } from '@/constants/Users';
+import { faMessage } from '@fortawesome/free-regular-svg-icons';
 
 interface TabProps {
   steps: Array<Step>;
@@ -39,6 +38,7 @@ const Tab: FC<TabProps> = ({
     (state: RootState) => state.userApplication
   );
   const [showCommentActions, setShowCommentActions] = useState<boolean>(false);
+  const { user } = useSelector((state: RootState) => state.user);
 
   // HANDLE RENDER
   useEffect(() => {
@@ -124,61 +124,37 @@ const Tab: FC<TabProps> = ({
         })}
       </aside>
       <menu
-        className={`flex flex-col gap-3 h-full p-5 ${
+        className={`flex flex-col gap-3 h-full p-4 ${
           steps?.length <= 1 ? '!w-[90%] mx-auto' : 'w-[80%]'
         }`}
       >
-        <menu className="relative flex items-center justify-center gap-3 w-full">
-          <h1 className="min-w-[80%] text-lg font-semibold text-center uppercase">
+        <menu className="relative flex items-center justify-between gap-3 w-full">
+          <h1 className="min-w-[70%] text-lg font-semibold text-center uppercase">
             {active_step?.label}
           </h1>
+          {RDBAdminEmailPattern.test(user?.email) &&
+            stepUnresolvedComments <= 0 &&
+            stepResolvedComments <= 0 &&
+            active_step?.name !== 'preview_submission' && (
+              <Link
+                to={'#'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setAddReviewCommentsModal(true));
+                }}
+                className="flex items-center gap-2 p-0 transition-all ease-in-out hover:scale-[1.01] text-primary"
+              >
+                <p className="text-[13px]">Add comment</p>
+                <FontAwesomeIcon className="text-[13px]" icon={faMessage} />
+              </Link>
+            )}
           {(stepUnresolvedComments > 0 || stepResolvedComments > 0) && (
-            <menu className="flex relative flex-col gap-3 w-full">
+            <menu className="flex relative flex-col gap-3 w-full self-end align-baseline">
               {stepUnresolvedComments > 0 && (
                 <Link
                   to={'#'}
                   onClick={(e) => {
                     e.preventDefault();
-                    setShowCommentActions(!showCommentActions);
-                  }}
-                  className="bg-red-600 text-white rounded-md p-1 px-2 w-fit flex items-center gap-2"
-                >
-                  <p className="text-[12px]">
-                    {stepUnresolvedComments} requested change
-                  </p>
-                  <FontAwesomeIcon
-                    icon={!showCommentActions ? faCaretDown : faCaretUp}
-                  />
-                </Link>
-              )}
-              {stepResolvedComments > 0 && stepUnresolvedComments <= 0 && (
-                <Link
-                  to={'#'}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    dispatch(setUserReviewStepCommentModal(true));
-                      dispatch(
-                        setApplicationReviewComment(
-                          applicationReviewComments?.find(
-                            (comment: ReviewComment) =>
-                              comment?.step?.name === active_step?.name &&
-                              comment.checked
-                          )
-                        )
-                      );
-                      setShowCommentActions(false);
-                  }}
-                  className="text-[12px] p-1 px-2 rounded-md bg-green-600 text-white w-fit"
-                >
-                  {stepResolvedComments} comment resolved
-                </Link>
-              )}
-              {showCommentActions && (
-                <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
-                  <Link
-                    to={'#'}
-                    onClick={(e) => {
-                      e.preventDefault();
                       dispatch(setUserReviewStepCommentModal(true));
                       dispatch(
                         setApplicationReviewComment(
@@ -190,39 +166,35 @@ const Tab: FC<TabProps> = ({
                         )
                       );
                       setShowCommentActions(false);
-                    }}
-                    className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
-                  >
-                    View comment
-                  </Link>
-                  <Link
-                    to={'#'}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const commentToResolve = applicationReviewComments?.find(
-                        (comment: ReviewComment) =>
-                          comment?.step?.name === active_step?.name &&
-                          !comment.checked
-                      );
-                      dispatch(
-                        updateReviewComment({
-                          ...commentToResolve,
-                          checked: true,
-                        })
-                      );
-                      dispatch(
-                        updateUserReviewComment({
-                          ...commentToResolve,
-                          checked: true,
-                        })
-                      );
-                      setShowCommentActions(false);
-                    }}
-                    className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
-                  >
-                    Mark as completed
-                  </Link>
-                </ul>
+                  }}
+                  className="bg-red-600 text-white rounded-md p-1 px-2 w-fit flex items-center gap-2"
+                >
+                  <p className="text-[12px]">
+                    {stepUnresolvedComments} requested change. Click to view
+                  </p>
+                </Link>
+              )}
+              {stepResolvedComments > 0 && stepUnresolvedComments <= 0 && (
+                <Link
+                  to={'#'}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(setUserReviewStepCommentModal(true));
+                    dispatch(
+                      setApplicationReviewComment(
+                        applicationReviewComments?.find(
+                          (comment: ReviewComment) =>
+                            comment?.step?.name === active_step?.name &&
+                            comment.checked
+                        )
+                      )
+                    );
+                    setShowCommentActions(false);
+                  }}
+                  className="text-[12px] p-1 px-2 rounded-md bg-green-600 text-white w-fit"
+                >
+                  {stepResolvedComments} comment resolved
+                </Link>
               )}
             </menu>
           )}
