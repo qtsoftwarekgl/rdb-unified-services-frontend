@@ -17,6 +17,7 @@ import Button from '../../../../components/inputs/Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Loader from '../../../../components/Loader';
 import {
+  setApplicationReviewComments,
   setListReviewCommentsModal,
   setUserApplications,
 } from '../../../../states/features/userApplicationSlice';
@@ -891,7 +892,18 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             primary
             disabled={
               RDBAdminEmailPattern.test(user?.email) ||
-              unresolvedApplicationComments > 0
+              unresolvedApplicationComments > 0 ||
+              !business_application?.company_details ||
+              !business_application?.company_address ||
+              !business_application?.company_activities ||
+              business_application?.board_of_directors?.length <= 0 ||
+              business_application?.senior_management?.length <= 0 ||
+              !business_application?.employment_info ||
+              !business_application?.share_details ||
+              business_application?.shareholders?.length <= 0 ||
+              business_application?.capital_details?.length <= 0 ||
+              business_application?.beneficial_owners?.length <= 0 ||
+              business_application?.company_attachments?.length <= 0
             }
             onClick={(e) => {
               e.preventDefault();
@@ -942,9 +954,12 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           />
         </menu>
       )}
-      {['in_review', 'is_approved', 'pending_approval'].includes(
-        business_application.status
-      ) && (
+      {[
+        'in_review',
+        'is_approved',
+        'pending_approval',
+        'pending_rejection',
+      ].includes(business_application.status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"
@@ -971,11 +986,21 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             danger
             onClick={(e) => {
               e.preventDefault();
+              if (user.email.includes('infoapprover@rdb')) {
+                dispatch(
+                  setApplicationReviewComments(
+                    applicationReviewComments?.filter(
+                      (comment: ReviewComment) =>
+                        comment.entry_id !== business_application?.entry_id
+                    )
+                  )
+                );
+              }
               dispatch(
                 setUserApplications({
                   entry_id: business_application?.entry_id,
                   status: user.email.includes('infoverifier@rdb')
-                    ? 'pending_approval'
+                    ? 'pending_rejection'
                     : 'rejected',
                   review: {
                     note: 'Recommend for rejection',

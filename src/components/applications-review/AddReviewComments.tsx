@@ -19,6 +19,7 @@ export type ReviewComment = {
   step: Step;
   tab: TabType;
   createdAt: string;
+  updatedAt?: string;
   entry_id?: string | null;
   checked?: boolean;
 };
@@ -55,7 +56,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
 
   // SET DEFAULT VALUE
   useEffect(() => {
-    if (applicationReviewComments?.length > 0) {
+    if (applicationReviewComments?.length > 0 && addReviewCommentsModal) {
       const commentExists = applicationReviewComments?.find(
         (business_comment: ReviewComment) =>
           business_comment?.step?.name === activeStep?.name &&
@@ -64,6 +65,9 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       if (commentExists) {
         setValue('comment', commentExists?.comment);
         setComment(commentExists);
+      } else {
+        setValue('comment', '');
+        setComment(null);
       }
     }
   }, [
@@ -112,10 +116,9 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       }
       setValue('comment', '');
       setComment(null);
-    }, 1000);
-    setTimeout(() => {
       dispatch(setAddReviewCommentsModal(false));
-    }, 1200);
+
+    }, 1000);
   };
 
   return (

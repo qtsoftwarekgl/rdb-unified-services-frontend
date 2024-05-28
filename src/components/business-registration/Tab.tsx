@@ -37,7 +37,6 @@ const Tab: FC<TabProps> = ({
   const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
-  const [showCommentActions, setShowCommentActions] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
 
   // HANDLE RENDER
@@ -149,7 +148,7 @@ const Tab: FC<TabProps> = ({
               </Link>
             )}
           {(stepUnresolvedComments > 0 || stepResolvedComments > 0) && (
-            <menu className="flex relative flex-col gap-3 w-full self-end align-baseline">
+            <menu className="flex relative flex-col gap-3 w-full px-2">
               {stepUnresolvedComments > 0 && (
                 <Link
                   to={'#'}
@@ -165,9 +164,8 @@ const Tab: FC<TabProps> = ({
                           )
                         )
                       );
-                      setShowCommentActions(false);
                   }}
-                  className="bg-red-600 text-white rounded-md p-1 px-2 w-fit flex items-center gap-2"
+                  className="bg-red-600 text-white rounded-md p-1 px-2 w-fit flex items-center gap-2 self-end"
                 >
                   <p className="text-[12px]">
                     {stepUnresolvedComments} requested change. Click to view
@@ -189,7 +187,6 @@ const Tab: FC<TabProps> = ({
                         )
                       )
                     );
-                    setShowCommentActions(false);
                   }}
                   className="text-[12px] p-1 px-2 rounded-md bg-green-600 text-white w-fit"
                 >

@@ -58,6 +58,9 @@ const UserApplications = () => {
     {
       header: 'Service Name',
       accessorKey: 'service_name',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
       cell: ({
         row,
       }: {
@@ -136,6 +139,7 @@ const UserApplications = () => {
     row: {
       original: {
         entry_id: string;
+        status: string;
       };
     };
   }) {
@@ -157,31 +161,33 @@ const UserApplications = () => {
             navigate(`/company-details/${row?.original?.entry_id}`);
           }}
         />
-        {hasComments(row?.original?.entry_id) && (
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              handleEditClick(
-                row as {
-                  original: {
-                    path: string;
-                    entry_id: string;
-                  };
-                }
-              );
-            }}
-            value={
-              <menu className="flex items-center gap-1 transition-all duration-300 bg-primary p-1 px-2 w-full rounded-md">
-                <FontAwesomeIcon
-                  className="text-[12px] text-white"
-                  icon={faPenToSquare}
-                />
-                <p className="text-[12px] text-white">Make changes</p>
-              </menu>
-            }
-            styled={false}
-          />
-        )}
+        {hasComments(row?.original?.entry_id) &&
+          !['rejected'].includes(row?.original?.status) && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                handleEditClick(
+                  row as {
+                    original: {
+                      path: string;
+                      entry_id: string;
+                      status: string;
+                    };
+                  }
+                );
+              }}
+              value={
+                <menu className="flex items-center gap-1 transition-all duration-300 bg-primary p-1 px-2 w-full rounded-md">
+                  <FontAwesomeIcon
+                    className="text-[12px] text-white"
+                    icon={faPenToSquare}
+                  />
+                  <p className="text-[12px] text-white">Make changes</p>
+                </menu>
+              }
+              styled={false}
+            />
+          )}
       </menu>
     );
   }

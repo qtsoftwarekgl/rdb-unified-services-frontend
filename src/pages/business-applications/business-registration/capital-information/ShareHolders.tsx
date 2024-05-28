@@ -530,7 +530,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                                   });
                                   setTimeout(() => {
                                     const randomNumber = Math.floor(
-                                      Math.random() * 16
+                                      Math.random() * 10
                                     );
                                     const userDetails =
                                       searchedCompanies[randomNumber];
@@ -1422,7 +1422,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval'].includes(
+          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(
             status
           ) && (
             <menu className="flex items-center gap-3 justify-between">
