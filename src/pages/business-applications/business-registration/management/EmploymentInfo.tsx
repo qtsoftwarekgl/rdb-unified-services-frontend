@@ -524,7 +524,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval'].includes(
+          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(
             status
           ) && (
             <menu className="flex items-center gap-3 justify-between">

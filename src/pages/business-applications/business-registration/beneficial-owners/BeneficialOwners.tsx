@@ -395,9 +395,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 }}
               />
             )}
-            <menu className="flex flex-col gap-4">
+            <menu className="flex flex-col gap-4 w-[49%]">
               {watch('type') && watch('type') === 'legal_entity' && (
-                <menu className="flex flex-col gap-4">
+                <menu className="flex flex-col gap-4 w-full">
                   <Controller
                     name="description"
                     rules={{
@@ -449,7 +449,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                     rules={{ required: 'Select Rwandan company status' }}
                     render={({ field }) => {
                       return (
-                        <menu className="flex flex-col gap-2">
+                        <menu className="flex flex-col gap-2 w-full">
                           <p className="flex items-center gap-2 text-[15px]">
                             Is the beneficial owner based in Rwanda?
                             <span className="text-red-600">*</span>
@@ -541,7 +541,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                                 });
                                 setTimeout(() => {
                                   const randomNumber = Math.floor(
-                                    Math.random() * 16
+                                    Math.random() * 10
                                   );
                                   const userDetails =
                                     searchedCompanies[randomNumber];
@@ -1719,7 +1719,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           />
         </menu>
       )}
-      {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+      {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"

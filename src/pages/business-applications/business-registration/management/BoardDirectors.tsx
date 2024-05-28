@@ -989,7 +989,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"

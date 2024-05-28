@@ -36,7 +36,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { selectReservedNameModal, reservedNames } = useSelector(
+  const { selectReservedNameModal } = useSelector(
     (state: RootState) => state.nameReservation
   );
   const { user_applications } = useSelector((state: RootState) => state.userApplication);
@@ -64,6 +64,7 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
             name: data?.name_reservation,
             name_reserved: true,
           },
+          status: "in_progress",
         })
       );
       dispatch(setSelectReservedNameModal(false));

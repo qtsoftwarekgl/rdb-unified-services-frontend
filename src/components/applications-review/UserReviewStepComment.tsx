@@ -54,7 +54,8 @@ const UserReviewStepComment = () => {
             dispatch(setUserReviewStepCommentModal(false));
           }}
         />
-        {!applicationReviewComment?.checked && (
+        {!applicationReviewComment?.checked &&
+        !RDBAdminEmailPattern.test(user?.email) ? (
           <Button
             value={isLoading ? <Loader /> : 'Mark as resolved'}
             primary
@@ -78,6 +79,27 @@ const UserReviewStepComment = () => {
               }, 1000);
               dispatch(setUserReviewStepCommentModal(false));
             }}
+          />
+        ) : !applicationReviewComment?.checked && (
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsLoading(true);
+              setTimeout(() => {
+                setIsLoading(false);
+                dispatch(
+                  setApplicationReviewComments(
+                    applicationReviewComments.filter(
+                      (business_comment: ReviewComment) =>
+                        business_comment !== applicationReviewComment
+                    )
+                  )
+                );
+                dispatch(setUserReviewStepCommentModal(false));
+              }, 1000);
+            }}
+            danger
+            value={isLoading ? <Loader color='red-600' /> : 'Delete'}
           />
         )}
         {applicationReviewComment?.checked &&
