@@ -87,7 +87,7 @@ const ApplicatinsList = ({
     dispatch(
       setUserApplications({
         entry_id: row?.original?.entry_id,
-        status: "is_Amending",
+        status: "is_amending",
       })
     );
     navigate(row.original?.path);

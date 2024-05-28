@@ -12,6 +12,7 @@ import Button from '../inputs/Button';
 import { useState } from 'react';
 import Loader from '../Loader';
 import { ReviewComment } from './AddReviewComments';
+import { RDBAdminEmailPattern } from '@/constants/Users';
 
 const UserReviewStepComment = () => {
   // STATE VARIABLES
@@ -22,6 +23,7 @@ const UserReviewStepComment = () => {
     applicationReviewComments,
   } = useSelector((state: RootState) => state.userApplication);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useSelector((state: RootState) => state.user);
 
   return (
     <Modal
@@ -52,7 +54,7 @@ const UserReviewStepComment = () => {
             dispatch(setUserReviewStepCommentModal(false));
           }}
         />
-        {!applicationReviewComment?.checked ? (
+        {!applicationReviewComment?.checked && (
           <Button
             value={isLoading ? <Loader /> : 'Mark as resolved'}
             primary
@@ -77,31 +79,33 @@ const UserReviewStepComment = () => {
               dispatch(setUserReviewStepCommentModal(false));
             }}
           />
-        ) : (
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setIsLoading(true);
-              setTimeout(() => {
-                setIsLoading(false);
-                dispatch(
-                  setApplicationReviewComments(
-                    applicationReviewComments?.filter(
-                      (comment: ReviewComment) =>
-                        comment?.step?.name ===
-                          applicationReviewComment?.step?.name &&
-                        comment !== applicationReviewComment
-                    )
-                  )
-                );
-              }, 1000);
-              dispatch(setUserReviewStepCommentModal(false));
-            }}
-            primary
-            className="!bg-green-600 hover:!bg-green-600 !border-none"
-            value={isLoading ? <Loader color='white' /> : 'Approve'}
-          />
         )}
+        {applicationReviewComment?.checked &&
+          RDBAdminEmailPattern.test(user?.email) && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                setIsLoading(true);
+                setTimeout(() => {
+                  setIsLoading(false);
+                  dispatch(
+                    setApplicationReviewComments(
+                      applicationReviewComments?.filter(
+                        (comment: ReviewComment) =>
+                          comment?.step?.name ===
+                            applicationReviewComment?.step?.name &&
+                          comment !== applicationReviewComment
+                      )
+                    )
+                  );
+                }, 1000);
+                dispatch(setUserReviewStepCommentModal(false));
+              }}
+              primary
+              className="!bg-green-600 hover:!bg-green-600 !border-none"
+              value={isLoading ? <Loader color="white" /> : 'Approve'}
+            />
+          )}
       </menu>
     </Modal>
   );

@@ -134,7 +134,13 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
     {
       header: 'action',
       accesorKey: 'action',
-      cell: ({ row }) => {
+      cell: ({ row }: {
+        row: {
+          original: {
+            name: string;
+          };
+        };
+      }) => {
         return (
           <menu className="flex items-center gap-4">
             <FontAwesomeIcon
@@ -257,12 +263,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                         )}
                         <Link
                           to={'#'}
-                          className='text-primary text-[12px] hover:underline cursor-pointer w-fit'
+                          className="text-primary text-[12px] hover:underline cursor-pointer w-fit"
                           onClick={(e) => {
                             e.preventDefault();
                             setAttachmentFiles([]);
                             setCustomReferenceDate(false);
-                            clearErrors('attachment')
+                            clearErrors('attachment');
                           }}
                         >
                           Use default date
@@ -448,69 +454,98 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               />
             )}
           </menu>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('senior_management'));
-              }}
-            />
-            {status === 'is_Amending' && (
+          {[
+            'in_preview',
+            'action_required',
+            'is_amending',
+            'in_progress',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
-                onClick={() => {
-                  setIsLoading({
-                    ...isLoading,
-                    amend: true,
-                    submit: false,
-                    preview: false,
-                  });
+                value="Back"
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('senior_management'));
                 }}
-                submit
               />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
+              {status === 'is_amending' && (
+                <Button
+                  value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                  onClick={() => {
+                    setIsLoading({
+                      ...isLoading,
+                      amend: true,
+                      submit: false,
+                      preview: false,
+                    });
+                  }}
+                  submit
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value={
+                    isLoading?.preview ? <Loader /> : 'Save & Complete Review'
+                  }
+                  onClick={() => {
+                    setIsLoading({
+                      ...isLoading,
+                      preview: true,
+                      submit: false,
+                      amend: false,
+                    });
+                  }}
+                  submit
+                  primary
+                  disabled={disableForm}
+                />
+              )}
               <Button
-                value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Review'
-                }
-                onClick={() => {
+                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+                onClick={async () => {
+                  await trigger();
+                  if (Object.keys(errors).length > 0) return;
                   setIsLoading({
                     ...isLoading,
-                    preview: true,
-                    submit: false,
+                    submit: true,
+                    preview: false,
                     amend: false,
                   });
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_progress' })
+                  );
                 }}
                 submit
                 primary
                 disabled={disableForm}
               />
-            )}
-            <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors).length > 0) return;
-                setIsLoading({
-                  ...isLoading,
-                  submit: true,
-                  preview: false,
-                  amend: false,
-                });
-                dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
-                );
-              }}
-              submit
-              primary
-              disabled={disableForm}
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(
+            status
+          ) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('senior_management'));
+                }}
+              />
+              <Button
+                value="Next"
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('share_details'));
+                  dispatch(setBusinessActiveTab('capital_information'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
       {attachmentPreview && (

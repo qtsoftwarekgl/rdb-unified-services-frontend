@@ -869,42 +869,70 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               </p>
             )}
           </section>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('board_of_directors'));
-              }}
-            />
-            {status === 'is_Amending' && (
+          {[
+            'in_preview',
+            'in_progress',
+            'is_amending',
+            'action_required',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                value={'Complete Amendment'}
-                disabled={Object.keys(errors).length > 0 || disableForm}
+                value="Back"
+                disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!senior_management?.length) {
-                    setError('submit', {
-                      type: 'manual',
-                      message: 'Add at least one member',
-                    });
-                    setTimeout(() => {
-                      clearErrors('submit');
-                    }, 5000);
-                    return;
-                  }
-                  dispatch(setBusinessCompletedStep('senior_management'));
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                  dispatch(setBusinessActiveStep('preview_submission'));
+                  dispatch(setBusinessActiveStep('board_of_directors'));
                 }}
               />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
+              {status === 'is_amending' && (
+                <Button
+                  value={'Complete Amendment'}
+                  disabled={Object.keys(errors).length > 0 || disableForm}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!senior_management?.length) {
+                      setError('submit', {
+                        type: 'manual',
+                        message: 'Add at least one member',
+                      });
+                      setTimeout(() => {
+                        clearErrors('submit');
+                      }, 5000);
+                      return;
+                    }
+                    dispatch(setBusinessCompletedStep('senior_management'));
+                    dispatch(setBusinessActiveTab('preview_submission'));
+                    dispatch(setBusinessActiveStep('preview_submission'));
+                  }}
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value="Save & Complete Review"
+                  primary
+                  disabled={disableForm || Object.keys(errors).length > 0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!senior_management?.length) {
+                      setError('submit', {
+                        type: 'manual',
+                        message: 'Add at least one member',
+                      });
+                      setTimeout(() => {
+                        clearErrors('submit');
+                      }, 5000);
+                      return;
+                    }
+                    dispatch(setBusinessCompletedStep('senior_management'));
+                    dispatch(setBusinessActiveTab('preview_submission'));
+                    dispatch(setBusinessActiveStep('preview_submission'));
+                  }}
+                />
+              )}
               <Button
-                value="Save & Complete Review"
+                value="Save & Continue"
                 primary
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
@@ -919,36 +947,34 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     }, 5000);
                     return;
                   }
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_progress' })
+                  );
                   dispatch(setBusinessCompletedStep('senior_management'));
-                  dispatch(setBusinessActiveTab('preview_submission'));
-                  dispatch(setBusinessActiveStep('preview_submission'));
+                  dispatch(setBusinessActiveStep('employment_info'));
                 }}
               />
-            )}
-            <Button
-              value="Save & Continue"
-              primary
-              disabled={disableForm || Object.keys(errors).length > 0}
-              onClick={(e) => {
-                e.preventDefault();
-                if (!senior_management?.length) {
-                  setError('submit', {
-                    type: 'manual',
-                    message: 'Add at least one member',
-                  });
-                  setTimeout(() => {
-                    clearErrors('submit');
-                  }, 5000);
-                  return;
-                }
-                dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
-                );
-                dispatch(setBusinessCompletedStep('senior_management'));
-                dispatch(setBusinessActiveStep('employment_info'));
-              }}
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('board_of_directors'));
+                }}
+              />
+              <Button
+                value="Next"
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('employment_info'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
       {attachmentPreview && (

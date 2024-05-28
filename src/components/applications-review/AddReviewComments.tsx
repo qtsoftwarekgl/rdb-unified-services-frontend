@@ -39,7 +39,6 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
     handleSubmit,
     control,
     formState: { errors },
-    reset,
     setValue,
   } = useForm();
 
@@ -68,12 +67,13 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       }
     }
   }, [
-    activeStep?.name,
+    activeStep,
     applicationReviewComments,
     setValue,
     addReviewCommentsModal,
     entry_id,
   ]);
+
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -111,11 +111,11 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
         );
       }
       setValue('comment', '');
-      reset({
-        comment: '',
-      });
-      dispatch(setAddReviewCommentsModal(false));
+      setComment(null);
     }, 1000);
+    setTimeout(() => {
+      dispatch(setAddReviewCommentsModal(false));
+    }, 1200);
   };
 
   return (
@@ -139,7 +139,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
         <Controller
           name="comment"
           control={control}
-          defaultValue={comment && comment?.comment}
+          defaultValue={comment?.comment}
           rules={{ required: 'Comment is required' }}
           render={({ field }) => {
             return (
@@ -149,9 +149,6 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
                   placeholder="Add comment to provide the applicant with more context"
                   label="Comment box"
                   {...field}
-                  onChange={(e) => {
-                    field.onChange(e);
-                  }}
                 />
                 {errors.comment && (
                   <p className="text-red-500 text-[13px]">

@@ -1609,7 +1609,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             dispatch(setForeignBusinessActiveTab("foreign_management"));
           }}
         />
-        {status === "is_Amending" && (
+        {status === "is_amending" && (
           <Button
             value={"Complete Amendment"}
             onClick={(e) => {

@@ -430,7 +430,7 @@ const BusinessActivity = ({
                 );
               }}
             />
-            {status === "is_Amending" && (
+            {status === "is_amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

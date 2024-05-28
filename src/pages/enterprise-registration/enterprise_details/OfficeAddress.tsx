@@ -598,7 +598,7 @@ const OfficeAddress = ({
                 dispatch(setEnterpriseActiveStep("business_activity_vat"));
               }}
             />
-            {status === "is_Amending" && (
+            {status === "is_amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

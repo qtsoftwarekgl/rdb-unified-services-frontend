@@ -429,7 +429,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button value="Back" route="/business-registration/new" />
-            {status === "is_Amending" && (
+            {status === "is_amending" && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : "Complete Amendment"}

@@ -7,16 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { capitalizeString, formatCompanyData } from "../../helpers/strings";
 import {
-  business_registration_tabs_initial_state,
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setBusinessRegistrationTabs,
-  setCompanySubActivities,
 } from "../../states/features/businessRegistrationSlice";
 import { useNavigate } from "react-router-dom";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 import { Row } from "@tanstack/react-table";
 import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { business_application } from "../business-applications/business-registration/preview-submission/BusinessPreviewSubmission";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -30,10 +28,14 @@ const UserApplications = () => {
   const navigate = useNavigate();
 
   const registeredBusinesses = user_applications
-    ?.filter((app) =>
-      ['submitted', 'approved', 'rejected', 'action_required'].includes(
-        app.status
-      )
+    ?.filter((app: business_application) =>
+      [
+        'submitted',
+        'approved',
+        'rejected',
+        'action_required',
+        're_submitted',
+      ].includes(app.status)
     )
     .map(formatCompanyData)
     .reverse();
@@ -123,8 +125,8 @@ const UserApplications = () => {
       entry_id: string;
     };
   }) => {
-    dispatch(setBusinessActiveTab("general_information"));
-    dispatch(setBusinessActiveStep("company_details"));
+    dispatch(setBusinessActiveTab("preview_submission"));
+    dispatch(setBusinessActiveStep("preview_submission"));
     navigate(row.original?.path);
   };
 
@@ -194,18 +196,8 @@ const UserApplications = () => {
           <Button
             primary
             route="/services"
-            onClick={() => {
-              dispatch(setCompanySubActivities([]));
-              dispatch(
-                setBusinessRegistrationTabs(
-                  business_registration_tabs_initial_state
-                )
-              );
-              dispatch(setBusinessActiveTab('general_information'));
-              dispatch(setBusinessActiveStep('company_details'));
-            }}
             value={
-              <menu className="flex text-[14px] items-center gap-2">
+              <menu className="flex text-[13px] items-center gap-2">
                 <FontAwesomeIcon icon={faPlus} />
                 New application
               </menu>

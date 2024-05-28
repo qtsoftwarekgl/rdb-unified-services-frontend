@@ -37,7 +37,7 @@ interface CompanyAddressProps {
   isOpen: boolean;
   company_address: business_company_address | null;
   entry_id: string | null;
-  status?: string;
+  status: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
@@ -141,7 +141,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Select
                       {...field}
                       required
-                      placeholder='Select province'
+                      placeholder="Select province"
                       label="Province"
                       options={provicesList?.map((province) => {
                         return {
@@ -176,7 +176,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       required
-                      placeholder='Select district'
+                      placeholder="Select district"
                       label="District"
                       options={districtsList
                         ?.filter(
@@ -223,7 +223,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Select
                       {...field}
                       required
-                      placeholder='Select sector'
+                      placeholder="Select sector"
                       label="Sector"
                       options={sectorsList
                         ?.filter(
@@ -264,7 +264,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       {...field}
-                      placeholder='Select cell'
+                      placeholder="Select cell"
                       required
                       label="Cell"
                       options={cellsList
@@ -306,7 +306,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
-                    placeholder='Select village'
+                      placeholder="Select village"
                       {...field}
                       required
                       label="Village"
@@ -460,75 +460,101 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               }}
             />
           </menu>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('company_details'));
-              }}
-            />
-            {status === 'is_Amending' && (
+          {[
+            'in_progress',
+            'action_required',
+            'is_amending',
+            'in_preview',
+          ].includes(status) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                submit
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                value="Back"
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('company_details'));
+                }}
+              />
+              {status === 'is_amending' && (
+                <Button
+                  submit
+                  value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
+                  onClick={async () => {
+                    await trigger();
+                    if (Object.keys(errors).length > 0) return;
+                    setIsLoading({
+                      ...isLoading,
+                      preview: false,
+                      submit: false,
+                      amend: true,
+                    });
+                  }}
+                />
+              )}
+              {['in_preview', 'action_required'].includes(status) && (
+                <Button
+                  value={
+                    isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
+                  }
+                  primary
+                  onClick={() => {
+                    dispatch(
+                      setUserApplications({ entry_id, status: 'in_preview' })
+                    );
+
+                    setIsLoading({
+                      ...isLoading,
+                      preview: true,
+                      submit: false,
+                      amend: false,
+                    });
+                  }}
+                  submit
+                  disabled={disableForm}
+                />
+              )}
+              <Button
+                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
                 onClick={async () => {
                   await trigger();
                   if (Object.keys(errors).length > 0) return;
                   setIsLoading({
                     ...isLoading,
                     preview: false,
-                    submit: false,
-                    amend: true,
-                  });
-                }}
-              />
-            )}
-            {['in_preview', 'action_required'].includes(status) && (
-              <Button
-                value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Preview'
-                }
-                primary
-                onClick={() => {
-                  dispatch(
-                    setUserApplications({ entry_id, status: 'in_preview' })
-                  );
-
-                  setIsLoading({
-                    ...isLoading,
-                    preview: true,
-                    submit: false,
+                    submit: true,
                     amend: false,
                   });
+                  dispatch(
+                    setUserApplications({ entry_id, status: 'in_progress' })
+                  );
                 }}
+                primary
                 submit
                 disabled={disableForm}
               />
-            )}
-            <Button
-              value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors).length > 0) return;
-                setIsLoading({
-                  ...isLoading,
-                  preview: false,
-                  submit: true,
-                  amend: false,
-                });
-                dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
-                );
-              }}
-              primary
-              submit
-              disabled={disableForm}
-            />
-          </menu>
+            </menu>
+          )}
+          {['in_review', 'is_approved', 'pending_approval'].includes(status) && (
+            <menu className="flex items-center gap-3 justify-between">
+              <Button
+                value={'Back'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('company_details'));
+                }}
+              />
+              <Button
+                value={'Next'}
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setBusinessActiveStep('business_activity_vat'));
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
     </section>

@@ -24,7 +24,6 @@ import AddReviewComments from '../../../components/applications-review/AddReview
 import ListReviewComments from '../../../components/applications-review/ListReviewComments';
 import { useEffect } from 'react';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import ReviewNavigation from './ReviewNavigation';
 import { RDBAdminEmailPattern } from '../../../constants/Users';
 import UserReviewTabComments from '../../../components/applications-review/UserReviewTabComments';
 import { Step, TabType } from '../../../states/features/types';
@@ -244,22 +243,13 @@ const BusinessRegistration = () => {
         </menu>
         {RDBAdminEmailPattern.test(user?.email) && (
           <>
-            <ReviewNavigation
-              entry_id={entry_id}
-              setActiveStep={setBusinessActiveStep}
-              setActiveTab={setBusinessActiveTab}
-              tabs={business_registration_tabs}
-              activeStep={business_active_step}
-              first_step="company_details"
-              last_step="preview_submission"
-              redirectUrl="/admin/review-applications"
-              setApplication={setUserApplications}
-            />
             <AddReviewComments
               entry_id={entry_id}
               activeStep={business_registration_tabs
                 ?.flatMap((tab: TabType) => tab?.steps)
-                ?.find((step: Step) => step?.name === applicationReviewStepName)}
+                ?.find(
+                  (step: Step) => step?.name === applicationReviewStepName
+                )}
               activeTab={business_registration_tabs?.find(
                 (tab: TabType) => tab?.name === applicationReviewTabName
               )}

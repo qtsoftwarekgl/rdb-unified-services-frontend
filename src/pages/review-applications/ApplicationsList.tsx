@@ -17,7 +17,7 @@ import {
   setSelectedApplication,
 } from '@/states/features/userApplicationSlice';
 import ApproveApplication from './ApproveApplication';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 type Props = {
   title: string;
@@ -45,12 +45,6 @@ const ApplicatinsList = ({
   // STATE VARIABLES
   const dispatch = useDispatch();
   const [selectedViewOption, setSelectedViewOption] = useState('mine');
-  const [applicationValue, setApplicationValue] = useState(randomValue());
-
-  // ALTER THE VALUE AS OPTION SELECTED CHANGES
-  useEffect(() => {
-    setApplicationValue(randomValue());
-  }, [selectedViewOption]);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -82,7 +76,8 @@ const ApplicatinsList = ({
       <menu className="flex items-center gap-2">
         <Button
           onClick={(e) => {
-            handleEditClick(e, row);
+            e.preventDefault();
+            handleEditClick(row);
             handleClickAction();
           }}
           value="Review"
@@ -202,8 +197,7 @@ const ApplicatinsList = ({
     },
   ];
 
-  const handleEditClick = (e, row) => {
-    e.preventDefault();
+  const handleEditClick = (row) => {
     const company = user_applications?.find(
       (application) => application.entry_id === row?.original?.entry_id
     );
@@ -259,7 +253,7 @@ const ApplicatinsList = ({
             return (
               <RegistrationApplicationCard
                 label={application?.label}
-                value={applicationValue}
+                value={randomValue()}
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
@@ -271,6 +265,9 @@ const ApplicatinsList = ({
         </menu>
         {data.length > 0 ? (
           <Table
+          rowClickHandler={(row) => {
+            handleEditClick(row);
+          }}
             showExport
             columns={columns}
             data={data}
