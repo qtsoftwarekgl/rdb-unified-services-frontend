@@ -1,20 +1,20 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
-import { searchedCompanies } from '../../../constants/businessRegistration';
 import UserLayout from '../../../containers/UserLayout';
 import { faArrowLeft, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Loader from '../../../components/Loader';
 import moment from 'moment';
 import Button from '../../../components/inputs/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useNavigate } from 'react-router-dom';
+import { ErrorResponse, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { validTinNumber } from '@/constants/authentication';
 import Select from '@/components/inputs/Select';
 import { capitalizeString } from '@/helpers/strings';
 import Table from '@/components/table/Table';
+import { useLazySearchCompaniesQuery } from '@/states/api/businessRegistrationApiSlice';
+import queryString, { ParsedQuery } from 'query-string';
 
-const SearchCompanyDetails = () => {
+const SearchCompanies = () => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -24,11 +24,64 @@ const SearchCompanyDetails = () => {
     clearErrors,
     formState: { errors },
     trigger,
-    reset,
   } = useForm();
 
   // NAVIGATE
   const navigate = useNavigate();
+
+  // STATE VARIABLES
+  const [searchQueries, setSearchQueries] = useState<ParsedQuery<string>>({});
+  const [searchType, setSearchType] = useState<string>('companyName');
+
+  // CATCH SEARCH QUERIES
+  const { search } = useLocation();
+
+  useEffect(() => {
+    if (search) {
+      setSearchQueries(queryString.parse(search));
+    }
+  }, [search]);
+
+  useEffect(() => {
+    navigate(`?${queryString.stringify({
+      ...searchQueries,
+      type: searchType,
+    })}`);
+  }, [navigate, searchQueries, searchType]);
+
+  // INITIALIZE SEARCH COMPANIES QUERY
+  const [
+    searchCompanies,
+    {
+      data: searchCommpaniesData,
+      error: searchCompaniesError,
+      isLoading: searchCompaniesIsLoading,
+      isSuccess: searchCompaniesIsSuccess,
+      isError: searchCompaniesIsError,
+    },
+  ] = useLazySearchCompaniesQuery();
+
+  // HANDLE SEARCH COMPANIES RESPONSE
+  useEffect(() => {
+    if (searchCompaniesIsError) {
+      if ((searchCompaniesError as ErrorResponse).status === 500) {
+        toast.error('Search failed, please try again later');
+      } else {
+        toast.error(
+          (searchCompaniesError as ErrorResponse).data?.message ||
+            'An error occurred, please try again later'
+        );
+      }
+    } else if (searchCompaniesIsSuccess) {
+      toast.success('Company details requested successfully');
+      console.log(searchCommpaniesData.data);
+    }
+  }, [
+    searchCommpaniesData,
+    searchCompaniesError,
+    searchCompaniesIsError,
+    searchCompaniesIsSuccess,
+  ]);
 
   // STATE VARIABLES
   const [isLoading, setIsLoading] = useState<{
@@ -37,13 +90,13 @@ const SearchCompanyDetails = () => {
     data:
       | {
           tin?: string | number;
-          company_name: string;
+          companyName: string;
           company_type: string;
         }
       | null
       | Array<{
           tin?: string | number;
-          company_name: string;
+          companyName: string;
           company_type: string;
         } | null>;
   }>({
@@ -51,7 +104,6 @@ const SearchCompanyDetails = () => {
     submit: false,
     data: null,
   });
-  const [searchType, setSearchType] = useState<string>('company_name');
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -70,18 +122,13 @@ const SearchCompanyDetails = () => {
   const searchOptions = [
     {
       label: 'Company Name',
-      value: 'company_name',
+      value: 'companyName',
     },
     {
       label: 'Company TIN',
-      value: 'company_tin',
+      value: 'tin',
     },
   ];
-
-  // HANDLE SEARCH OPTIONS CHANGE
-  const handleSearchOptionsChange = (value: string) => {
-    setSearchType(value);
-  };
 
   // TABLE COLUMNS
   const columns = [
@@ -91,9 +138,9 @@ const SearchCompanyDetails = () => {
       accessorKey: 'no',
     },
     {
-      id: 'company_name',
+      id: 'companyName',
       header: 'Company Name',
-      accessorKey: 'company_name',
+      accessorKey: 'companyName',
     },
     {
       id: 'company_type',
@@ -124,7 +171,7 @@ const SearchCompanyDetails = () => {
               rules={{
                 required: 'Company name is required',
                 validate: (value) => {
-                  if (searchType === 'company_tin') {
+                  if (searchType === 'tin') {
                     return (
                       (value.length < 9 && 'TIN number must be 9 digits') ||
                       (value.length > 9 && 'TIN number cannot exceed 9 digits')
@@ -141,12 +188,12 @@ const SearchCompanyDetails = () => {
                       <Select
                         value={searchType}
                         onChange={async (value) => {
-                          handleSearchOptionsChange(value);
-                          reset({
-                            searchValue: '',
+                          setSearchType(value);
+                          setSearchQueries({
+                            ...searchQueries,
+                            type: value,
                           });
-                          await trigger('searchValue');
-                          setIsLoading({ ...isLoading, data: null });
+                          navigate(`?${queryString.stringify(searchQueries)}`);
                         }}
                         options={searchOptions}
                         labelClassName="!max-w-[35%]"
@@ -156,7 +203,11 @@ const SearchCompanyDetails = () => {
                         required
                         type="text"
                         className="placeholder:text-[13px] text-[14px] h-10 w-full border border-l-[0px] border-[#E5E5E5] outline-none focus:outline-none rounded-r-md"
-                        placeholder={`Enter ${capitalizeString(searchType)}`}
+                        placeholder={`Enter ${
+                          searchOptions?.find(
+                            (option) => option.value === searchType
+                          )?.label
+                        }`}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e);
@@ -166,7 +217,7 @@ const SearchCompanyDetails = () => {
                       <FontAwesomeIcon
                         icon={faSearch}
                         className="text-white bg-primary mx-2 p-3 rounded-md cursor-pointer"
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.preventDefault();
                           if (!field.value) {
                             setError('searchValue', {
@@ -178,40 +229,21 @@ const SearchCompanyDetails = () => {
                             return;
                           }
                           clearErrors('searchValue');
-                          setIsLoading({ ...isLoading, search: true });
-                          setTimeout(() => {
-                            setIsLoading({ ...isLoading, search: false });
-                            const randomNumber = Math.floor(Math.random() * 10);
-                            const companyDetails =
-                              searchedCompanies[randomNumber];
 
-                            if (
-                              field.value !== String(validTinNumber) &&
-                              searchType === 'company_tin'
-                            ) {
-                              setError('searchValue', {
-                                type: 'manual',
-                                message: `Company not found`,
-                              });
-                              setIsLoading({ ...isLoading, data: null });
-                            } else if (searchType === 'company_tin') {
-                              clearErrors('searchValue');
-                              setIsLoading({
-                                ...isLoading,
-                                data: companyDetails,
-                              });
-                            } else if (searchType === 'company_name') {
-                              setIsLoading({
-                                ...isLoading,
-                                data: searchedCompanies,
-                              });
-                            }
-                          }, 1000);
+                          setSearchQueries({
+                            ...searchQueries,
+                            type: searchType,
+                            companyName: searchType === 'companyName' ? field.value : '',
+                            tin: searchType === 'tin' ? field.value : '',
+                          });
+                          await searchCompanies({
+                            ...searchQueries,
+                          });
                         }}
                       />
                     </menu>
                     <section className="flex flex-col gap-1 pl-[35%]">
-                      {isLoading.search && (
+                      {searchCompaniesIsLoading && (
                         <p className="text-primary text-[13px] flex items-center gap-1">
                           <Loader size={4} /> Searching...
                         </p>
@@ -233,7 +265,7 @@ const SearchCompanyDetails = () => {
               isLoading?.data &&
               !Object.keys(errors).length &&
               !isLoading?.search &&
-              searchType === 'company_tin'
+              searchType === 'tin'
                 ? 'flex'
                 : 'hidden'
             } flex-col gap-5`}
@@ -245,7 +277,7 @@ const SearchCompanyDetails = () => {
               <section className="flex flex-col gap-4">
                 <p>
                   <span className="font-semibold">Company Name:</span>{' '}
-                  {isLoading?.data?.company_name}
+                  {isLoading?.data?.companyName}
                 </p>
                 <p>
                   <span className="font-semibold">Company TIN:</span>{' '}
@@ -267,7 +299,7 @@ const SearchCompanyDetails = () => {
               isLoading?.data &&
               !Object.keys(errors).length &&
               !isLoading?.search &&
-              searchType === 'company_name'
+              searchType === 'companyName'
                 ? 'flex'
                 : 'hidden'
             } flex-col gap-3`}
@@ -292,7 +324,7 @@ const SearchCompanyDetails = () => {
             <menu className="w-full flex items-center justify-center">
               <Button
                 styled={false}
-                route='/services'
+                route="/services"
                 value={
                   <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-200">
                     <FontAwesomeIcon icon={faArrowLeft} />
@@ -304,7 +336,7 @@ const SearchCompanyDetails = () => {
           </section>
           <menu
             className={
-              isLoading?.data && searchType === 'company_tin'
+              isLoading?.data && searchType === 'tin'
                 ? 'w-[40%] mx-auto flex flex-col items-center gap-3 justify-between mt-6'
                 : 'hidden'
             }
@@ -332,4 +364,4 @@ const SearchCompanyDetails = () => {
   );
 };
 
-export default SearchCompanyDetails;
+export default SearchCompanies;

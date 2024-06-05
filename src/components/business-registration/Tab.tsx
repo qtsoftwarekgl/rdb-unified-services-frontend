@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -128,7 +128,7 @@ const Tab: FC<TabProps> = ({
         }`}
       >
         <menu className="relative flex items-center justify-between gap-3 w-full">
-          <h1 className="min-w-[70%] text-lg font-semibold text-center uppercase">
+          <h1 className="min-w-[70%] w-full text-lg font-semibold text-center uppercase">
             {active_step?.label}
           </h1>
           {RDBAdminEmailPattern.test(user?.email) &&
