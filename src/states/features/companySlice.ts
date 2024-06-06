@@ -4,23 +4,36 @@ export const companySlice = createSlice({
   name: 'userCompanies',
   initialState: {
     companiesList: [],
-    pagination: {
-      page: 1,
-      size: 10,
-      totalElements: 0,
-      currentPage: 1,
-    },
+    page: 1,
+    size: 10,
+    totalElements: 0,
+    totalPages: 1,
   },
   reducers: {
     setCompaniesList: (state, action) => {
       state.companiesList = action.payload;
     },
-    setPagination: (state, action) => {
-      state.pagination = action.payload;
+    setCompanyPage: (state, action) => {
+      state.page = action.payload;
+    },
+    setCompanySize: (state, action) => {
+      state.size = action.payload;
+    },
+    setCompanyTotalElements: (state, action) => {
+      state.totalElements = action.payload;
+    },
+    setCompanyTotalPages: (state, action) => {
+      state.totalPages = action.payload;
     },
   },
 });
 
 export default companySlice.reducer;
 
-export const { setCompaniesList, setPagination } = companySlice.actions;
+export const {
+  setCompaniesList,
+  setCompanyPage,
+  setCompanySize,
+  setCompanyTotalElements,
+  setCompanyTotalPages,
+} = companySlice.actions;

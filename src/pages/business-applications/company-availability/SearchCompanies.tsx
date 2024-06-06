@@ -15,7 +15,13 @@ import queryString, { ParsedQuery } from 'query-string';
 import { AppDispatch, RootState } from '@/states/store';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { setCompaniesList } from '@/states/features/companySlice';
+import {
+  setCompaniesList,
+  setCompanyPage,
+  setCompanySize,
+  setCompanyTotalElements,
+  setCompanyTotalPages,
+} from '@/states/features/companySlice';
 import { AccessorKeyColumnDefBase, Row } from '@tanstack/react-table';
 import { Business } from '@/types/models/business';
 
@@ -35,9 +41,8 @@ const SearchCompanies = () => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { pagination, companiesList } = useSelector(
-    (state: RootState) => state.companies
-  );
+  const { page, size, totalElements, totalPages, companiesList } =
+    useSelector((state: RootState) => state.companies);
   const [searchQueries, setSearchQueries] = useState<
     ParsedQuery<string | number>
   >({});
@@ -52,16 +57,15 @@ const SearchCompanies = () => {
     }
   }, [search]);
 
+  // SET DEFAULT SEARCH TYPE
   useEffect(() => {
     navigate(
       `?${queryString.stringify({
         ...searchQueries,
         type: searchType,
-        page: pagination.page,
-        size: pagination.size,
       })}`
     );
-  }, [navigate, searchQueries, searchType, pagination]);
+  }, [navigate, searchQueries, searchType]);
 
   // INITIALIZE SEARCH COMPANIES QUERY
   const [
@@ -74,6 +78,20 @@ const SearchCompanies = () => {
       isError: searchCompaniesIsError,
     },
   ] = useLazySearchCompaniesQuery();
+
+  // RELOAD COMPANIES LIST ON PAGINATION CHANGE
+  useEffect(() => {
+    if (watch('searchValue')) {
+      searchCompanies({
+        ...searchQueries,
+        companyName: searchType === 'companyName' ? watch('searchValue') : '',
+        tin: searchType === 'tin' ? watch('searchValue') : '',
+        page,
+        size,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, searchCompanies, size]);
 
   // HANDLE SEARCH COMPANIES RESPONSE
   useEffect(() => {
@@ -88,6 +106,10 @@ const SearchCompanies = () => {
       }
     } else if (searchCompaniesIsSuccess) {
       dispatch(setCompaniesList(searchCommpaniesData.data.data || []));
+      dispatch(setCompanyTotalPages(searchCommpaniesData.data.totalPages || 0));
+      dispatch(
+        setCompanyTotalElements(searchCommpaniesData.data.totalElements || 0)
+      );
     }
   }, [
     dispatch,
@@ -130,9 +152,23 @@ const SearchCompanies = () => {
       },
     },
     {
-      id: 'date_of_incorporation',
+      id: 'dateOfIncorporation',
       header: 'Date of Incorporation',
       accessorKey: 'createdAt',
+    },
+    {
+      id: 'action',
+      header: 'Action',
+      accessorKey: 'action',
+      cell: ({ row }: { row: Row<Business> }) => {
+        return (
+          <Button
+            styled={false}
+            route={`/services/company-details/${row.original.id}`}
+            value="Full info"
+          />
+        );
+      },
     },
   ];
 
@@ -156,7 +192,7 @@ const SearchCompanies = () => {
                       (value.length > 9 && 'TIN number cannot exceed 9 digits')
                     );
                   } else {
-                    return value.length < 3 && 'Company name is too short';
+                    return value.length >= 3 || 'Company name is too short';
                   }
                 },
               }}
@@ -195,7 +231,9 @@ const SearchCompanies = () => {
                       />
                       <FontAwesomeIcon
                         icon={faSearch}
-                        className="text-white bg-primary mx-2 p-3 rounded-md cursor-pointer"
+                        className={`${errors?.searchValue && 
+                          'text-red-600'
+                        } text-white bg-primary mx-2 p-3 rounded-md cursor-pointer`}
                         onClick={async (e) => {
                           e.preventDefault();
                           if (!field.value) {
@@ -207,19 +245,22 @@ const SearchCompanies = () => {
                             });
                             return;
                           }
+                          if (Object.keys(errors).length) {
+                            return;
+                          }
                           clearErrors('searchValue');
 
                           setSearchQueries({
                             ...searchQueries,
                             type: searchType,
-                            companyName:
-                              searchType === 'companyName' ? field.value : '',
-                            tin: searchType === 'tin' ? field.value : '',
-                            page: pagination.page,
-                            size: pagination.size,
                           });
                           await searchCompanies({
                             ...searchQueries,
+                            companyName:
+                              searchType === 'companyName' ? watch('searchValue') : '',
+                            tin: searchType === 'tin' ? watch('searchValue') : '',
+                            page,
+                            size,
                           });
                         }}
                       />
@@ -252,11 +293,20 @@ const SearchCompanies = () => {
               List of companies that match your query {watch('searchValue')}
             </h1>
             <Table
+              page={page}
+              size={size}
+              totalElements={totalElements}
+              totalPages={totalPages}
+              setPage={setCompanyPage}
+              setSize={setCompanySize}
+              rowClickHandler={(row: Business) => {
+                navigate(`/services/company-details/${row.id}`);
+              }}
               data={companiesList?.map((company: Business, index) => {
                 return {
                   ...company,
                   companyName: company?.companyName?.toUpperCase(),
-                  no: index + pagination.page,
+                  no: index + page,
                   createdAt: formatDate(company.createdAt),
                 };
               })}
