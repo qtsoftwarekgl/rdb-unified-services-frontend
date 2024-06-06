@@ -4,7 +4,6 @@ import Table from "../../components/table/Table";
 import { capitalizeString, formatCompanyData } from "../../helpers/strings";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../states/store";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { useNavigate } from "react-router";
 
 const RegisteredBusinessesTable = () => {
@@ -79,7 +78,6 @@ const RegisteredBusinessesTable = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setViewedCompany(row?.original));
                 navigate(`/company-details/${row?.original?.entry_id}`);
               }}
               icon={faEye}

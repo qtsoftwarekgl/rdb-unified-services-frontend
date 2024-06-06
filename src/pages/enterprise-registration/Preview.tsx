@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import { Step } from "../../states/features/types";
+import { Step } from "../../navigationTypes/navigationTypes";
 import {
   resetToInitialState,
   setEnterpriseActiveStep,

@@ -7,7 +7,6 @@ import { companyDocuments } from "../../constants/dashboard";
 import { useEffect, useState } from "react";
 import ViewDocument from "./ViewDocument";
 import { faBackward, faDownload } from "@fortawesome/free-solid-svg-icons";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
@@ -67,11 +66,7 @@ const CompanyDocuments = () => {
 
   useEffect(() => {
     if (id) {
-      dispatch(
-        setViewedCompany(
-          user_applications?.find((business) => business.entry_id === id)
-        )
-      );
+      console.log(id)
     }
 
     return () => {

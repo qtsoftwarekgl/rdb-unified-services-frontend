@@ -6,11 +6,10 @@ import {
   faHouseChimney,
   faMagnifyingGlassDollar,
   faPen,
-  faRightFromBracket,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion, useAnimation } from "framer-motion";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../states/store";
 import { toggleSidebar } from "../states/features/sidebarSlice";
@@ -23,7 +22,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import rdb_logo from "/rdb-logo.png";
 import rdb_icon from "/rdb-icon.png";
-import Button from "../components/inputs/Button";
 
 const AdminSidebar = () => {
   const { pathname } = useLocation();
@@ -33,9 +31,6 @@ const AdminSidebar = () => {
   const { isOpen } = useSelector((state: RootState) => state.sidebar);
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
   const { user } = useSelector((state: RootState) => state.user);
-
-  // NAVIGATE
-  const navigate = useNavigate();
 
   // GET SCREEN WIDTH
   const ref = useRef<HTMLDivElement>(null);
@@ -213,26 +208,6 @@ const AdminSidebar = () => {
             );
           })}
         </menu>
-        <Button
-          className={`w-full max-w-[90%]`}
-          primary
-          route="/auth/login"
-          value={
-            <menu
-              className={`flex items-center w-full gap-4 ${
-                isOpen ? "justify-start w-full" : "justify-center"
-              }`}
-            >
-              <FontAwesomeIcon icon={faRightFromBracket} />
-              {isOpen ? "Logout" : null}
-            </menu>
-          }
-          onClick={(e) => {
-            e.preventDefault();
-            sessionStorage.clear();
-            navigate("/auth/login");
-          }}
-        />
       </motion.div>
     </aside>
   );

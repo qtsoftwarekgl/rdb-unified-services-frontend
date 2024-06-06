@@ -16,23 +16,26 @@ import { AppDispatch, RootState } from "../../states/store";
 import Modal from "../../components/Modal";
 import { setInfoModal } from "../../states/features/authSlice";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import {
-  setUser,
-  setUserAuthenticated,
-} from "../../states/features/userSlice";
-import { useState } from "react";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
-import {
-  BankEmailPattern,
-  RDBVerifierAndApproverEmailPattern,
-} from "../../constants/Users";
+import { useLoginMutation } from "@/states/api/userManagamentApiSlice";
+import { setUser } from "@/states/features/userSlice";
 
 const Login = () => {
   // LOCALES
   const { t } = useTranslation();
+
+  // INITIALIZE LOGIN MUTATION
+  const [login, {
+    data: loginData,
+    error: loginError,
+    isLoading: loginIsLoading,
+    isError: loginIsError,
+    isSuccess: loginIsSuccess
+  }] = useLoginMutation();
 
   // REACT HOOK FORM
   const {
@@ -44,38 +47,37 @@ const Login = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { infoModal } = useSelector((state: RootState) => state.auth);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // NAVIGATION
   const navigate = useNavigate();
 
-
-
   // HANDLE SUBMIT
-  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    toast.success("Login successful. Redirecting...");
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      dispatch(setUser({ email: data.email, name: "Nishimwe Prince" }));
-      dispatch(setUserAuthenticated(true));
-      if (RDBVerifierAndApproverEmailPattern.test(data.email)) {
-        return navigate("/back-office/dashboard");
-      }
-      if (data?.email?.includes("admin")) {
-        return navigate("/super-admin/dashboard");
-      } else if (
-        data?.email?.includes("info") &&
-        !BankEmailPattern.test(data.email)
-      ) {
-        return navigate("/admin/dashboard");
-      } else if (BankEmailPattern.test(data.email)) {
-        return navigate("/admin/collaterals");
-      }
-      return navigate("/services");
-    }, 1000);
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    login({
+      username: data.email,
+      password: data.password
+    })
   };
+
+  // HANDLE LOGIN RESPONSE
+  useEffect(() => {
+    if (loginIsError) {
+      if ((loginError as ErrorResponse)?.status === 500) {
+        toast.error("Internal server error");
+      } else {
+        toast.error((loginError as ErrorResponse)?.data.message);
+      }
+    } else if (loginIsSuccess) {
+      toast.success("Login successful. Redirecting...");
+      dispatch(setUser(loginData?.data));
+      if (loginData?.data?.roles?.includes("PUBLIC_USER")) {
+        navigate("/services");
+      } else if (loginData?.data?.roles?.includes("SYSTEM_ADMIN")) {
+        navigate("/admin/dashboard");
+      }
+    }
+  }, [dispatch, loginData, loginError, loginIsError, loginIsSuccess, navigate]);
 
   return (
     <main className="h-[100vh] flex items-center justify-between w-full !bg-white">
@@ -172,7 +174,7 @@ const Login = () => {
             <Button
               submit
               primary
-              value={isLoading ? <Loader /> : t("login")}
+              value={loginIsLoading ? <Loader /> : t("login")}
               className="w-full"
             />
             <ul className="flex items-center gap-6">

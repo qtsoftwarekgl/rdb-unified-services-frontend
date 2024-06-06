@@ -7,7 +7,7 @@ import {
   setNameReservationActiveStep,
 } from '../../states/features/nameReservationSlice';
 import Tab from '../../components/business-registration/Tab';
-import { TabType } from '../../states/features/types';
+import { TabType } from '../../navigationTypes/navigationTypes';
 import { useLocation, useNavigate } from 'react-router-dom';
 import OwnerDetails from './OwnerDetails';
 import NameReservationSearch from './NameReservationSearch';

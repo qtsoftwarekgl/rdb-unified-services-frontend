@@ -10,12 +10,13 @@ import roleSlice from './features/roleSlice';
 import permissionSlice from './features/permissionSlice';
 import institutionSlice from './features/institutionSlice';
 import localeSlice from './features/localeSlice';
-import userCompaniesSlice from './features/userCompaniesSlice';
+import companySlice from './features/companySlice';
 import enterpriseRegistrationSlice from './features/enterpriseRegistrationSlice';
 import foreignCompanyRegistrationSlice from './features/foreignCompanyRegistrationSlice';
 import nameReservationSlice from './features/nameReservationSlice';
 import userApplicationSlice from './features/userApplicationSlice';
 import businessRegistrationApiSlice from './api/businessRegistrationApiSlice';
+import userManagementApiSlice from './api/userManagamentApiSlice';
 import collateralRegistrationSlice from './features/collateralRegistrationSlice';
 import collateralReviewSlice from './features/collateralReviewSlice';
 import applicationReviewSlice from './features/applicationReviewSlice';
@@ -24,6 +25,7 @@ export const store = configureStore({
   reducer: {
     [businessRegistrationApiSlice.reducerPath]:
       businessRegistrationApiSlice.reducer,
+    [userManagementApiSlice.reducerPath]: userManagementApiSlice.reducer,
     user: userSlice,
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
@@ -35,7 +37,7 @@ export const store = configureStore({
     permission: permissionSlice,
     institution: institutionSlice,
     locale: localeSlice,
-    userCompanies: userCompaniesSlice,
+    companies: companySlice,
     enterpriseRegistration: enterpriseRegistrationSlice,
     foreignCompanyRegistration: foreignCompanyRegistrationSlice,
     nameReservation: nameReservationSlice,
@@ -46,7 +48,8 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(
-      businessRegistrationApiSlice.middleware
+      businessRegistrationApiSlice.middleware,
+      userManagementApiSlice.middleware
     );
   },
 });

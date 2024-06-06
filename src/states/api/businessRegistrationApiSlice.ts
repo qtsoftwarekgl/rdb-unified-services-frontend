@@ -1,26 +1,21 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-export interface ResponseErrorType {
-  status: number;
-  data: {
-    message: string;
-  };
-}
+import store from 'store';
 
 export const businessRegistrationApiSlice = createApi({
-  reducerPath: 'api',
+  reducerPath: 'businessRegistrationApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:8051/api/company',
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('authorization', `Bearer ${token}`);
+      const user = store.get('user');
+      if (user) {
+        headers.set('authorization', `Bearer ${user.token}`);
       }
       return headers;
     },
   }),
   endpoints: (builder) => {
     return {
+      // SEARCH COMPANIES
       searchCompanies: builder.query({
         query: ({ type, companyName, tin, page, size }) => {
           return {

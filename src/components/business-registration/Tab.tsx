@@ -7,7 +7,7 @@ import {
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { UnknownAction } from '@reduxjs/toolkit';
-import { Step, TabType } from '../../states/features/types';
+import { Step, TabType } from '../../navigationTypes/navigationTypes';
 import { ReviewComment } from '../applications-review/AddReviewComments';
 import {
   setAddReviewCommentsModal,

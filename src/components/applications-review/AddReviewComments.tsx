@@ -6,7 +6,7 @@ import TextArea from '../inputs/TextArea';
 import Button from '../inputs/Button';
 import { FC, useEffect, useState } from 'react';
 import Loader from '../Loader';
-import { Step, TabType } from '../../states/features/types';
+import { Step, TabType } from '../../navigationTypes/navigationTypes';
 import moment from 'moment';
 import {
   setAddReviewCommentsModal,

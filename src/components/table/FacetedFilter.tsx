@@ -43,6 +43,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   table
 }: DataTableFacetedFilterProps<TData, TValue>) {
 
+
   // STATE VARIABLES
   const [queryExists, setQueryExists] = useState<string[]>([])
 

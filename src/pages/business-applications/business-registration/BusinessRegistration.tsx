@@ -26,7 +26,7 @@ import { useEffect } from 'react';
 import { setUserApplications } from '../../../states/features/userApplicationSlice';
 import { RDBAdminEmailPattern } from '../../../constants/Users';
 import UserReviewTabComments from '../../../components/applications-review/UserReviewTabComments';
-import { Step, TabType } from '../../../states/features/types';
+import { Step, TabType } from '../../../navigationTypes/navigationTypes';
 import {
   setApplicationReviewStepName,
   setApplicationReviewTabName,

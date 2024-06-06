@@ -1,23 +1,27 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import UserLayout from '../../../containers/UserLayout';
 import { faArrowLeft, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import Loader from '../../../components/Loader';
-import moment from 'moment';
 import Button from '../../../components/inputs/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ErrorResponse, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Select from '@/components/inputs/Select';
-import { capitalizeString } from '@/helpers/strings';
+import { capitalizeString, formatDate } from '@/helpers/strings';
 import Table from '@/components/table/Table';
 import { useLazySearchCompaniesQuery } from '@/states/api/businessRegistrationApiSlice';
 import queryString, { ParsedQuery } from 'query-string';
+import { AppDispatch, RootState } from '@/states/store';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { setCompaniesList } from '@/states/features/companySlice';
+import { AccessorKeyColumnDefBase, Row } from '@tanstack/react-table';
+import { Business } from '@/types/models/business';
 
 const SearchCompanies = () => {
   // REACT HOOK FORM
   const {
-    handleSubmit,
     control,
     watch,
     setError,
@@ -30,7 +34,13 @@ const SearchCompanies = () => {
   const navigate = useNavigate();
 
   // STATE VARIABLES
-  const [searchQueries, setSearchQueries] = useState<ParsedQuery<string>>({});
+  const dispatch: AppDispatch = useDispatch();
+  const { pagination, companiesList } = useSelector(
+    (state: RootState) => state.companies
+  );
+  const [searchQueries, setSearchQueries] = useState<
+    ParsedQuery<string | number>
+  >({});
   const [searchType, setSearchType] = useState<string>('companyName');
 
   // CATCH SEARCH QUERIES
@@ -43,11 +53,15 @@ const SearchCompanies = () => {
   }, [search]);
 
   useEffect(() => {
-    navigate(`?${queryString.stringify({
-      ...searchQueries,
-      type: searchType,
-    })}`);
-  }, [navigate, searchQueries, searchType]);
+    navigate(
+      `?${queryString.stringify({
+        ...searchQueries,
+        type: searchType,
+        page: pagination.page,
+        size: pagination.size,
+      })}`
+    );
+  }, [navigate, searchQueries, searchType, pagination]);
 
   // INITIALIZE SEARCH COMPANIES QUERY
   const [
@@ -73,50 +87,15 @@ const SearchCompanies = () => {
         );
       }
     } else if (searchCompaniesIsSuccess) {
-      toast.success('Company details requested successfully');
-      console.log(searchCommpaniesData.data);
+      dispatch(setCompaniesList(searchCommpaniesData.data.data || []));
     }
   }, [
+    dispatch,
     searchCommpaniesData,
     searchCompaniesError,
     searchCompaniesIsError,
     searchCompaniesIsSuccess,
   ]);
-
-  // STATE VARIABLES
-  const [isLoading, setIsLoading] = useState<{
-    search: boolean;
-    submit: boolean;
-    data:
-      | {
-          tin?: string | number;
-          companyName: string;
-          company_type: string;
-        }
-      | null
-      | Array<{
-          tin?: string | number;
-          companyName: string;
-          company_type: string;
-        } | null>;
-  }>({
-    search: false,
-    submit: false,
-    data: null,
-  });
-
-  // HANDLE FORM SUBMIT
-  const onSubmit = (data: FieldValues) => {
-    setIsLoading({ ...isLoading, submit: true });
-    setTimeout(() => {
-      setIsLoading({ ...isLoading, submit: false });
-      toast.success('Company details requested successfully');
-      setTimeout(() => {
-        navigate('/services');
-      }, 1000);
-    }, 1000);
-    return data;
-  };
 
   // SEARCH OPTIONS
   const searchOptions = [
@@ -143,27 +122,27 @@ const SearchCompanies = () => {
       accessorKey: 'companyName',
     },
     {
-      id: 'company_type',
+      id: 'companyType',
       header: 'Company Type',
-      accessorKey: 'company_type',
+      accessorKey: 'companyType',
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
     },
     {
       id: 'date_of_incorporation',
       header: 'Date of Incorporation',
-      accessorKey: 'date_of_incorporation',
+      accessorKey: 'createdAt',
     },
   ];
 
   return (
     <UserLayout>
-      <main className="w-full flex flex-col gap-5 p-6 rounded-md bg-white">
+      <main className="flex flex-col gap-5 p-6 rounded-md bg-white w-full">
         <h1 className="uppercase font-semibold text-lg text-center">
           Request company details
         </h1>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 w-full"
-        >
+        <form className="flex flex-col gap-4 w-[95%] mx-auto">
           <section className="w-[45%] mx-auto">
             <Controller
               name="searchValue"
@@ -233,8 +212,11 @@ const SearchCompanies = () => {
                           setSearchQueries({
                             ...searchQueries,
                             type: searchType,
-                            companyName: searchType === 'companyName' ? field.value : '',
+                            companyName:
+                              searchType === 'companyName' ? field.value : '',
                             tin: searchType === 'tin' ? field.value : '',
+                            page: pagination.page,
+                            size: pagination.size,
                           });
                           await searchCompanies({
                             ...searchQueries,
@@ -259,47 +241,9 @@ const SearchCompanies = () => {
               }}
             />
           </section>
-
           <section
             className={`${
-              isLoading?.data &&
-              !Object.keys(errors).length &&
-              !isLoading?.search &&
-              searchType === 'tin'
-                ? 'flex'
-                : 'hidden'
-            } flex-col gap-5`}
-          >
-            <section className="flex flex-col gap-4 w-[40%] mx-auto mt-5">
-              <h1 className="uppercase font-semibold text-lg text-primary">
-                Company Details
-              </h1>
-              <section className="flex flex-col gap-4">
-                <p>
-                  <span className="font-semibold">Company Name:</span>{' '}
-                  {isLoading?.data?.companyName}
-                </p>
-                <p>
-                  <span className="font-semibold">Company TIN:</span>{' '}
-                  {isLoading?.data?.tin || watch('searchValue')}
-                </p>
-                <p>
-                  <span className="font-semibold">Company Type:</span>{' '}
-                  {isLoading?.data?.company_type}
-                </p>
-                <p>
-                  <span className="font-semibold">Incorporation date:</span>{' '}
-                  {moment().subtract(1, 'years').format('MMMM Do YYYY')}
-                </p>
-              </section>
-            </section>
-          </section>
-          <section
-            className={`${
-              isLoading?.data &&
-              !Object.keys(errors).length &&
-              !isLoading?.search &&
-              searchType === 'companyName'
+              searchCompaniesIsSuccess || companiesList?.length
                 ? 'flex'
                 : 'hidden'
             } flex-col gap-3`}
@@ -308,20 +252,17 @@ const SearchCompanies = () => {
               List of companies that match your query {watch('searchValue')}
             </h1>
             <Table
-              data={
-                (isLoading?.data as Array<unknown>)?.map(
-                  (company, index: number) => {
-                    return {
-                      ...company,
-                      no: index + 1,
-                    };
-                  }
-                ) || []
-              }
-              columns={columns}
-              showFilter={false}
+              data={companiesList?.map((company: Business, index) => {
+                return {
+                  ...company,
+                  companyName: company?.companyName?.toUpperCase(),
+                  no: index + pagination.page,
+                  createdAt: formatDate(company.createdAt),
+                };
+              })}
+              columns={columns as unknown as AccessorKeyColumnDefBase<Business>}
             />
-            <menu className="w-full flex items-center justify-center">
+            <menu className="w-full flex items-center justify-center mt-6">
               <Button
                 styled={false}
                 route="/services"
@@ -334,30 +275,6 @@ const SearchCompanies = () => {
               />
             </menu>
           </section>
-          <menu
-            className={
-              isLoading?.data && searchType === 'tin'
-                ? 'w-[40%] mx-auto flex flex-col items-center gap-3 justify-between mt-6'
-                : 'hidden'
-            }
-          >
-            <Button
-              value={isLoading?.submit ? <Loader /> : 'Request full info'}
-              primary
-              submit
-              className="!w-full"
-            />
-            <Button
-              styled={false}
-              route="/services"
-              value={
-                <menu className="flex items-center gap-2">
-                  <FontAwesomeIcon icon={faArrowLeft} />
-                  Back
-                </menu>
-              }
-            />
-          </menu>
         </form>
       </main>
     </UserLayout>

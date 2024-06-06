@@ -11,7 +11,6 @@ import Table from '../../components/table/Table';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { setViewedCompany } from '../../states/features/userCompaniesSlice';
 import { capitalizeString } from '../../helpers/strings';
 import { countriesList } from '../../constants/countries';
 import Button from '../../components/inputs/Button';
@@ -41,13 +40,7 @@ const CompanyDetails = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (id) {
-      dispatch(
-        setViewedCompany(
-          user_applications?.find(
-            (business: { entry_id: string }) => business.entry_id === id
-          )
-        )
-      );
+console.log(id)
     }
 
     return () => {
