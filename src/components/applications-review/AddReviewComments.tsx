@@ -20,18 +20,18 @@ export type ReviewComment = {
   tab: TabType;
   createdAt: string;
   updatedAt?: string;
-  entry_id?: string | null;
+  entryId?: string | null;
   checked?: boolean;
 };
 
 interface AddReviewCommentsProps {
-  entry_id?: string | null;
+  entryId?: string | null;
   activeStep: Step;
   activeTab: TabType;
 }
 
 const AddReviewComments: FC<AddReviewCommentsProps> = ({
-  entry_id,
+  entryId,
   activeStep,
   activeTab,
 }) => {
@@ -60,7 +60,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       const commentExists = applicationReviewComments?.find(
         (business_comment: ReviewComment) =>
           business_comment?.step?.name === activeStep?.name &&
-          business_comment?.entry_id === entry_id
+          business_comment?.entryId === entryId
       );
       if (commentExists) {
         setValue('comment', commentExists?.comment);
@@ -75,7 +75,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
     applicationReviewComments,
     setValue,
     addReviewCommentsModal,
-    entry_id,
+    entryId,
   ]);
 
 
@@ -87,7 +87,7 @@ const AddReviewComments: FC<AddReviewCommentsProps> = ({
       const newComment = {
         comment: data?.comment,
         step: activeStep,
-        entry_id,
+        entryId,
         tab: {
           name: activeTab?.name,
           label: activeTab?.label,

@@ -22,13 +22,13 @@ import { setUserApplications } from "../../../states/features/userApplicationSli
 import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface BusinessActivityProps {
-  entry_id: string | null;
+  entryId: string | null;
   enterprise_business_lines: any;
   status?: string;
 }
 
 const BusinessActivity = ({
-  entry_id,
+  entryId,
   enterprise_business_lines,
   status,
 }: BusinessActivityProps) => {
@@ -78,7 +78,7 @@ const BusinessActivity = ({
             enterprise_business_lines: selectedBusinessLines,
             step: { ...enterprise_registration_active_step },
           },
-          entry_id,
+          entryId,
         })
       );
 
@@ -376,7 +376,7 @@ const BusinessActivity = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
               }}
               primary

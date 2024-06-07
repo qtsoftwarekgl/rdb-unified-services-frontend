@@ -23,13 +23,13 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface BusinessActivityProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_company_activities: any;
   status?: string;
 }
 
 const BusinessActivity = ({
-  entry_id,
+  entryId,
   foreign_company_activities,
   status,
 }: BusinessActivityProps) => {
@@ -62,7 +62,7 @@ const BusinessActivity = ({
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_company_activities: {
             vat: data?.vat,
             turnover: data?.turnover,
@@ -184,7 +184,7 @@ const BusinessActivity = ({
                                             subActivity,
                                           ],
                                         },
-                                        entry_id,
+                                        entryId,
                                       })
                                     );
                                   } else {
@@ -194,7 +194,7 @@ const BusinessActivity = ({
                                           ...foreign_company_activities,
                                           business_lines: [subActivity],
                                         },
-                                        entry_id,
+                                        entryId,
                                       })
                                     );
                                   }
@@ -262,7 +262,7 @@ const BusinessActivity = ({
                                                 }
                                               ),
                                           },
-                                          entry_id,
+                                          entryId,
                                         })
                                       );
                                     }}
@@ -295,7 +295,7 @@ const BusinessActivity = ({
                                               }
                                             ),
                                         },
-                                        entry_id,
+                                        entryId,
                                       })
                                     );
                                     clearErrors("business_lines");
@@ -325,7 +325,7 @@ const BusinessActivity = ({
                                       ...foreign_company_activities,
                                       business_lines: updatedSubActivities,
                                     },
-                                    entry_id,
+                                    entryId,
                                   })
                                 );
                               }}
@@ -491,7 +491,7 @@ const BusinessActivity = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

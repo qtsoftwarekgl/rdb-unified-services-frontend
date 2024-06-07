@@ -238,7 +238,7 @@ export const nameReservationSlice = createSlice({
       state.reservedNames = state.reservedNames?.filter(
         (reserved: {
           name: string,
-          entry_id?: string
+          entryId?: string
         }) => reserved?.name !== action.payload
       );
       localStorage.setItem(

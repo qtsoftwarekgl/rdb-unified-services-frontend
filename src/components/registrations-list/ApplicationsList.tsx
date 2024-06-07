@@ -86,7 +86,7 @@ const ApplicatinsList = ({
     dispatch(setBusinessActiveStep("company_details"));
     dispatch(
       setUserApplications({
-        entry_id: row?.original?.entry_id,
+        entryId: row?.original?.entryId,
         status: "is_amending",
       })
     );

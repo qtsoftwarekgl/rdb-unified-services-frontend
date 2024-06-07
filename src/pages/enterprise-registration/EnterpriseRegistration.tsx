@@ -35,23 +35,23 @@ const EnterpriseRegistration = () => {
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entryId = queryParams.get("entryId");
   const dispatch = useDispatch();
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
   const current_application = user_applications?.find(
     (app: {
-      entry_id: string;
+      entryId: string;
       status: string;
       path: string;
       type: string;
       owner: string;
-    }) => app.entry_id === entry_id
+    }) => app.entryId === entryId
   );
 
   // APPLICATION STATUS
-  let status = "in_progress";
+  let status = "IN_PROGRESS";
   if (current_application) {
     status = current_application.status;
   }
@@ -62,15 +62,15 @@ const EnterpriseRegistration = () => {
   useEffect(() => {
     dispatch(
       setUserApplications({
-        entry_id,
+        entryId,
         status,
         createdAt: moment(Date.now()).format("DD/MM/YYYY"),
-        path: `/enterprise-registration?entry_id=${entry_id}`,
+        path: `/enterprise-registration?entryId=${entryId}`,
         type: "enterprise",
         owner: user?.email,
       })
     );
-  }, [entry_id, dispatch]);
+  }, [entryId, dispatch]);
 
   return (
     <UserLayout>
@@ -88,7 +88,7 @@ const EnterpriseRegistration = () => {
               <Tab
                 isOpen={isActiveTab}
                 steps={tab.steps}
-                key={`${String(index)}-${entry_id}`}
+                key={`${String(index)}-${entryId}`}
                 setActiveStep={setEnterpriseActiveStep}
                 active_tab={enterprise_registration_active_tab}
               >
@@ -96,7 +96,7 @@ const EnterpriseRegistration = () => {
                   <>
                     {activeStepName === "company_details" && (
                       <EnterpriseDetails
-                        entry_id={entry_id}
+                        entryId={entryId}
                         company_details={
                           current_application?.company_details || {}
                         }
@@ -105,7 +105,7 @@ const EnterpriseRegistration = () => {
                     )}
                     {activeStepName === "business_activity_vat" && (
                       <BusinessActivity
-                        entry_id={entry_id}
+                        entryId={entryId}
                         enterprise_business_lines={
                           current_application?.business_lines
                             ?.enterprise_business_lines || []
@@ -115,7 +115,7 @@ const EnterpriseRegistration = () => {
                     )}
                     {activeStepName === "office_address" && (
                       <OfficeAddress
-                        entry_id={entry_id}
+                        entryId={entryId}
                         enterprise_office_address={
                           current_application?.office_address || {}
                         }
@@ -124,14 +124,14 @@ const EnterpriseRegistration = () => {
                     )}
                     {activeStepName === "attachments" && (
                       <Attachments
-                        entry_id={entry_id}
+                        entryId={entryId}
                         enterprise_attachments={
                           current_application?.enterprise_attachments?.fileNames
                         }
                       />
                     )}
                     {activeStepName === "enterprise_preview_submission" && (
-                      <Preview entry_id={entry_id} status={status} />
+                      <Preview entryId={entryId} status={status} />
                     )}
                   </>
                 )}
@@ -143,7 +143,7 @@ const EnterpriseRegistration = () => {
           {RDBAdminEmailPattern.test(user?.email) && (
             <>
               <ReviewNavigation
-                entry_id={entry_id}
+                entryId={entryId}
                 setActiveStep={setEnterpriseActiveStep}
                 setActiveTab={setEnterpriseActiveTab}
                 tabs={enterprise_registration_tabs}
@@ -154,12 +154,12 @@ const EnterpriseRegistration = () => {
                 setApplication={setUserApplications}
               />
               <AddReviewComments
-                entry_id={entry_id}
+                entryId={entryId}
                 activeStep={enterprise_registration_active_step}
                 activeTab={enterprise_registration_active_tab}
               />
               <ListReviewComments
-                entry_id={entry_id}
+                entryId={entryId}
                 setActiveStep={setEnterpriseActiveStep}
                 setActiveTab={setEnterpriseActiveTab}
                 title="Enterprise Registration Review Comments"

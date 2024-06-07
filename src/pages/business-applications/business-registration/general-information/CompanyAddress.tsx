@@ -36,14 +36,14 @@ export interface business_company_address {
 interface CompanyAddressProps {
   isOpen: boolean;
   company_address: business_company_address | null;
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
   isOpen,
   company_address,
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -85,8 +85,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
-          status: 'in_progress',
+          entryId,
+          status: 'IN_PROGRESS',
           active_tab: 'general_information',
           active_step: 'business_activity_vat',
           company_address: {
@@ -461,7 +461,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             />
           </menu>
           {[
-            'in_progress',
+            'IN_PROGRESS',
             'action_required',
             'is_amending',
             'in_preview',
@@ -501,7 +501,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   primary
                   onClick={() => {
                     dispatch(
-                      setUserApplications({ entry_id, status: 'in_preview' })
+                      setUserApplications({ entryId, status: 'in_preview' })
                     );
 
                     setIsLoading({
@@ -527,7 +527,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     amend: false,
                   });
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_progress' })
+                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
                 }}
                 primary

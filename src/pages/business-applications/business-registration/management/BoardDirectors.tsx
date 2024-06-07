@@ -43,14 +43,14 @@ export interface business_board_of_directors {
 interface BoardDirectorsProps {
   isOpen: boolean;
   board_of_directors: business_board_of_directors[];
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const BoardDirectors: FC<BoardDirectorsProps> = ({
   isOpen,
   board_of_directors = [],
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -116,7 +116,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       setIsLoading(false);
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           active_step: 'senior_management',
           active_tab: 'management',
           board_of_directors: [
@@ -218,7 +218,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                       e.preventDefault();
                       dispatch(
                         setUserApplications({
-                          entry_id,
+                          entryId,
                           board_of_directors: board_of_directors?.filter(
                             (director: business_board_of_directors) => {
                               return director?.id !== row?.original?.id;
@@ -884,7 +884,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
             </p>
           )}
           {[
-            'in_progress',
+            'IN_PROGRESS',
             'action_required',
             'in_preview',
             'is_amending',
@@ -980,7 +980,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                     return;
                   }
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_progress' })
+                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
                   dispatch(setBusinessCompletedStep('board_of_directors'));
                   dispatch(setBusinessActiveTab('management'));

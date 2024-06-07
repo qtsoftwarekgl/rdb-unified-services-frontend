@@ -63,7 +63,7 @@ const DeleteBusinessApplication = () => {
             setIsLoading(true);
             setTimeout(() => {
               setIsLoading(false);
-              dispatch(deleteUserApplication(selectedApplication?.entry_id));
+              dispatch(deleteUserApplication(selectedApplication?.entryId));
               dispatch(setDeleteApplicationModal(false));
             }, 1000);
           }}

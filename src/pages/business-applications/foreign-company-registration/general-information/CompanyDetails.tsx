@@ -22,13 +22,13 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface CompanyDetailsProps {
-  entry_id: string | null;
+  entryId: string | null;
   company_details: any;
   status: string;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
-  entry_id,
+  entryId,
   company_details,
   status,
 }) => {
@@ -65,7 +65,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           company_details: {
             ...company_details,
             name: data?.name,
@@ -494,7 +494,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

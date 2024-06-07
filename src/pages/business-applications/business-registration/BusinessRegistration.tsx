@@ -37,7 +37,7 @@ const BusinessRegistration = () => {
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get('entry_id');
+  const entryId = queryParams.get('entryId');
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -52,12 +52,12 @@ const BusinessRegistration = () => {
   const { user } = useSelector((state: RootState) => state.user);
   const businessApplication = user_applications?.find(
     (app: {
-      entry_id: string;
+      entryId: string;
       status: string;
       path: string;
       type: string;
       owner: string;
-    }) => app?.entry_id === entry_id
+    }) => app?.entryId === entryId
   );
   const { applicationReviewStepName, applicationReviewTabName } = useSelector(
     (state: RootState) => state.applicationReview
@@ -73,7 +73,7 @@ const BusinessRegistration = () => {
   }, [dispatch, business_active_step, business_active_tab]);
 
   // APPLICATION STATUS
-  let status = businessApplication?.status || 'in_progress';
+  let status = businessApplication?.status || 'IN_PROGRESS';
   if (businessApplication) {
     status = businessApplication.status;
   }
@@ -82,12 +82,12 @@ const BusinessRegistration = () => {
   }
 
   useEffect(() => {
-    if (entry_id) {
+    if (entryId) {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           status,
-          path: `/business-registration?entry_id=${entry_id}`,
+          path: `/business-registration?entryId=${entryId}`,
           type: 'business_registration',
           owner: user?.email,
         })
@@ -95,7 +95,7 @@ const BusinessRegistration = () => {
     } else {
       navigate('/business-registration/new');
     }
-  }, [dispatch, entry_id, navigate, status, user?.email]);
+  }, [dispatch, entryId, navigate, status, user?.email]);
 
   return (
     <UserLayout>
@@ -110,14 +110,14 @@ const BusinessRegistration = () => {
               <Tab
                 isOpen={tab?.active}
                 steps={tab?.steps}
-                key={`${String(index)}-${entry_id}`}
+                key={`${String(index)}-${entryId}`}
                 setActiveStep={setBusinessActiveStep}
                 active_tab={business_active_tab}
               >
                 {/* COMPANY DETAILS */}
                 {business_active_step?.name === 'company_details' && (
                   <CompanyDetails
-                    entry_id={entry_id}
+                    entryId={entryId}
                     isOpen={business_active_step?.name === 'company_details'}
                     company_details={businessApplication?.company_details}
                     status={status}
@@ -128,7 +128,7 @@ const BusinessRegistration = () => {
                   <CompanyAddress
                     isOpen={business_active_step?.name === 'company_address'}
                     company_address={businessApplication?.company_address}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -139,7 +139,7 @@ const BusinessRegistration = () => {
                       business_active_step?.name === 'business_activity_vat'
                     }
                     company_activities={businessApplication?.company_activities}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -149,7 +149,7 @@ const BusinessRegistration = () => {
                   <BoardDirectors
                     isOpen={business_active_step?.name === 'board_of_directors'}
                     board_of_directors={businessApplication?.board_of_directors}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -159,7 +159,7 @@ const BusinessRegistration = () => {
                   <SeniorManagement
                     isOpen={business_active_step?.name === 'senior_management'}
                     senior_management={businessApplication?.senior_management}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -169,7 +169,7 @@ const BusinessRegistration = () => {
                   <EmploymentInfo
                     isOpen={business_active_step?.name === 'employment_info'}
                     employment_info={businessApplication?.employment_info}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -179,7 +179,7 @@ const BusinessRegistration = () => {
                   <ShareDetails
                     isOpen={business_active_step?.name === 'share_details'}
                     share_details={businessApplication?.share_details}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -189,7 +189,7 @@ const BusinessRegistration = () => {
                   <ShareHolders
                     isOpen={business_active_step?.name === 'shareholders'}
                     shareholders={businessApplication?.shareholders}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -199,7 +199,7 @@ const BusinessRegistration = () => {
                   <CapitalDetails
                     isOpen={business_active_step?.name === 'capital_details'}
                     capital_details={businessApplication?.capital_details}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     share_details={businessApplication?.share_details}
                     shareholders={businessApplication?.shareholders}
                     status={status}
@@ -211,7 +211,7 @@ const BusinessRegistration = () => {
                   <BeneficialOwners
                     isOpen={business_active_step?.name === 'beneficial_owners'}
                     beneficial_owners={businessApplication?.beneficial_owners}
-                    entry_id={entry_id}
+                    entryId={entryId}
                     status={status}
                   />
                 )}
@@ -223,7 +223,7 @@ const BusinessRegistration = () => {
                     company_attachments={
                       businessApplication?.company_attachments
                     }
-                    entry_id={entry_id}
+                    entryId={entryId}
                     company_details={businessApplication?.company_details}
                     status={status}
                   />
@@ -244,7 +244,7 @@ const BusinessRegistration = () => {
         {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <AddReviewComments
-              entry_id={entry_id}
+              entryId={entryId}
               activeStep={business_registration_tabs
                 ?.flatMap((tab: TabType) => tab?.steps)
                 ?.find(
@@ -255,7 +255,7 @@ const BusinessRegistration = () => {
               )}
             />
             <ListReviewComments
-              entry_id={entry_id}
+              entryId={entryId}
               setActiveStep={setBusinessActiveStep}
               setActiveTab={setBusinessActiveTab}
               title="Business Registration Review Comments"

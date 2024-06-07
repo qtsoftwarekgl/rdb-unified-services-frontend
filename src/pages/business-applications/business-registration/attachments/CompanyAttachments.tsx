@@ -32,7 +32,7 @@ export interface business_company_attachments {
 interface CompanyAttachmentsProps {
   isOpen: boolean;
   company_attachments: business_company_attachments[];
-  entry_id: string | null;
+  entryId: string | null;
   company_details: business_company_details;
   status: string;
 }
@@ -40,7 +40,7 @@ interface CompanyAttachmentsProps {
 const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
   isOpen,
   company_attachments = [],
-  entry_id,
+  entryId,
   company_details,
   status,
 }) => {
@@ -131,7 +131,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           active_tab: 'preview_submission',
           active_step: 'preview_submission',
           company_attachments: {
@@ -530,7 +530,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
             )}
           </menu>
           {[
-            'in_progress',
+            'IN_PROGRESS',
             'is_amending',
             'in_preview',
             'action_required',

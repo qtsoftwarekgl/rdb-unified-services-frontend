@@ -34,14 +34,14 @@ export interface business_company_details {
 
 interface CompanyDetailsProps {
   isOpen: boolean;
-  entry_id: string | null;
+  entryId: string | null;
   company_details: business_company_details | null;
   status: string;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
   isOpen,
-  entry_id,
+  entryId,
   company_details,
   status,
 }) => {
@@ -96,10 +96,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
 
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           active_tab: "general_information",
           active_step: "company_address",
-          status: "in_progress",
+          status: "IN_PROGRESS",
           company_details: {
             ...company_details,
             name: data?.name,
@@ -410,7 +410,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
               }}
             />
           </menu>
-          {['in_progress', 'in_preview', 'action_required', 'is_amending'].includes(
+          {['IN_PROGRESS', 'in_preview', 'action_required', 'is_amending'].includes(
             status
           ) && (
             <menu
@@ -480,7 +480,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                     preview: false,
                   });
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_progress' })
+                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
                 }}
                 submit

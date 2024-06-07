@@ -116,8 +116,8 @@ const CompanyDormancy = () => {
                     options={user_applications?.map((application) => {
                       return {
                         ...application,
-                        value: application?.entry_id,
-                        label: `${application?.entry_id
+                        value: application?.entryId,
+                        label: `${application?.entryId
                           ?.split('-')[0]
                           ?.toUpperCase()} - ${
                           application?.company_details?.name

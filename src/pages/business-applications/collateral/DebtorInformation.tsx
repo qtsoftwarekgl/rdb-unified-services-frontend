@@ -20,11 +20,11 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 
 type Props = {
-  entry_id: string | null;
+  entryId: string | null;
   debtor_info: any;
 };
 
-const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
+const DebtorInformation: FC<Props> = ({ entryId, debtor_info }) => {
   const {
     control,
     handleSubmit,
@@ -53,7 +53,7 @@ const DebtorInformation: FC<Props> = ({ entry_id, debtor_info }) => {
       setIsLoading(false);
       dispatch(
         setCollateralApplications({
-          entry_id,
+          entryId,
           debtor_info: {
             ...filterObject(data),
           },

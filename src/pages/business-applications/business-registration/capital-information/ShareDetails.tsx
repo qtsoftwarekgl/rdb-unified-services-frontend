@@ -29,14 +29,14 @@ export interface business_share_details {
 interface ShareDetailsProps {
   isOpen: boolean;
   share_details: business_share_details;
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const ShareDetails: FC<ShareDetailsProps> = ({
   isOpen,
   share_details,
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -155,7 +155,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
 
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           share_details: {
             company_capital: data?.company_capital,
             remaining_capital: data?.company_capital,
@@ -327,7 +327,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
           </table>
         </fieldset>
         {[
-          'in_progress',
+          'IN_PROGRESS',
           'action_required',
           'in_preview',
           'is_amending',
@@ -391,7 +391,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
               }}
               submit

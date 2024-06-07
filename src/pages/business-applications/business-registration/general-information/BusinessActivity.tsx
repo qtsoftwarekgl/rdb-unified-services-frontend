@@ -30,14 +30,14 @@ export interface business_company_activities {
 interface BusinessActivityProps {
   isOpen: boolean;
   company_activities: business_company_activities;
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const BusinessActivity: FC<BusinessActivityProps> = ({
   isOpen,
   company_activities,
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -106,7 +106,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           active_tab: 'management',
           active_step: 'board_of_directors',
           company_activities: {
@@ -434,7 +434,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
             </menu>
           </section>
           {[
-            'in_progress',
+            'IN_PROGRESS',
             'in_preview',
             'action_required',
             'is_amending',
@@ -479,7 +479,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                       preview: true,
                     });
                     dispatch(
-                      setUserApplications({ entry_id, status: 'in_preview' })
+                      setUserApplications({ entryId, status: 'in_preview' })
                     );
                   }}
                   submit
@@ -498,7 +498,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                     preview: false,
                   });
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_progress' })
+                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
                 }}
                 submit

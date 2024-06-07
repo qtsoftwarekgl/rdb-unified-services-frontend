@@ -52,7 +52,7 @@ export const NewRegistration = ({
   const applicationsInProgress = user_applications
     .filter(
       (app: any) =>
-        app.status === 'in_progress' && app.type === 'business_registration'
+        app.status === 'IN_PROGRESS' && app.type === 'business_registration'
     )
     .map((business: any) => {
       return {
@@ -62,10 +62,10 @@ export const NewRegistration = ({
         status: capitalizeString(business?.status),
         id:
           business?.id ||
-          business?.entry_id ||
+          business?.entryId ||
           Math.floor(Math.random() * 9000) + 1000,
         reference_no: `REG-${(
-          business?.entry_id?.split('-')[0] || ''
+          business?.entryId?.split('-')[0] || ''
         ).toUpperCase()}`,
         service_name: capitalizeString(business?.type),
         path: business?.path,
@@ -82,7 +82,7 @@ export const NewRegistration = ({
         active_step: string;
         active_tab: string;
         path: string;
-        entry_id: string;
+        entryId: string;
       };
     };
   }) {
@@ -266,7 +266,7 @@ const NewBusinessRegistration = () => {
       description="You are going to start a business registration process which
       involves 6 steps. Below you will find a list of all documents you will be required to submit during the application process. Feel free to pause the process and
       resume whenever is convenient for you. Your progress will be saved automatically."
-      path={`/business-registration?entry_id=${generateUUID()}`}
+      path={`/business-registration?entryId=${generateUUID()}`}
       setActiveStep={setBusinessActiveStep}
       setActiveTab={setBusinessActiveTab}
     />

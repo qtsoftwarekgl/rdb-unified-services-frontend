@@ -19,7 +19,7 @@ import CollateralForm from "./CollateralForm";
 import { integerToWords } from "@/constants/integerToWords";
 
 type Props = {
-  entry_id: string | null;
+  entryId: string | null;
   collateral_infos: any;
   debtor_info: any;
   collateral_type: string;
@@ -28,7 +28,7 @@ type Props = {
 };
 
 const CollateralInformation = ({
-  entry_id,
+  entryId,
   collateral_infos,
   debtor_info,
   collateral_type,
@@ -102,7 +102,7 @@ const CollateralInformation = ({
       setSubmitSuccessful(false);
       dispatch(
         setCollateralApplications({
-          entry_id,
+          entryId,
           loan_amount: data.loan_amount,
           loan_amount_in_words: data.loan_amount_in_words,
         })
@@ -117,7 +117,7 @@ const CollateralInformation = ({
   return (
     <section className="flex flex-col gap-8 max-md:w-full">
       <CollateralForm
-        entry_id={entry_id}
+        entryId={entryId}
         collateral_infos={collateral_infos}
         debtor_info={debtor_info}
         collateral_type={collateral_type}
@@ -257,7 +257,7 @@ const CollateralInformation = ({
           );
           dispatch(
             setCollateralApplications({
-              entry_id,
+              entryId,
               collateral_infos: updatedData,
             })
           );

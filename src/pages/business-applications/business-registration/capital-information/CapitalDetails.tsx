@@ -39,7 +39,7 @@ export interface business_capital_details {
 interface CapitalDetailsProps {
   isOpen: boolean;
   capital_details: business_capital_details[];
-  entry_id: string | null;
+  entryId: string | null;
   share_details: business_share_details;
   shareholders: business_shareholders[];
   status: string;
@@ -48,7 +48,7 @@ interface CapitalDetailsProps {
 const CapitalDetails: FC<CapitalDetailsProps> = ({
   isOpen,
   capital_details = [],
-  entry_id,
+  entryId,
   share_details,
   shareholders = [],
   status,
@@ -154,13 +154,13 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 if (disableForm) return;
                 dispatch(
                   setUserApplications({
-                    entry_id,
+                    entryId,
                     share_details,
                   })
                 );
                 dispatch(
                   setUserApplications({
-                    entry_id,
+                    entryId,
                     capital_details: capital_details?.filter(
                       (capital) => capital?.id !== row?.original?.id
                     ),
@@ -217,7 +217,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         ?.filter((item) => item !== null);
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           capital_details: [
             ...filteredShareholders,
             ...capital_details,
@@ -295,7 +295,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       <CapitalDetailsModal
         capital_details={capital_details}
         share_details={share_details}
-        entry_id={entry_id}
+        entryId={entryId}
         shareholder={shareholderShareDetails}
       />
       <section className="flex flex-col gap-4">
@@ -340,7 +340,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           </ul>
         </menu>
       </section>
-      {['in_progress', 'is_amending', 'in_preview', 'action_required'].includes(
+      {['IN_PROGRESS', 'is_amending', 'in_preview', 'action_required'].includes(
         status
       ) && (
         <menu
@@ -399,7 +399,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   dispatch(setBusinessActiveTab(active_tab));
                   dispatch(
                     setUserApplications({
-                      entry_id,
+                      entryId,
                       active_step,
                       active_tab,
                     })
@@ -453,7 +453,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   dispatch(setBusinessActiveTab(active_tab));
                   dispatch(
                     setUserApplications({
-                      entry_id,
+                      entryId,
                       active_step,
                       active_tab,
                     })
@@ -500,7 +500,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 dispatch(setBusinessActiveTab('beneficial_owners'));
                 dispatch(
                   setUserApplications({
-                    entry_id,
+                    entryId,
                     active_step: 'beneficial_owners',
                     active_tab: 'beneficial_owners',
                   })

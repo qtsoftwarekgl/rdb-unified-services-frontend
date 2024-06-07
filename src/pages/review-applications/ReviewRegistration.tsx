@@ -31,7 +31,7 @@ const ReviewRegistration = () => {
   };
 
   let applications = user_applications
-    ?.filter((application: business_application) => application?.status !== 'in_progress')
+    ?.filter((application: business_application) => application?.status !== 'IN_PROGRESS')
     ?.map(formatCompanyData)
     .sort(sortBySubmissionDate);
 

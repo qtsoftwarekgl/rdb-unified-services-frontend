@@ -59,12 +59,12 @@ const SelectReservedName: FC<SelectReservedNameProps> = ({
       dispatch(setActiveTab("general_information"));
       dispatch(
         setUserApplications({
-          entry_id: path?.split("=")[1],
+          entryId: path?.split("=")[1],
           company_details: {
             name: data?.name_reservation,
             name_reserved: true,
           },
-          status: "in_progress",
+          status: "IN_PROGRESS",
         })
       );
       dispatch(setSelectReservedNameModal(false));

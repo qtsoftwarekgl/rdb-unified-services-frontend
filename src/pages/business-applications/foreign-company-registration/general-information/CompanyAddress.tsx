@@ -18,13 +18,13 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface CompanyAddressProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_company_address: any;
   status?: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
-  entry_id,
+  entryId,
   foreign_company_address,
   status,
 }) => {
@@ -66,7 +66,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_company_address: {
             ...data,
             step: "foreign_company_address",
@@ -363,7 +363,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

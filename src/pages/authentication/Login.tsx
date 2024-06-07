@@ -66,7 +66,7 @@ const Login = () => {
       if ((loginError as ErrorResponse)?.status === 500) {
         toast.error("Internal server error");
       } else {
-        toast.error((loginError as ErrorResponse)?.data.message);
+        toast.error((loginError as ErrorResponse)?.data?.message);
       }
     } else if (loginIsSuccess) {
       toast.success("Login successful. Redirecting...");

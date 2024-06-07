@@ -22,7 +22,7 @@ export const userApplicationsSlice = createSlice({
     setUserApplications: (state, action) => {
       // create user application entry if not exist
       const userApplicationIndex = state.user_applications?.findIndex(
-        (app) => app?.entry_id === action?.payload?.entry_id
+        (app) => app?.entryId === action?.payload?.entryId
       );
 
       if (userApplicationIndex === -1)
@@ -64,7 +64,7 @@ export const userApplicationsSlice = createSlice({
       const commentIndex = updatedComments?.findIndex(
         (comment) =>
           comment?.step?.name === action.payload?.step?.name &&
-          comment?.entry_id === action.payload?.entry_id
+          comment?.entryId === action.payload?.entryId
       );
       if (commentIndex !== -1) {
         updatedComments[commentIndex] = action.payload;
@@ -82,7 +82,7 @@ export const userApplicationsSlice = createSlice({
       const commentIndex = updatedComments?.findIndex(
         (comment) =>
           comment?.step?.name === action.payload?.step?.name &&
-          comment?.entry_id === action.payload?.entry_id
+          comment?.entryId === action.payload?.entryId
       );
       if (commentIndex !== -1) {
         updatedComments[commentIndex] = action.payload;
@@ -103,7 +103,7 @@ export const userApplicationsSlice = createSlice({
     // DELETE USER APPLICATION
     deleteUserApplication: (state, action) => {
       state.user_applications = state.user_applications.filter(
-        (app) => app?.entry_id !== action.payload
+        (app) => app?.entryId !== action.payload
       );
     },
 

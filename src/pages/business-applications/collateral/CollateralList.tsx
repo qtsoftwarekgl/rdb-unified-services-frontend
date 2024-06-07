@@ -37,7 +37,7 @@ const CollateralList = () => {
   const hasComments = (applicationId: string) => {
     return applicationReviewComments.some(
       (comment: ReviewComment) =>
-        comment?.entry_id === applicationId && !comment?.checked
+        comment?.entryId === applicationId && !comment?.checked
     );
   };
 
@@ -55,7 +55,7 @@ const CollateralList = () => {
         debtor: app?.debtor_info?.debtor_names,
         status: app?.status,
         createdAt: app?.createdAt,
-        entry_id: app?.entry_id,
+        entryId: app?.entryId,
       };
     });
   const columns = [
@@ -105,14 +105,14 @@ const CollateralList = () => {
       cell: ({ row }) => {
         return (
           <menu className="flex items-center gap-2 cursor-pointer">
-            {hasComments(row?.original?.entry_id) ? (
+            {hasComments(row?.original?.entryId) ? (
               <Button
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setCollateralActiveTab("debtor_information"));
                   dispatch(setCollateralActiveStep("debtor_information"));
                   navigate(
-                    `/admin/collateral?entry_id=${row?.original?.entry_id}`
+                    `/admin/collateral?entryId=${row?.original?.entryId}`
                   );
                 }}
                 value="Resolve Comments"
@@ -126,7 +126,7 @@ const CollateralList = () => {
                   dispatch(setCollateralActiveTab("debtor_information"));
                   dispatch(setCollateralActiveStep("debtor_information"));
                   navigate(
-                    `/admin/collateral?entry_id=${row?.original?.entry_id}`
+                    `/admin/collateral?entryId=${row?.original?.entryId}`
                   );
                 }}
                 value="View"
@@ -192,17 +192,17 @@ const NewCollateralType = ({
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      const entry_id = generateUUID();
+      const entryId = generateUUID();
       dispatch(
         setCollateralApplications({
           collateral_type: data.collateral_type,
-          entry_id,
+          entryId,
           creditor: bankData[Math.floor(Math.random() * 3)],
         })
       );
       dispatch(setCollateralActiveTab("debtor_information"));
       dispatch(setCollateralActiveStep("debtor_information"));
-      navigate(`/admin/collateral?entry_id=${entry_id}`);
+      navigate(`/admin/collateral?entryId=${entryId}`);
     }, 1000);
   };
 

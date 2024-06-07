@@ -62,14 +62,14 @@ export interface business_beneficial_owners {
 interface BeneficialOwnersProps {
   isOpen: boolean;
   beneficial_owners: business_beneficial_owners[];
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const BeneficialOwners: FC<BeneficialOwnersProps> = ({
   isOpen,
   beneficial_owners = [],
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -120,7 +120,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
       setIsLoading(false);
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           beneficial_owners: [{ ...data }, ...beneficial_owners],
         })
       );
@@ -223,7 +223,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       );
                       dispatch(
                         setUserApplications({
-                          entry_id,
+                          entryId,
                           beneficial_owners: newBeneficialOwners,
                         })
                       );
@@ -1645,7 +1645,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           showPagination={false}
         />
       </section>
-      {['in_progress', 'action_required', 'in_preview', 'is_amending'].includes(
+      {['IN_PROGRESS', 'action_required', 'in_preview', 'is_amending'].includes(
         status
       ) && (
         <menu
@@ -1670,7 +1670,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 dispatch(setBusinessActiveTab('preview_submission'));
                 dispatch(
                   setUserApplications({
-                    entry_id,
+                    entryId,
                     active_tab: 'preview_submission',
                     active_step: 'preview_submission',
                   })
@@ -1690,7 +1690,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 dispatch(setBusinessActiveTab('preview_submission'));
                 dispatch(
                   setUserApplications({
-                    entry_id,
+                    entryId,
                     active_tab: 'preview_submission',
                     active_step: 'preview_submission',
                   })
@@ -1709,10 +1709,10 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               dispatch(setBusinessActiveTab('attachments'));
               dispatch(
                 setUserApplications({
-                  entry_id,
+                  entryId,
                   active_tab: 'attachments',
                   active_step: 'attachments',
-                  status: 'in_progress',
+                  status: 'IN_PROGRESS',
                 })
               );
             }}

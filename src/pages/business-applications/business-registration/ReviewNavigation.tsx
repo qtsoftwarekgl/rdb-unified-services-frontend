@@ -29,7 +29,7 @@ interface ReviewNavigationProps {
   activeStep: Step;
   setActiveTab: (tab: string) => UnknownAction;
   setActiveStep: (string: string) => UnknownAction;
-  entry_id: string | null;
+  entryId: string | null;
   last_step: string;
   first_step: string;
   redirectUrl: string;
@@ -42,7 +42,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
   activeStep,
   setActiveTab,
   setActiveStep,
-  entry_id,
+  entryId,
   last_step,
   first_step,
   setApplication,
@@ -111,7 +111,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
         />
         <ul className="flex items-center gap-3">
           {applicationReviewComments?.filter(
-            (comment: ReviewComment) => comment?.entry_id === entry_id
+            (comment: ReviewComment) => comment?.entryId === entryId
           )?.length > 0 ? (
             <Button
               value={
@@ -126,7 +126,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   setIsLoading({ ...isLoading, complete_review: false });
                   dispatch(
                     setApplication({
-                      entry_id,
+                      entryId,
                       status: user?.email.includes('infoapprover@rdb')
                         ? 'approved'
                         : 'action_required',
@@ -152,7 +152,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
               disabled={
                 !activeStep?.name.includes(last_step) ||
                 applicationReviewComments?.filter(
-                  (comment: ReviewComment) => comment?.entry_id === entry_id
+                  (comment: ReviewComment) => comment?.entryId === entryId
                 )?.length > 0
               }
               onClick={(e) => {
@@ -162,7 +162,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                   setIsLoading({ ...isLoading, recommend_approval: false });
                   dispatch(
                     setApplication({
-                      entry_id,
+                      entryId,
                       status: user?.email?.includes('infoverifier@rdb')
                         ? 'pending_approval'
                         : 'approved',
@@ -184,7 +184,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                 setIsLoading({ ...isLoading, decline: false });
                 dispatch(
                   setApplication({
-                    entry_id,
+                    entryId,
                     status: 'rejected',
                   })
                 );

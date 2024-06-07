@@ -57,7 +57,7 @@ const BusinessNewBranch = () => {
       setValue(
         'company_activities',
         user_applications?.find(
-          (business) => business?.entry_id === watch('company')
+          (business) => business?.entryId === watch('company')
         )?.company_activities
       );
     }
@@ -129,12 +129,12 @@ const BusinessNewBranch = () => {
                     label="Select company"
                     required
                     options={user_applications
-                      ?.filter((app) => app?.status !== 'in_progress')
+                      ?.filter((app) => app?.status !== 'IN_PROGRESS')
                       ?.map((business) => {
                         return {
                           ...business,
-                          value: business?.entry_id,
-                          label: `${business?.entry_id
+                          value: business?.entryId,
+                          label: `${business?.entryId
                             ?.split('-')[0]
                             ?.toUpperCase()} - ${
                             business?.company_details?.name

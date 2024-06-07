@@ -28,7 +28,7 @@ interface PreviewCardProps {
   children: ReactNode;
   stepName: string;
   tabName: string;
-  entry_id?: string | null;
+  entryId?: string | null;
   status: string;
 }
 
@@ -39,7 +39,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   setActiveStep,
   stepName,
   tabName,
-  entry_id,
+  entryId,
   status,
 }) => {
   // STATE VARIABLES
@@ -58,10 +58,10 @@ const PreviewCard: FC<PreviewCardProps> = ({
         (comment: ReviewComment) =>
           comment?.step.name === stepName &&
           comment?.tab.name === tabName &&
-          comment?.entry_id === entry_id
+          comment?.entryId === entryId
       )
     );
-  }, [applicationReviewComments, entry_id, stepName, tabName]);
+  }, [applicationReviewComments, entryId, stepName, tabName]);
 
   // ADD/UPDATE COMMENT
   const handleAddComment = () => {
@@ -98,7 +98,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 dispatch(setActiveStep(stepName));
                 dispatch(setActiveTab(tabName));
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_preview' })
+                  setUserApplications({ entryId, status: 'in_preview' })
                 );
               }}
               className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"

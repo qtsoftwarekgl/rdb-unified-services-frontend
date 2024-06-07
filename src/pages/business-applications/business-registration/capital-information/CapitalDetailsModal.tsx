@@ -16,14 +16,14 @@ import { RDBAdminEmailPattern } from '../../../../constants/Users';
 
 interface CapitalDetailsModalProps {
   shareholder: object | null;
-  entry_id: string | null;
+  entryId: string | null;
   capital_details: business_capital_details[];
   share_details: business_share_details;
 }
 
 const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
   shareholder,
-  entry_id,
+  entryId,
   capital_details,
   share_details,
 }) => {
@@ -71,7 +71,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
       setIsLoading(false);
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           capital_details: capital_details?.map((capital) => {
             if (capital?.shareholder_id === shareholder?.shareholder_id) {
               return {
@@ -93,7 +93,7 @@ const CapitalDetailsModal: FC<CapitalDetailsModalProps> = ({
       );
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           share_details: {
             ...share_details,
             remaining_capital:

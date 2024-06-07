@@ -42,14 +42,14 @@ export interface business_senior_management {
 interface SeniorManagementProps {
   isOpen: boolean;
   senior_management: business_senior_management[];
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const SeniorManagement: FC<SeniorManagementProps> = ({
   isOpen,
   senior_management = [],
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -115,7 +115,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
       clearErrors('submit');
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           active_tab: 'management',
           active_step: 'employment_info',
           senior_management: [
@@ -218,7 +218,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       e.preventDefault();
                       dispatch(
                         setUserApplications({
-                          entry_id,
+                          entryId,
                           senior_management: senior_management?.filter(
                             (manager: business_senior_management) => {
                               return manager?.id !== row?.original?.id;
@@ -871,7 +871,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           </section>
           {[
             'in_preview',
-            'in_progress',
+            'IN_PROGRESS',
             'is_amending',
             'action_required',
           ].includes(status) && (
@@ -948,7 +948,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                     return;
                   }
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_progress' })
+                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
                   dispatch(setBusinessCompletedStep('senior_management'));
                   dispatch(setBusinessActiveStep('employment_info'));

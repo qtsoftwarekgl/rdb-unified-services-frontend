@@ -22,13 +22,13 @@ import { cellsList } from "../../../constants/cells";
 import { villagesList } from "../../../constants/villages";
 
 interface OfficeAddressProps {
-  entry_id: string | null;
+  entryId: string | null;
   enterprise_office_address: any;
   status?: string;
 }
 
 const OfficeAddress = ({
-  entry_id,
+  entryId,
   enterprise_office_address,
   status,
 }: OfficeAddressProps) => {
@@ -75,7 +75,7 @@ const OfficeAddress = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           office_address: {
             ...data,
             step: { ...enterprise_registration_active_step },
@@ -110,7 +110,7 @@ const OfficeAddress = ({
   const resetCompanyLocation = () => {
     dispatch(
       setUserApplications({
-        entry_id,
+        entryId,
         office_address: {
           ...enterprise_office_address,
           province: "",
@@ -626,7 +626,7 @@ const OfficeAddress = ({
                     return;
                   }
                   dispatch(
-                    setUserApplications({ entry_id, status: "in_preview" })
+                    setUserApplications({ entryId, status: "in_preview" })
                   );
 
                   setIsLoading({
@@ -655,7 +655,7 @@ const OfficeAddress = ({
                 });
                 if ((['in_preview', 'action_required'].includes(status)))
                   dispatch(
-                    setUserApplications({ entry_id, status: "in_progress" })
+                    setUserApplications({ entryId, status: "IN_PROGRESS" })
                   );
               }}
               primary

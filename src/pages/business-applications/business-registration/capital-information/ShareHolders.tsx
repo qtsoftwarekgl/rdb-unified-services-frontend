@@ -52,14 +52,14 @@ export interface business_shareholders {
 interface ShareHoldersProps {
   isOpen: boolean;
   shareholders: business_shareholders[];
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const ShareHolders: FC<ShareHoldersProps> = ({
   isOpen,
   shareholders = [],
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -107,7 +107,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           shareholders: [
             {
               ...data,
@@ -209,7 +209,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                       e.preventDefault();
                       dispatch(
                         setUserApplications({
-                          entry_id,
+                          entryId,
                           shareholders: shareholders?.filter(
                             (shareholder: business_shareholders) => {
                               return shareholder?.id !== row?.original?.id;
@@ -1335,7 +1335,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
             />
           </section>
           {[
-            'in_progress',
+            'IN_PROGRESS',
             'is_amending',
             'in_preview',
             'action_required',
@@ -1367,7 +1367,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                     dispatch(setBusinessActiveTab(active_tab));
                     dispatch(
                       setUserApplications({
-                        entry_id,
+                        entryId,
                         active_tab,
                         active_step,
                       })
@@ -1392,7 +1392,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                     dispatch(setBusinessActiveTab(active_tab));
                     dispatch(
                       setUserApplications({
-                        entry_id,
+                        entryId,
                         active_tab,
                         active_step,
                       })
@@ -1412,10 +1412,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   dispatch(setBusinessActiveTab('capital_information'));
                   dispatch(
                     setUserApplications({
-                      entry_id,
+                      entryId,
                       active_tab: 'capital_information',
                       active_step: 'capital_details',
-                      status: 'in_progress',
+                      status: 'IN_PROGRESS',
                     })
                   );
                 }}

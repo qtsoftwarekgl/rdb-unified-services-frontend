@@ -82,7 +82,7 @@ const CollateralList = () => {
                 dispatch(setCollateralReviewActiveTab("property"));
                 dispatch(setCollateralReviewActiveStep("property"));
                 navigate(
-                  `/admin/collateral-review?entry_id=${row?.original?.loan_id}&collateral_id=${row?.original?.collateral_id}`
+                  `/admin/collateral-review?entryId=${row?.original?.loan_id}&collateral_id=${row?.original?.collateral_id}`
                 );
               }}
               value="Review"

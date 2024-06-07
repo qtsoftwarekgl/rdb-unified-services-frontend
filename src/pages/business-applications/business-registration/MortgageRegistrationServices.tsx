@@ -54,10 +54,10 @@ const MortgageRegistrationServices = () => {
                 <Link to="/receivership-possession">
                   <span>Receivership (possession)</span>
                 </Link>
-                <Link to="//receivership-manage">
+                <Link to="/receivership-manage">
                   <span>Receivership (manage)</span>
                 </Link>
-                <Link to="//receivership-lease">
+                <Link to="/receivership-lease">
                   <span>Receivership (lease)</span>
                 </Link>
               </div>

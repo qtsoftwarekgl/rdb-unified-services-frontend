@@ -78,7 +78,7 @@ const RegisteredBusinessesTable = () => {
             <FontAwesomeIcon
               onClick={(e) => {
                 e.preventDefault();
-                navigate(`/company-details/${row?.original?.entry_id}`);
+                navigate(`/company-details/${row?.original?.entryId}`);
               }}
               icon={faEye}
               className="text-primary"

@@ -34,14 +34,14 @@ export interface business_employment_info {
 interface EmploymentInfoProps {
   isOpen: boolean;
   employment_info: business_employment_info;
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const EmploymentInfo: FC<EmploymentInfoProps> = ({
   isOpen,
   employment_info,
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -88,7 +88,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           active_tab: 'capital_information',
           active_step: 'share_details',
           employment_info: {
@@ -458,7 +458,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
             'in_preview',
             'action_required',
             'is_amending',
-            'in_progress',
+            'IN_PROGRESS',
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -515,7 +515,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                     amend: false,
                   });
                   dispatch(
-                    setUserApplications({ entry_id, status: 'in_progress' })
+                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
                 }}
                 submit

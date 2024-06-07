@@ -7,7 +7,7 @@ export const userManagementApiSlice = createApi({
     baseUrl: 'http://localhost:8050/api/users',
     prepareHeaders: (headers) => {
       const user = store.get('user');
-      if (user.token) {
+      if (user?.token) {
         headers.set('authorization', `Bearer ${user.token}`);
       }
       return headers;

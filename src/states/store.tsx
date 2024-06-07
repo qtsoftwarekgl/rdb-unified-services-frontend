@@ -20,12 +20,15 @@ import userManagementApiSlice from './api/userManagamentApiSlice';
 import collateralRegistrationSlice from './features/collateralRegistrationSlice';
 import collateralReviewSlice from './features/collateralReviewSlice';
 import applicationReviewSlice from './features/applicationReviewSlice';
+import serviceSlice from './features/serviceSlice';
+import coreApiSlice from './api/coreApiSlice';
 
 export const store = configureStore({
   reducer: {
     [businessRegistrationApiSlice.reducerPath]:
       businessRegistrationApiSlice.reducer,
     [userManagementApiSlice.reducerPath]: userManagementApiSlice.reducer,
+    [coreApiSlice.reducerPath]: coreApiSlice.reducer,
     user: userSlice,
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
@@ -45,11 +48,13 @@ export const store = configureStore({
     collateralRegistration: collateralRegistrationSlice,
     collateralReview: collateralReviewSlice,
     applicationReview: applicationReviewSlice,
+    service: serviceSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(
       businessRegistrationApiSlice.middleware,
-      userManagementApiSlice.middleware
+      userManagementApiSlice.middleware,
+      coreApiSlice.middleware
     );
   },
 });

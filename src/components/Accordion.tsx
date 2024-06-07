@@ -50,7 +50,7 @@ const AccordionContent = forwardRef<
     {underlineHeader && (
       <div className="absolute inset-x-0 top-0 w-24 h-[5px] bg-primary"></div>
     )}
-    <div className={`${underlineHeader ? "pt-8" : ""} `}>{children}</div>
+    <div className={`${underlineHeader ? "pt-8" : ""}`}>{children}</div>
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;

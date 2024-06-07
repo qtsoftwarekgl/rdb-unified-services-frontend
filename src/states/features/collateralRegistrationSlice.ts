@@ -90,7 +90,7 @@ export const collateralRegistrationSlice = createSlice({
   reducers: {
     setCollateralApplications: (state, action) => {
       const applicationIndex = state.collateral_applications.findIndex(
-        (app) => app.entry_id === action?.payload?.entry_id
+        (app) => app.entryId === action?.payload?.entryId
       );
 
       if (applicationIndex === -1) {
@@ -111,7 +111,7 @@ export const collateralRegistrationSlice = createSlice({
     },
     setCollateralStatus: (state, action) => {
       const applicationIndex = state.collateral_applications.findIndex(
-        (app) => app.entry_id === action?.payload?.entry_id
+        (app) => app.entryId === action?.payload?.entryId
       );
 
       if (applicationIndex !== -1) {

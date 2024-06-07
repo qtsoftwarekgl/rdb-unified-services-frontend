@@ -32,7 +32,7 @@ const CollateralReview = () => {
   } = useSelector((state: RootState) => state.collateralReview);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entryId = queryParams.get("entryId");
   const collateral_id = queryParams.get("collateral_id");
 
   const { collateral_applications } = useSelector(
@@ -41,7 +41,7 @@ const CollateralReview = () => {
   const { user } = useSelector((state: RootState) => state.user);
 
   const application = collateral_applications.find(
-    (app) => app?.entry_id === entry_id
+    (app) => app?.entryId === entryId
   );
 
   const collateral = application?.collateral_infos.find(
@@ -148,7 +148,7 @@ const CollateralReview = () => {
         {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <ReviewNavigation
-              entry_id={entry_id}
+              entryId={entryId}
               setActiveStep={setCollateralReviewActiveStep}
               setActiveTab={setCollateralReviewActiveTab}
               tabs={collateral_review_tabs}
@@ -163,12 +163,12 @@ const CollateralReview = () => {
               }}
             />
             <AddReviewComments
-              entry_id={entry_id}
+              entryId={entryId}
               activeStep={collateral_review_active_step}
               activeTab={collateral_review_active_tab}
             />
             <ListReviewComments
-              entry_id={entry_id}
+              entryId={entryId}
               setActiveStep={setCollateralReviewActiveStep}
               setActiveTab={setCollateralReviewActiveTab}
               title="Collateral Review Comments"

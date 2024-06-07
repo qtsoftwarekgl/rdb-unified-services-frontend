@@ -15,13 +15,13 @@ import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import moment from 'moment';
 
 interface EmploymentInfoProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_employment_info: any;
   status?: string;
 }
 
 const EmploymentInfo = ({
-  entry_id,
+  entryId,
   foreign_employment_info,
   status,
 }: EmploymentInfoProps) => {
@@ -60,7 +60,7 @@ const EmploymentInfo = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_employment_info: {
             ...data,
             step: 'foreign_employment_info',
@@ -296,7 +296,7 @@ const EmploymentInfo = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
               }}
               primary

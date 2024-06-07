@@ -199,7 +199,7 @@ const ApplicatinsList = ({
 
   const handleEditClick = (row) => {
     const company = user_applications?.find(
-      (application) => application.entry_id === row?.original?.entry_id
+      (application) => application.entryId === row?.original?.entryId
     );
 
     if (!company) return;

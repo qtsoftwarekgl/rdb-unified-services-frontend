@@ -18,13 +18,13 @@ import { useNavigate } from "react-router-dom";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 type EnterpriseDetailsProps = {
-  entry_id: string | null;
+  entryId: string | null;
   company_details: any;
   status?: string;
 };
 
 export const EnterpriseDetails = ({
-  entry_id,
+  entryId,
   company_details,
   status,
 }: EnterpriseDetailsProps) => {
@@ -116,7 +116,7 @@ export const EnterpriseDetails = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           company_details: {
             ...company_details,
             name: data?.name,
@@ -397,7 +397,7 @@ export const EnterpriseDetails = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

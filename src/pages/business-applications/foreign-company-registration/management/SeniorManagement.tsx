@@ -30,13 +30,13 @@ import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
 import { business_senior_management } from '@/pages/business-applications/business-registration/management/SeniorManagement';
 
 interface SeniorManagementProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_senior_management: any;
   status?: string;
 }
 
 const SeniorManagement = ({
-  entry_id,
+  entryId,
   foreign_senior_management,
   status,
 }: SeniorManagementProps) => {
@@ -99,7 +99,7 @@ const SeniorManagement = ({
       clearErrors('submit');
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_senior_management: [
             {
               ...data,
@@ -756,7 +756,7 @@ const SeniorManagement = ({
                   return;
                 }
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
                 dispatch(
                   setForeignBusinessCompletedStep('foreign_senior_management')
@@ -785,7 +785,7 @@ const SeniorManagement = ({
           e.preventDefault();
           dispatch(
             setUserApplications({
-              entry_id,
+              entryId,
               foreign_senior_management: foreign_senior_management?.filter(
                 (_: unknown, index: number) => {
                   return index !== confirmModalData?.no - 1;

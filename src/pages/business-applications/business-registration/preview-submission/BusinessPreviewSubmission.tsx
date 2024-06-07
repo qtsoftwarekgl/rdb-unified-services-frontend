@@ -48,7 +48,7 @@ import { ReviewComment } from '@/components/applications-review/AddReviewComment
 import { RDBAdminEmailPattern } from '@/constants/Users';
 
 export interface business_application {
-  entry_id: string;
+  entryId: string;
   type: string;
   company_details: business_company_details;
   company_address: business_company_address;
@@ -92,7 +92,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   // UNRESOLVED COMMENTS
   const unresolvedApplicationComments = applicationReviewComments.filter(
     (comment: ReviewComment) =>
-      comment?.entry_id === business_application?.entry_id && !comment?.checked
+      comment?.entryId === business_application?.entryId && !comment?.checked
   ).length;
 
   // NAVIGATION
@@ -186,7 +186,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   // CATCH PROGRESS ID
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get('entry_id');
+  const entryId = queryParams.get('entryId');
 
   if (!isOpen) return null;
 
@@ -197,7 +197,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         business_application?.status === 'in_review') && (
         <PreviewCard
           status={business_application.status}
-          entry_id={business_application?.entry_id}
+          entryId={business_application?.entryId}
           header="Company Details"
           tabName="general_information"
           stepName="company_details"
@@ -224,7 +224,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {business_application?.company_address && (
         <PreviewCard
           status={business_application.status}
-          entry_id={business_application?.entry_id}
+          entryId={business_application?.entryId}
           header="Company Address"
           tabName="general_information"
           stepName="company_address"
@@ -261,7 +261,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* COMPANY ACTIVITIES */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Business Activities & VAT"
         tabName="general_information"
         stepName="business_activity_vat"
@@ -304,7 +304,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Board of Directors"
         tabName="management"
         stepName="board_of_directors"
@@ -344,7 +344,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* SENIOR MANAGEMENT */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Senior Management"
         tabName="management"
         stepName="senior_management"
@@ -384,7 +384,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* EMPLOYMENT INFO */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Employment Information"
         tabName="management"
         stepName="employment_info"
@@ -423,7 +423,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* SHARE DETAILS */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Share Details"
         tabName="capital_information"
         stepName="share_details"
@@ -461,7 +461,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* SHAREHOLDERS */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Shareholders"
         tabName="capital_information"
         stepName="shareholders"
@@ -505,7 +505,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* CAPITAL DETAILS */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Capital Details"
         tabName="capital_information"
         stepName="capital_details"
@@ -551,7 +551,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* BENEFICIAL OWNERS */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Beneficial Owners"
         tabName="beneficial_owners"
         stepName="beneficial_owners"
@@ -587,7 +587,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {/* ATTACHMENTS */}
       <PreviewCard
         status={business_application.status}
-        entry_id={business_application?.entry_id}
+        entryId={business_application?.entryId}
         header="Attachments"
         tabName="attachments"
         stepName="attachments"
@@ -873,7 +873,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             </p>
           </menu>
         )}
-      {['in_progress', 'action_required', 'in_preview', 'is_amending'].includes(
+      {['IN_PROGRESS', 'action_required', 'in_preview', 'is_amending'].includes(
         business_application?.status
       ) && (
         <menu
@@ -912,7 +912,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                 setIsLoading(false);
                 dispatch(
                   setUserApplications({
-                    entry_id,
+                    entryId,
                     type: 'business_registration',
                     company_details: business_application?.company_details,
                     company_address: business_application?.company_address,
@@ -928,7 +928,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     beneficial_owners: business_application?.beneficial_owners,
                     company_attachments:
                       business_application?.company_attachments,
-                    path: `/business-registration/?entry_id=${entry_id}`,
+                    path: `/business-registration/?entryId=${entryId}`,
                     status:
                       business_application?.status === 'action_required'
                         ? 're_submitted'
@@ -991,14 +991,14 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   setApplicationReviewComments(
                     applicationReviewComments?.filter(
                       (comment: ReviewComment) =>
-                        comment.entry_id !== business_application?.entry_id
+                        comment.entryId !== business_application?.entryId
                     )
                   )
                 );
               }
               dispatch(
                 setUserApplications({
-                  entry_id: business_application?.entry_id,
+                  entryId: business_application?.entryId,
                   status: user.email.includes('infoverifier@rdb')
                     ? 'pending_rejection'
                     : 'rejected',
@@ -1023,7 +1023,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               e.preventDefault();
               dispatch(
                 setUserApplications({
-                  entry_id: business_application?.entry_id,
+                  entryId: business_application?.entryId,
                   status:
                     unresolvedApplicationComments > 0
                       ? 'action_required'

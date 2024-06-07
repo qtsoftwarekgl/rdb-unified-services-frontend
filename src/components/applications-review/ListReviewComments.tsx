@@ -16,14 +16,14 @@ import { UnknownAction } from '@reduxjs/toolkit';
 import { Link } from 'react-router-dom';
 
 interface ListReviewCommentsProps {
-  entry_id: string | null;
+  entryId: string | null;
   title: string;
   setActiveTab: (tab: string) => UnknownAction;
   setActiveStep: (string: string) => UnknownAction;
 }
 
 const ListReviewComments: FC<ListReviewCommentsProps> = ({
-  entry_id,
+  entryId,
   title,
   setActiveTab,
   setActiveStep,
@@ -46,7 +46,7 @@ const ListReviewComments: FC<ListReviewCommentsProps> = ({
           {title}
         </h1>
         {applicationReviewComments
-          ?.filter((review: ReviewComment) => review?.entry_id === entry_id)
+          ?.filter((review: ReviewComment) => review?.entryId === entryId)
           ?.map((comment: ReviewComment, index: number) => {
             return (
               <menu
