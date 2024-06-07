@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../states/store';
 import UserLayout from '../../../containers/UserLayout';
 import ProgressNavigation from '../../../components/business-registration/ProgressNavigation';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { ErrorResponse, useLocation, useNavigate } from 'react-router-dom';
 import Tab from '../../../components/business-registration/Tab';
 import {
   setBusinessActiveStep,
@@ -20,25 +20,19 @@ import CapitalDetails from './capital-information/CapitalDetails';
 import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 import CompanyAttachments from './attachments/CompanyAttachments';
 import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
-import AddReviewComments from '../../../components/applications-review/AddReviewComments';
-import ListReviewComments from '../../../components/applications-review/ListReviewComments';
-import { useEffect } from 'react';
-import { setUserApplications } from '../../../states/features/userApplicationSlice';
-import { RDBAdminEmailPattern } from '../../../constants/Users';
-import UserReviewTabComments from '../../../components/applications-review/UserReviewTabComments';
-import { Step, TabType } from '../../../navigationTypes/navigationTypes';
+import { useEffect, useState } from 'react';
+import { TabType } from '../../../navigationTypes/navigationTypes';
 import {
   setApplicationReviewStepName,
   setApplicationReviewTabName,
 } from '@/states/features/applicationReviewSlice';
 import UserReviewStepComment from '@/components/applications-review/UserReviewStepComment';
+import queryString, { ParsedQuery } from 'query-string';
+import { useLazyGetBusinessQuery } from '@/states/api/businessRegistrationApiSlice';
+import { toast } from 'react-toastify';
+import { setBusiness } from '@/states/features/businessSlice';
 
 const BusinessRegistration = () => {
-  // CATCH PROGRESS ID
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const entryId = queryParams.get('entryId');
-
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const {
@@ -46,22 +40,48 @@ const BusinessRegistration = () => {
     business_active_step,
     business_active_tab,
   } = useSelector((state: RootState) => state.businessRegistration);
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
+  const { business } = useSelector((state: RootState) => state.business);
   const { user } = useSelector((state: RootState) => state.user);
-  const businessApplication = user_applications?.find(
-    (app: {
-      entryId: string;
-      status: string;
-      path: string;
-      type: string;
-      owner: string;
-    }) => app?.entryId === entryId
+  const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
+    {}
   );
-  const { applicationReviewStepName, applicationReviewTabName } = useSelector(
-    (state: RootState) => state.applicationReview
-  );
+
+  // INITIALIZE GET BUSINESS QUERY
+  const [getBusiness, {
+    data: businessData,
+    error: businessError,
+    isLoading: businessIsLoading,
+    isError: businessIsError,
+    isSuccess: businessIsSuccess,
+  }] = useLazyGetBusinessQuery();
+
+  // GET BUSINESS
+  useEffect(() => {
+    if (queryParams?.businessId) {
+      getBusiness({ id: queryParams?.businessId });
+    }
+  }, [getBusiness, queryParams?.businessId]);
+
+  // HANDLE GET BUSINESS RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      if ((businessError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching business data');
+      } else {
+        toast.error((businessError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessIsSuccess) {
+      dispatch(setBusiness(businessData?.data));
+    }
+  }, [businessData, businessError, businessIsError, businessIsSuccess, dispatch]);
+
+  // NAVIGATION
+  const { search } = useLocation();
+
+  // GET PARAM FROM PATH
+  useEffect(() => {
+    setQueryParams(queryString.parse(search));
+  }, [search]);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -72,34 +92,10 @@ const BusinessRegistration = () => {
     dispatch(setApplicationReviewTabName(business_active_tab?.name));
   }, [dispatch, business_active_step, business_active_tab]);
 
-  // APPLICATION STATUS
-  let status = businessApplication?.status || 'IN_PROGRESS';
-  if (businessApplication) {
-    status = businessApplication.status;
-  }
-  if (RDBAdminEmailPattern.test(user?.email)) {
-    status = 'in_review';
-  }
-
-  useEffect(() => {
-    if (entryId) {
-      dispatch(
-        setUserApplications({
-          entryId,
-          status,
-          path: `/business-registration?entryId=${entryId}`,
-          type: 'business_registration',
-          owner: user?.email,
-        })
-      );
-    } else {
-      navigate('/business-registration/new');
-    }
-  }, [dispatch, entryId, navigate, status, user?.email]);
-
   return (
     <UserLayout>
-      <main className="flex flex-col w-full h-screen gap-6 p-8">
+      {JSON.stringify(business)}
+      {/* <main className="flex flex-col w-full h-screen gap-6 p-8">
         <ProgressNavigation
           tabs={business_registration_tabs}
           setActiveTab={setBusinessActiveTab}
@@ -110,126 +106,114 @@ const BusinessRegistration = () => {
               <Tab
                 isOpen={tab?.active}
                 steps={tab?.steps}
-                key={`${String(index)}-${entryId}`}
+                key={`${String(index)}-${queryParams?.businessId}`}
                 setActiveStep={setBusinessActiveStep}
                 active_tab={business_active_tab}
               >
-                {/* COMPANY DETAILS */}
                 {business_active_step?.name === 'company_details' && (
                   <CompanyDetails
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     isOpen={business_active_step?.name === 'company_details'}
                     company_details={businessApplication?.company_details}
                     status={status}
                   />
                 )}
-                {/* COMPANY ADDRESS */}
                 {business_active_step?.name === 'company_address' && (
                   <CompanyAddress
                     isOpen={business_active_step?.name === 'company_address'}
                     company_address={businessApplication?.company_address}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
-                {/* BUSINESS ACTIVITY */}
                 {business_active_step?.name === 'business_activity_vat' && (
                   <BusinessActivity
                     isOpen={
                       business_active_step?.name === 'business_activity_vat'
                     }
                     company_activities={businessApplication?.company_activities}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* BOARD OF DIRECTORS */}
                 {business_active_step?.name === 'board_of_directors' && (
                   <BoardDirectors
                     isOpen={business_active_step?.name === 'board_of_directors'}
                     board_of_directors={businessApplication?.board_of_directors}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* SENIOR MANAGEMENT */}
                 {business_active_step?.name === 'senior_management' && (
                   <SeniorManagement
                     isOpen={business_active_step?.name === 'senior_management'}
                     senior_management={businessApplication?.senior_management}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* EMPLOYMENT INFO */}
                 {business_active_step?.name === 'employment_info' && (
                   <EmploymentInfo
                     isOpen={business_active_step?.name === 'employment_info'}
                     employment_info={businessApplication?.employment_info}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* SHARE DETAILS */}
                 {business_active_step?.name === 'share_details' && (
                   <ShareDetails
                     isOpen={business_active_step?.name === 'share_details'}
                     share_details={businessApplication?.share_details}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* SHAREHOLDERS */}
                 {business_active_step?.name === 'shareholders' && (
                   <ShareHolders
                     isOpen={business_active_step?.name === 'shareholders'}
                     shareholders={businessApplication?.shareholders}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* CAPITAL DETAILS */}
                 {business_active_step?.name === 'capital_details' && (
                   <CapitalDetails
                     isOpen={business_active_step?.name === 'capital_details'}
                     capital_details={businessApplication?.capital_details}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     share_details={businessApplication?.share_details}
                     shareholders={businessApplication?.shareholders}
                     status={status}
                   />
                 )}
 
-                {/* BENEFICIAL OWNERS */}
                 {business_active_step?.name === 'beneficial_owners' && (
                   <BeneficialOwners
                     isOpen={business_active_step?.name === 'beneficial_owners'}
                     beneficial_owners={businessApplication?.beneficial_owners}
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     status={status}
                   />
                 )}
 
-                {/* ATTACHMENTS */}
                 {business_active_step?.name === 'attachments' && (
                   <CompanyAttachments
                     isOpen={business_active_step?.name === 'attachments'}
                     company_attachments={
                       businessApplication?.company_attachments
                     }
-                    entryId={entryId}
+                    businessId={queryParams?.businessId}
                     company_details={businessApplication?.company_details}
                     status={status}
                   />
                 )}
 
-                {/* PREVIEW AND SUBMISSINO */}
                 {business_active_step?.name === 'preview_submission' && (
                   <PreviewSubmission
                     isOpen={business_active_step?.name === 'preview_submission'}
@@ -241,30 +225,7 @@ const BusinessRegistration = () => {
             );
           })}
         </menu>
-        {RDBAdminEmailPattern.test(user?.email) && (
-          <>
-            <AddReviewComments
-              entryId={entryId}
-              activeStep={business_registration_tabs
-                ?.flatMap((tab: TabType) => tab?.steps)
-                ?.find(
-                  (step: Step) => step?.name === applicationReviewStepName
-                )}
-              activeTab={business_registration_tabs?.find(
-                (tab: TabType) => tab?.name === applicationReviewTabName
-              )}
-            />
-            <ListReviewComments
-              entryId={entryId}
-              setActiveStep={setBusinessActiveStep}
-              setActiveTab={setBusinessActiveTab}
-              title="Business Registration Review Comments"
-            />
-          </>
-        )}
-      </main>
-      <UserReviewTabComments active_tab={business_active_tab} />
-      <UserReviewStepComment />
+      </main> */}
     </UserLayout>
   );
 };

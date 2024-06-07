@@ -10,7 +10,7 @@ import roleSlice from './features/roleSlice';
 import permissionSlice from './features/permissionSlice';
 import institutionSlice from './features/institutionSlice';
 import localeSlice from './features/localeSlice';
-import companySlice from './features/companySlice';
+import businessSlice from './features/businessSlice';
 import enterpriseRegistrationSlice from './features/enterpriseRegistrationSlice';
 import foreignCompanyRegistrationSlice from './features/foreignCompanyRegistrationSlice';
 import nameReservationSlice from './features/nameReservationSlice';
@@ -40,7 +40,7 @@ export const store = configureStore({
     permission: permissionSlice,
     institution: institutionSlice,
     locale: localeSlice,
-    companies: companySlice,
+    business: businessSlice,
     enterpriseRegistration: enterpriseRegistrationSlice,
     foreignCompanyRegistration: foreignCompanyRegistrationSlice,
     nameReservation: nameReservationSlice,

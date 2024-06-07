@@ -27,7 +27,7 @@ import ConfirmModal from '../../../../components/confirm-modal/ConfirmModal';
 import ViewDocument from '../../../user-company-details/ViewDocument';
 import validateInputs from '../../../../helpers/validations';
 import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import { business_senior_management } from '@/pages/business-applications/business-registration/management/SeniorManagement';
+import { business_senior_management } from '@/pages/business-applications/domestic-business-registration/management/SeniorManagement';
 
 interface SeniorManagementProps {
   entryId: string | null;

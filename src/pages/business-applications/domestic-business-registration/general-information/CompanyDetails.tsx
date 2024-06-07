@@ -69,15 +69,15 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
     loading: false,
     name: "",
   });
-  const [companyTypesOptions, setCompanyTypesOptions] = useState(companyTypes);
+  const [companyTypesOptions, setBusinessTypesOptions] = useState(companyTypes);
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
   useEffect(() => {
     if (watch("category") === "public") {
-      setCompanyTypesOptions(companyTypes);
+      setBusinessTypesOptions(companyTypes);
     } else if (watch("category") === "private") {
-      setCompanyTypesOptions(privateCompanyTypes);
+      setBusinessTypesOptions(privateCompanyTypes);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch("category")]);

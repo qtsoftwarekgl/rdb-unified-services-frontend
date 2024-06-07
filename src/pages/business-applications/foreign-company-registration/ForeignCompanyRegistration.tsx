@@ -21,7 +21,7 @@ import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import moment from "moment";
 import { RootState } from "../../../states/store";
-import ReviewNavigation from "../business-registration/ReviewNavigation";
+import ReviewNavigation from "../domestic-business-registration/ReviewNavigation";
 import AddReviewComments from "../../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../../constants/Users";

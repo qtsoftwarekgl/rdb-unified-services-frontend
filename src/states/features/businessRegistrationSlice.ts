@@ -374,7 +374,7 @@ export const businessRegistrationSlice = createSlice({
     },
 
     // SET COMPANY SUB ACTIVITIES
-    setCompanySubActivities: (state, action) => {
+    setBusinessSubActivities: (state, action) => {
       state.company_business_lines = action.payload;
       localStorage.setItem(
         'company_business_lines',
@@ -420,7 +420,7 @@ export const {
   setBusinessActiveTab,
   setBusinessActiveStep,
   setBusinessCompletedStep,
-  setCompanySubActivities,
+  setBusinessSubActivities,
   removeBusinessCompletedStep,
   setBusinessRegistrationTabs,
   setBusinessCompletedTab,

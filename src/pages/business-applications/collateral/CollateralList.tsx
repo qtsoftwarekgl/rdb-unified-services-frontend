@@ -34,10 +34,10 @@ const CollateralList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const hasComments = (applicationId: string) => {
+  const hasComments = (businessId: string) => {
     return applicationReviewComments.some(
       (comment: ReviewComment) =>
-        comment?.entryId === applicationId && !comment?.checked
+        comment?.entryId === businessId && !comment?.checked
     );
   };
 

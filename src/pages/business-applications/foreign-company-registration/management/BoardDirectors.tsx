@@ -26,7 +26,7 @@ import {
 } from "../../../../constants/Users";
 import ConfirmModal from "../../../../components/confirm-modal/ConfirmModal";
 import ViewDocument from "../../../user-company-details/ViewDocument";
-import { business_board_of_directors } from "@/pages/business-applications/business-registration/management/BoardDirectors";
+import { business_board_of_directors } from "@/pages/business-applications/domestic-business-registration/management/BoardDirectors";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 
 interface BoardDirectorsProps {

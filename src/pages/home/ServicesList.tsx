@@ -19,7 +19,7 @@ import { Service } from '@/types/models/service';
 import { capitalizeString } from '@/helpers/strings';
 import Loader from '@/components/Loader';
 
-const Home = () => {
+const ServicesList = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { servicesList } = useSelector((state: RootState) => state.service);
@@ -176,14 +176,14 @@ const Home = () => {
                         {capitalizeString(service?.section)}
                       </AccordionTrigger>
                       <AccordionContent className="w-full border-none">
-                        <menu className="w-full grid grid-cols-1 gap-4 p-4 px-2 mb-8 md:grid-cols-2 lg:grid-cols-3">
+                        <menu className="w-full grid grid-cols-1 gap-6 p-4 px-2 mb-8 md:grid-cols-2 lg:grid-cols-3">
                           {service?.items.map(
                             (item: Service, index: number) => {
                               return (
                                 <Link
                                   className="w-full text-[15px]"
                                   key={index}
-                                  to={`${item.path}?serviceId=${item?.id}`}
+                                  to={`${item.id}/new`}
                                 >
                                   {capitalizeString(item.name)}
                                 </Link>
@@ -209,4 +209,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ServicesList;

@@ -10,18 +10,18 @@ import { toast } from 'react-toastify';
 import Select from '@/components/inputs/Select';
 import { capitalizeString, formatDate } from '@/helpers/strings';
 import Table from '@/components/table/Table';
-import { useLazySearchCompaniesQuery } from '@/states/api/businessRegistrationApiSlice';
+import { useLazySearchBusinessesQuery } from '@/states/api/businessRegistrationApiSlice';
 import queryString, { ParsedQuery } from 'query-string';
 import { AppDispatch, RootState } from '@/states/store';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import {
-  setCompaniesList,
-  setCompanyPage,
-  setCompanySize,
-  setCompanyTotalElements,
-  setCompanyTotalPages,
-} from '@/states/features/companySlice';
+  setBusinessesList,
+  setBusinessPage,
+  setBusinessSize,
+  setBusinessTotalElements,
+  setBusinessTotalPages,
+} from '@/states/features/businessSlice';
 import { AccessorKeyColumnDefBase, Row } from '@tanstack/react-table';
 import { Business } from '@/types/models/business';
 
@@ -41,8 +41,9 @@ const SearchCompanies = () => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { page, size, totalElements, totalPages, companiesList } =
-    useSelector((state: RootState) => state.companies);
+  const { page, size, totalElements, totalPages, businessesList } = useSelector(
+    (state: RootState) => state.business
+  );
   const [searchQueries, setSearchQueries] = useState<
     ParsedQuery<string | number>
   >({});
@@ -69,20 +70,20 @@ const SearchCompanies = () => {
 
   // INITIALIZE SEARCH COMPANIES QUERY
   const [
-    searchCompanies,
+    searchBusinesses,
     {
-      data: searchCommpaniesData,
-      error: searchCompaniesError,
-      isLoading: searchCompaniesIsLoading,
-      isSuccess: searchCompaniesIsSuccess,
-      isError: searchCompaniesIsError,
+      data: searchBusinessesData,
+      error: searchBusinessesError,
+      isLoading: searchBusinessesIsLoading,
+      isSuccess: searchBusinessesIsSuccess,
+      isError: searchBusinessesIsError,
     },
-  ] = useLazySearchCompaniesQuery();
+  ] = useLazySearchBusinessesQuery();
 
   // RELOAD COMPANIES LIST ON PAGINATION CHANGE
   useEffect(() => {
     if (watch('searchValue')) {
-      searchCompanies({
+      searchBusinesses({
         ...searchQueries,
         companyName: searchType === 'companyName' ? watch('searchValue') : '',
         tin: searchType === 'tin' ? watch('searchValue') : '',
@@ -91,32 +92,34 @@ const SearchCompanies = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, searchCompanies, size]);
+  }, [page, searchBusinesses, size]);
 
   // HANDLE SEARCH COMPANIES RESPONSE
   useEffect(() => {
-    if (searchCompaniesIsError) {
-      if ((searchCompaniesError as ErrorResponse).status === 500) {
+    if (searchBusinessesIsError) {
+      if ((searchBusinessesError as ErrorResponse).status === 500) {
         toast.error('Search failed, please try again later');
       } else {
         toast.error(
-          (searchCompaniesError as ErrorResponse).data?.message ||
+          (searchBusinessesError as ErrorResponse).data?.message ||
             'An error occurred, please try again later'
         );
       }
-    } else if (searchCompaniesIsSuccess) {
-      dispatch(setCompaniesList(searchCommpaniesData.data.data || []));
-      dispatch(setCompanyTotalPages(searchCommpaniesData.data.totalPages || 0));
+    } else if (searchBusinessesIsSuccess) {
+      dispatch(setBusinessesList(searchBusinessesData.data.data || []));
       dispatch(
-        setCompanyTotalElements(searchCommpaniesData.data.totalElements || 0)
+        setBusinessTotalPages(searchBusinessesData.data.totalPages || 0)
+      );
+      dispatch(
+        setBusinessTotalElements(searchBusinessesData.data.totalElements || 0)
       );
     }
   }, [
     dispatch,
-    searchCommpaniesData,
-    searchCompaniesError,
-    searchCompaniesIsError,
-    searchCompaniesIsSuccess,
+    searchBusinessesData,
+    searchBusinessesError,
+    searchBusinessesIsError,
+    searchBusinessesIsSuccess,
   ]);
 
   // SEARCH OPTIONS
@@ -231,8 +234,8 @@ const SearchCompanies = () => {
                       />
                       <FontAwesomeIcon
                         icon={faSearch}
-                        className={`${errors?.searchValue && 
-                          'text-red-600'
+                        className={`${
+                          errors?.searchValue && 'text-red-600'
                         } text-white bg-primary mx-2 p-3 rounded-md cursor-pointer`}
                         onClick={async (e) => {
                           e.preventDefault();
@@ -254,11 +257,14 @@ const SearchCompanies = () => {
                             ...searchQueries,
                             type: searchType,
                           });
-                          await searchCompanies({
+                          await searchBusinesses({
                             ...searchQueries,
                             companyName:
-                              searchType === 'companyName' ? watch('searchValue') : '',
-                            tin: searchType === 'tin' ? watch('searchValue') : '',
+                              searchType === 'companyName'
+                                ? watch('searchValue')
+                                : '',
+                            tin:
+                              searchType === 'tin' ? watch('searchValue') : '',
                             page,
                             size,
                           });
@@ -266,7 +272,7 @@ const SearchCompanies = () => {
                       />
                     </menu>
                     <section className="flex flex-col gap-1 pl-[35%]">
-                      {searchCompaniesIsLoading && (
+                      {searchBusinessesIsLoading && (
                         <p className="text-primary text-[13px] flex items-center gap-1">
                           <Loader size={4} /> Searching...
                         </p>
@@ -284,7 +290,7 @@ const SearchCompanies = () => {
           </section>
           <section
             className={`${
-              searchCompaniesIsSuccess || companiesList?.length
+              searchBusinessesIsSuccess || businessesList?.length
                 ? 'flex'
                 : 'hidden'
             } flex-col gap-3`}
@@ -297,17 +303,17 @@ const SearchCompanies = () => {
               size={size}
               totalElements={totalElements}
               totalPages={totalPages}
-              setPage={setCompanyPage}
-              setSize={setCompanySize}
+              setPage={setBusinessPage}
+              setSize={setBusinessSize}
               rowClickHandler={(row: Business) => {
                 navigate(`/services/company-details/${row.id}`);
               }}
-              data={companiesList?.map((company: Business, index) => {
+              data={businessesList?.map((business: Business, index: number) => {
                 return {
-                  ...company,
-                  companyName: company?.companyName?.toUpperCase(),
+                  ...business,
+                  companyName: business?.companyName?.toUpperCase(),
                   no: index + page,
-                  createdAt: formatDate(company.createdAt),
+                  createdAt: formatDate(business.createdAt),
                 };
               })}
               columns={columns as unknown as AccessorKeyColumnDefBase<Business>}

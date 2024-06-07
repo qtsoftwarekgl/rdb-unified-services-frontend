@@ -4,7 +4,7 @@ import store from 'store';
 export const businessRegistrationApiSlice = createApi({
   reducerPath: 'businessRegistrationApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8051/api/company',
+    baseUrl: 'http://localhost:8051/api/business',
     prepareHeaders: (headers) => {
       const user = store.get('user');
       if (user) {
@@ -15,11 +15,60 @@ export const businessRegistrationApiSlice = createApi({
   }),
   endpoints: (builder) => {
     return {
-      // SEARCH COMPANIES
-      searchCompanies: builder.query({
+      // SEARCH BUSINESSES
+      searchBusinesses: builder.query({
         query: ({ type, companyName, tin, page, size }) => {
           return {
             url: `/search?companyName=${companyName}&tin=${tin}&type=${type}&page=${page}&size=${size}`,
+          };
+        },
+      }),
+
+      // FETCH BUSINESSES
+      fetchBusinesses: builder.query({
+        query: ({ page, size, applicationStatus, serviceId }) => {
+          let url = `?page=${page}&size=${size}`;
+          if (applicationStatus) {
+            url += `&applicationStatus=${applicationStatus}`;
+          }
+          if (serviceId) {
+            url += `&serviceId=${serviceId}`;
+          }
+          return {
+            url,
+          };
+        },
+      }),
+
+      // GET BUSINESS
+      getBusiness: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/${id}`,
+          };
+        },
+      }),
+
+      // CREATE BUSINESS
+      createBusiness: builder.mutation({
+        query: ({ isForeign, serviceId }) => {
+          return {
+            url: '/register',
+            method: 'POST',
+            body: {
+              isForeign,
+              serviceId,
+            },
+          };
+        },
+      }),
+
+      // DELETE BUSINESS
+      deleteBusiness: builder.mutation({
+        query: ({ id }) => {
+          return {
+            url: `/${id}`,
+            method: 'DELETE',
           };
         },
       }),
@@ -27,6 +76,12 @@ export const businessRegistrationApiSlice = createApi({
   },
 });
 
-export const { useLazySearchCompaniesQuery } = businessRegistrationApiSlice;
+export const {
+  useLazySearchBusinessesQuery,
+  useLazyFetchBusinessesQuery,
+  useLazyGetBusinessQuery,
+  useCreateBusinessMutation,
+  useDeleteBusinessMutation,
+} = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

@@ -7,7 +7,7 @@ import {
   setEnterpriseActiveTab,
 } from "../../states/features/enterpriseRegistrationSlice";
 import ProgressNavigation from "../../components/business-registration/ProgressNavigation";
-import { TabType } from "../../navigationTypes/navigationTypes";
+import { TabType } from "../../types/navigationTypes";
 import Tab from "../../components/business-registration/Tab";
 import { useLocation } from "react-router-dom";
 import EnterpriseDetails from "./enterprise_details/EnterpriseDetails";
@@ -17,7 +17,7 @@ import Attachments from "./Attachements";
 import Preview from "./Preview";
 import { setUserApplications } from "../../states/features/userApplicationSlice";
 import moment from "moment";
-import ReviewNavigation from "../business-applications/business-registration/ReviewNavigation";
+import ReviewNavigation from "../business-applications/domestic-business-registration/ReviewNavigation";
 import AddReviewComments from "../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../constants/Users";

@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 import { Row } from "@tanstack/react-table";
 import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { business_application } from "../business-applications/business-registration/preview-submission/BusinessPreviewSubmission";
+import { business_application } from "../business-applications/domestic-business-registration/preview-submission/BusinessPreviewSubmission";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -115,10 +115,10 @@ const UserApplications = () => {
     );
   }
 
-  const hasComments = (applicationId: string) => {
+  const hasComments = (businessId: string) => {
     return applicationReviewComments.some(
       (comment: ReviewComment) =>
-        comment?.entryId === applicationId && !comment?.checked
+        comment?.entryId === businessId && !comment?.checked
     );
   };
 

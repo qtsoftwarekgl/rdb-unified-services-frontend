@@ -4,7 +4,7 @@ import { formatCompanyData } from '../../helpers/strings';
 import AdminLayout from '../../containers/AdminLayout';
 import ApplicatinsList from './ApplicationsList';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { business_application } from '../business-applications/business-registration/preview-submission/BusinessPreviewSubmission';
+import { business_application } from '../business-applications/domestic-business-registration/preview-submission/BusinessPreviewSubmission';
 
 const ReviewRegistration = () => {
   const { user_applications } = useSelector(

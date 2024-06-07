@@ -107,7 +107,7 @@ const OfficeAddress = ({
   };
 
   // RESET COMPANY ADDRESS
-  const resetCompanyLocation = () => {
+  const resetBusinessLocation = () => {
     dispatch(
       setUserApplications({
         entryId,
@@ -157,7 +157,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -220,7 +220,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -289,7 +289,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -354,7 +354,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -420,7 +420,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>

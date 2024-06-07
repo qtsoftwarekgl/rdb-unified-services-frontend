@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import Property from "./Property";
 import { RDBAdminEmailPattern, documents } from "@/constants/Users";
-import ReviewNavigation from "../business-applications/business-registration/ReviewNavigation";
+import ReviewNavigation from "../business-applications/domestic-business-registration/ReviewNavigation";
 import AddReviewComments from "@/components/applications-review/AddReviewComments";
 import ListReviewComments from "@/components/applications-review/ListReviewComments";
 import Mortgage from "./Mortgage";
