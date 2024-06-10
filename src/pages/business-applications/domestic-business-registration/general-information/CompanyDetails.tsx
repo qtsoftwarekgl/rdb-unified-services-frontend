@@ -393,7 +393,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                       <Input
                         type="radio"
                         label="Yes"
-                        defaultChecked={business?.hasArticlesOfAssociation}
+                        defaultdefaultChecked={business?.hasArticlesOfAssociation}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);
@@ -404,7 +404,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                       <Input
                         type="radio"
                         label="No"
-                        defaultChecked={!business?.hasArticlesOfAssociation}
+                        defaultdefaultChecked={!business?.hasArticlesOfAssociation}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);

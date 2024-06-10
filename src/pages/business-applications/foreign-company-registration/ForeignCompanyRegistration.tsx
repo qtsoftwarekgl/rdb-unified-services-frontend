@@ -132,11 +132,11 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === 'foreign_senior_management' && (
+                      {activeStepName === 'foreign_executive_management' && (
                         <SeniorManagement
                           entryId={entryId}
-                          foreign_senior_management={
-                            current_application?.foreign_senior_management || []
+                          foreign_executive_management={
+                            current_application?.foreign_executive_management || []
                           }
                           status={status}
                         />

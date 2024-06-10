@@ -124,8 +124,37 @@ export const businessRegistrationApiSlice = createApi({
               address,
               email,
               phoneNumber,
-              streetName
+              streetName,
             },
+          };
+        },
+      }),
+
+      // CREATE BUSINESS ACTIVITIES
+      createBusinessActivities: builder.mutation({
+        query: ({
+          businessId,
+          VATRegistered,
+          mainBusinessActivity,
+          businessLines,
+        }) => {
+          return {
+            url: `/business-activities?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              VATRegistered,
+              mainBusinessActivity,
+              businessLines,
+            },
+          };
+        },
+      }),
+
+      // FETCH BUSINESS ACTIVITIES
+      fetchBusinessActivities: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/business-activities?businessId=${businessId}`,
           };
         },
       }),
@@ -142,6 +171,8 @@ export const {
   useLazySearchBusinessNameAvailabilityQuery,
   useCreateCompanyDetailsMutation,
   useCreateCompanyAddressMutation,
+  useCreateBusinessActivitiesMutation,
+  useLazyFetchBusinessActivitiesQuery,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

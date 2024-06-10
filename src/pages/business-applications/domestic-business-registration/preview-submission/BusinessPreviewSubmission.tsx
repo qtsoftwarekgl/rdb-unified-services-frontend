@@ -23,9 +23,9 @@ import {
 } from '../../../../states/features/userApplicationSlice';
 import { business_company_details } from '../general-information/CompanyDetails';
 import { business_company_address } from '../general-information/CompanyAddress';
-import { business_company_activities } from '../general-information/BusinessActivity';
+import { business_company_activities } from '../general-information/BusinessActivities';
 import { business_board_of_directors } from '../management/BoardDirectors';
-import { business_senior_management } from '../management/SeniorManagement';
+import { business_executive_management } from '../management/SeniorManagement';
 import { business_employment_info } from '../management/EmploymentInfo';
 import { business_share_details } from '../capital-information/ShareDetails';
 import { business_shareholders } from '../capital-information/ShareHolders';
@@ -54,7 +54,7 @@ export interface business_application {
   company_address: business_company_address;
   company_activities: business_company_activities;
   board_of_directors: business_board_of_directors[];
-  senior_management: business_senior_management[];
+  executive_management: business_executive_management[];
   employment_info: business_employment_info;
   share_details: business_share_details;
   shareholders: business_shareholders[];
@@ -347,7 +347,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         entryId={business_application?.entryId}
         header="Senior Management"
         tabName="management"
-        stepName="senior_management"
+        stepName="executive_management"
         setActiveStep={setBusinessActiveStep}
         setActiveTab={setBusinessActiveTab}
       >
@@ -360,8 +360,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           }}
           columns={managementColumns}
           data={
-            business_application?.senior_management?.length > 0
-              ? business_application?.senior_management?.map((director) => {
+            business_application?.executive_management?.length > 0
+              ? business_application?.executive_management?.map((director) => {
                   return {
                     ...director,
                     name: `${director?.first_name || ''} ${
@@ -629,7 +629,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             <h3 className="font-semibold uppercase text-md">
               Senior management
             </h3>
-            {business_application?.senior_management?.map((senior, index) => {
+            {business_application?.executive_management?.map((senior, index) => {
               if (senior?.attachment?.name) {
                 return (
                   <p
@@ -897,7 +897,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               !business_application?.company_address ||
               !business_application?.company_activities ||
               business_application?.board_of_directors?.length <= 0 ||
-              business_application?.senior_management?.length <= 0 ||
+              business_application?.executive_management?.length <= 0 ||
               !business_application?.employment_info ||
               !business_application?.share_details ||
               business_application?.shareholders?.length <= 0 ||
@@ -920,7 +920,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       business_application?.company_activities,
                     board_of_directors:
                       business_application?.board_of_directors,
-                    senior_management: business_application?.senior_management,
+                    executive_management: business_application?.executive_management,
                     employment_info: business_application?.employment_info,
                     share_details: business_application?.share_details,
                     shareholders: business_application?.shareholders,

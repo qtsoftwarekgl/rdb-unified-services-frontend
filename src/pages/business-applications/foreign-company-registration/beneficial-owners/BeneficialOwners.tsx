@@ -407,7 +407,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               type="radio"
                               label="Yes"
                               value="yes"
-                              checked={watch('rwandan_company') === 'yes'}
+                              defaultChecked={watch('rwandan_company') === 'yes'}
                               onChange={(e) => {
                                 setSearchMember({
                                   ...searchMember,
@@ -801,7 +801,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <menu className="flex items-center gap-4 mt-2">
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Male'
                           }
@@ -811,7 +811,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         />
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Female'
                           }

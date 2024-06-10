@@ -816,7 +816,7 @@ const BoardDirectors = ({
                   setForeignBusinessCompletedStep('foreign_board_of_directors')
                 );
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_senior_management')
+                  setForeignBusinessActiveStep('foreign_executive_management')
                 );
               }}
             />

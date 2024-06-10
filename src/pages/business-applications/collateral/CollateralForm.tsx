@@ -172,7 +172,7 @@ const CollateralForm = ({
                     <Input
                       type="radio"
                       label="Vehicle"
-                      checked={watch("movable_collateral_type") === "vehicle"}
+                      defaultChecked={watch("movable_collateral_type") === "vehicle"}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -190,7 +190,7 @@ const CollateralForm = ({
                     <Input
                       type="radio"
                       label="Other"
-                      checked={watch("movable_collateral_type") === "other"}
+                      defaultChecked={watch("movable_collateral_type") === "other"}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);

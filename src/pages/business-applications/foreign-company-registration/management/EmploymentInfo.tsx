@@ -136,7 +136,7 @@ const EmploymentInfo = ({
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch('has_employees') === 'yes'}
+                      defaultChecked={watch('has_employees') === 'yes'}
                       name={field?.name}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -148,7 +148,7 @@ const EmploymentInfo = ({
                       type="radio"
                       label="No"
                       name={field?.name}
-                      checked={watch('has_employees') === 'no'}
+                      defaultChecked={watch('has_employees') === 'no'}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setValue(field?.name, 'no');
@@ -239,7 +239,7 @@ const EmploymentInfo = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_senior_management')
+                  setForeignBusinessActiveStep('foreign_executive_management')
                 );
               }}
             />

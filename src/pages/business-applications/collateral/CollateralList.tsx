@@ -226,14 +226,14 @@ const NewCollateralType = ({
                   <Input
                     type="radio"
                     label="Movable"
-                    checked={watch("collateral_type") === "movable"}
+                    defaultChecked={watch("collateral_type") === "movable"}
                     {...field}
                     value={"movable"}
                   />
                   <Input
                     type="radio"
                     label="Immovable"
-                    checked={watch("collateral_type") === "immovable"}
+                    defaultChecked={watch("collateral_type") === "immovable"}
                     {...field}
                     value={"immovable"}
                   />

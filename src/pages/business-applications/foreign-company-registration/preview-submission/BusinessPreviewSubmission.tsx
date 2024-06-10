@@ -45,8 +45,8 @@ const PreviewSubmission = ({
     current_application?.foreign_company_activities;
   const foreign_board_of_directors =
     current_application?.foreign_board_of_directors || [];
-  const foreign_senior_management =
-    current_application?.foreign_senior_management || [];
+  const foreign_executive_management =
+    current_application?.foreign_executive_management || [];
   const foreign_employment_info = current_application?.foreign_employment_info;
   const foreign_beneficial_owners =
     current_application?.foreign_beneficial_owners || [];
@@ -223,7 +223,7 @@ const PreviewSubmission = ({
       <PreviewCard
         header="Senior Management"
         tabName="foreign_management"
-        stepName="foreign_senior_management"
+        stepName="foreign_executive_management"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         entryId={entryId}
@@ -233,7 +233,7 @@ const PreviewSubmission = ({
           showFilter={false}
           showPagination={false}
           columns={managementColumns}
-          data={foreign_senior_management?.map((director) => {
+          data={foreign_executive_management?.map((director) => {
             return {
               ...director,
               name: `${director?.first_name} ${director?.last_name}`,
@@ -344,7 +344,7 @@ const PreviewSubmission = ({
             <h3 className="font-semibold uppercase text-md">
               Senior management
             </h3>
-            {foreign_senior_management?.map((senior, index) => {
+            {foreign_executive_management?.map((senior, index) => {
               if (
                 senior?.attachment &&
                 Object.keys(senior?.attachment).length

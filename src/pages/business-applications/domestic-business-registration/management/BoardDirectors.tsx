@@ -117,7 +117,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
       dispatch(
         setUserApplications({
           entryId,
-          active_step: 'senior_management',
+          active_step: 'executive_management',
           active_tab: 'management',
           board_of_directors: [
             {
@@ -658,14 +658,14 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                           type="radio"
                           label="Male"
                           {...field}
-                          checked={watch('gender') === 'Male'}
+                          defaultChecked={watch('gender') === 'Male'}
                           value={'Male'}
                         />
                         <Input
                           type="radio"
                           label="Female"
                           {...field}
-                          checked={watch('gender') === 'Female'}
+                          defaultChecked={watch('gender') === 'Female'}
                           value={'Female'}
                         />
                       </menu>
@@ -984,7 +984,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   );
                   dispatch(setBusinessCompletedStep('board_of_directors'));
                   dispatch(setBusinessActiveTab('management'));
-                  dispatch(setBusinessActiveStep('senior_management'));
+                  dispatch(setBusinessActiveStep('executive_management'));
                 }}
               />
             </menu>
@@ -1004,7 +1004,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('senior_management'));
+                  dispatch(setBusinessActiveStep('executive_management'));
                 }}
               />
             </menu>

@@ -27,17 +27,17 @@ import ConfirmModal from '../../../../components/confirm-modal/ConfirmModal';
 import ViewDocument from '../../../user-company-details/ViewDocument';
 import validateInputs from '../../../../helpers/validations';
 import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import { business_senior_management } from '@/pages/business-applications/domestic-business-registration/management/SeniorManagement';
+import { business_executive_management } from '@/pages/business-applications/domestic-business-registration/management/SeniorManagement';
 
 interface SeniorManagementProps {
   entryId: string | null;
-  foreign_senior_management: any;
+  foreign_executive_management: any;
   status?: string;
 }
 
 const SeniorManagement = ({
   entryId,
-  foreign_senior_management,
+  foreign_executive_management,
   status,
 }: SeniorManagementProps) => {
   // REACT HOOK FORM
@@ -100,7 +100,7 @@ const SeniorManagement = ({
       dispatch(
         setUserApplications({
           entryId,
-          foreign_senior_management: [
+          foreign_executive_management: [
             {
               ...data,
               attachment: {
@@ -108,9 +108,9 @@ const SeniorManagement = ({
                 size: attachmentFile?.size,
                 type: attachmentFile?.type,
               },
-              step: 'foreign_senior_management',
+              step: 'foreign_executive_management',
             },
-            ...foreign_senior_management,
+            ...foreign_executive_management,
           ],
         })
       );
@@ -669,8 +669,8 @@ const SeniorManagement = ({
             </h2>
             <Table
               rowClickHandler={undefined}
-              data={foreign_senior_management?.map(
-                (member: business_senior_management, index: number) => {
+              data={foreign_executive_management?.map(
+                (member: business_executive_management, index: number) => {
                   return {
                     ...member,
                     no: index + 1,
@@ -721,7 +721,7 @@ const SeniorManagement = ({
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!foreign_senior_management?.length) {
+                  if (!foreign_executive_management?.length) {
                     setError('board_of_directors', {
                       type: 'manual',
                       message: 'Add at least one board member',
@@ -732,7 +732,7 @@ const SeniorManagement = ({
                     return;
                   }
                   dispatch(
-                    setForeignBusinessCompletedStep('foreign_senior_management')
+                    setForeignBusinessCompletedStep('foreign_executive_management')
                   );
                   dispatch(
                     setForeignBusinessActiveTab('foreign_preview_submission')
@@ -745,7 +745,7 @@ const SeniorManagement = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                if (!foreign_senior_management?.length) {
+                if (!foreign_executive_management?.length) {
                   setError('submit', {
                     type: 'manual',
                     message: 'Add at least one member',
@@ -759,7 +759,7 @@ const SeniorManagement = ({
                   setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
                 dispatch(
-                  setForeignBusinessCompletedStep('foreign_senior_management')
+                  setForeignBusinessCompletedStep('foreign_executive_management')
                 );
                 dispatch(
                   setForeignBusinessActiveStep('foreign_employment_info')
@@ -786,7 +786,7 @@ const SeniorManagement = ({
           dispatch(
             setUserApplications({
               entryId,
-              foreign_senior_management: foreign_senior_management?.filter(
+              foreign_executive_management: foreign_executive_management?.filter(
                 (_: unknown, index: number) => {
                   return index !== confirmModalData?.no - 1;
                 }

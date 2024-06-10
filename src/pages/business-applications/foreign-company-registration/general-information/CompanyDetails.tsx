@@ -349,7 +349,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       type="radio"
                       label="Yes"
                       value={"yes"}
-                      checked={
+                      defaultChecked={
                         watch("articles_of_association") === "yes" ||
                         company_details?.articles_of_association === "yes"
                       }
@@ -365,7 +365,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       type="radio"
                       label="No"
                       value={"no"}
-                      checked={
+                      defaultChecked={
                         watch("articles_of_association") === "no" ||
                         company_details?.articles_of_association === "no"
                       }

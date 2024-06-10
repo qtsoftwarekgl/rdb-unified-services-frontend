@@ -331,7 +331,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch('has_employees') === 'yes'}
+                      defaultChecked={watch('has_employees') === 'yes'}
                       name={field?.name}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -343,7 +343,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                       type="radio"
                       label="No"
                       name={field?.name}
-                      checked={watch('has_employees') === 'no'}
+                      defaultChecked={watch('has_employees') === 'no'}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setValue(field?.name, 'no');
@@ -468,7 +468,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('senior_management'));
+                  dispatch(setBusinessActiveStep('executive_management'));
                 }}
               />
               {status === 'IS_AMENDING' && (
@@ -532,7 +532,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                 value="Back"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('senior_management'));
+                  dispatch(setBusinessActiveStep('executive_management'));
                 }}
               />
               <Button

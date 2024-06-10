@@ -364,7 +364,7 @@ const BusinessActivity = ({
                         <Input
                           type="radio"
                           label="Yes"
-                          checked={watch("vat") === "yes"}
+                          defaultChecked={watch("vat") === "yes"}
                           value={"yes"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
@@ -374,7 +374,7 @@ const BusinessActivity = ({
                         <Input
                           type="radio"
                           label="No"
-                          checked={watch("vat") === "no"}
+                          defaultChecked={watch("vat") === "no"}
                           value={"no"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);

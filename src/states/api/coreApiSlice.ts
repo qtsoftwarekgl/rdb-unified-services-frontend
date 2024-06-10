@@ -76,6 +76,24 @@ export const coreApiSlice = createApi({
         };
       },
     }),
+
+    // FETCH BUSINESS ACTIVITY SECTORS
+    fetchBusinessActivitiesSectors: builder.query({
+      query: () => {
+        return {
+          url: `/business-activity/sectors`,
+        };
+      },
+    }),
+
+    // FETCH BUSINESS LINES
+    fetchBusinessLines: builder.query({
+      query: ({ sectorCode }) => {
+        return {
+          url: `/business-activity/business-lines?sectorCode=${sectorCode}`,
+        };
+      },
+    }),
   }),
 });
 
@@ -87,6 +105,8 @@ export const {
   useLazyFetchSectorsQuery,
   useLazyFetchCellsQuery,
   useLazyFetchVillagesQuery,
+  useLazyFetchBusinessActivitiesSectorsQuery,
+  useLazyFetchBusinessLinesQuery,
 } = coreApiSlice;
 
 export default coreApiSlice;

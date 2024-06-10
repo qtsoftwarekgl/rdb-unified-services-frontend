@@ -121,14 +121,14 @@ const OwnerDetails = ({ isOpen }: Props) => {
                 <Input
                   type="radio"
                   label="Myself"
-                  checked={watch('name_owner') === 'owner'}
+                  defaultChecked={watch('name_owner') === 'owner'}
                   {...field}
                   value={'owner'}
                 />
                 <Input
                   type="radio"
                   label="Someone else"
-                  checked={watch('name_owner') === 'other'}
+                  defaultChecked={watch('name_owner') === 'other'}
                   {...field}
                   value={'other'}
                 />
@@ -386,7 +386,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       <menu className="flex items-center gap-4 mt-2">
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Male'
                           }
@@ -401,7 +401,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                         />
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Female'
                           }

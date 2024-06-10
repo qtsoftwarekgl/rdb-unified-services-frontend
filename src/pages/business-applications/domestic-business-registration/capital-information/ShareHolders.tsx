@@ -452,7 +452,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                               <Input
                                 type="radio"
                                 label="Yes"
-                                checked={watch('rwandan_company') === 'yes'}
+                                defaultChecked={watch('rwandan_company') === 'yes'}
                                 {...field}
                                 value="yes"
                                 onChange={(e) => {
@@ -466,7 +466,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                               <Input
                                 type="radio"
                                 label="No"
-                                checked={watch('rwandan_company') === 'no'}
+                                defaultChecked={watch('rwandan_company') === 'no'}
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
@@ -837,7 +837,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                       <menu className="flex items-center gap-4 mt-2">
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Male'
                           }
@@ -847,7 +847,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                         />
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Female'
                           }

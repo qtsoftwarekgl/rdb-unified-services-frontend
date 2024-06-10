@@ -62,8 +62,8 @@ console.log(id)
     viewedCompany?.foreign_company_activities ||
     null;
   const companyManagementMembers =
-    viewedCompany?.senior_management ||
-    viewedCompany?.foreign_senior_management ||
+    viewedCompany?.executive_management ||
+    viewedCompany?.foreign_executive_management ||
     [];
   const employment_info =
     viewedCompany?.employment_info ||

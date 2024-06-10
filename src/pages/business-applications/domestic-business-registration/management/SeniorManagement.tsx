@@ -31,7 +31,7 @@ import ViewDocument from "../../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 import BusinessPersonDetails from "../BusinessPersonDetails";
 
-export interface business_senior_management {
+export interface business_executive_management {
   first_name: string;
   middle_name: string;
   last_name: string;
@@ -41,14 +41,14 @@ export interface business_senior_management {
 
 interface SeniorManagementProps {
   isOpen: boolean;
-  senior_management: business_senior_management[];
+  executive_management: business_executive_management[];
   entryId: string | null;
   status: string;
 }
 
 const SeniorManagement: FC<SeniorManagementProps> = ({
   isOpen,
-  senior_management = [],
+  executive_management = [],
   entryId,
   status,
 }) => {
@@ -89,7 +89,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
   });
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
-  const [seniorManagementDetails, setSeniorManagementDetails] = useState<business_senior_management | null>(null);
+  const [seniorManagementDetails, setSeniorManagementDetails] = useState<business_executive_management | null>(null);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
@@ -118,7 +118,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
           entryId,
           active_tab: 'management',
           active_step: 'employment_info',
-          senior_management: [
+          executive_management: [
             {
               ...data,
               attachment: {
@@ -127,7 +127,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 type: attachmentFile?.type,
               },
             },
-            ...senior_management,
+            ...executive_management,
           ],
         })
       );
@@ -219,8 +219,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       dispatch(
                         setUserApplications({
                           entryId,
-                          senior_management: senior_management?.filter(
-                            (manager: business_senior_management) => {
+                          executive_management: executive_management?.filter(
+                            (manager: business_executive_management) => {
                               return manager?.id !== row?.original?.id;
                             }
                           ),
@@ -840,8 +840,8 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             </h2>
             <Table
               data={
-                senior_management?.length > 0
-                  ? senior_management?.map((member, index) => {
+                executive_management?.length > 0
+                  ? executive_management?.map((member, index) => {
                       return {
                         ...member,
                         no: index + 1,
@@ -892,7 +892,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   disabled={Object.keys(errors).length > 0 || disableForm}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (!senior_management?.length) {
+                    if (!executive_management?.length) {
                       setError('submit', {
                         type: 'manual',
                         message: 'Add at least one member',
@@ -902,7 +902,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       }, 5000);
                       return;
                     }
-                    dispatch(setBusinessCompletedStep('senior_management'));
+                    dispatch(setBusinessCompletedStep('executive_management'));
                     dispatch(setBusinessActiveTab('preview_submission'));
                     dispatch(setBusinessActiveStep('preview_submission'));
                   }}
@@ -915,7 +915,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   disabled={disableForm || Object.keys(errors).length > 0}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (!senior_management?.length) {
+                    if (!executive_management?.length) {
                       setError('submit', {
                         type: 'manual',
                         message: 'Add at least one member',
@@ -925,7 +925,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                       }, 5000);
                       return;
                     }
-                    dispatch(setBusinessCompletedStep('senior_management'));
+                    dispatch(setBusinessCompletedStep('executive_management'));
                     dispatch(setBusinessActiveTab('preview_submission'));
                     dispatch(setBusinessActiveStep('preview_submission'));
                   }}
@@ -937,7 +937,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!senior_management?.length) {
+                  if (!executive_management?.length) {
                     setError('submit', {
                       type: 'manual',
                       message: 'Add at least one member',
@@ -950,7 +950,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   dispatch(
                     setUserApplications({ entryId, status: 'IN_PROGRESS' })
                   );
-                  dispatch(setBusinessCompletedStep('senior_management'));
+                  dispatch(setBusinessCompletedStep('executive_management'));
                   dispatch(setBusinessActiveStep('employment_info'));
                 }}
               />

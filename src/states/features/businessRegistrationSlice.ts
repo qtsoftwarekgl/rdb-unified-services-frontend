@@ -56,15 +56,15 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
       completed: false,
       steps: [
         {
-          label: 'Board of Directors',
-          name: 'board_of_directors',
+          label: 'Executive Management',
+          name: 'executive_management',
           tab_name: 'management',
           active: false,
           completed: false,
         },
         {
-          label: 'Senior Management',
-          name: 'senior_management',
+          label: 'Board of Directors',
+          name: 'board_of_directors',
           tab_name: 'management',
           active: false,
           completed: false,
@@ -288,7 +288,6 @@ export const businessRegistrationSlice = createSlice({
         'business_registration_tabs',
         JSON.stringify(updatedRegistrationTabs)
       );
-      
     },
 
     // SET COMPLETED STEP
@@ -385,34 +384,34 @@ export const businessRegistrationSlice = createSlice({
     // SET CAPITAL DETAILS MODAL
     setCapitalDetailsModal: (state, action) => {
       state.capitalDetailsModal = action.payload;
+    },
+
+    // SET CONFIRM DELETE MODAL
+    setConfirmDeleteModal: (state, action) => {
+      state.confirmDeleteModal = action.payload;
+    },
+
+    // SET SHAREHOLDER DETAILS MODAL
+    setShareholderDetailsModal: (state, action) => {
+      state.shareholderDetailsModal = action.payload;
+    },
+
+    // SET BENEFICIAL OWNER DETAILS MODAL
+    setBeneficialOwnerDetailsModal: (state, action) => {
+      state.beneficialOwnerDetailsModal = action.payload;
+    },
+
+    // SET PERSON DETAILS MODAL
+    setBusinessPersonDetailsModal: (state, action) => {
+      state.businessPersonDetailsModal = action.payload;
+    },
+
+    // SET DELETE APPLICATION MODAL
+    setDeleteApplicationModal: (state, action) => {
+      state.deleteApplicationModal = action.payload;
+    },
   },
-
-  // SET CONFIRM DELETE MODAL
-  setConfirmDeleteModal: (state, action) => {
-    state.confirmDeleteModal = action.payload;
-  },
-
-  // SET SHAREHOLDER DETAILS MODAL
-  setShareholderDetailsModal: (state, action) => {
-    state.shareholderDetailsModal = action.payload;
-  },
-
-  // SET BENEFICIAL OWNER DETAILS MODAL
-  setBeneficialOwnerDetailsModal: (state, action) => {
-    state.beneficialOwnerDetailsModal = action.payload;
-  },
-
-  // SET PERSON DETAILS MODAL
-  setBusinessPersonDetailsModal: (state, action) => {
-    state.businessPersonDetailsModal = action.payload;
-  },
-
-  // SET DELETE APPLICATION MODAL
-  setDeleteApplicationModal: (state, action) => {
-    state.deleteApplicationModal = action.payload;
-  }
-
-}});
+});
 
 export default businessRegistrationSlice.reducer;
 
@@ -429,5 +428,5 @@ export const {
   setShareholderDetailsModal,
   setBeneficialOwnerDetailsModal,
   setBusinessPersonDetailsModal,
-  setDeleteApplicationModal
+  setDeleteApplicationModal,
 } = businessRegistrationSlice.actions;

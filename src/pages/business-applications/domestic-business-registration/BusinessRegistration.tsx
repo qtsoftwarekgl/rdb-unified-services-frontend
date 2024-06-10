@@ -10,7 +10,6 @@ import {
 } from '../../../states/features/businessRegistrationSlice';
 import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
-import BusinessActivity from './general-information/BusinessActivity';
 import BoardDirectors from './management/BoardDirectors';
 import SeniorManagement from './management/SeniorManagement';
 import EmploymentInfo from './management/EmploymentInfo';
@@ -27,6 +26,7 @@ import {
   setApplicationReviewTabName,
 } from '@/states/features/applicationReviewSlice';
 import queryString, { ParsedQuery } from 'query-string';
+import BusinessActivities from './general-information/BusinessActivities';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -77,27 +77,19 @@ const BusinessRegistration = () => {
                 active_tab={business_active_tab}
               >
                 {business_active_step?.name === 'company_details' && (
-                  <CompanyDetails
-                    businessId={queryParams?.businessId}
-                  />
+                  <CompanyDetails businessId={queryParams?.businessId} />
                 )}
                 {business_active_step?.name === 'company_address' && (
-                  <CompanyAddress
-                    businessId={queryParams?.businessId}
-                  />
+                  <CompanyAddress businessId={queryParams?.businessId} />
                 )}
-               {/* {business_active_step?.name === 'business_activity_vat' && (
-                  <BusinessActivity
-                    isOpen={
-                      business_active_step?.name === 'business_activity_vat'
-                    }
-                    company_activities={businessApplication?.company_activities}
+                {business_active_step?.name === 'business_activity_vat' && (
+                  <BusinessActivities
                     businessId={queryParams?.businessId}
-                    status={status}
+                    status={"IN_PROGRESS"}
                   />
                 )}
 
-                {business_active_step?.name === 'board_of_directors' && (
+                {/* {business_active_step?.name === 'board_of_directors' && (
                   <BoardDirectors
                     isOpen={business_active_step?.name === 'board_of_directors'}
                     board_of_directors={businessApplication?.board_of_directors}
@@ -106,10 +98,10 @@ const BusinessRegistration = () => {
                   />
                 )}
 
-                {business_active_step?.name === 'senior_management' && (
+                {business_active_step?.name === 'executive_management' && (
                   <SeniorManagement
-                    isOpen={business_active_step?.name === 'senior_management'}
-                    senior_management={businessApplication?.senior_management}
+                    isOpen={business_active_step?.name === 'executive_management'}
+                    executive_management={businessApplication?.executive_management}
                     businessId={queryParams?.businessId}
                     status={status}
                   />

@@ -83,7 +83,7 @@ const Input: FC<InputProps> = ({
           type={type}
           name={name}
           value={value}
-          defaultChecked={defaultChecked}
+          defaultdefaultChecked={defaultChecked}
           onChange={onChange}
           className={`w-4 h-4 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />

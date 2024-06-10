@@ -50,3 +50,8 @@ type Address = {
 };
 
 export type businessId = string | number | (string | number | null)[] | null;
+
+export type BusinessActivity = {
+  code: number;
+  description: string;
+};

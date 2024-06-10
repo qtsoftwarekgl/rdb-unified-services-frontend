@@ -189,7 +189,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                     <Input
                       type="radio"
                       label="Male"
-                      checked={watch('gender') === 'Male'}
+                      defaultChecked={watch('gender') === 'Male'}
                       {...field}
                     />
                   )}
@@ -198,7 +198,7 @@ const RwandanRegistrationForm: FC<RwandanRegistrationFormProps> = ({
                       type="radio"
                       label="Female"
                       {...field}
-                      checked={watch('gender') === 'Female'}
+                      defaultChecked={watch('gender') === 'Female'}
                     />
                   )}
                 </menu>
