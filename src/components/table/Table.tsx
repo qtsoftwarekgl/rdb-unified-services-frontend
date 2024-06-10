@@ -35,12 +35,12 @@ interface DataTableProps<TData, TValue> {
   showFilter?: boolean;
   showPagination?: boolean;
   showExport?: boolean;
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  setPage: (page: number) => UnknownAction;
-  setSize: (size: number) => UnknownAction;
+  page?: number;
+  size?: number;
+  totalElements?: number;
+  totalPages?: number;
+  setPage?: (page: number) => UnknownAction;
+  setSize?: (size: number) => UnknownAction;
 }
 
 export default function Table<TData, TValue>({

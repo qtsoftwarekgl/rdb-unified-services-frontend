@@ -1,50 +1,40 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../../../../components/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Select from "../../../../components/inputs/Select";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import Loader from '../../../../components/Loader';
+import Select from '../../../../components/inputs/Select';
 import {
   companyCategories,
   companyPositions,
   companyTypes,
   privateCompanyTypes,
-} from "../../../../constants/businessRegistration";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+} from '../../../../constants/businessRegistration';
+import Button from '../../../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setBusinessActiveStep } from '../../../../states/features/businessRegistrationSlice';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
+import { businessId } from '@/types/models/business';
+import { toast } from 'react-toastify';
+import { ErrorResponse, Link } from 'react-router-dom';
 import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-  setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
-
-export interface business_company_details {
-  name: string;
-  category: string;
-  type: string;
-  position: string;
-  articles_of_association: string;
-  step: string;
-  name_reserved?: boolean;
-}
+  setBusiness,
+  setNameAvailabilitiesList,
+  setSimilarBusinessNamesModal,
+} from '@/states/features/businessSlice';
+import {
+  useLazyGetBusinessQuery,
+  useLazySearchBusinessNameAvailabilityQuery,
+} from '@/states/api/businessRegistrationApiSlice';
+import { convertDecimalToPercentage } from '@/helpers/strings';
+import SimilarBusinessNames from './SimilarBusinessNames';
 
 interface CompanyDetailsProps {
-  isOpen: boolean;
-  entryId: string | null;
-  company_details: business_company_details | null;
-  status: string;
+  businessId: businessId;
 }
 
-const CompanyDetails: FC<CompanyDetailsProps> = ({
-  isOpen,
-  entryId,
-  company_details,
-  status,
-}) => {
+const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -58,361 +48,333 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   } = useForm();
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    submit: false,
-    preview: false,
-    amend: false,
-  });
-  const [searchCompany, setSearchCompany] = useState({
-    error: false,
-    success: false,
-    loading: false,
-    name: "",
-  });
+  const { business, nameAvailabilitiesList } = useSelector(
+    (state: RootState) => state.business
+  );
   const [companyTypesOptions, setBusinessTypesOptions] = useState(companyTypes);
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
+  // INITIALIZE GET BUSINESS QUERY
+  const [
+    getBusiness,
+    {
+      data: businessData,
+      error: businessError,
+      isLoading: businessIsLoading,
+      isError: businessIsError,
+      isSuccess: businessIsSuccess,
+    },
+  ] = useLazyGetBusinessQuery();
+
+  // GET BUSINESS
   useEffect(() => {
-    if (watch("category") === "public") {
+    if (businessId) {
+      getBusiness({ id: businessId });
+    }
+  }, [getBusiness, businessId]);
+
+  // HANDLE GET BUSINESS RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      if ((businessError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching business data');
+      } else {
+        toast.error((businessError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessIsSuccess) {
+      dispatch(setBusiness(businessData?.data));
+    }
+  }, [
+    businessData,
+    businessError,
+    businessIsError,
+    businessIsSuccess,
+    dispatch,
+  ]);
+
+  // INITIALIZE SEARCH BUSINESS NAME AVAILABILITY QUERY
+  const [
+    searchBusinessNameAvailability,
+    {
+      data: searchBusinessNameData,
+      isLoading: searchBusinessNameIsLoading,
+      error: searchBusinessNameError,
+      isError: searchBusinessNameIsError,
+      isSuccess: searchBusinessNameIsSuccess,
+    },
+  ] = useLazySearchBusinessNameAvailabilityQuery();
+
+  // HANDLE SEARCH BUSINESS NAME AVAILABILITY RESPONSE
+  useEffect(() => {
+    if (searchBusinessNameIsError) {
+      if ((searchBusinessNameError as ErrorResponse)?.status === 500) {
+        toast.error(
+          'An error occurred while searching for business name availability'
+        );
+      } else {
+        toast.error((searchBusinessNameError as ErrorResponse)?.data?.message);
+      }
+    } else if (searchBusinessNameIsSuccess) {
+      if (searchBusinessNameIsSuccess) {
+        dispatch(setNameAvailabilitiesList(searchBusinessNameData?.data));
+      }
+    }
+  }, [
+    dispatch,
+    searchBusinessNameData?.data,
+    searchBusinessNameError,
+    searchBusinessNameIsError,
+    searchBusinessNameIsSuccess,
+  ]);
+
+  // SET BUSINESS CATEGORY OPTIONS
+  useEffect(() => {
+    if (watch('category') === 'public') {
       setBusinessTypesOptions(companyTypes);
-    } else if (watch("category") === "private") {
+    } else if (watch('category') === 'private') {
       setBusinessTypesOptions(privateCompanyTypes);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("category")]);
+  }, [watch('category')]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setTimeout(() => {
-      // SET ACTIVE TAB AND STEP
-      let active_tab = "general_information";
-      let active_step = "company_address";
-
-      if ((['in_preview', 'action_required'].includes(status))) {
-        active_tab = "preview_submission";
-        active_step = "preview_submission";
-      }
-
-      dispatch(
-        setUserApplications({
-          entryId,
-          active_tab: "general_information",
-          active_step: "company_address",
-          status: "IN_PROGRESS",
-          company_details: {
-            ...company_details,
-            name: data?.name,
-            category: data?.category,
-            type: data?.type,
-            position: data?.position,
-            articles_of_association: data?.articles_of_association,
-            step: "company_details",
-          },
-        })
-      );
-
-      // SET CURRENT STEP AS COMPLETED
-      dispatch(setBusinessCompletedStep("company_details"));
-
-      // SET ACTIVE TAB
-      dispatch(setBusinessActiveTab(active_tab));
-
-      // SET ACTIVE STEP
-      dispatch(setBusinessActiveStep(active_step));
-
-      // RESET LOADING STATE
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-      });
-    }, 1000);
+    console.log(data);
   };
-
-  // HANDLE DEFAULT VALUES
-  useEffect(() => {
-    if (company_details) {
-      setValue("name", company_details?.name);
-      setValue("category", company_details?.category);
-      setValue("type", company_details?.type);
-      setValue("position", company_details?.position);
-      setValue(
-        "articles_of_association",
-        company_details?.articles_of_association
-      );
-    }
-  }, [company_details, setValue]);
-
-  if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-4">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              name="name"
-              control={control}
-              defaultValue={company_details?.name || watch('name')}
-              rules={{ required: 'Company name is required' }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col items-start w-full gap-1">
-                    <Input
-                      label="Search company name"
-                      required
-                      defaultValue={company_details?.name}
-                      suffixIcon={
-                        company_details?.name_reserved ? undefined : faSearch
-                      }
-                      readOnly={company_details?.name_reserved ? true : false}
-                      suffixIconPrimary
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSearchCompany({
-                          ...searchCompany,
-                          name: e.target.value,
-                          error: false,
-                          success: false,
-                          loading: false,
-                        });
-                        setError('name', {
-                          type: 'manual',
-                          message:
-                            'Check if company name is available before proceeding',
-                        });
-                      }}
-                      suffixIconHandler={(e) => {
-                        e.preventDefault();
-                        if (!field?.value) {
-                          return;
-                        }
-                        clearErrors('name');
-                        setSearchCompany({
-                          ...searchCompany,
-                          loading: true,
-                          error: false,
-                          success: false,
-                        });
-                        setTimeout(() => {
-                          if (field?.value?.toLowerCase() === 'xyz') {
-                            setValue('name', searchCompany.name);
-                            setSearchCompany({
-                              ...searchCompany,
-                              loading: false,
-                              success: true,
-                              error: false,
-                            });
-                          } else {
-                            setSearchCompany({
-                              ...searchCompany,
-                              loading: false,
-                              success: false,
-                              error: true,
-                            });
+      {businessIsLoading && (
+        <figure className="h-[40vh] flex items-center justify-center">
+          <Loader />
+        </figure>
+      )}
+      {businessIsSuccess && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <fieldset
+            className="flex flex-col w-full gap-6"
+            disabled={disableForm}
+          >
+            <menu className="flex items-start w-full gap-6">
+              <Controller
+                name="companyName"
+                control={control}
+                rules={{ required: 'Company name is required' }}
+                defaultValue={business?.companyName}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-full gap-1">
+                      <Input
+                        label="Search company name"
+                        required
+                        suffixIconPrimary
+                        suffixIcon={faSearch}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setError('name', {
+                            type: 'manual',
+                            message:
+                              'Check if company name is available before proceeding',
+                          });
+                        }}
+                        suffixIconHandler={(e) => {
+                          e.preventDefault();
+                          if (!field?.value) {
+                            return;
                           }
-                        }, 1000);
-                      }}
-                    />
-                    <menu
-                      className={`flex flex-col gap-1 w-full my-1 ${
-                        !Object.values(searchCompany).includes(true) && 'hidden'
-                      }`}
-                    >
-                      <article
-                        className={`${
-                          searchCompany.loading ? 'flex' : 'hidden'
-                        } text-[12px] items-center`}
-                      >
-                        <Loader size={4} /> Checking if "{searchCompany.name}"
-                        exists
-                      </article>
-                      <p
-                        className={`${
-                          searchCompany.error && searchCompany?.name
-                            ? 'flex'
-                            : 'hidden'
-                        } text-[12px] items-center text-red-500 gap-2`}
-                      >
-                        {searchCompany.name} is already taken. Please try
-                        another name
-                      </p>
-                      <p
-                        className={`${
-                          searchCompany.success ? 'flex' : 'hidden'
-                        } text-[12px] items-center gap-2 text-green-600`}
-                      >
-                        {searchCompany.name} is available{' '}
-                        <span className="w-fit">
-                          <FontAwesomeIcon
-                            icon={faCheck}
-                            className="text-green-600"
-                          />
-                        </span>
-                      </p>
-                    </menu>
-                    {errors.name && (
-                      <p className="text-xs text-red-500">
-                        {String(errors.name.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              control={control}
-              name="category"
-              defaultValue={company_details?.category}
-              rules={{ required: 'Select company category' }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      label="Company category"
-                      required
-                      placeholder="Select company category"
-                      options={companyCategories?.map((category) => {
-                        return {
-                          ...category,
-                          value: category?.value,
-                          label: category?.label,
-                        };
-                      })}
-                      defaultValue={company_details?.category}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e);
-                        await trigger(field?.name);
-                      }}
-                    />
-                    {errors?.category && (
-                      <p className="text-xs text-red-500">
-                        {String(errors?.category?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              control={control}
-              name="type"
-              defaultValue={company_details?.type}
-              rules={{ required: 'Select company type' }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      defaultValue={company_details?.type}
-                      label="Company type"
-                      required
-                      placeholder="Select company type"
-                      options={companyTypesOptions?.map((type) => {
-                        return {
-                          ...type,
-                          value: type?.value,
-                          label: type?.label,
-                        };
-                      })}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e);
-                        await trigger(field?.name);
-                      }}
-                    />
-                    {errors?.type && (
-                      <p className="text-xs text-red-500">
-                        {String(errors?.type?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              control={control}
-              name="position"
-              defaultValue={company_details?.position}
-              rules={{ required: 'Select your position' }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      defaultValue={company_details?.position}
-                      label="Your position"
-                      required
-                      placeholder="Select your position"
-                      options={companyPositions?.map((position) => {
-                        return {
-                          ...position,
-                          value: position?.value,
-                          label: position?.label,
-                        };
-                      })}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e);
-                        await trigger(field?.name);
-                      }}
-                    />
-                    {errors?.position && (
-                      <p className="text-xs text-red-500">
-                        {String(errors?.position?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu className="flex flex-col w-full gap-2 my-2">
-            <h4>Does the company have Articles of Association?</h4>
-            <Controller
-              control={control}
-              name="articles_of_association"
-              rules={{ required: 'Select one of the choices provided' }}
-              render={({ field }) => {
-                return (
-                  <ul className="flex items-center gap-6">
-                    <Input
-                      type="radio"
-                      label="Yes"
-                      checked={watch('articles_of_association') === 'yes'}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e.target.value);
-                        await trigger(field?.name);
-                      }}
-                      value={'yes'}
-                    />
-                    <Input
-                      type="radio"
-                      label="No"
-                      checked={watch('articles_of_association') === 'no'}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e.target.value);
-                        await trigger(field?.name);
-                      }}
-                      value={'no'}
-                    />
-                    {errors?.articles_of_association && (
-                      <p className="text-xs text-red-500">
-                        {String(errors?.articles_of_association?.message)}
-                      </p>
-                    )}
-                  </ul>
-                );
-              }}
-            />
-          </menu>
-          {['IN_PROGRESS', 'in_preview', 'action_required', 'is_amending'].includes(
-            status
-          ) && (
+                          clearErrors('name');
+                          searchBusinessNameAvailability({
+                            companyName: field?.value,
+                          });
+                        }}
+                      />
+                      <menu className="flex w-full flex-col gap-2">
+                        {searchBusinessNameIsLoading && (
+                          <figure className="flex items-center gap-2">
+                            <Loader />
+                            <p>Searching...</p>
+                          </figure>
+                        )}
+                        {searchBusinessNameIsSuccess &&
+                          nameAvailabilitiesList?.length && (
+                            <section className="flex flex-col gap-1">
+                              <p className="text-[11px] text-red-600">
+                                The given name has a similarity of up to{' '}
+                                {convertDecimalToPercentage(
+                                  nameAvailabilitiesList[0]?.similarity
+                                )}
+                                % with other business names. Consider changing
+                                it to avoid conflicts.
+                              </p>
+                              <Link
+                                to={'#'}
+                                className="text-[11px] underline text-primary"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  dispatch(setSimilarBusinessNamesModal(true));
+                                }}
+                              >
+                                Click to find conflicting business names
+                              </Link>
+                            </section>
+                          )}
+                      </menu>
+                      {errors.companyName && (
+                        <p className="text-xs text-red-500">
+                          {String(errors.companyName.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                control={control}
+                name="companyCategory"
+                rules={{ required: 'Select company category' }}
+                defaultValue={business?.companyCategory}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        label="Company category"
+                        required
+                        placeholder="Select company category"
+                        options={companyCategories?.map((category) => {
+                          return {
+                            ...category,
+                            value: category?.value,
+                            label: category?.label,
+                          };
+                        })}
+                        {...field}
+                        onChange={async (e) => {
+                          field.onChange(e);
+                          await trigger(field?.name);
+                        }}
+                      />
+                      {errors?.companyCategory && (
+                        <p className="text-xs text-red-500">
+                          {String(errors?.companyCategory?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            </menu>
+            <menu className="flex items-start w-full gap-6">
+              <Controller
+                control={control}
+                name="companyType"
+                rules={{ required: 'Select company type' }}
+                defaultValue={business?.companyType}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        label="Company type"
+                        required
+                        placeholder="Select company type"
+                        options={companyTypesOptions?.map((type) => {
+                          return {
+                            ...type,
+                            value: type?.value,
+                            label: type?.label,
+                          };
+                        })}
+                        {...field}
+                        onChange={async (e) => {
+                          field.onChange(e);
+                          await trigger(field?.name);
+                        }}
+                      />
+                      {errors?.companyType && (
+                        <p className="text-xs text-red-500">
+                          {String(errors?.companyType?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                control={control}
+                name="position"
+                rules={{ required: 'Select your position' }}
+                defaultValue={business?.position}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        label="Your position"
+                        required
+                        placeholder="Select your position"
+                        options={companyPositions?.map((position) => {
+                          return {
+                            ...position,
+                            value: position?.value,
+                            label: position?.label,
+                          };
+                        })}
+                        {...field}
+                        onChange={async (e) => {
+                          field.onChange(e);
+                          await trigger(field?.name);
+                        }}
+                      />
+                      {errors?.position && (
+                        <p className="text-xs text-red-500">
+                          {String(errors?.position?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            </menu>
+            <menu className="flex flex-col w-full gap-2 my-2">
+              <h4>Does the company have Articles of Association?</h4>
+              <Controller
+                control={control}
+                name="hasArticlesOfAssociation"
+                rules={{ required: 'Select one of the choices provided' }}
+                render={({ field }) => {
+                  return (
+                    <ul className="flex items-center gap-6">
+                      <Input
+                        type="radio"
+                        label="Yes"
+                        checked={business?.hasArticlesOfAssociation}
+                        {...field}
+                        onChange={async (e) => {
+                          field.onChange(e.target.value);
+                          await trigger(field?.name);
+                        }}
+                        value={'yes'}
+                      />
+                      <Input
+                        type="radio"
+                        label="No"
+                        checked={!business?.hasArticlesOfAssociation}
+                        {...field}
+                        onChange={async (e) => {
+                          field.onChange(e.target.value);
+                          await trigger(field?.name);
+                        }}
+                        value={'no'}
+                      />
+                      {errors?.hasArticlesOfAssociation && (
+                        <p className="text-xs text-red-500">
+                          {String(errors?.hasArticlesOfAssociation?.message)}
+                        </p>
+                      )}
+                    </ul>
+                  );
+                }}
+              />
+            </menu>
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
@@ -421,87 +383,29 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 value="Back"
                 route="/business-registration/new"
               />
-              {status === 'is_amending' && (
+              <Button primary value={'Save & Continue'} submit />
+            </menu>
+            {['IN_REVIEW'].includes(business.applicationStatus) && (
+              <menu className="flex items-center w-full gap-3 justify-between">
                 <Button
-                  value={'Complete Amendment'}
-                  submit
-                  onClick={() => {
-                    setIsLoading({
-                      ...isLoading,
-                      preview: true,
-                      submit: false,
-                      amend: false,
-                    });
+                  value="Back"
+                  route="/business-registration/new"
+                  disabled
+                />
+                <Button
+                  value={'Next'}
+                  primary
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(setBusinessActiveStep('company_address'));
                   }}
                 />
-              )}
-              {['in_preview', 'action_required'].includes(status) && (
-                <Button
-                  value={
-                    isLoading?.preview ? <Loader /> : 'Save & Complete Review'
-                  }
-                  submit
-                  primary={!searchCompany?.error}
-                  disabled={
-                    searchCompany?.error ||
-                    disableForm ||
-                    Object.keys(errors).length > 0
-                  }
-                  onClick={async () => {
-                    await trigger();
-                    if (Object.keys(errors)?.length) {
-                      return;
-                    }
-                    setIsLoading({
-                      ...isLoading,
-                      preview: true,
-                      submit: false,
-                      amend: false,
-                    });
-                  }}
-                />
-              )}
-              <Button
-                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-                primary={!searchCompany?.error}
-                disabled={
-                  searchCompany?.error ||
-                  disableForm ||
-                  Object.keys(errors).length > 0
-                }
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
-                  setIsLoading({
-                    ...isLoading,
-                    submit: true,
-                    preview: false,
-                  });
-                  dispatch(
-                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
-                  );
-                }}
-                submit
-              />
-            </menu>
-          )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
-            <menu className="flex items-center w-full gap-3 justify-between">
-              <Button
-                value="Back"
-                route="/business-registration/new"
-                disabled
-              />
-              <Button value={'Next'} primary onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep('company_address'));
-              }} />
-            </menu>
-          )}
-        </fieldset>
-      </form>
+              </menu>
+            )}
+          </fieldset>
+        </form>
+      )}
+      <SimilarBusinessNames companyName={watch('companyName')} />
     </section>
   );
 };

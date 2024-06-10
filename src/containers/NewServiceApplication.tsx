@@ -198,6 +198,10 @@ const NewServiceApplication = () => {
                   />
                 </menu>
               }
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`${service?.path}?businessId=${row.original.id}`);
+              }}
               styled={false}
               className="!bg-transparent"
             />
@@ -210,7 +214,10 @@ const NewServiceApplication = () => {
               value={
                 <menu className="flex p-1 px-3 bg-red-600 rounded-md items-center gap-1 transition-all duration-200 hover:gap-2">
                   <p className="text-[12px] text-white">Discard</p>
-                  <FontAwesomeIcon className="text-[12px] text-white" icon={faTrash} />
+                  <FontAwesomeIcon
+                    className="text-[12px] text-white"
+                    icon={faTrash}
+                  />
                 </menu>
               }
               styled={false}

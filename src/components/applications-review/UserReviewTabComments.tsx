@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
 import Modal from '../Modal';
 import { setUserReviewTabCommentsModal } from '../../states/features/userApplicationSlice';
-import { TabType } from '../../navigationTypes/navigationTypes';
+import { TabType } from '../../types/navigationTypes';
 import { FC } from 'react';
 import { formatDate } from '../../helpers/strings';
 import { ReviewComment } from './AddReviewComments';

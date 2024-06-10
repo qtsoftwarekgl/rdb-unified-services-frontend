@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { TabType } from "../../navigationTypes/navigationTypes";
+import { TabType } from "../../types/navigationTypes";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { ReviewComment } from "../applications-review/AddReviewComments";
 import {

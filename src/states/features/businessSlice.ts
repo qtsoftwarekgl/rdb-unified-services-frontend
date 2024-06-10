@@ -9,7 +9,12 @@ const initialState: {
   totalElements: number;
   totalPages: number;
   selectedBusiness: Business;
-deleteBusinessModal: boolean;
+  deleteBusinessModal: boolean;
+  nameAvailabilitiesList: {
+    companyName: string;
+    similarity: string | number;
+  }[];
+  similarBusinessNamesModal: boolean;
 } = {
   businessesList: [],
   business: {} as Business,
@@ -19,6 +24,8 @@ deleteBusinessModal: boolean;
   totalPages: 1,
   selectedBusiness: {} as Business,
   deleteBusinessModal: false,
+  nameAvailabilitiesList: [],
+  similarBusinessNamesModal: false,
 };
 
 export const businessSlice = createSlice({
@@ -48,7 +55,13 @@ export const businessSlice = createSlice({
     },
     setDeleteBusinessModal: (state, action) => {
       state.deleteBusinessModal = action.payload;
-    }
+    },
+    setNameAvailabilitiesList: (state, action) => {
+      state.nameAvailabilitiesList = action.payload;
+    },
+    setSimilarBusinessNamesModal: (state, action) => {
+      state.similarBusinessNamesModal = action.payload;
+    },
   },
 });
 
@@ -62,5 +75,7 @@ export const {
   setBusinessTotalPages,
   setBusiness,
   setDeleteBusinessModal,
-  setSelectedBusiness
+  setSelectedBusiness,
+  setNameAvailabilitiesList,
+  setSimilarBusinessNamesModal,
 } = businessSlice.actions;

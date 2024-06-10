@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../../components/inputs/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../states/store';
-import { Step, TabType } from '../../../navigationTypes/navigationTypes';
+import { Step, TabType } from '../../../types/navigationTypes';
 import { Link, useNavigate } from 'react-router-dom';
 import { FC, useState } from 'react';
 import { UnknownAction } from '@reduxjs/toolkit';

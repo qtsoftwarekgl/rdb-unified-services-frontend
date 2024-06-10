@@ -72,6 +72,15 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // SEARCH BUSINESS NAME AVAILABILITY
+      searchBusinessNameAvailability: builder.query({
+        query: ({ companyName }) => {
+          return {
+            url: `/search-availability?companyName=${companyName}`,
+          };
+        },
+      }),
     };
   },
 });
@@ -82,6 +91,7 @@ export const {
   useLazyGetBusinessQuery,
   useCreateBusinessMutation,
   useDeleteBusinessMutation,
+  useLazySearchBusinessNameAvailabilityQuery,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

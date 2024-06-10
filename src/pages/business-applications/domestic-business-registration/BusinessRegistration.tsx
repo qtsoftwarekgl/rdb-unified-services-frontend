@@ -21,16 +21,12 @@ import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 import CompanyAttachments from './attachments/CompanyAttachments';
 import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
 import { useEffect, useState } from 'react';
-import { TabType } from '../../../navigationTypes/navigationTypes';
+import { TabType } from '../../../types/navigationTypes';
 import {
   setApplicationReviewStepName,
   setApplicationReviewTabName,
 } from '@/states/features/applicationReviewSlice';
-import UserReviewStepComment from '@/components/applications-review/UserReviewStepComment';
 import queryString, { ParsedQuery } from 'query-string';
-import { useLazyGetBusinessQuery } from '@/states/api/businessRegistrationApiSlice';
-import { toast } from 'react-toastify';
-import { setBusiness } from '@/states/features/businessSlice';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -45,35 +41,6 @@ const BusinessRegistration = () => {
   const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
     {}
   );
-
-  // INITIALIZE GET BUSINESS QUERY
-  const [getBusiness, {
-    data: businessData,
-    error: businessError,
-    isLoading: businessIsLoading,
-    isError: businessIsError,
-    isSuccess: businessIsSuccess,
-  }] = useLazyGetBusinessQuery();
-
-  // GET BUSINESS
-  useEffect(() => {
-    if (queryParams?.businessId) {
-      getBusiness({ id: queryParams?.businessId });
-    }
-  }, [getBusiness, queryParams?.businessId]);
-
-  // HANDLE GET BUSINESS RESPONSE
-  useEffect(() => {
-    if (businessIsError) {
-      if ((businessError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching business data');
-      } else {
-        toast.error((businessError as ErrorResponse)?.data?.message);
-      }
-    } else if (businessIsSuccess) {
-      dispatch(setBusiness(businessData?.data));
-    }
-  }, [businessData, businessError, businessIsError, businessIsSuccess, dispatch]);
 
   // NAVIGATION
   const { search } = useLocation();
@@ -94,8 +61,7 @@ const BusinessRegistration = () => {
 
   return (
     <UserLayout>
-      {JSON.stringify(business)}
-      {/* <main className="flex flex-col w-full h-screen gap-6 p-8">
+      <main className="flex flex-col w-full h-screen gap-6 p-8">
         <ProgressNavigation
           tabs={business_registration_tabs}
           setActiveTab={setBusinessActiveTab}
@@ -113,12 +79,9 @@ const BusinessRegistration = () => {
                 {business_active_step?.name === 'company_details' && (
                   <CompanyDetails
                     businessId={queryParams?.businessId}
-                    isOpen={business_active_step?.name === 'company_details'}
-                    company_details={businessApplication?.company_details}
-                    status={status}
                   />
                 )}
-                {business_active_step?.name === 'company_address' && (
+                {/* {business_active_step?.name === 'company_address' && (
                   <CompanyAddress
                     isOpen={business_active_step?.name === 'company_address'}
                     company_address={businessApplication?.company_address}
@@ -220,12 +183,12 @@ const BusinessRegistration = () => {
                     business_application={businessApplication}
                     status={status}
                   />
-                )}
+                )} */}
               </Tab>
             );
           })}
         </menu>
-      </main> */}
+      </main>
     </UserLayout>
   );
 };

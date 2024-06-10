@@ -22,15 +22,11 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface CompanyDetailsProps {
-  entryId: string | null;
-  company_details: any;
-  status: string;
+  businessId: string | undefined;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
-  entryId,
-  company_details,
-  status,
+  businessId,
 }) => {
   // REACT HOOK FORM
   const {
@@ -63,20 +59,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entryId,
-          company_details: {
-            ...company_details,
-            name: data?.name,
-            category: data?.category,
-            type: data?.type,
-            position: data?.position,
-            articles_of_association: data?.articles_of_association,
-            step: "company_details",
-          },
-        })
-      );
 
       if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
@@ -94,26 +76,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       });
     }, 1000);
   };
-
-  // HANDLE DEFAULT VALUES
-  useEffect(() => {
-    if (company_details) {
-      setValue("name", company_details?.name);
-      setSearchCompany({
-        ...searchCompany,
-        name: company_details?.name,
-        success: true,
-        error: false,
-      });
-      setValue("category", company_details?.category);
-      setValue("type", company_details?.type);
-      setValue("position", company_details?.position);
-      setValue(
-        "articles_of_association",
-        company_details?.articles_of_association
-      );
-    }
-  }, [company_details, setValue]);
 
   return (
     <section className="flex flex-col w-full gap-4">

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Step, TabType } from "../../navigationTypes/navigationTypes";
+import { Step, TabType } from "../../types/navigationTypes";
 
 export const collateral_registration_tabs_initial_state: Array<TabType> = [
   {

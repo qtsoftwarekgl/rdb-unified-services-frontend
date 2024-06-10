@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from 'crypto';
 
 export type Business = {
   id: UUID;
@@ -30,3 +30,5 @@ export type Business = {
   employmentInfo?: string | object;
   address?: string | object;
 };
+
+export type businessId = string | number | (string | number | null)[] | null;

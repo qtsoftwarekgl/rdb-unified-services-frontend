@@ -20,12 +20,12 @@ import { UnknownAction } from '@reduxjs/toolkit';
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  setPage: (page: number) => UnknownAction;
-  setSize: (size: number) => UnknownAction;
+  page?: number;
+  size?: number;
+  totalElements?: number;
+  totalPages?: number;
+  setPage?: (page: number) => UnknownAction;
+  setSize?: (size: number) => UnknownAction;
 }
 
 export function DataTablePagination<TData>({
@@ -43,11 +43,15 @@ export function DataTablePagination<TData>({
   return (
     <footer className="flex items-center justify-between px-2">
       <article className="flex flex-col gap-1">
-        <p className="flex-1 text-[12px] text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </p>
-        <p className="text-[12px]">Total records: {totalElements}</p>
+        {table.getFilteredSelectedRowModel().rows.length > 0 && (
+          <p className="flex-1 text-[12px] text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </p>
+        )}
+        {totalElements > 0 && (
+          <p className="text-[12px]">Total records: {totalElements}</p>
+        )}
       </article>
       <menu className="flex items-center space-x-6 lg:space-x-8">
         <section className="flex items-center space-x-2">
@@ -56,7 +60,9 @@ export function DataTablePagination<TData>({
             value={`${size}`}
             onValueChange={(value) => {
               table.setPageSize(Number(value));
-              dispatch(setSize(Number(value)));
+              if (setSize) {
+                dispatch(setSize(Number(value)));
+              }
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -93,7 +99,9 @@ export function DataTablePagination<TData>({
                 return;
               } else {
                 table.setPageIndex(Number(e.target.value) - 1);
-                dispatch(setPage(Number(e.target.value)));
+                if (setPage) {
+                  dispatch(setPage(Number(e.target.value)));
+                }
               }
             }}
           />
@@ -105,7 +113,9 @@ export function DataTablePagination<TData>({
             onClick={(e) => {
               e.preventDefault();
               table.setPageIndex(0);
-              dispatch(setPage(1));
+              if (setPage) {
+                dispatch(setPage(1));
+              }
             }}
             disabled={!table.getCanPreviousPage() && page === 1}
           >
@@ -118,7 +128,9 @@ export function DataTablePagination<TData>({
             onClick={(e) => {
               e.preventDefault();
               table.previousPage();
-              dispatch(setPage(page - 1));
+              if (setPage) {
+                dispatch(setPage(page - 1));
+              }
             }}
             disabled={!table.getCanPreviousPage() && page === 1}
           >
@@ -131,7 +143,9 @@ export function DataTablePagination<TData>({
             onClick={(e) => {
               e.preventDefault();
               table.nextPage();
-              dispatch(setPage(page + 1));
+              if (setPage) {
+                dispatch(setPage(page + 1));
+              }
             }}
             disabled={!table.getCanNextPage() && page === totalPages}
           >
@@ -144,7 +158,9 @@ export function DataTablePagination<TData>({
             onClick={(e) => {
               e.preventDefault();
               table.setPageIndex(table.getPageCount() - 1);
-              dispatch(setPage(totalPages));
+              if (setPage) {
+                dispatch(setPage(totalPages));
+              }
             }}
             disabled={!table.getCanNextPage() && page === totalPages}
           >
