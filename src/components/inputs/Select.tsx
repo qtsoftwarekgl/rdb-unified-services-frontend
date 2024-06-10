@@ -9,7 +9,7 @@ import {
 import { FC } from "react";
 
 interface SelectProps {
-  label?: string | undefined;
+  label?: string | number | undefined;
   options?: Array<{ label: string; value: string }>;
   defaultValue?: string | undefined;
   placeholder?: string;

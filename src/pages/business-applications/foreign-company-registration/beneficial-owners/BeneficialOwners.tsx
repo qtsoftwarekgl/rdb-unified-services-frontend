@@ -1620,7 +1620,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             }}
           />
         )}
-        {['in_preview', 'action_required'].includes(status) && (
+        {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
           <Button
             value={"Save & Complete Review"}
             primary

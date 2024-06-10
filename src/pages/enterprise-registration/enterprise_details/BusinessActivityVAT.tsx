@@ -318,7 +318,7 @@ const BusinessActivity = ({
                 dispatch(setEnterpriseActiveStep('company_details'));
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
@@ -337,7 +337,7 @@ const BusinessActivity = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 onClick={async () => {
                   await trigger();

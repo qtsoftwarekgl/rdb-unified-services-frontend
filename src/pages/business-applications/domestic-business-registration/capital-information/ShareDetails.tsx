@@ -148,7 +148,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
       let active_tab = "capital_information";
       let active_step = "shareholders";
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend) {
         active_tab = "preview_submission";
         active_step = "preview_submission";
       }
@@ -328,9 +328,9 @@ const ShareDetails: FC<ShareDetailsProps> = ({
         </fieldset>
         {[
           'IN_PROGRESS',
-          'action_required',
-          'in_preview',
-          'is_amending',
+          'ACTION_REQUIRED',
+          'IN_PREVIEW',
+          'IS_AMENDING',
         ].includes(status) && (
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -344,7 +344,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                 dispatch(setBusinessActiveTab('management'));
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
                 disabled={disableForm || Object.keys(errors)?.length > 0}
@@ -360,7 +360,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
                 submit
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview ? <Loader /> : 'Save & Complete Review'
@@ -399,7 +399,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({
             />
           </menu>
         )}
-        {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+        {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
           <menu className="flex items-center gap-3 justify-between">
             <Button
               value="Back"

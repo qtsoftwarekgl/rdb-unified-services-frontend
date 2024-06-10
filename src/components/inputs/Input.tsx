@@ -32,7 +32,7 @@ interface InputProps {
   prefixIconHandler?: MouseEventHandler<HTMLAnchorElement> | undefined;
   prefixIconPrimary?: boolean;
   prefixText?: string | ReactNode;
-  checked?: boolean | undefined;
+  defaultChecked?: boolean | undefined;
   accept?: string;
   min?: string | number;
   readOnly?: boolean;
@@ -56,13 +56,13 @@ const Input: FC<InputProps> = ({
   prefixIcon = null,
   prefixIconHandler,
   prefixText = null,
-  checked = undefined,
   name,
   accept = '*',
   min,
   readOnly = false,
   labelClassName = '',
   multiple = false,
+  defaultChecked = false,
 }) => {
   const hiddenFileInput = useRef<HTMLButtonElement>(null);
 
@@ -71,6 +71,8 @@ const Input: FC<InputProps> = ({
   useEffect(() => {
     if (!defaultValue && !value && ref?.current) {
       ref.current.value = '';
+    } else if ((defaultValue || value) && ref?.current) {
+      ref.current.value = String(defaultValue || value);
     }
   }, [defaultValue, value]);
 
@@ -81,7 +83,7 @@ const Input: FC<InputProps> = ({
           type={type}
           name={name}
           value={value}
-          checked={checked}
+          defaultChecked={defaultChecked}
           onChange={onChange}
           className={`w-4 h-4 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
@@ -213,6 +215,7 @@ const Input: FC<InputProps> = ({
               type={type || 'text'}
               readOnly={readOnly}
               name={name}
+              ref={ref}
               onChange={onChange}
               placeholder={readOnly ? '' : placeholder}
               className={`py-[7px] px-6 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
@@ -245,6 +248,7 @@ const Input: FC<InputProps> = ({
               onChange={onChange}
               readOnly={readOnly}
               name={name}
+              ref={ref}
               placeholder={readOnly ? '' : placeholder}
               className={`${
                 prefixText && '!ml-16 !w-[85%]'

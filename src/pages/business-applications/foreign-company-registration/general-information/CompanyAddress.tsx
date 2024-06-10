@@ -73,7 +73,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           },
         })
       );
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
@@ -322,7 +322,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (

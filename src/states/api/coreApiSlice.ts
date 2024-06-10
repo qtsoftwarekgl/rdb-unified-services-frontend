@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import store from "store";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import store from 'store';
 
 export const coreApiSlice = createApi({
   reducerPath: 'coreApi',
@@ -31,9 +31,62 @@ export const coreApiSlice = createApi({
         };
       },
     }),
+
+    // FETCH PROVINCES
+    fetchProvinces: builder.query({
+      query: () => {
+        return {
+          url: `/location/provinces`,
+        };
+      },
+    }),
+
+    // FETCH DISTRICTS
+    fetchDistricts: builder.query({
+      query: ({ provinceId }) => {
+        return {
+          url: `/location/districts?provinceId=${provinceId}`,
+        };
+      },
+    }),
+
+    // FETCH SECTORS
+    fetchSectors: builder.query({
+      query: ({ districtId }) => {
+        return {
+          url: `/location/sectors?districtId=${districtId}`,
+        };
+      },
+    }),
+
+    // FETCH CELLS
+    fetchCells: builder.query({
+      query: ({ sectorId }) => {
+        return {
+          url: `/location/cells?sectorId=${sectorId}`,
+        };
+      },
+    }),
+
+    // FETCH VILLAGES
+    fetchVillages: builder.query({
+      query: ({ cellId }) => {
+        return {
+          url: `/location/villages?cellId=${cellId}`,
+        };
+      },
+    }),
   }),
 });
 
-export const { useLazyFetchServicesQuery, useLazyGetServiceQuery } = coreApiSlice;
+export const {
+  useLazyFetchServicesQuery,
+  useLazyGetServiceQuery,
+  useLazyFetchProvincesQuery,
+  useLazyFetchDistrictsQuery,
+  useLazyFetchSectorsQuery,
+  useLazyFetchCellsQuery,
+  useLazyFetchVillagesQuery,
+} = coreApiSlice;
 
 export default coreApiSlice;

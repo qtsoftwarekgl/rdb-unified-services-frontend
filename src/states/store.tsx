@@ -22,6 +22,7 @@ import collateralReviewSlice from './features/collateralReviewSlice';
 import applicationReviewSlice from './features/applicationReviewSlice';
 import serviceSlice from './features/serviceSlice';
 import coreApiSlice from './api/coreApiSlice';
+import locationSlice from './features/locationSlice';
 
 export const store = configureStore({
   reducer: {
@@ -49,6 +50,7 @@ export const store = configureStore({
     collateralReview: collateralReviewSlice,
     applicationReview: applicationReviewSlice,
     service: serviceSlice,
+    location: locationSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(

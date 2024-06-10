@@ -870,10 +870,10 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
             )}
           </section>
           {[
-            'in_preview',
+            'IN_PREVIEW',
             'IN_PROGRESS',
-            'is_amending',
-            'action_required',
+            'IS_AMENDING',
+            'ACTION_REQUIRED',
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -886,7 +886,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   dispatch(setBusinessActiveStep('board_of_directors'));
                 }}
               />
-              {status === 'is_amending' && (
+              {status === 'IS_AMENDING' && (
                 <Button
                   value={'Complete Amendment'}
                   disabled={Object.keys(errors).length > 0 || disableForm}
@@ -908,7 +908,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
                   }}
                 />
               )}
-              {['in_preview', 'action_required'].includes(status) && (
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
                 <Button
                   value="Save & Complete Review"
                   primary
@@ -956,7 +956,7 @@ const SeniorManagement: FC<SeniorManagementProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"

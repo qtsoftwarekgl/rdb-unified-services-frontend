@@ -108,7 +108,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
       let active_step = 'share_details';
 
       if (
-        ['in_preview', 'action_required'].includes(status) ||
+        ['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) ||
         isLoading?.amend
       ) {
         active_tab = 'preview_submission';
@@ -455,9 +455,9 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
             )}
           </menu>
           {[
-            'in_preview',
-            'action_required',
-            'is_amending',
+            'IN_PREVIEW',
+            'ACTION_REQUIRED',
+            'IS_AMENDING',
             'IN_PROGRESS',
           ].includes(status) && (
             <menu
@@ -471,7 +471,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                   dispatch(setBusinessActiveStep('senior_management'));
                 }}
               />
-              {status === 'is_amending' && (
+              {status === 'IS_AMENDING' && (
                 <Button
                   value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
                   onClick={() => {
@@ -485,7 +485,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                   submit
                 />
               )}
-              {['in_preview', 'action_required'].includes(status) && (
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
                 <Button
                   value={
                     isLoading?.preview ? <Loader /> : 'Save & Complete Review'
@@ -524,7 +524,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(
+          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(
             status
           ) && (
             <menu className="flex items-center gap-3 justify-between">

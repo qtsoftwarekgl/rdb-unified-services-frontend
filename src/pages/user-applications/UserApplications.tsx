@@ -33,7 +33,7 @@ const UserApplications = () => {
         'submitted',
         'approved',
         'rejected',
-        'action_required',
+        'ACTION_REQUIRED',
         're_submitted',
       ].includes(app.status)
     )

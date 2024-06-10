@@ -340,7 +340,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           </ul>
         </menu>
       </section>
-      {['IN_PROGRESS', 'is_amending', 'in_preview', 'action_required'].includes(
+      {['IN_PROGRESS', 'IS_AMENDING', 'IN_PREVIEW', 'ACTION_REQUIRED'].includes(
         status
       ) && (
         <menu
@@ -355,7 +355,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               dispatch(setBusinessActiveTab('capital_information'));
             }}
           />
-          {status === 'is_amending' && (
+          {status === 'IS_AMENDING' && (
             <Button
               disabled={disableForm || Object.keys(errors).length > 0}
               value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
@@ -408,7 +408,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               }}
             />
           )}
-          {['in_preview', 'action_required'].includes(status) && (
+          {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
             <Button
               value={isLoading?.preview ? <Loader /> : 'Save & Complete Review'}
               primary
@@ -510,7 +510,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           />
         </menu>
       )}
-      {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+      {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"

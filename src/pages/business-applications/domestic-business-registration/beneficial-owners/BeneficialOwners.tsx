@@ -1645,7 +1645,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           showPagination={false}
         />
       </section>
-      {['IN_PROGRESS', 'action_required', 'in_preview', 'is_amending'].includes(
+      {['IN_PROGRESS', 'ACTION_REQUIRED', 'IN_PREVIEW', 'IS_AMENDING'].includes(
         status
       ) && (
         <menu
@@ -1660,7 +1660,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               dispatch(setBusinessActiveTab('capital_information'));
             }}
           />
-          {status === 'is_amending' && (
+          {status === 'IS_AMENDING' && (
             <Button
               value={'Complete Amendment'}
               onClick={(e) => {
@@ -1678,7 +1678,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               }}
             />
           )}
-          {['in_preview', 'action_required'].includes(status) && (
+          {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
             <Button
               value="Save & Complete Review"
               disabled={disableForm}
@@ -1719,7 +1719,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           />
         </menu>
       )}
-      {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+      {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"

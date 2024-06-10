@@ -129,7 +129,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                       entryId,
                       status: user?.email.includes('infoapprover@rdb')
                         ? 'approved'
-                        : 'action_required',
+                        : 'ACTION_REQUIRED',
                       [propName]: propValue,
                     })
                   );
@@ -164,7 +164,7 @@ const ReviewNavigation: FC<ReviewNavigationProps> = ({
                     setApplication({
                       entryId,
                       status: user?.email?.includes('infoverifier@rdb')
-                        ? 'pending_approval'
+                        ? 'PENDING_APPROVAL'
                         : 'approved',
                       updatedAt: moment().format(),
                     })

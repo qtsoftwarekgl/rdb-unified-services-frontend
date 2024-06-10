@@ -124,7 +124,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     setIsLoading({
       submit: isLoading?.isSubmitting ? true : false,
       amend:
-        status === 'is_amending' && !isLoading?.isSubmitting ? true : false,
+        status === 'IS_AMENDING' && !isLoading?.isSubmitting ? true : false,
       isSubmitting: false,
     });
 
@@ -531,9 +531,9 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
           </menu>
           {[
             'IN_PROGRESS',
-            'is_amending',
-            'in_preview',
-            'action_required',
+            'IS_AMENDING',
+            'IN_PREVIEW',
+            'ACTION_REQUIRED',
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -547,7 +547,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                   dispatch(setBusinessActiveTab('beneficial_owners'));
                 }}
               />
-              {status === 'is_amending' && (
+              {status === 'IS_AMENDING' && (
                 <Button
                   disabled={disableForm || Object.keys(errors).length > 0}
                   value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
@@ -568,7 +568,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"

@@ -98,7 +98,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 dispatch(setActiveStep(stepName));
                 dispatch(setActiveTab(tabName));
                 dispatch(
-                  setUserApplications({ entryId, status: 'in_preview' })
+                  setUserApplications({ entryId, status: 'IN_PREVIEW' })
                 );
               }}
               className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
@@ -184,7 +184,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
       )}
       {!RDBAdminEmailPattern.test(user?.email) &&
         existingComments?.filter((comment) => !comment.checked)?.length > 0 &&
-        status === 'action_required' && (
+        status === 'ACTION_REQUIRED' && (
           <menu className="flex items-center w-full justify-center">
             <Button
               styled={false}

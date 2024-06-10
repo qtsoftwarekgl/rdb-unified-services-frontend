@@ -178,24 +178,24 @@ export const documentTypes = [
 export const companyTypes = [
   {
     label: "Community Benefit Company (CBC)",
-    value: "community_benefit_company",
+    value: "communityBenefitCompany",
   },
   {
     label: "Protected Cell Company (PCL)",
-    value: "protected_cell_company",
+    value: "protectedCellCompany",
   },
   {
     label: "Public Limited Company (PLC)",
-    value: "public_limited_company",
+    value: "publicLimitedCompany",
   },
 ];
 
 export const privateCompanyTypes = [
   { label: "Limited by shares", value: "limited_by_shares" },
-  { label: "Limited by guarantee", value: "limited_by_guarantee" },
+  { label: "Limited by guarantee", value: "limitedByGuarantee" },
   {
     label: "Limited by shares and guarantee",
-    value: "limited_by_shares_and_guarantee",
+    value: "limitedBySharesAndGuarantee",
   },
   { label: "Unlimited", value: "unlimited" },
 ];
@@ -203,15 +203,15 @@ export const privateCompanyTypes = [
 export const companyPositions = [
   {
     label: "MD/GM/CEO",
-    value: "md_gm_ceo",
+    value: "md/gm/ceo",
   },
   {
     label: "Chair of Board",
-    value: "chair_of_board",
+    value: "chairOfBoard",
   },
   {
     label: "Power of Attorney",
-    value: "power_of_attorney",
+    value: "powerOfAttorney",
   },
 ];
 

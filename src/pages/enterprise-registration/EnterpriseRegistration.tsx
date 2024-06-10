@@ -56,7 +56,7 @@ const EnterpriseRegistration = () => {
     status = current_application.status;
   }
   if (RDBAdminEmailPattern.test(user?.email)) {
-    status = "in_review";
+    status = "IN_REVIEW";
   }
 
   useEffect(() => {

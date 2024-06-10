@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../../components/inputs/Input';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -24,27 +24,28 @@ import {
   setSimilarBusinessNamesModal,
 } from '@/states/features/businessSlice';
 import {
+  useCreateCompanyDetailsMutation,
   useLazyGetBusinessQuery,
   useLazySearchBusinessNameAvailabilityQuery,
 } from '@/states/api/businessRegistrationApiSlice';
 import { convertDecimalToPercentage } from '@/helpers/strings';
 import SimilarBusinessNames from './SimilarBusinessNames';
 
-interface CompanyDetailsProps {
+type CompanyDetailsProps = {
   businessId: businessId;
 }
 
-const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
+const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
     formState: { errors },
-    setValue,
     watch,
     setError,
     clearErrors,
     trigger,
+    setValue
   } = useForm();
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -128,20 +129,59 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     searchBusinessNameIsSuccess,
   ]);
 
+  // INITIALIZE CREATE COMPANY DETAILS MUTATION
+  const [
+    createCompanyDetails,
+    {
+      error: createCompanyDetailsError,
+      isLoading: createCompanyDetailsIsLoading,
+      isError: createCompanyDetailsIsError,
+      isSuccess: createCompanyDetailsIsSuccess,
+    },
+  ] = useCreateCompanyDetailsMutation();
+
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
-    if (watch('category') === 'public') {
+    if ((watch('category') || business?.companyCategory) === 'public') {
       setBusinessTypesOptions(companyTypes);
-    } else if (watch('category') === 'private') {
+    } else if ((watch('category') || business?.companyCategory) === 'private') {
       setBusinessTypesOptions(privateCompanyTypes);
     }
+    if (business?.companyCategory) {
+      setValue('companyCategory', business?.companyCategory);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('category')]);
+  }, [watch('category'), business?.companyCategory]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
+    createCompanyDetails({
+      businessId,
+      companyName: data.companyName,
+      position: data.position,
+      hasArticlesOfAssociation: data.hasArticlesOfAssociation === 'yes',
+      companyType: data.companyType,
+      companyCategory: data.companyCategory,
+    });
   };
+
+  // HANDLE CREATE COMPANY DETAILS RESPONSE
+  useEffect(() => {
+    if (createCompanyDetailsIsError) {
+      if ((createCompanyDetailsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while creating company details');
+      } else {
+        toast.error((createCompanyDetailsError as ErrorResponse)?.data?.message);
+      }
+    } else if (createCompanyDetailsIsSuccess) {
+      dispatch(setBusinessActiveStep('company_address'));
+    }
+  }, [
+    createCompanyDetailsError,
+    createCompanyDetailsIsError,
+    createCompanyDetailsIsSuccess,
+    dispatch,
+  ]);
 
   return (
     <section className="flex flex-col w-full gap-4">
@@ -150,7 +190,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           <Loader />
         </figure>
       )}
-      {businessIsSuccess && (
+      {businessIsSuccess && business && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <fieldset
             className="flex flex-col w-full gap-6"
@@ -170,6 +210,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                         required
                         suffixIconPrimary
                         suffixIcon={faSearch}
+                        {...field}
                         onChange={(e) => {
                           field.onChange(e);
                           setError('name', {
@@ -193,11 +234,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                         {searchBusinessNameIsLoading && (
                           <figure className="flex items-center gap-2">
                             <Loader />
-                            <p>Searching...</p>
+                            <p className="text-[13px]">Searching...</p>
                           </figure>
                         )}
                         {searchBusinessNameIsSuccess &&
-                          nameAvailabilitiesList?.length && (
+                          nameAvailabilitiesList?.length > 0 && (
                             <section className="flex flex-col gap-1">
                               <p className="text-[11px] text-red-600">
                                 The given name has a similarity of up to{' '}
@@ -218,6 +259,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                                 Click to find conflicting business names
                               </Link>
                             </section>
+                          )}
+                        {searchBusinessNameIsSuccess &&
+                          nameAvailabilitiesList?.length === 0 && (
+                            <p className="text-[11px] text-green-600 px-2">
+                              {field.value} is available for use
+                            </p>
                           )}
                       </menu>
                       {errors.companyName && (
@@ -269,7 +316,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                 control={control}
                 name="companyType"
                 rules={{ required: 'Select company type' }}
-                defaultValue={business?.companyType}
+                defaultValue={watch('companyType') || business?.companyType}
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
@@ -346,7 +393,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       <Input
                         type="radio"
                         label="Yes"
-                        checked={business?.hasArticlesOfAssociation}
+                        defaultChecked={business?.hasArticlesOfAssociation}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);
@@ -357,7 +404,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       <Input
                         type="radio"
                         label="No"
-                        checked={!business?.hasArticlesOfAssociation}
+                        defaultChecked={!business?.hasArticlesOfAssociation}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);
@@ -383,7 +430,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                 value="Back"
                 route="/business-registration/new"
               />
-              <Button primary value={'Save & Continue'} submit />
+              <Button
+                primary
+                value={
+                  createCompanyDetailsIsLoading ? <Loader /> : 'Save & Continue'
+                }
+                submit
+              />
             </menu>
             {['IN_REVIEW'].includes(business.applicationStatus) && (
               <menu className="flex items-center w-full gap-3 justify-between">

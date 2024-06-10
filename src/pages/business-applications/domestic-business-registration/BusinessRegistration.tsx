@@ -81,15 +81,12 @@ const BusinessRegistration = () => {
                     businessId={queryParams?.businessId}
                   />
                 )}
-                {/* {business_active_step?.name === 'company_address' && (
+                {business_active_step?.name === 'company_address' && (
                   <CompanyAddress
-                    isOpen={business_active_step?.name === 'company_address'}
-                    company_address={businessApplication?.company_address}
                     businessId={queryParams?.businessId}
-                    status={status}
                   />
                 )}
-                {business_active_step?.name === 'business_activity_vat' && (
+               {/* {business_active_step?.name === 'business_activity_vat' && (
                   <BusinessActivity
                     isOpen={
                       business_active_step?.name === 'business_activity_vat'

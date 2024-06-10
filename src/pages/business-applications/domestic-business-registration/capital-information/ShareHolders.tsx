@@ -1336,9 +1336,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({
           </section>
           {[
             'IN_PROGRESS',
-            'is_amending',
-            'in_preview',
-            'action_required',
+            'IS_AMENDING',
+            'IN_PREVIEW',
+            'ACTION_REQUIRED',
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -1352,7 +1352,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   dispatch(setBusinessActiveTab('capital_information'));
                 }}
               />
-              {status === 'is_amending' && (
+              {status === 'IS_AMENDING' && (
                 <Button
                   value={'Complete Amendment'}
                   onClick={(e) => {
@@ -1375,7 +1375,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
                   }}
                 />
               )}
-              {['in_preview', 'action_required'].includes(status) && (
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
                 <Button
                   value="Save & Complete Review"
                   primary
@@ -1422,7 +1422,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(
+          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(
             status
           ) && (
             <menu className="flex items-center gap-3 justify-between">

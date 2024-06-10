@@ -194,7 +194,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
       {(business_application?.company_details ||
-        business_application?.status === 'in_review') && (
+        business_application?.status === 'IN_REVIEW') && (
         <PreviewCard
           status={business_application.status}
           entryId={business_application?.entryId}
@@ -873,7 +873,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
             </p>
           </menu>
         )}
-      {['IN_PROGRESS', 'action_required', 'in_preview', 'is_amending'].includes(
+      {['IN_PROGRESS', 'ACTION_REQUIRED', 'IN_PREVIEW', 'IS_AMENDING'].includes(
         business_application?.status
       ) && (
         <menu
@@ -930,7 +930,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                       business_application?.company_attachments,
                     path: `/business-registration/?entryId=${entryId}`,
                     status:
-                      business_application?.status === 'action_required'
+                      business_application?.status === 'ACTION_REQUIRED'
                         ? 're_submitted'
                         : 'submitted',
                     createdAt: moment().format(),
@@ -955,10 +955,10 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         </menu>
       )}
       {[
-        'in_review',
-        'is_approved',
-        'pending_approval',
-        'pending_rejection',
+        'IN_REVIEW',
+        'IS_APPROVED',
+        'PENDING_APPROVAL',
+        'PENDING_REJECTION',
       ].includes(business_application.status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
@@ -1000,7 +1000,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                 setUserApplications({
                   entryId: business_application?.entryId,
                   status: user.email.includes('infoverifier@rdb')
-                    ? 'pending_rejection'
+                    ? 'PENDING_REJECTION'
                     : 'rejected',
                   review: {
                     note: 'Recommend for rejection',
@@ -1026,9 +1026,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                   entryId: business_application?.entryId,
                   status:
                     unresolvedApplicationComments > 0
-                      ? 'action_required'
+                      ? 'ACTION_REQUIRED'
                       : user.email.includes('infoverifier@rdb')
-                      ? 'pending_approval'
+                      ? 'PENDING_APPROVAL'
                       : 'approved',
                 })
               );

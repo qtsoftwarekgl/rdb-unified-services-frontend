@@ -885,9 +885,9 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
           )}
           {[
             'IN_PROGRESS',
-            'action_required',
-            'in_preview',
-            'is_amending',
+            'ACTION_REQUIRED',
+            'IN_PREVIEW',
+            'IS_AMENDING',
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -901,7 +901,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   dispatch(setBusinessActiveTab('general_information'));
                 }}
               />
-              {status === 'is_amending' && (
+              {status === 'IS_AMENDING' && (
                 <Button
                   submit
                   value={'Complete Amendment'}
@@ -924,7 +924,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
                   }}
                 />
               )}
-              {['in_preview', 'action_required'].includes(status) && (
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
                 <Button
                   value="Save & Complete Review"
                   primary
@@ -989,7 +989,7 @@ const BoardDirectors: FC<BoardDirectorsProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"

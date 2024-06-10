@@ -124,7 +124,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
       let active_step = 'board_of_directors';
 
       if (
-        ['in_preview', 'action_required'].includes(status) ||
+        ['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) ||
         isLoading?.amend
       ) {
         active_tab = 'preview_submission';
@@ -435,9 +435,9 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
           </section>
           {[
             'IN_PROGRESS',
-            'in_preview',
-            'action_required',
-            'is_amending',
+            'IN_PREVIEW',
+            'ACTION_REQUIRED',
+            'IS_AMENDING',
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -450,7 +450,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                   dispatch(setBusinessActiveStep('company_address'));
                 }}
               />
-              {status === 'is_amending' && (
+              {status === 'IS_AMENDING' && (
                 <Button
                   submit
                   value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
@@ -467,7 +467,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                   }}
                 />
               )}
-              {['in_preview', 'action_required'].includes(status) && (
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
                 <Button
                   value={
                     isLoading?.preview ? <Loader /> : 'Save & Complete Review'
@@ -479,7 +479,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
                       preview: true,
                     });
                     dispatch(
-                      setUserApplications({ entryId, status: 'in_preview' })
+                      setUserApplications({ entryId, status: 'IN_PREVIEW' })
                     );
                   }}
                   submit
@@ -511,7 +511,7 @@ const BusinessActivity: FC<BusinessActivityProps> = ({
               />
             </menu>
           )}
-          {['in_review', 'is_approved', 'pending_approval', 'pending_rejection'].includes(status) && (
+          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value={'Back'}

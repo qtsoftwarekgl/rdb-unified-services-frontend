@@ -83,7 +83,7 @@ const OfficeAddress = ({
         })
       );
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET ACTIVE STEP
@@ -614,7 +614,7 @@ const OfficeAddress = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview ? <Loader /> : "Save & Complete Review"
@@ -653,7 +653,7 @@ const OfficeAddress = ({
                   submit: true,
                   amend: false,
                 });
-                if ((['in_preview', 'action_required'].includes(status)))
+                if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)))
                   dispatch(
                     setUserApplications({ entryId, status: "IN_PROGRESS" })
                   );

@@ -81,6 +81,54 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // CREATE OR UPDATE COMPANY DETAILS
+      createCompanyDetails: builder.mutation({
+        query: ({
+          businessId,
+          companyName,
+          position,
+          hasArticlesOfAssociation,
+          companyType,
+          companyCategory,
+        }) => {
+          return {
+            url: `/details?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              companyName,
+              position,
+              hasArticlesOfAssociation,
+              companyType,
+              companyCategory,
+            },
+          };
+        },
+      }),
+
+      // CREATE OR UPDATE COMPANY ADDRESS
+      createCompanyAddress: builder.mutation({
+        query: ({
+          businessId,
+          villageId,
+          address,
+          email,
+          phoneNumber,
+          streetName,
+        }) => {
+          return {
+            url: `/address?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              villageId,
+              address,
+              email,
+              phoneNumber,
+              streetName
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -92,6 +140,8 @@ export const {
   useCreateBusinessMutation,
   useDeleteBusinessMutation,
   useLazySearchBusinessNameAvailabilityQuery,
+  useCreateCompanyDetailsMutation,
+  useCreateCompanyAddressMutation,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

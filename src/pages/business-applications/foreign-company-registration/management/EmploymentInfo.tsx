@@ -68,7 +68,7 @@ const EmploymentInfo = ({
         })
       );
       if (
-        ['in_preview', 'action_required'].includes(status) ||
+        ['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) ||
         isLoading.amend
       ) {
         dispatch(setForeignBusinessActiveTab('foreign_preview_submission'));
@@ -243,7 +243,7 @@ const EmploymentInfo = ({
                 );
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 value={'Complete Amendment'}
                 onClick={(e) => {
@@ -254,7 +254,7 @@ const EmploymentInfo = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (

@@ -28,7 +28,25 @@ export type Business = {
   enterpriseName?: string;
   enterpriseBusinessName?: string;
   employmentInfo?: string | object;
-  address?: string | object;
+  address?: Address;
+};
+
+type Address = {
+  id: UUID;
+  countryOfIncorporation?: string;
+  streetName?: string;
+  city?: string;
+  zipCode?: string;
+  email: string;
+  phoneNumber: string;
+  location: {
+    country?: string;
+    province: string;
+    district: string;
+    sector: string;
+    cell: string;
+    village: string;
+  };
 };
 
 export type businessId = string | number | (string | number | null)[] | null;
