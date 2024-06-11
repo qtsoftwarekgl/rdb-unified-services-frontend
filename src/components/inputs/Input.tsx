@@ -83,7 +83,7 @@ const Input: FC<InputProps> = ({
           type={type}
           name={name}
           value={value}
-          defaultdefaultChecked={defaultChecked}
+          defaultChecked={defaultChecked}
           onChange={onChange}
           className={`w-4 h-4 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />
@@ -128,7 +128,9 @@ const Input: FC<InputProps> = ({
         </p>
         <menu className="relative flex items-center gap-0">
           <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-            <select className="w-full !text-[12px]">
+            <select
+              className="w-full !text-[12px]"
+            >
               {countriesList?.map((country) => {
                 return (
                   <option key={country?.dial_code} value={country?.dial_code}>

@@ -11,7 +11,7 @@ import {
 import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
 import BoardDirectors from './management/BoardDirectors';
-import SeniorManagement from './management/SeniorManagement';
+import ExecutiveManagement from './management/ExecutiveManagement';
 import EmploymentInfo from './management/EmploymentInfo';
 import ShareDetails from './capital-information/ShareDetails';
 import ShareHolders from './capital-information/ShareHolders';
@@ -85,7 +85,14 @@ const BusinessRegistration = () => {
                 {business_active_step?.name === 'business_activity_vat' && (
                   <BusinessActivities
                     businessId={queryParams?.businessId}
-                    status={"IN_PROGRESS"}
+                    status={'IN_PROGRESS'}
+                  />
+                )}
+
+                {business_active_step?.name === 'executive_management' && (
+                  <ExecutiveManagement
+                    businessId={queryParams?.businessId}
+                    status={'IN_PROGRESS'}
                   />
                 )}
 
@@ -93,15 +100,6 @@ const BusinessRegistration = () => {
                   <BoardDirectors
                     isOpen={business_active_step?.name === 'board_of_directors'}
                     board_of_directors={businessApplication?.board_of_directors}
-                    businessId={queryParams?.businessId}
-                    status={status}
-                  />
-                )}
-
-                {business_active_step?.name === 'executive_management' && (
-                  <SeniorManagement
-                    isOpen={business_active_step?.name === 'executive_management'}
-                    executive_management={businessApplication?.executive_management}
                     businessId={queryParams?.businessId}
                     status={status}
                   />

@@ -16,7 +16,7 @@ export const convertDecimalToPercentage = (number: number | string) => {
   return Number(Number(number).toFixed(2)) * 100;
 };
 
-export const capitalizeString = (string: string) => {
+export const capitalizeString = (string: string | undefined | null) => {
   if (!string) return '';
   const words = string?.toLowerCase()?.split('_');
   const capitalizedWords =

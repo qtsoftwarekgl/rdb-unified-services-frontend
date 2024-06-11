@@ -158,6 +158,78 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // CREATE MANAGEMENT OR BOARD PEOPLE
+      createManagementOrBoardPerson: builder.mutation({
+        query: ({
+          route = 'management',
+          businessId,
+          position,
+          firstName,
+          middleName,
+          lastName,
+          fatherName,
+          motherName,
+          spouseName,
+          maritalStatus,
+          dateOfBirth,
+          gender,
+          nationality,
+          personIdentType,
+          personDocNo,
+          persDocIssueDate,
+          persDocExpiryDate,
+          persDocIssuePlace,
+          validFrom,
+          validTo,
+          isFromNida,
+          streetNumber,
+          phoneNumber,
+          email,
+          fax,
+          poBox,
+        }) => {
+          return {
+            url: `/${route}?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              position,
+              firstName,
+              middleName,
+              lastName,
+              fatherName,
+              motherName,
+              spouseName,
+              maritalStatus,
+              dateOfBirth,
+              gender,
+              nationality,
+              personIdentType,
+              personDocNo,
+              persDocIssueDate,
+              persDocExpiryDate,
+              persDocIssuePlace,
+              validFrom,
+              validTo,
+              isFromNida,
+              streetNumber,
+              phoneNumber,
+              email,
+              fax,
+              poBox,
+            },
+          };
+        },
+      }),
+
+      // FETCH MANAGEMENT OR BOARD PEOPLE
+      fetchManagementOrBoardPeople: builder.query({
+        query: ({ businessId, route = 'management' }) => {
+          return {
+            url: `/${route}?businessId=${businessId}`,
+          };
+        },
+      }),
     };
   },
 });
@@ -173,6 +245,8 @@ export const {
   useCreateCompanyAddressMutation,
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
+  useCreateManagementOrBoardPersonMutation,
+  useLazyFetchManagementOrBoardPeopleQuery,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

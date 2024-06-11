@@ -25,7 +25,7 @@ import { business_company_details } from '../general-information/CompanyDetails'
 import { business_company_address } from '../general-information/CompanyAddress';
 import { business_company_activities } from '../general-information/BusinessActivities';
 import { business_board_of_directors } from '../management/BoardDirectors';
-import { business_executive_management } from '../management/SeniorManagement';
+import { business_executive_management } from '../management/ExecutiveManagement';
 import { business_employment_info } from '../management/EmploymentInfo';
 import { business_share_details } from '../capital-information/ShareDetails';
 import { business_shareholders } from '../capital-information/ShareHolders';
