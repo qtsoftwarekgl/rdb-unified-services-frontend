@@ -142,9 +142,9 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
 
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
-    if ((watch('category') || business?.companyCategory) === 'public') {
+    if (watch('category') === 'public') {
       setBusinessTypesOptions(companyTypes);
-    } else if ((watch('category') || business?.companyCategory) === 'private') {
+    } else if (watch('category') === 'private') {
       setBusinessTypesOptions(privateCompanyTypes);
     }
     if (business?.companyCategory) {

@@ -10,7 +10,7 @@ import {
 } from '../../../states/features/businessRegistrationSlice';
 import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
-import BoardDirectors from './management/BoardDirectors';
+import BoardOfDirectors from './management/BoardOfDirectors';
 import ExecutiveManagement from './management/ExecutiveManagement';
 import EmploymentInfo from './management/EmploymentInfo';
 import ShareDetails from './capital-information/ShareDetails';
@@ -96,16 +96,14 @@ const BusinessRegistration = () => {
                   />
                 )}
 
-                {/* {business_active_step?.name === 'board_of_directors' && (
-                  <BoardDirectors
-                    isOpen={business_active_step?.name === 'board_of_directors'}
-                    board_of_directors={businessApplication?.board_of_directors}
+                {business_active_step?.name === 'board_of_directors' && (
+                  <BoardOfDirectors
                     businessId={queryParams?.businessId}
-                    status={status}
+                    status={'IN_PROGRESS'}
                   />
                 )}
 
-                {business_active_step?.name === 'employment_info' && (
+                {/* {business_active_step?.name === 'employment_info' && (
                   <EmploymentInfo
                     isOpen={business_active_step?.name === 'employment_info'}
                     employment_info={businessApplication?.employment_info}

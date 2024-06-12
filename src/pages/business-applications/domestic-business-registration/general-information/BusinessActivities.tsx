@@ -407,8 +407,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                   )}
                 </menu>
               )}
-              {selectedBusinessLinesList?.length > 0 &&
-                businessActivitiesIsSuccess && (
+              {selectedBusinessLinesList?.length > 0 && (
                   <menu className="w-full">
                     <Controller
                       control={control}

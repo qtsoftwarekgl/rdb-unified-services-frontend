@@ -128,7 +128,13 @@ const ManagementPeople = ({ type, businessId }: ManagementPeopleProps) => {
           <Loader />
         </figure>
       )}
-      {managementPeopleIsSuccess && (
+      {managementPeopleList?.length <= 0 && (
+        <p className="text-center text-sm text-gray-500">
+          No {type === 'executiveManagement' ? 'management' : 'board'} people
+          found
+        </p>
+      )}
+      {managementPeopleIsSuccess && managementPeopleList?.length > 0 && (
         <Table
           data={managementPeopleList?.map(
             (person: PersonDetail, index: number) => {
