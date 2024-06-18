@@ -26,6 +26,7 @@ import businessActivitySlice from './features/businessActivitySlice';
 import businessPeopleSlice from './features/businessPeopleSlice';
 import authApiSlice from './api/authApiSlice';
 import founderDetailSlice from './features/founderDetailSlice';
+import shareDetailSlice from './features/shareDetailSlice';
 
 export const store = configureStore({
   reducer: {
@@ -57,6 +58,7 @@ export const store = configureStore({
     businessActivity: businessActivitySlice,
     businessPeople: businessPeopleSlice,
     founderDetail: founderDetailSlice,
+    shareDetail: shareDetailSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(

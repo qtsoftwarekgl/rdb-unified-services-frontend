@@ -1,133 +1,163 @@
-import { FC, SetStateAction, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { faCircleInfo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Table from '../../../../components/table/Table';
-import { capitalizeString, generateUUID } from '../../../../helpers/strings';
 import {
-  removeBusinessCompletedStep,
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setBusinessCompletedStep,
-  setCapitalDetailsModal,
 } from '../../../../states/features/businessRegistrationSlice';
-import CapitalDetailsModal from './CapitalDetailsModal';
+import CapitalDetailsModal from './AssignShareDetails';
 import Button from '../../../../components/inputs/Button';
 import Loader from '../../../../components/Loader';
 import { useForm } from 'react-hook-form';
-import { setUserApplications } from '../../../../states/features/userApplicationSlice';
-import { business_share_details } from './ShareDetails';
-import { business_shareholders } from './ShareHolders';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
-
-export interface business_capital_details {
-  no: number;
-  first_name?: string;
-  id: string;
-  shareholder_id: string;
-  last_name?: string;
-  company_name?: string;
-  type?: string;
-  shares: {
-    total_shares?: number;
-    total_value?: number;
-  };
-}
+import { businessId } from '@/types/models/business';
+import {
+  useLazyFetchShareDetailsQuery,
+  useLazyFetchShareholdersQuery,
+} from '@/states/api/businessRegistrationApiSlice';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import {
+  setAssignSharesModal,
+  setFounderDetailsList,
+  setSelectedFounderDetail,
+} from '@/states/features/founderDetailSlice';
+import { setShareDetailsList } from '@/states/features/shareDetailSlice';
+import Table from '@/components/table/Table';
+import { FounderDetail } from '@/types/models/personDetail';
+import { capitalizeString } from '@/helpers/strings';
+import { ColumnDef, Row } from '@tanstack/react-table';
 
 interface CapitalDetailsProps {
-  isOpen: boolean;
-  capital_details: business_capital_details[];
-  entryId: string | null;
-  share_details: business_share_details;
-  shareholders: business_shareholders[];
+  businessId: businessId;
   status: string;
 }
 
-const CapitalDetails: FC<CapitalDetailsProps> = ({
-  isOpen,
-  capital_details = [],
-  entryId,
-  share_details,
-  shareholders = [],
-  status,
-}) => {
+const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
   // REACT HOOK FORM
   const {
-    setError,
     clearErrors,
     formState: { errors },
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    preview: false,
-    submit: false,
-    amend: false,
-  });
-  const [shareholderShareDetails, setShareholderShareDetails] = useState(null);
-  const [assignedShares, setAssignedShares] = useState<{
-    number: number;
-    value: number;
-  }>({
-    number: 0,
-    value: 0,
-  });
+  const { shareDetailsList } = useSelector(
+    (state: RootState) => state.shareDetail
+  );
+  const { founderDetailsList } = useSelector(
+    (state: RootState) => state.founderDetail
+  );
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
+  // INITIALIZE FETCH FOUNDER DETAILS QUERY
+  const [
+    fetchShareholders,
+    {
+      data: shareholdersData,
+      isLoading: shareholdersIsLoading,
+      error: shareholdersError,
+      isError: shareholdersIsError,
+      isSuccess: shareholdersIsSuccess,
+    },
+  ] = useLazyFetchShareholdersQuery();
+
+  // INITIALIZE FETCH SHARE DETAILS QUERY
+  const [
+    fetchShareDetails,
+    {
+      data: shareDetailsData,
+      isLoading: shareDetailsIsLoading,
+      error: shareDetailsError,
+      isError: shareDetailsIsError,
+      isSuccess: shareDetailsIsSuccess,
+    },
+  ] = useLazyFetchShareDetailsQuery();
+
+  // GET BUSINESS SHARE DETAILS
   useEffect(() => {
-    setAssignedShares({
-      ...assignedShares,
-      number: capital_details
-        ?.filter(
-          (shareholder) => shareholder?.shares?.total_shares !== undefined
-        )
-        ?.reduce(
-          (acc, curr) => Number(acc) + Number(curr?.shares?.total_shares),
-          0
-        ),
-      value: capital_details
-        ?.filter(
-          (shareholder) => shareholder?.shares?.total_value !== undefined
-        )
-        ?.reduce(
-          (acc, curr) => Number(acc) + Number(curr?.shares?.total_value),
-          0
-        ),
-    });
-  }, [capital_details]);
+    fetchShareDetails({ businessId });
+  }, [businessId, fetchShareDetails]);
+
+  // FETCH SHAREHOLDERS
+  useEffect(() => {
+    fetchShareholders({ businessId });
+  }, [businessId, fetchShareholders]);
+
+  // HANDLE FETCH SHAREHOLDERS RESPONSE
+  useEffect(() => {
+    if (shareholdersIsError) {
+      if ((shareholdersError as ErrorResponse).status === 500) {
+        toast.error('An error occurred while fetching shareholders');
+      } else {
+        toast.error(
+          (shareholdersError as ErrorResponse).data?.message ??
+            'An error occurred while fetching shareholders'
+        );
+      }
+    } else if (shareholdersIsSuccess) {
+      dispatch(setFounderDetailsList(shareholdersData?.data));
+    }
+  }, [
+    dispatch,
+    shareholdersData,
+    shareholdersError,
+    shareholdersIsError,
+    shareholdersIsSuccess,
+  ]);
+
+  // HANDLE FETCH SHARE DETAILS RESPONSE
+  useEffect(() => {
+    if (shareDetailsIsError) {
+      if ((shareDetailsError as ErrorResponse).status === 500) {
+        toast.error('An error occurred while fetching share details');
+      } else {
+        toast.error(
+          (shareDetailsError as ErrorResponse).data?.message ??
+            'An error occurred while fetching share details'
+        );
+      }
+    } else if (shareDetailsIsSuccess) {
+      dispatch(setShareDetailsList(shareDetailsData?.data));
+    }
+  }, [
+    dispatch,
+    shareDetailsData?.data,
+    shareDetailsError,
+    shareDetailsIsError,
+    shareDetailsIsSuccess,
+  ]);
 
   // TABLE COLUMNS
-  const columns = [
+  const founderDetailsColumns = [
+    {
+      header: 'No',
+      accessorKey: 'no',
+    },
     {
       header: 'Name',
       accessorKey: 'name',
     },
     {
       header: 'Type',
-      accessorKey: 'type',
+      accessorKey: 'shareHolderType',
     },
     {
       header: 'Number of shares',
-      accessorKey: 'total_shares',
+      accessorKey: 'shareQuantity',
     },
     {
       header: 'Total value',
-      accessorKey: 'total_value',
+      accessorKey: 'totalQuantity',
     },
     {
       header: 'Action',
       accessorKey: 'action',
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: business_capital_details;
-        };
-      }) => {
+      cell: ({ row }: { row: Row<FounderDetail> }) => {
         return (
           <menu className="flex items-center gap-6">
             <FontAwesomeIcon
@@ -135,11 +165,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               icon={disableForm ? faCircleInfo : faPenToSquare}
               onClick={(e) => {
                 e.preventDefault();
-                setShareholderShareDetails(
-                  row?.original as unknown as SetStateAction<null>
-                );
-                clearErrors('total_shares');
-                dispatch(setCapitalDetailsModal(true));
+                dispatch(setAssignSharesModal(true));
+                dispatch(setSelectedFounderDetail(row?.original));
               }}
             />
             <FontAwesomeIcon
@@ -152,36 +179,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 if (disableForm) return;
-                dispatch(
-                  setUserApplications({
-                    entryId,
-                    share_details,
-                  })
-                );
-                dispatch(
-                  setUserApplications({
-                    entryId,
-                    capital_details: capital_details?.filter(
-                      (capital) => capital?.id !== row?.original?.id
-                    ),
-                    share_details: {
-                      ...share_details,
-                      shares: share_details?.shares?.map((share) => {
-                        return {
-                          ...share,
-                          remaining_shares:
-                            share?.remaining_shares +
-                              (Number(row?.original?.shares[share?.name]) ||
-                                0) || undefined,
-                        };
-                      }),
-                    },
-                    shareholders: shareholders?.filter(
-                      (shareholder) =>
-                        shareholder?.id !== row?.original?.shareholder_id
-                    ),
-                  })
-                );
                 clearErrors('total_shares');
               }}
             />
@@ -191,154 +188,117 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
     },
   ];
 
-  // SET CAPITAL DETAILS
-  useEffect(() => {
-    if (
-      capital_details?.length <= 0 ||
-      shareholders?.length > capital_details?.length
-    ) {
-      const filteredShareholders = shareholders
-        ?.map((shareholder) => {
-          if (
-            capital_details?.find(
-              (capital) => capital?.shareholder_id === shareholder?.id
-            ) === undefined
-          ) {
-            return {
-              ...shareholder,
-              id: generateUUID(),
-              shareholder_id: shareholder?.id,
-              shares: {
-                total_shares: 0,
-              },
-            };
-          } else return null;
-        })
-        ?.filter((item) => item !== null);
-      dispatch(
-        setUserApplications({
-          entryId,
-          capital_details: [
-            ...filteredShareholders,
-            ...capital_details,
-          ]?.filter((item) => item !== null),
-        })
-      );
-    }
-  }, [dispatch]);
-
-  if (!isOpen) return null;
-
   return (
     <section className="flex flex-col w-full gap-6">
-      <menu className="flex flex-col w-full gap-2">
-        {shareholders?.length > 0 ? (
-          <Table
-            data={
-              capital_details?.length > 0
-                ? capital_details?.map(
-                    (shareholder: business_capital_details, index: number) => {
-                      return {
-                        ...shareholder,
-                        no: index,
-                        name: shareholder?.first_name
-                          ? `${shareholder?.first_name || ''} ${
-                              shareholder?.last_name || ''
-                            }`
-                          : shareholder?.company_name,
-                        type: capitalizeString(shareholder?.type as string),
-                        total_shares: shareholder?.shares?.total_shares || 0,
-                        total_value: `RWF ${
-                          shareholder?.shares?.total_value || 0
-                        }`,
-                      };
-                    }
-                  )
-                : []
-            }
-            columns={columns}
-            showFilter={false}
-            showPagination={false}
-            rowClickHandler={(row) => {
-              setShareholderShareDetails(
-                row?.original as unknown as SetStateAction<null>
-              );
-              clearErrors('total_shares');
-              dispatch(setCapitalDetailsModal(true));
-            }}
-          />
-        ) : (
-          <menu className="flex flex-col gap-2">
-            <p className="text-center text-[14px] text-gray-500">
-              No shareholders have been added yet.
-            </p>
-            <Button
-              value="Click here to add shareholders"
-              styled={false}
-              className="hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveTab('capital_information'));
-                dispatch(removeBusinessCompletedStep('capital_details'));
-                dispatch(dispatch(removeBusinessCompletedStep('shareholders')));
-                dispatch(setBusinessActiveStep('shareholders'));
-              }}
-            />
-          </menu>
-        )}
-        {errors?.total_shares && (
-          <p className="text-red-500 text-[13px] text-center">
-            {String(errors?.total_shares?.message)}
-          </p>
-        )}
-      </menu>
-      <CapitalDetailsModal
-        capital_details={capital_details}
-        share_details={share_details}
-        entryId={entryId}
-        shareholder={shareholderShareDetails}
-      />
+      {shareholdersIsLoading && (
+        <figure className="min-h-[40vh] flex items-center w-full justify-center">
+          <Loader />
+        </figure>
+      )}
+      <CapitalDetailsModal businessId={businessId} />
       <section className="flex flex-col gap-4">
         <h1 className="font-semibold text-lg uppercase text-[16px]">
           Overall capital details
         </h1>
-        <menu className="flex flex-col w-full gap-1">
-          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Total number of assignable shares</h2>
-            <p>{share_details?.total_shares}</p>
-          </ul>
-          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Total number of assigned shares</h2>
-            <p>{assignedShares?.number}</p>
-          </ul>
-          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Unassigned shares</h2>
-            <p>
-              {Number(share_details?.total_shares ?? 0) -
-                Number(assignedShares?.number)}
-            </p>
-          </ul>
-        </menu>
-        <menu className="flex flex-col w-full gap-2">
-          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Total value of assignable shares</h2>
-            <p>RWF {share_details?.total_value}</p>
-          </ul>
-          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2>Value of assigned shares</h2>
-            <p>RWF {assignedShares?.value}</p>
-          </ul>
-          <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-            <h2 className="font-medium underline uppercase">
-              Remaning value of assignable shares
-            </h2>
-            <p className="underline">
-              RWF{' '}
-              {Number(share_details?.total_value ?? 0) -
-                Number(assignedShares?.value)}
-            </p>
-          </ul>
-        </menu>
+        <Table
+          showFilter={false}
+          showPagination={false}
+          data={founderDetailsList?.map(
+            (founder: FounderDetail, index: number) => {
+              return {
+                ...founder,
+                no: index + 1,
+                name: `${founder?.firstName || founder?.companyName || ''} ${
+                  founder?.middleName || ''
+                } ${founder?.lastName || ''}`,
+                shareHolderType: capitalizeString(founder?.shareHolderType),
+              };
+            }
+          )}
+          columns={
+            founderDetailsColumns as unknown as ColumnDef<FounderDetail>[]
+          }
+        />
+        {shareDetailsIsLoading || shareDetailsIsLoading ? (
+          <figure className="min-h-[40vh] flex items-center w-full justify-center">
+            <Loader />
+          </figure>
+        ) : (
+          <>
+            {' '}
+            <menu className="flex flex-col w-full gap-1">
+              <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+                <h2>Total number of assignable shares</h2>
+                <p>
+                  {shareDetailsList?.reduce(
+                    (acc, curr) => acc + Number(curr?.shareQuantity),
+                    0
+                  )}
+                </p>
+              </ul>
+              <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+                <h2>Total number of assigned shares</h2>
+                <p>
+                  {founderDetailsList?.reduce(
+                    (acc, curr) => acc + Number(curr?.shareQuantity),
+                    0
+                  )}
+                </p>
+              </ul>
+              <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+                <h2>Unassigned shares</h2>
+                <p>
+                  {shareDetailsList?.reduce(
+                    (acc, curr) => acc + Number(curr?.shareQuantity),
+                    0
+                  ) -
+                    shareDetailsList?.reduce(
+                      (acc, curr) => acc + Number(curr?.remainingShares),
+                      0
+                    )}
+                </p>
+              </ul>
+            </menu>
+            <menu className="flex flex-col w-full gap-2">
+              <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+                <h2>Total value of assignable shares</h2>
+                <p>
+                  RWF{' '}
+                  {shareDetailsList?.reduce(
+                    (acc, curr) => acc + Number(curr?.totalAmount),
+                    0
+                  )}
+                </p>
+              </ul>
+              <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+                <h2>Value of assigned shares</h2>
+                <p>
+                  RWF{' '}
+                  {founderDetailsList?.reduce(
+                    (acc, curr) => acc + Number(curr?.totalQuantity),
+                    0
+                  )}
+                </p>
+              </ul>
+              <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
+                <h2 className="font-medium underline uppercase">
+                  Remaning value of assignable shares
+                </h2>
+                <p className="underline">
+                  RWF{' '}
+                  {shareDetailsList?.reduce(
+                    (acc, curr) => acc + Number(curr?.totalAmount),
+                    0
+                  ) -
+                    founderDetailsList?.reduce(
+                      (acc, curr) => acc + Number(curr?.totalQuantity),
+                      0
+                    )}
+                </p>
+              </ul>
+            </menu>
+          </>
+        )}
       </section>
       {['IN_PROGRESS', 'IS_AMENDING', 'IN_PREVIEW', 'ACTION_REQUIRED'].includes(
         status
@@ -358,159 +318,48 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           {status === 'IS_AMENDING' && (
             <Button
               disabled={disableForm || Object.keys(errors).length > 0}
-              value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
-              onClick={(e) => {
-                e.preventDefault();
-
-                // SET ACTIVE TAB AND STEP
-                const active_tab = 'preview_submission';
-                const active_step = 'preview_submission';
-
-                // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-                if (
-                  capital_details?.filter(
-                    (shareholder) => shareholder?.shares?.total_shares === 0
-                  )?.length > 0
-                ) {
-                  setError('total_shares', {
-                    type: 'manual',
-                    message:
-                      'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-                  });
-                  return;
-                }
-                setIsLoading({
-                  ...isLoading,
-                  submit: false,
-                  preview: false,
-                  amend: true,
-                });
-
-                setTimeout(() => {
-                  setIsLoading({
-                    ...isLoading,
-                    submit: false,
-                    preview: false,
-                    amend: false,
-                  });
-                  clearErrors('total_shares');
-                  dispatch(setBusinessCompletedStep('capital_details'));
-                  dispatch(setBusinessActiveStep(active_step));
-                  dispatch(setBusinessActiveTab(active_tab));
-                  dispatch(
-                    setUserApplications({
-                      entryId,
-                      active_step,
-                      active_tab,
-                    })
-                  );
-                }, 1000);
-              }}
+              value={'Complete Amendment'}
             />
           )}
           {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
             <Button
-              value={isLoading?.preview ? <Loader /> : 'Save & Complete Review'}
+              value={'Save & Complete Review'}
               primary
               disabled={disableForm || Object.keys(errors).length > 0}
-              onClick={(e) => {
-                e.preventDefault();
-
-                // SET ACTIVE TAB AND STEP
-                const active_tab = 'preview_submission';
-                const active_step = 'preview_submission';
-
-                // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-                if (
-                  capital_details?.filter(
-                    (shareholder) => shareholder?.shares?.total_shares === 0
-                  )?.length > 0
-                ) {
-                  setError('total_shares', {
-                    type: 'manual',
-                    message:
-                      'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-                  });
-                  return;
-                }
-                setIsLoading({
-                  ...isLoading,
-                  amend: false,
-                  submit: false,
-                  preview: true,
-                });
-
-                setTimeout(() => {
-                  setIsLoading({
-                    ...isLoading,
-                    submit: false,
-                    preview: false,
-                    amend: false,
-                  });
-                  clearErrors('total_shares');
-                  dispatch(setBusinessCompletedStep('capital_details'));
-                  dispatch(setBusinessActiveStep(active_step));
-                  dispatch(setBusinessActiveTab(active_tab));
-                  dispatch(
-                    setUserApplications({
-                      entryId,
-                      active_step,
-                      active_tab,
-                    })
-                  );
-                }, 1000);
-              }}
             />
           )}
           <Button
-            value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
+            value={'Save & Continue'}
             primary
             disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
               e.preventDefault();
-              // CHECK FOR SHAREHOLDERS WITH 0 SHARES
-              if (
-                capital_details?.filter(
-                  (shareholder) => shareholder?.shares?.total_shares === 0
-                )?.length > 0
-              ) {
-                setError('total_shares', {
-                  type: 'manual',
-                  message:
-                    'Some shareholders have 0 shares assigned. Update their shares or remove them from the list to continue.',
-                });
+              // CHECK FOR AN UNASSIGNED FOUNDER
+              const unassignedFounder = founderDetailsList?.find(
+                (founder) => !founder?.shareQuantity
+              );
+
+              if (unassignedFounder) {
+                toast.error(
+                  'Please assign shares to all shareholders before proceeding',
+                  {
+                    autoClose: 5000,
+                  }
+                );
                 return;
               }
-              setIsLoading({
-                ...isLoading,
-                amend: false,
-                submit: true,
-                preview: false,
-              });
-
-              setTimeout(() => {
-                setIsLoading({
-                  ...isLoading,
-                  submit: false,
-                  preview: false,
-                });
-                clearErrors('total_shares');
-                dispatch(setBusinessCompletedStep('capital_details'));
-                dispatch(setBusinessActiveStep('beneficial_owners'));
-                dispatch(setBusinessActiveTab('beneficial_owners'));
-                dispatch(
-                  setUserApplications({
-                    entryId,
-                    active_step: 'beneficial_owners',
-                    active_tab: 'beneficial_owners',
-                  })
-                );
-              }, 1000);
+              dispatch(setBusinessActiveStep('beneficial_owners'));
+              dispatch(setBusinessActiveTab('beneficial_owners'));
             }}
           />
         </menu>
       )}
-      {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
+      {[
+        'IN_REVIEW',
+        'IS_APPROVED',
+        'PENDING_APPROVAL',
+        'PENDING_REJECTION',
+      ].includes(status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"

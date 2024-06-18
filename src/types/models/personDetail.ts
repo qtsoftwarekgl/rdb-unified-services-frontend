@@ -27,6 +27,11 @@ export type PersonDetail = {
   fax?: string;
   poBox?: string;
   roleDescription?: string;
+};
+
+export interface FounderDetail extends PersonDetail {
   shareHolderType?: string;
   companyName?: string;
-};
+  shareQuantity?: number;
+  totalQuantity?: number;
+}

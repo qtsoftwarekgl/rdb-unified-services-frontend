@@ -1,12 +1,14 @@
-import { PersonDetail } from '@/types/models/personDetail';
+import { FounderDetail, PersonDetail } from '@/types/models/personDetail';
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState: {
-founderDetailsList: PersonDetail[],
-selectedFounderDetail: PersonDetail,
+founderDetailsList: FounderDetail[],
+selectedFounderDetail: FounderDetail,
+assignSharesModal: boolean,
 } = {
 founderDetailsList: [],
-selectedFounderDetail: {} as PersonDetail,
+selectedFounderDetail: {} as FounderDetail,
+assignSharesModal: false,
 }
 
 const founderDetailSlice = createSlice({
@@ -30,6 +32,9 @@ const founderDetailSlice = createSlice({
         (person: PersonDetail) => person.id !== action.payload
       );
     },
+    setAssignSharesModal: (state, action) => {
+      state.assignSharesModal = action.payload;
+    }
   }
 });
 
@@ -38,6 +43,7 @@ export const {
     setSelectedFounderDetail,
     addFounderDetail,
     removeFounderDetail,
+    setAssignSharesModal
 } = founderDetailSlice.actions
 
 export default founderDetailSlice.reducer;

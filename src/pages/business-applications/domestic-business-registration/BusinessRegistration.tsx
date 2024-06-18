@@ -124,18 +124,14 @@ const BusinessRegistration = () => {
                   />
                 )}
 
-                {/* {business_active_step?.name === 'capital_details' && (
+               {business_active_step?.name === 'capital_details' && (
                   <CapitalDetails
-                    isOpen={business_active_step?.name === 'capital_details'}
-                    capital_details={businessApplication?.capital_details}
                     businessId={queryParams?.businessId}
-                    share_details={businessApplication?.share_details}
-                    shareholders={businessApplication?.shareholders}
-                    status={status}
+                    status={'IN_PROGRESS'}
                   />
                 )}
 
-                {business_active_step?.name === 'beneficial_owners' && (
+                 {/* {business_active_step?.name === 'beneficial_owners' && (
                   <BeneficialOwners
                     isOpen={business_active_step?.name === 'beneficial_owners'}
                     beneficial_owners={businessApplication?.beneficial_owners}

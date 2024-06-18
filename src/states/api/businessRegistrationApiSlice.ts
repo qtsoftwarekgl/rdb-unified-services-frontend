@@ -352,6 +352,26 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // FETCH SHARE DETAILS
+      fetchShareDetails: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/share-details?businessId=${businessId}`,
+          };
+        },
+      }),
+
+      // ASSIGN SHARES
+      assignShares: builder.mutation({
+        query: ({ founderId, shareDetails }) => {
+          return {
+            url: `/assign-share?founderId=${founderId}`,
+            method: 'POST',
+            body: shareDetails,
+          };
+        },
+      }),
     };
   },
 });
@@ -372,7 +392,9 @@ export const {
   useCreateEmploymentInfoMutation,
   useCreateShareDetailsMutation,
   useCreateShareholderMutation,
-  useLazyFetchShareholdersQuery
+  useLazyFetchShareholdersQuery,
+  useLazyFetchShareDetailsQuery,
+  useAssignSharesMutation,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

@@ -5,7 +5,7 @@ import { useLazyFetchShareholdersQuery } from '@/states/api/businessRegistration
 import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { businessId } from '@/types/models/business';
-import { PersonDetail } from '@/types/models/personDetail';
+import { FounderDetail } from '@/types/models/personDetail';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -95,7 +95,7 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
         </p>
       )}
       <Table
-        data={founderDetailsList?.map((founder: PersonDetail, index) => {
+        data={founderDetailsList?.map((founder: FounderDetail, index) => {
           return {
             ...founder,
             no: index + 1,
