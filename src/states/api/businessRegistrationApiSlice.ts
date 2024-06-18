@@ -258,6 +258,17 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // CREATE SHARE DETAILS
+      createShareDetails: builder.mutation({
+        query: ({ businessId, shareDetails }) => {
+          return {
+            url: `/share-details?businessId=${businessId}`,
+            method: 'POST',
+            body: shareDetails,
+          };
+        },
+      }),
     };
   },
 });
@@ -276,6 +287,7 @@ export const {
   useCreateManagementOrBoardPersonMutation,
   useLazyFetchManagementOrBoardPeopleQuery,
   useCreateEmploymentInfoMutation,
+  useCreateShareDetailsMutation,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

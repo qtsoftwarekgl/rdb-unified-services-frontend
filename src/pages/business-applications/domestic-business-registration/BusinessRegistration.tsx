@@ -110,16 +110,14 @@ const BusinessRegistration = () => {
                   />
                 )}
 
-                 {/* {business_active_step?.name === 'share_details' && (
+                {business_active_step?.name === 'share_details' && (
                   <ShareDetails
-                    isOpen={business_active_step?.name === 'share_details'}
-                    share_details={businessApplication?.share_details}
                     businessId={queryParams?.businessId}
-                    status={status}
+                    status={'IN_PROGRESS'}
                   />
                 )}
 
-                {business_active_step?.name === 'shareholders' && (
+                {/* {business_active_step?.name === 'shareholders' && (
                   <ShareHolders
                     isOpen={business_active_step?.name === 'shareholders'}
                     shareholders={businessApplication?.shareholders}
