@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../states/store';
 import UserLayout from '../../../containers/UserLayout';
 import ProgressNavigation from '../../../components/business-registration/ProgressNavigation';
-import { ErrorResponse, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Tab from '../../../components/business-registration/Tab';
 import {
   setBusinessActiveStep,
@@ -103,16 +103,14 @@ const BusinessRegistration = () => {
                   />
                 )}
 
-                {/* {business_active_step?.name === 'employment_info' && (
+               {business_active_step?.name === 'employment_info' && (
                   <EmploymentInfo
-                    isOpen={business_active_step?.name === 'employment_info'}
-                    employment_info={businessApplication?.employment_info}
                     businessId={queryParams?.businessId}
-                    status={status}
+                    status={'IN_PROGRESS'}
                   />
                 )}
 
-                {business_active_step?.name === 'share_details' && (
+                 {/* {business_active_step?.name === 'share_details' && (
                   <ShareDetails
                     isOpen={business_active_step?.name === 'share_details'}
                     share_details={businessApplication?.share_details}

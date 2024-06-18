@@ -230,6 +230,34 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // CREATE EMPLOYMENT INFORMATION
+      createEmploymentInfo: builder.mutation({
+        query: ({
+          businessId,
+          workingStartTime,
+          workingEndTime,
+          numberOfEmployees,
+          hiringDate,
+          employmentDeclarationDate,
+          financialYearStartDate,
+          financialYearEndDate = financialYearStartDate,
+        }) => {
+          return {
+            url: `/employment-info?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              workingStartTime,
+              workingEndTime,
+              numberOfEmployees,
+              hiringDate,
+              employmentDeclarationDate,
+              financialYearStartDate,
+              financialYearEndDate,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -247,6 +275,7 @@ export const {
   useLazyFetchBusinessActivitiesQuery,
   useCreateManagementOrBoardPersonMutation,
   useLazyFetchManagementOrBoardPeopleQuery,
+  useCreateEmploymentInfoMutation,
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

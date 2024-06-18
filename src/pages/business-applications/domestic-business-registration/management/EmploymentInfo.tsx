@@ -7,43 +7,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setBusinessCompletedStep,
 } from '../../../../states/features/businessRegistrationSlice';
 import Loader from '../../../../components/Loader';
-import { setUserApplications } from '../../../../states/features/userApplicationSlice';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
-import { Link } from 'react-router-dom';
-import { attachmentFileColumns } from '@/constants/businessRegistration';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import Modal from '@/components/Modal';
-import Table from '@/components/table/Table';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { ErrorResponse, Link } from 'react-router-dom';
 import ViewDocument from '@/pages/user-company-details/ViewDocument';
-import { previewUrl } from '@/constants/authentication';
+import { businessId } from '@/types/models/business';
+import Select from '@/components/inputs/Select';
+import { dayHoursArray } from '@/constants/time';
+import { useCreateEmploymentInfoMutation } from '@/states/api/businessRegistrationApiSlice';
 import moment from 'moment';
-
-export interface business_employment_info {
-  has_employees: string;
-  hiring_date?: string;
-  employees_no?: number;
-  reference_date?: string;
-  number_of_employees?: number;
-}
+import { toast } from 'react-toastify';
 
 interface EmploymentInfoProps {
-  isOpen: boolean;
-  employment_info: business_employment_info;
-  entryId: string | null;
+  businessId: businessId;
   status: string;
 }
 
-const EmploymentInfo: FC<EmploymentInfoProps> = ({
-  isOpen,
-  employment_info,
-  entryId,
-  status,
-}) => {
+const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -52,8 +33,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
     setValue,
     watch,
     trigger,
-    setError,
-    clearErrors
   } = useForm();
 
   // STATE VARIABLES
@@ -68,164 +47,72 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
   const [customReferenceDate, setCustomReferenceDate] =
     useState<boolean>(false);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
-  const [attachmentFiles, setAttachmentFiles] = useState<[]>([]);
-  const [confirmDeleteModal, setConfirmDeleteModal] = useState({
-    attachment: false,
-  });
 
-  // SET DEFAULT VALUES
-  useEffect(() => {
-    if (employment_info) {
-      setValue('has_employees', employment_info?.has_employees);
-      setValue('hiring_date', employment_info?.hiring_date);
-      setValue('employees_no', employment_info?.employees_no);
-      setValue('reference_date', employment_info?.reference_date);
-    }
-  }, [employment_info, setValue]);
+  // INITIALIZE CREATE EMPLOYMENT INFO MUTATIon
+  const [
+    createEmploymentInfo,
+    {
+      isLoading: createEmploymentInfoIsLoading,
+      error: createEmploymentInfoError,
+      isSuccess: createEmploymentInfoIsSuccess,
+      isError: createEmploymentInfoIsError,
+    },
+  ] = useCreateEmploymentInfoMutation();
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entryId,
-          active_tab: 'capital_information',
-          active_step: 'share_details',
-          employment_info: {
-            ...data,
-            reference_date: customReferenceDate
-              ? data?.reference_date
-              : moment(`12/31/${new Date().getFullYear()}`).format(
-                  'YYYY-MM-DD'
-                ),
-            step: 'employment_info',
-          },
-        })
-      );
-
-      // SET ACTIVE TAB AND STEP
-      let active_tab = 'capital_information';
-      let active_step = 'share_details';
-
-      if (
-        ['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) ||
-        isLoading?.amend
-      ) {
-        active_tab = 'preview_submission';
-        active_step = 'preview_submission';
-      }
-
-      dispatch(setBusinessCompletedStep('employment_info'));
-      dispatch(setBusinessActiveStep(active_step));
-      dispatch(setBusinessActiveTab(active_tab));
-
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-        amend: false,
-      });
-    }, 1000);
+    createEmploymentInfo({
+      businessId,
+      workingStartTime:
+        data?.workingStartTime && data?.workingStartTime + ':00:00',
+      workingEndTime: data?.workingEndTime && data?.workingEndTime + ':00:00',
+      numberOfEmployees:
+        data?.numberOfEmployees && Number(data?.numberOfEmployees),
+      hiringDate: data.hiringDate,
+      employmentDeclarationDate: data?.employeeDeclarationDate,
+      financialYearStartDate:
+        data?.financialYearStartDate &&
+        moment(data?.financialYearStartDate).format('0000-MM-DD'),
+      financialYearEndDate:
+        data?.financialYearStartDate &&
+        moment(data?.financialYearStartDate).format('0000-MM-DD'),
+    });
   };
 
-  // ATTACHMENT COLUMNS
-  const attachmentColumns = [
-    ...attachmentFileColumns,
-    {
-      header: 'action',
-      accesorKey: 'action',
-      cell: ({ row }: {
-        row: {
-          original: {
-            name: string;
-          };
-        };
-      }) => {
-        return (
-          <menu className="flex items-center gap-4">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[20px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-                setAttachmentPreview(previewUrl);
-              }}
-            />
-            <FontAwesomeIcon
-              className="cursor-pointer text-white bg-red-600 p-2 w-[13px] h-[13px] text-[16px] rounded-full font-bold ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-                setConfirmDeleteModal({
-                  ...confirmDeleteModal,
-                  attachment: true,
-                });
-              }}
-            />
-            <Modal
-              isOpen={confirmDeleteModal?.attachment}
-              onClose={() => {
-                setConfirmDeleteModal({
-                  ...confirmDeleteModal,
-                  attachment: false,
-                });
-              }}
-            >
-              <section className="flex flex-col gap-6">
-                <h1 className="font-medium text-center uppercase">
-                  Delete {row?.original?.name}
-                </h1>
-                <menu className="flex items-center justify-between gap-3">
-                  <Button
-                    value="Cancel"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setConfirmDeleteModal({
-                        ...confirmDeleteModal,
-                        attachment: false,
-                      });
-                    }}
-                  />
-                  <Button
-                    value="Delete"
-                    danger
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setAttachmentFiles([]);
-                      setValue('attachment', null);
-                      setError('attachment', {
-                        type: 'manual',
-                        message: 'Supporting documents are required is required',
-                      });
-                      setConfirmDeleteModal({
-                        ...confirmDeleteModal,
-                        attachment: false,
-                      });
-                    }}
-                  />
-                </menu>
-              </section>
-            </Modal>
-          </menu>
+  // HANDLE CREATE EMPLYOMENT INFO RESPONSE
+  useEffect(() => {
+    if (createEmploymentInfoIsError) {
+      if ((createEmploymentInfoError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred. Please try again later');
+      } else {
+        toast.error(
+          (createEmploymentInfoError as ErrorResponse)?.data?.message
         );
-      },
-    },
-  ];
-
-  if (!isOpen) return null;
+      }
+    } else if (createEmploymentInfoIsSuccess) {
+      dispatch(setBusinessActiveStep('share_details'));
+      dispatch(setBusinessActiveTab('capital_information'));
+    }
+  }, [
+    createEmploymentInfoError,
+    createEmploymentInfoIsError,
+    createEmploymentInfoIsSuccess,
+    dispatch,
+  ]);
 
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset disabled={disableForm} className="flex flex-col w-full gap-6">
           <Controller
-            name="reference_date"
+            name="financialYearStartDate"
             control={control}
             rules={{
               required: customReferenceDate
                 ? 'Account reference date is required'
                 : false,
             }}
+            defaultValue={moment().format('0000-MM-DD')}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1">
@@ -233,42 +120,23 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                     <menu className="flex flex-col gap-2">
                       <Input
                         type="date"
+                        selectionType="recurringDate"
                         required
                         label="Account reference date"
                         {...field}
                       />
-                      {errors?.reference_date && (
+                      {errors?.financialYearStartDate && (
                         <p className="text-red-600 text-[13px]">
-                          {String(errors?.reference_date?.message)}
+                          {String(errors?.financialYearStartDate?.message)}
                         </p>
                       )}
                       <ul className="flex flex-col gap-1">
-                        <p className="text-[13px]">Supporting documents</p>
-                        <Input
-                          label="Supporting documents"
-                          multiple
-                          type="file"
-                          accept="application/pdf"
-                          onChange={(e) => {
-                            const files = e.target.files;
-                            if (files) {
-                              setAttachmentFiles((prev) => [...prev, ...files]);
-                            }
-                          }}
-                        />
-                        {errors?.attachment && (
-                          <p className="text-red-600 text-[13px]">
-                            {String(errors?.attachment?.message)}
-                          </p>
-                        )}
                         <Link
                           to={'#'}
                           className="text-primary text-[12px] hover:underline cursor-pointer w-fit"
                           onClick={(e) => {
                             e.preventDefault();
-                            setAttachmentFiles([]);
                             setCustomReferenceDate(false);
-                            clearErrors('attachment');
                           }}
                         >
                           Use default date
@@ -282,22 +150,20 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                           Account reference date{' '}
                           <span className="text-red-600">*</span>
                         </p>
-                        <p className="text-[14px] p-1 px-2 bg-secondary text-white w-fit rounded-md">
-                          31st December
+                        <p className="text-[13px] p-1 px-2 bg-secondary text-white w-fit rounded-md">
+                          December 31
                         </p>
                       </label>
                       <ul className="flex flex-col items-start gap-1">
-                        <p className="text-[11px] text-secondary">
-                          The default date for account reference dates is
-                          determined by the National Bank of Rwanda. Click the
-                          button below to use a custom date. Supporting
-                          documents are required.
-                        </p>
                         <Link
                           to={'#'}
                           onClick={(e) => {
                             e.preventDefault();
                             setCustomReferenceDate(true);
+                            setValue(
+                              'financialYearStartDate',
+                              moment().format('0000-MM-DD')
+                            );
                           }}
                           className="text-primary text-[12px] hover:underline cursor-pointer"
                         >
@@ -318,7 +184,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
           <Controller
             name="has_employees"
             control={control}
-            defaultValue={employment_info?.has_employees}
             rules={{ required: 'Select a choice' }}
             render={({ field }) => {
               return (
@@ -362,13 +227,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
           />
           <menu
             className={`${
-              watch('has_employees') === 'yes' ? 'flex' : 'hidden'
-            } w-full items-start gap-5 flex-wrap`}
+              watch('has_employees') === 'yes' ? 'grid' : 'hidden'
+            } w-full grid-cols-2 gap-6`}
           >
             <Controller
-              name="hiring_date"
+              name="hiringDate"
               control={control}
-              defaultValue={employment_info?.hiring_date}
               rules={{
                 required:
                   watch('has_employees') === 'yes'
@@ -377,17 +241,16 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               }}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="w-full flex flex-col gap-1">
                     <Input
-                      defaultValue={employment_info?.hiring_date}
                       type="date"
                       required
                       label="Hiring Date"
                       {...field}
                     />
-                    {errors?.hiring_date && (
+                    {errors?.hiringDate && (
                       <p className="text-red-600 text-[13px]">
-                        {String(errors?.hiring_date?.message)}
+                        {String(errors?.hiringDate?.message)}
                       </p>
                     )}
                   </label>
@@ -395,8 +258,107 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               }}
             />
             <Controller
-              name="employees_no"
-              defaultValue={employment_info?.employees_no}
+              name="employeeDeclarationDate"
+              control={control}
+              rules={{
+                required:
+                  watch('has_employees') === 'yes'
+                    ? 'Hiring date is required'
+                    : false,
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-1">
+                    <Input
+                      type="date"
+                      required
+                      label="Employee Declaration Date"
+                      {...field}
+                      value={field?.value || watch('hiringDate')}
+                    />
+                    {errors?.employeeDeclarationDate && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.employeeDeclarationDate?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="workingStartTime"
+              rules={{
+                validate: (value) => {
+                  if (watch('has_employees') === 'yes') {
+                    if (
+                      value &&
+                      Number(value) >= Number(watch('workingEndTime'))
+                    )
+                      return 'Working Start Time must be less than Working End Time';
+                  }
+                },
+              }}
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-1">
+                    <Select
+                      options={dayHoursArray}
+                      label="Working Start Time"
+                      {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger('workingStartTime');
+                        await trigger('workingEndTime');
+                      }}
+                    />
+                    {errors?.workingStartTime && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.workingStartTime?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="workingEndTime"
+              control={control}
+              rules={{
+                validate: (value) => {
+                  if (watch('has_employees') === 'yes') {
+                    if (
+                      value &&
+                      Number(value) <= Number(watch('workingStartTime'))
+                    )
+                      return 'Working End Time must be greater than Working Start Time';
+                  }
+                },
+              }}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-1">
+                    <Select
+                      options={dayHoursArray}
+                      label="Working End Time"
+                      {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                        await trigger('workingEndTime');
+                        await trigger('workingStartTime');
+                      }}
+                    />
+                    {errors?.workingEndTime && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.workingEndTime?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="numberOfEmployees"
               rules={{
                 required:
                   watch('has_employees') === 'yes'
@@ -413,46 +375,25 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
               control={control}
               render={({ field }) => {
                 return (
-                  <label className="w-[49%] flex flex-col gap-1">
+                  <label className="w-full flex flex-col gap-1">
                     <Input
                       required
                       label="Number of employees"
-                      defaultValue={employment_info?.employees_no}
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger('employees_no');
+                        await trigger('numberOfEmployees');
                       }}
                     />
-                    {errors?.employees_no && (
+                    {errors?.numberOfEmployees && (
                       <p className="text-red-600 text-[13px]">
-                        {String(errors?.employees_no?.message)}
+                        {String(errors?.numberOfEmployees?.message)}
                       </p>
                     )}
                   </label>
                 );
               }}
             />
-          </menu>
-          <menu className="flex items-center w-full gap-6">
-            {attachmentFiles?.length > 0 && (
-              <Table
-                data={
-                  attachmentFiles?.length > 0 &&
-                  attachmentFiles?.map((file: File) => {
-                    return {
-                      name: file?.name,
-                      type: file?.type,
-                      size: file?.size,
-                      // source: capitalizeString(file?.source),
-                    };
-                  })
-                }
-                columns={attachmentColumns}
-                showFilter={false}
-                showPagination={false}
-              />
-            )}
           </menu>
           {[
             'IN_PREVIEW',
@@ -490,43 +431,27 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({
                   value={
                     isLoading?.preview ? <Loader /> : 'Save & Complete Review'
                   }
-                  onClick={() => {
-                    setIsLoading({
-                      ...isLoading,
-                      preview: true,
-                      submit: false,
-                      amend: false,
-                    });
-                  }}
                   submit
                   primary
                   disabled={disableForm}
                 />
               )}
               <Button
-                value={isLoading?.submit ? <Loader /> : 'Save & Continue'}
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors).length > 0) return;
-                  setIsLoading({
-                    ...isLoading,
-                    submit: true,
-                    preview: false,
-                    amend: false,
-                  });
-                  dispatch(
-                    setUserApplications({ entryId, status: 'IN_PROGRESS' })
-                  );
-                }}
+                value={
+                  createEmploymentInfoIsLoading ? <Loader /> : 'Save & Continue'
+                }
                 submit
                 primary
                 disabled={disableForm}
               />
             </menu>
           )}
-          {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(
-            status
-          ) && (
+          {[
+            'IN_REVIEW',
+            'IS_APPROVED',
+            'PENDING_APPROVAL',
+            'PENDING_REJECTION',
+          ].includes(status) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"

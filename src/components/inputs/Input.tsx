@@ -39,6 +39,7 @@ interface InputProps {
   multiple?: boolean;
   labelClassName?: string;
   range?: boolean;
+  selectionType?: 'date' | 'month' | 'year' | 'recurringDate';
 }
 
 const Input: FC<InputProps> = ({
@@ -63,6 +64,7 @@ const Input: FC<InputProps> = ({
   labelClassName = '',
   multiple = false,
   defaultChecked = false,
+  selectionType,
 }) => {
   const hiddenFileInput = useRef<HTMLButtonElement>(null);
 
@@ -166,7 +168,7 @@ const Input: FC<InputProps> = ({
             *
           </span>
         </p>
-        <DatePicker onChange={onChange} value={value as Date | undefined} />
+        <DatePicker selectionType={selectionType} onChange={onChange} value={value as Date | undefined} />
       </label>
     );
   }
