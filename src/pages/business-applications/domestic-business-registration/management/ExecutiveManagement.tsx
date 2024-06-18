@@ -99,7 +99,11 @@ const ExecutiveManagement = ({
         toast.error((managementPersonError as ErrorResponse).data.message);
       }
     } else if (managementPersonIsSuccess) {
-      reset();
+      reset({
+        position: '',
+        personIdentType: '',
+      });
+      setAttachmentFile(null);
       dispatch(addManagementPerson(managementPersonData?.data));
     }
   }, [

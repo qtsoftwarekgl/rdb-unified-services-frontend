@@ -13,7 +13,7 @@ import {
 import Button from '../../../../components/inputs/Button';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBusinessActiveStep } from '../../../../states/features/businessRegistrationSlice';
+import { setBusinessActiveStep, setBusinessCompletedStep } from '../../../../states/features/businessRegistrationSlice';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
 import { toast } from 'react-toastify';
@@ -45,7 +45,6 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
     setError,
     clearErrors,
     trigger,
-    setValue
   } = useForm();
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -103,6 +102,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
       error: searchBusinessNameError,
       isError: searchBusinessNameIsError,
       isSuccess: searchBusinessNameIsSuccess,
+      isFetching: searchBusinessNameIsFetching,
     },
   ] = useLazySearchBusinessNameAvailabilityQuery();
 
@@ -142,16 +142,13 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
 
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
-    if (watch('category') === 'public') {
+    if (watch('companyCategory') === 'PUBLIC') {
       setBusinessTypesOptions(companyTypes);
-    } else if (watch('category') === 'private') {
+    } else if (watch('companyCategory') === 'PRIVATE') {
       setBusinessTypesOptions(privateCompanyTypes);
     }
-    if (business?.companyCategory) {
-      setValue('companyCategory', business?.companyCategory);
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch('category'), business?.companyCategory]);
+  }, [watch('companyCategory'), business?.companyCategory]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -174,6 +171,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
         toast.error((createCompanyDetailsError as ErrorResponse)?.data?.message);
       }
     } else if (createCompanyDetailsIsSuccess) {
+      dispatch(setBusinessCompletedStep('company_details'));
       dispatch(setBusinessActiveStep('company_address'));
     }
   }, [
@@ -213,7 +211,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          setError('name', {
+                          setError('companyName', {
                             type: 'manual',
                             message:
                               'Check if company name is available before proceeding',
@@ -221,24 +219,24 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                         }}
                         suffixIconHandler={(e) => {
                           e.preventDefault();
-                          if (!field?.value) {
+                          if (!field?.value || field?.value?.length < 3) {
                             return;
                           }
-                          clearErrors('name');
+                          clearErrors('companyName');
                           searchBusinessNameAvailability({
                             companyName: field?.value,
                           });
                         }}
                       />
                       <menu className="flex w-full flex-col gap-2">
-                        {searchBusinessNameIsLoading && (
+                        {searchBusinessNameIsLoading || searchBusinessNameIsFetching && (
                           <figure className="flex items-center gap-2">
                             <Loader />
                             <p className="text-[13px]">Searching...</p>
                           </figure>
                         )}
                         {searchBusinessNameIsSuccess &&
-                          nameAvailabilitiesList?.length > 0 && (
+                          nameAvailabilitiesList?.length > 0 && !errors?.companyName && (
                             <section className="flex flex-col gap-1">
                               <p className="text-[11px] text-red-600">
                                 The given name has a similarity of up to{' '}
@@ -261,7 +259,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                             </section>
                           )}
                         {searchBusinessNameIsSuccess &&
-                          nameAvailabilitiesList?.length === 0 && (
+                          nameAvailabilitiesList?.length === 0 && !errors?.companyName && (
                             <p className="text-[11px] text-green-600 px-2">
                               {field.value} is available for use
                             </p>
@@ -393,7 +391,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                       <Input
                         type="radio"
                         label="Yes"
-                        defaultdefaultChecked={business?.hasArticlesOfAssociation}
+                        defaultChecked={business?.hasArticlesOfAssociation}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);
@@ -404,7 +402,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                       <Input
                         type="radio"
                         label="No"
-                        defaultdefaultChecked={!business?.hasArticlesOfAssociation}
+                        defaultChecked={!business?.hasArticlesOfAssociation}
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);

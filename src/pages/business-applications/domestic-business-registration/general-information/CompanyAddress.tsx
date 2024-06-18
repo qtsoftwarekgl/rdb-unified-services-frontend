@@ -6,7 +6,7 @@ import Button from '../../../../components/inputs/Button';
 import validateInputs from '../../../../helpers/validations';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBusinessActiveStep } from '../../../../states/features/businessRegistrationSlice';
+import { setBusinessActiveStep, setBusinessCompletedStep } from '../../../../states/features/businessRegistrationSlice';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
 import { setBusiness } from '@/states/features/businessSlice';
@@ -323,6 +323,7 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
       }
     } else if (createCompanyAddressIsSuccess) {
       toast.success('Company address created or updated successfully');
+      dispatch(setBusinessCompletedStep('company_address'));
       dispatch(setBusinessActiveStep('business_activity_vat'));
     }
   }, [

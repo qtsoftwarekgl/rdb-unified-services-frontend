@@ -88,7 +88,11 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
         toast.error((boardPersonError as ErrorResponse).data.message);
       }
     } else if (boardPersonIsSuccess) {
-      reset();
+      reset({
+        position: '',
+        personIdentType: '',
+      });
+      setAttachmentFile(null);
       dispatch(addManagementPerson(boardPersonData?.data));
     }
   }, [
@@ -723,8 +727,8 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                     }, 5000);
                     return;
                   }
-                  dispatch(setBusinessCompletedStep('executive_management'));
-                  dispatch(setBusinessActiveStep('board_of_directors'));
+                  dispatch(setBusinessCompletedStep('board_of_directors'));
+                  dispatch(setBusinessActiveStep('employment_info'));
                 }}
               />
             </menu>

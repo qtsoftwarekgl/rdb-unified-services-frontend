@@ -1,11 +1,11 @@
 export const companyCategories = [
   {
     label: "Public",
-    value: "public",
+    value: "PUBLIC",
   },
   {
     label: "Private",
-    value: "private",
+    value: "PRIVATE",
   },
 ];
 
@@ -191,7 +191,7 @@ export const companyTypes = [
 ];
 
 export const privateCompanyTypes = [
-  { label: "Limited by shares", value: "limited_by_shares" },
+  { label: "Limited by shares", value: "limitedByShares" },
   { label: "Limited by guarantee", value: "limitedByGuarantee" },
   {
     label: "Limited by shares and guarantee",

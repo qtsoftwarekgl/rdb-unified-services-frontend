@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
-import { useLoginMutation } from "@/states/api/userManagamentApiSlice";
+import { useLoginMutation } from "@/states/api/authApiSlice";
 import { setUser } from "@/states/features/userSlice";
 
 const Login = () => {

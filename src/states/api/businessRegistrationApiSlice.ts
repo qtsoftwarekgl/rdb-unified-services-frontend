@@ -4,7 +4,7 @@ import store from 'store';
 export const businessRegistrationApiSlice = createApi({
   reducerPath: 'businessRegistrationApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8051/api/business',
+    baseUrl: 'http://localhost:8051/api/v1/business',
     prepareHeaders: (headers) => {
       const user = store.get('user');
       if (user) {

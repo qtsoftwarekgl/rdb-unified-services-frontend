@@ -4,7 +4,7 @@ import store from 'store';
 export const coreApiSlice = createApi({
   reducerPath: 'coreApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8051/api',
+    baseUrl: 'http://localhost:8051/api/v1',
     prepareHeaders: (headers) => {
       const user = store.get('user');
       if (user?.token) {

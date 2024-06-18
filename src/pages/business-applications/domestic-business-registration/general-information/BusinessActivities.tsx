@@ -7,6 +7,8 @@ import { AppDispatch, RootState } from '../../../../states/store';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
+  setBusinessCompletedStep,
+  setBusinessCompletedTab,
 } from '../../../../states/features/businessRegistrationSlice';
 import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Input from '../../../../components/inputs/Input';
@@ -97,8 +99,6 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
         toast.error(
           'An error occured while fetching business activities. Please try again later.'
         );
-      } else {
-        toast.error((businessActivitiesError as ErrorResponse)?.data?.message);
       }
     } else if (businessActivitiesIsSuccess) {
       dispatch(
@@ -122,7 +122,6 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
     businessActivitiesIsError,
     businessActivitiesIsSuccess,
     dispatch,
-    selectedBusinessLinesList,
     selectedMainBusinessLine,
   ]);
 
@@ -157,7 +156,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
 
   // FETCH BUSINESS LINES
   useEffect(() => {
-    if (selectedBusinessActivity) {
+    if (selectedBusinessActivity?.code) {
       fetchBusinessLines({ sectorCode: selectedBusinessActivity?.code });
     }
   }, [fetchBusinessLines, selectedBusinessActivity]);
@@ -598,6 +597,8 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                     primary
                     onClick={(e) => {
                       e.preventDefault();
+                      dispatch(setBusinessCompletedTab('general_information'));
+                      dispatch(setBusinessCompletedStep('business_activity_vat'));
                       dispatch(setBusinessActiveStep('board_of_directors'));
                       dispatch(setBusinessActiveTab('management'));
                     }}

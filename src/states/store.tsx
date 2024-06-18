@@ -16,7 +16,6 @@ import foreignCompanyRegistrationSlice from './features/foreignCompanyRegistrati
 import nameReservationSlice from './features/nameReservationSlice';
 import userApplicationSlice from './features/userApplicationSlice';
 import businessRegistrationApiSlice from './api/businessRegistrationApiSlice';
-import userManagementApiSlice from './api/userManagamentApiSlice';
 import collateralRegistrationSlice from './features/collateralRegistrationSlice';
 import collateralReviewSlice from './features/collateralReviewSlice';
 import applicationReviewSlice from './features/applicationReviewSlice';
@@ -25,13 +24,14 @@ import coreApiSlice from './api/coreApiSlice';
 import locationSlice from './features/locationSlice';
 import businessActivitySlice from './features/businessActivitySlice';
 import businessManagementSlice from './features/businessManagementSlice';
+import authApiSlice from './api/authApiSlice';
 
 export const store = configureStore({
   reducer: {
     [businessRegistrationApiSlice.reducerPath]:
       businessRegistrationApiSlice.reducer,
-    [userManagementApiSlice.reducerPath]: userManagementApiSlice.reducer,
     [coreApiSlice.reducerPath]: coreApiSlice.reducer,
+    [authApiSlice.reducerPath]: authApiSlice.reducer,
     user: userSlice,
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
@@ -54,12 +54,12 @@ export const store = configureStore({
     service: serviceSlice,
     location: locationSlice,
     businessActivity: businessActivitySlice,
-    businessManagement: businessManagementSlice
+    businessManagement: businessManagementSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(
       businessRegistrationApiSlice.middleware,
-      userManagementApiSlice.middleware,
+      authApiSlice.middleware,
       coreApiSlice.middleware
     );
   },

@@ -1,4 +1,4 @@
-import { ErrorResponse, Link } from 'react-router-dom';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import Input from '../../components/inputs/Input';
 import Navbar from '../../containers/Navbar';
 import { useEffect, useRef, useState } from 'react';
@@ -28,6 +28,9 @@ const ServicesList = () => {
 
   // DOM REFERENCES
   const accordionsRef = useRef<Array<HTMLButtonElement | null>>([]);
+
+  // NAVIGATION
+  const navigate = useNavigate();
 
   // INITIALIZE FETCH SERVICES QUERY
   const [
@@ -183,7 +186,21 @@ const ServicesList = () => {
                                 <Link
                                   className="w-full text-[15px]"
                                   key={index}
-                                  to={`${item.id}/new`}
+                                  to={'#'}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    if (
+                                      [
+                                        '/business-registration',
+                                        '/foreign-company-registration',
+                                        '/enterprise-registration',
+                                      ].includes(item.path)
+                                    ) {
+                                      navigate(`${item?.id}/new`);
+                                    } else {
+                                      navigate(`${item?.path}`);
+                                    }
+                                  }}
                                 >
                                   {capitalizeString(item.name)}
                                 </Link>

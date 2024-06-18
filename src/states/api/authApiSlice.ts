@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import store from 'store';
 
-export const userManagementApiSlice = createApi({
-  reducerPath: 'userManagementApi',
+export const authApiSlice = createApi({
+  reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8050/api/users',
+    baseUrl: 'http://localhost:8050/api/v1/auth',
     prepareHeaders: (headers) => {
       const user = store.get('user');
       if (user?.token) {
@@ -14,12 +14,12 @@ export const userManagementApiSlice = createApi({
     },
   }),
   endpoints: (builder) => {
-    // LOGIN
     return {
+      // LOGIN
       login: builder.mutation({
         query: ({ username, password }) => {
           return {
-            url: '/auth/login',
+            url: '/login',
             method: 'POST',
             body: {
               email: username,
@@ -32,6 +32,6 @@ export const userManagementApiSlice = createApi({
   },
 });
 
-export const { useLoginMutation } = userManagementApiSlice;
+export const { useLoginMutation } = authApiSlice;
 
-export default userManagementApiSlice;
+export default authApiSlice;
