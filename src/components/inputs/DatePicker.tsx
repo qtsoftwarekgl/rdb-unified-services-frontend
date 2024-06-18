@@ -71,9 +71,9 @@ const DatePicker: FC<DatePickerProps> = ({
                   setDefaultMonth(moment(e, 'YYYY-MM-DD').toDate());
                 }}
                 value={year}
-                options={Array.from({ length: 100 }, (_, i) => ({
-                  value: String(2024 - i),
-                  label: String(2024 - i),
+                options={Array.from({ length: 200 }, (_, i) => ({
+                  value: String(2099 - i),
+                  label: String(2099 - i),
                 }))}
               />
             )}
@@ -100,7 +100,7 @@ const DatePicker: FC<DatePickerProps> = ({
             }}
             selected={value}
             onSelect={(e) => {
-              e && onChange(moment(e).toDate());
+              e && onChange(moment(e).format());
             }}
             initialFocus
           />

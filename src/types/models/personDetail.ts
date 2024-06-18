@@ -27,4 +27,6 @@ export type PersonDetail = {
   fax?: string;
   poBox?: string;
   roleDescription?: string;
+  shareHolderType?: string;
+  companyName?: string;
 };

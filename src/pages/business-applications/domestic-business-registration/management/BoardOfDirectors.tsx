@@ -22,11 +22,11 @@ import validateInputs from '../../../../helpers/validations';
 import { attachmentFileColumns } from '../../../../constants/businessRegistration';
 import ViewDocument from '../../../user-company-details/ViewDocument';
 import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import ManagementPeople from './ManagementPeople';
+import BusinessPeople from './BusinessPeople';
 import { businessId } from '@/types/models/business';
 import moment from 'moment';
 import { useCreateManagementOrBoardPersonMutation } from '@/states/api/businessRegistrationApiSlice';
-import { addManagementPerson } from '@/states/features/businessManagementSlice';
+import { addBusinessPerson } from '@/states/features/businessPeopleSlice';
 import { toast } from 'react-toastify';
 import { ErrorResponse } from 'react-router-dom';
 
@@ -51,8 +51,8 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { managementPeopleList } = useSelector(
-    (state: RootState) => state.businessManagement
+  const { businessPeopleList } = useSelector(
+    (state: RootState) => state.businessPeople
   );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
@@ -93,7 +93,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
         personIdentType: '',
       });
       setAttachmentFile(null);
-      dispatch(addManagementPerson(boardPersonData?.data));
+      dispatch(addBusinessPerson(boardPersonData?.data));
     }
   }, [
     dispatch,
@@ -680,7 +680,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
               disabled={disableForm}
             />
           </section>
-          <ManagementPeople type="boardOfDirectors" businessId={businessId} />
+          <BusinessPeople type="boardOfDirectors" businessId={businessId} />
           {[
             'IN_PREVIEW',
             'IN_PROGRESS',
@@ -717,7 +717,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!managementPeopleList?.length) {
+                  if (!businessPeopleList?.length) {
                     setError('submit', {
                       type: 'manual',
                       message: 'Add at least one member',

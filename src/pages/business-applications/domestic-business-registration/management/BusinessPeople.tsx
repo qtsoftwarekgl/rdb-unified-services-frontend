@@ -2,7 +2,7 @@ import Loader from '@/components/Loader';
 import Table from '@/components/table/Table';
 import { capitalizeString } from '@/helpers/strings';
 import { useLazyFetchManagementOrBoardPeopleQuery } from '@/states/api/businessRegistrationApiSlice';
-import { setManagementPeopleList } from '@/states/features/businessManagementSlice';
+import { setBusinessPeopleList } from '@/states/features/businessPeopleSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { businessId } from '@/types/models/business';
 import { PersonDetail } from '@/types/models/personDetail';
@@ -14,16 +14,16 @@ import { useDispatch } from 'react-redux';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-type ManagementPeopleProps = {
+type BusinessPeopleProps = {
   type: string;
   businessId: businessId;
 };
 
-const ManagementPeople = ({ type, businessId }: ManagementPeopleProps) => {
+const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { managementPeopleList } = useSelector(
-    (state: RootState) => state.businessManagement
+  const { businessPeopleList } = useSelector(
+    (state: RootState) => state.businessPeople
   );
 
   // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
@@ -57,7 +57,7 @@ const ManagementPeople = ({ type, businessId }: ManagementPeopleProps) => {
         toast.error((managementPeopleError as ErrorResponse).data?.message);
       }
     } else if (managementPeopleIsSuccess) {
-      dispatch(setManagementPeopleList(managementPeopleData?.data));
+      dispatch(setBusinessPeopleList(managementPeopleData?.data));
     }
   }, [
     dispatch,
@@ -128,15 +128,15 @@ const ManagementPeople = ({ type, businessId }: ManagementPeopleProps) => {
           <Loader />
         </figure>
       )}
-      {managementPeopleList?.length <= 0 && (
+      {businessPeopleList?.length <= 0 && (
         <p className="text-center text-sm text-gray-500">
           No {type === 'executiveManagement' ? 'management' : 'board'} people
           found
         </p>
       )}
-      {managementPeopleIsSuccess && managementPeopleList?.length > 0 && (
+      {managementPeopleIsSuccess && businessPeopleList?.length > 0 && (
         <Table
-          data={managementPeopleList?.map(
+          data={businessPeopleList?.map(
             (person: PersonDetail, index: number) => {
               return {
                 ...person,
@@ -156,4 +156,4 @@ const ManagementPeople = ({ type, businessId }: ManagementPeopleProps) => {
   );
 };
 
-export default ManagementPeople;
+export default BusinessPeople;

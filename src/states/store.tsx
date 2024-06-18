@@ -23,8 +23,9 @@ import serviceSlice from './features/serviceSlice';
 import coreApiSlice from './api/coreApiSlice';
 import locationSlice from './features/locationSlice';
 import businessActivitySlice from './features/businessActivitySlice';
-import businessManagementSlice from './features/businessManagementSlice';
+import businessPeopleSlice from './features/businessPeopleSlice';
 import authApiSlice from './api/authApiSlice';
+import founderDetailSlice from './features/founderDetailSlice';
 
 export const store = configureStore({
   reducer: {
@@ -54,7 +55,8 @@ export const store = configureStore({
     service: serviceSlice,
     location: locationSlice,
     businessActivity: businessActivitySlice,
-    businessManagement: businessManagementSlice,
+    businessPeople: businessPeopleSlice,
+    founderDetail: founderDetailSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(

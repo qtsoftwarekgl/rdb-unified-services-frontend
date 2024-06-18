@@ -269,6 +269,89 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // CREATE SHAREHOLDER
+      createShareholder: builder.mutation({
+        query: ({
+          shareHolderType,
+          description,
+          companyName,
+          companyCode,
+          countryOfIncorporation,
+          incorporationDate,
+          isBasedInRwanda,
+          firstName,
+          middleName,
+          lastName,
+          fatherName,
+          motherName,
+          spouseName,
+          maritalStatus,
+          dateOfBirth,
+          gender,
+          nationality,
+          personIdentType,
+          personDocNo,
+          persDocIssueDate,
+          persDocExpiryDate,
+          persDocIssuePlace,
+          validFrom,
+          validTo,
+          isFromNida,
+          streetNumber,
+          phoneNumber,
+          email,
+          fax,
+          poBox,
+          businessId,
+        }) => {
+          return {
+            url: `/founder-details?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              shareHolderType,
+              description,
+              companyName,
+              companyCode,
+              countryOfIncorporation,
+              incorporationDate,
+              firstName,
+              middleName,
+              lastName,
+              fatherName,
+              motherName,
+              spouseName,
+              maritalStatus,
+              dateOfBirth,
+              gender,
+              nationality,
+              personIdentType,
+              personDocNo,
+              persDocIssueDate,
+              persDocExpiryDate,
+              persDocIssuePlace,
+              validFrom,
+              validTo,
+              isFromNida,
+              streetNumber,
+              phoneNumber,
+              email,
+              fax,
+              poBox,
+              isBasedInRwanda,
+            },
+          };
+        },
+      }),
+
+      // FETCH SHAREHOLDERS
+      fetchShareholders: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/founders?businessId=${businessId}`,
+          };
+        },
+      }),
     };
   },
 });
@@ -288,6 +371,8 @@ export const {
   useLazyFetchManagementOrBoardPeopleQuery,
   useCreateEmploymentInfoMutation,
   useCreateShareDetailsMutation,
+  useCreateShareholderMutation,
+  useLazyFetchShareholdersQuery
 } = businessRegistrationApiSlice;
 
 export default businessRegistrationApiSlice;

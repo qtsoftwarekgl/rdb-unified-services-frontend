@@ -591,14 +591,6 @@ export const personnelTypes = [
     value: "legal_entity",
   },
   {
-    value: "partnership",
-    label: "Partnership",
-  },
-  {
-    value: "company",
-    label: "Company",
-  },
-  {
     value: "ngo",
     label: "NGO",
   }

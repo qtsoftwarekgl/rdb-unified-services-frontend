@@ -27,8 +27,8 @@ import { useCreateManagementOrBoardPersonMutation } from '@/states/api/businessR
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
-import { addManagementPerson } from '@/states/features/businessManagementSlice';
-import ManagementPeople from './ManagementPeople';
+import { addBusinessPerson } from '@/states/features/businessPeopleSlice';
+import BusinessPeople from './BusinessPeople';
 
 export interface business_executive_management {
   firstName: string;
@@ -62,8 +62,8 @@ const ExecutiveManagement = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { managementPeopleList } = useSelector(
-    (state: RootState) => state.businessManagement
+  const { businessPeopleList } = useSelector(
+    (state: RootState) => state.businessPeople
   );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
@@ -104,7 +104,7 @@ const ExecutiveManagement = ({
         personIdentType: '',
       });
       setAttachmentFile(null);
-      dispatch(addManagementPerson(managementPersonData?.data));
+      dispatch(addBusinessPerson(managementPersonData?.data));
     }
   }, [
     dispatch,
@@ -701,7 +701,7 @@ const ExecutiveManagement = ({
               disabled={disableForm}
             />
           </section>
-          <ManagementPeople
+          <BusinessPeople
             type="executiveManagement"
             businessId={businessId}
           />
@@ -741,7 +741,7 @@ const ExecutiveManagement = ({
                 disabled={disableForm || Object.keys(errors).length > 0}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!managementPeopleList?.length) {
+                  if (!businessPeopleList?.length) {
                     setError('submit', {
                       type: 'manual',
                       message: 'Add at least one member',
