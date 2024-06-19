@@ -110,22 +110,6 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 4,
-      label: 'Beneficial Owners',
-      active: false,
-      completed: false,
-      name: 'beneficial_owners',
-      steps: [
-        {
-          label: 'Beneficial Owners',
-          name: 'beneficial_owners',
-          tab_name: 'beneficial_owners',
-          active: false,
-          completed: false,
-        },
-      ],
-    },
-    {
-      no: 5,
       label: 'Attachments',
       name: 'attachments',
       completed: false,
@@ -141,7 +125,7 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
       ],
     },
     {
-      no: 6,
+      no: 5,
       label: 'Preview & Submission',
       name: 'preview_submission',
       completed: false,

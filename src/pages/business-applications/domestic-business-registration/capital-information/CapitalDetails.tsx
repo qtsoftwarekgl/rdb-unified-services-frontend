@@ -348,8 +348,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
                 );
                 return;
               }
-              dispatch(setBusinessActiveStep('beneficial_owners'));
-              dispatch(setBusinessActiveTab('beneficial_owners'));
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'));
             }}
           />
         </menu>
@@ -373,8 +373,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('beneficial_owners'));
-              dispatch(setBusinessActiveTab('beneficial_owners'));
+              dispatch(setBusinessActiveStep('attachments'));
+              dispatch(setBusinessActiveTab('attachments'));
             }}
           />
         </menu>

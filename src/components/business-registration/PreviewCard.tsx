@@ -20,6 +20,7 @@ import {
   setApplicationReviewTabName,
 } from '@/states/features/applicationReviewSlice';
 import { ReviewComment } from '../applications-review/AddReviewComments';
+import { businessId } from '@/types/models/business';
 
 interface PreviewCardProps {
   header: string;
@@ -28,7 +29,7 @@ interface PreviewCardProps {
   children: ReactNode;
   stepName: string;
   tabName: string;
-  entryId?: string | null;
+  businessId?: businessId;
   status: string;
 }
 
@@ -39,7 +40,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   setActiveStep,
   stepName,
   tabName,
-  entryId,
+  businessId,
   status,
 }) => {
   // STATE VARIABLES
@@ -58,10 +59,10 @@ const PreviewCard: FC<PreviewCardProps> = ({
         (comment: ReviewComment) =>
           comment?.step.name === stepName &&
           comment?.tab.name === tabName &&
-          comment?.entryId === entryId
+          comment?.businessId === businessId
       )
     );
-  }, [applicationReviewComments, entryId, stepName, tabName]);
+  }, [applicationReviewComments, businessId, stepName, tabName]);
 
   // ADD/UPDATE COMMENT
   const handleAddComment = () => {
@@ -98,7 +99,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 dispatch(setActiveStep(stepName));
                 dispatch(setActiveTab(tabName));
                 dispatch(
-                  setUserApplications({ entryId, status: 'IN_PREVIEW' })
+                  setUserApplications({ businessId, status: 'IN_PREVIEW' })
                 );
               }}
               className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"

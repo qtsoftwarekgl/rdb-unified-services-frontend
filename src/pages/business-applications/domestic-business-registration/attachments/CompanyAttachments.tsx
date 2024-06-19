@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
@@ -13,8 +13,6 @@ import {
 } from '../../../../states/features/businessRegistrationSlice';
 import Button from '../../../../components/inputs/Button';
 import Loader from '../../../../components/Loader';
-import { setUserApplications } from '../../../../states/features/userApplicationSlice';
-import { business_company_details } from '../general-information/CompanyDetails';
 import Table from '../../../../components/table/Table';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
@@ -22,26 +20,15 @@ import ViewDocument from '../../../user-company-details/ViewDocument';
 import { previewUrl } from '../../../../constants/authentication';
 import { capitalizeString } from '../../../../helpers/strings';
 import Modal from '../../../../components/Modal';
-
-export interface business_company_attachments {
-  name: string;
-  size: number;
-  type: string;
-}
+import { businessId } from '@/types/models/business';
 
 interface CompanyAttachmentsProps {
-  isOpen: boolean;
-  company_attachments: business_company_attachments[];
-  entryId: string | null;
-  company_details: business_company_details;
+  businessId: businessId;
   status: string;
 }
 
 const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
-  isOpen,
-  company_attachments = [],
-  entryId,
-  company_details,
+  businessId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -50,7 +37,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
     setError,
     trigger,
     clearErrors,
@@ -79,35 +65,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     row_name: '',
   });
 
-  // SET DEFAULT ATTACHMENTS
-  useEffect(() => {
-    if (Object?.keys(company_attachments).length) {
-      if (Object.keys(company_attachments?.articles_of_association)?.length) {
-        setAttachmentFiles([
-          ...attachmentFiles,
-          company_attachments?.articles_of_association,
-        ]);
-      }
-      if (Object.keys(company_attachments?.resolution)?.length) {
-        setAttachmentFiles([
-          ...attachmentFiles,
-          company_attachments?.resolution,
-        ]);
-      }
-      if (company_attachments?.shareholder_attachments?.length) {
-        setAttachmentFiles([
-          ...attachmentFiles,
-          ...company_attachments?.shareholder_attachments,
-        ]);
-      }
-      if (company_attachments?.others?.length) {
-        setAttachmentFiles([
-          ...attachmentFiles,
-          ...company_attachments?.others,
-        ]);
-      }
-    }
-  }, [company_attachments]);
+  console.log(businessId);
 
   // HANDLE FORM SUBMIT
   const onSubmit = async (data: FieldValues) => {
@@ -129,40 +87,9 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     });
 
     setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entryId,
-          active_tab: 'preview_submission',
-          active_step: 'preview_submission',
-          company_attachments: {
-            articles_of_association: {
-              name: data?.articles_of_association?.name,
-              size: data?.articles_of_association?.size,
-              type: data?.articles_of_association?.type,
-            },
-            resolution: {
-              name: data?.resolution?.name,
-              size: data?.resolution?.size,
-              type: data?.resolution?.type,
-            },
-            shareholder_attachments:
-              data?.shareholder_attachments &&
-              JSON.parse(data?.shareholder_attachments)?.map(
-                (file: File) => file
-              ),
-            others:
-              data?.attachments &&
-              JSON.parse(data?.attachments)?.map((file: File) => file),
-          },
-        })
-      );
       dispatch(setBusinessCompletedStep('attachments'));
       dispatch(setBusinessActiveStep('preview_submission'));
       dispatch(setBusinessActiveTab('preview_submission'));
-      setIsLoading({
-        submit: false,
-        amend: false,
-      });
     }, 1000);
     return data;
   };
@@ -289,30 +216,16 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     },
   ];
 
-  if (!isOpen) return null;
-
   return (
     <main className="flex flex-col w-full gap-8">
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
           <section
-            className={`${
-              company_details?.articles_of_association === 'yes'
-                ? 'flex'
-                : 'hidden'
-            } w-full flex flex-col gap-3`}
+            className={`w-full flex flex-col gap-3`}
           >
             <h1 className="text-lg font-medium uppercase">Company Details</h1>
             <Controller
               name="articles_of_association"
-              rules={{
-                required:
-                  company_details?.articles_of_association === 'yes' &&
-                  !watch('articles_of_association') &&
-                  !company_attachments?.length
-                    ? 'Upload company articles of association'
-                    : false,
-              }}
               control={control}
               render={({ field }) => {
                 return (
@@ -365,11 +278,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
             </h1>
             <Controller
               name="resolution"
-              rules={{
-                required: !company_attachments?.resolution
-                  ? 'Resolution is required'
-                  : false,
-              }}
               control={control}
               render={({ field }) => {
                 return (
@@ -513,7 +421,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
               <Table
                 data={
                   attachmentFiles?.length > 0
-                    ? attachmentFiles?.map((file) => {
+                    && attachmentFiles?.map((file) => {
                         return {
                           name: file?.name || file?.file?.name,
                           type: file?.type || file?.file?.type,
@@ -521,7 +429,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                           source: capitalizeString(file?.source),
                         };
                       })
-                    : company_attachments
                 }
                 columns={columns}
                 showFilter={false}

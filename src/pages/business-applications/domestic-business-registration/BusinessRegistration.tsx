@@ -16,7 +16,6 @@ import EmploymentInfo from './management/EmploymentInfo';
 import ShareDetails from './capital-information/ShareDetails';
 import ShareHolders from './capital-information/ShareHolders';
 import CapitalDetails from './capital-information/CapitalDetails';
-import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 import CompanyAttachments from './attachments/CompanyAttachments';
 import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
 import { useEffect, useState } from 'react';
@@ -131,34 +130,19 @@ const BusinessRegistration = () => {
                   />
                 )}
 
-                 {/* {business_active_step?.name === 'beneficial_owners' && (
-                  <BeneficialOwners
-                    isOpen={business_active_step?.name === 'beneficial_owners'}
-                    beneficial_owners={businessApplication?.beneficial_owners}
-                    businessId={queryParams?.businessId}
-                    status={status}
-                  />
-                )}
-
                 {business_active_step?.name === 'attachments' && (
                   <CompanyAttachments
-                    isOpen={business_active_step?.name === 'attachments'}
-                    company_attachments={
-                      businessApplication?.company_attachments
-                    }
                     businessId={queryParams?.businessId}
-                    company_details={businessApplication?.company_details}
-                    status={status}
+                    status={'IN_PROGRESS'}
                   />
                 )}
 
-                {business_active_step?.name === 'preview_submission' && (
+                 {business_active_step?.name === 'preview_submission' && (
                   <PreviewSubmission
-                    isOpen={business_active_step?.name === 'preview_submission'}
-                    business_application={businessApplication}
-                    status={status}
+                    businessId={queryParams?.businessId}
+                    status={'IN_PROGRESS'}
                   />
-                )} */}
+                )}
               </Tab>
             );
           })}
