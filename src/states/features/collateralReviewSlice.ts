@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Step, TabType } from "./types";
+import { Step, TabType } from "../../types/navigationTypes";
 
 const initialCollateralReviewTabs = [
   {

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../states/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-regular-svg-icons";
-import { Step } from "../../states/features/types";
+import { Step } from "../../types/navigationTypes";
 import {
   resetToInitialState,
   setEnterpriseActiveStep,
@@ -19,11 +19,11 @@ import { cellsList } from "../../constants/cells";
 import { villagesList } from "../../constants/villages";
 
 type Props = {
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 };
 
-const Preview = ({ entry_id, status }: Props) => {
+const Preview = ({ entryId, status }: Props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const Preview = ({ entry_id, status }: Props) => {
   const { user } = useSelector((state: RootState) => state.user);
 
   const user_app =
-    user_applications?.find((app) => app.entry_id === entry_id) || null;
+    user_applications?.find((app) => app.entryId === entryId) || null;
 
   const enterprise_attachments =
     user_app?.enterprise_attachments?.fileNames || null;
@@ -46,14 +46,14 @@ const Preview = ({ entry_id, status }: Props) => {
   const handleEditButton = (step: Step) => {
     dispatch(setEnterpriseActiveTab(step.tab_name));
     dispatch(setEnterpriseActiveStep(step.name));
-    dispatch(setUserApplications({ entry_id, status: "in_preview" }));
+    dispatch(setUserApplications({ entryId, status: "in_preview" }));
   };
 
   const handleSubmit = () => {
     // reset all data
     dispatch(
       setUserApplications({
-        entry_id,
+        entryId,
         status: status === "action_required" ? "re_submitted" : "submitted",
       })
     );

@@ -27,17 +27,17 @@ import ConfirmModal from '../../../../components/confirm-modal/ConfirmModal';
 import ViewDocument from '../../../user-company-details/ViewDocument';
 import validateInputs from '../../../../helpers/validations';
 import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import { business_senior_management } from '@/pages/business-applications/business-registration/management/SeniorManagement';
+import { business_executive_management } from '@/pages/business-applications/domestic-business-registration/management/SeniorManagement';
 
 interface SeniorManagementProps {
-  entry_id: string | null;
-  foreign_senior_management: any;
+  entryId: string | null;
+  foreign_executive_management: any;
   status?: string;
 }
 
 const SeniorManagement = ({
-  entry_id,
-  foreign_senior_management,
+  entryId,
+  foreign_executive_management,
   status,
 }: SeniorManagementProps) => {
   // REACT HOOK FORM
@@ -99,8 +99,8 @@ const SeniorManagement = ({
       clearErrors('submit');
       dispatch(
         setUserApplications({
-          entry_id,
-          foreign_senior_management: [
+          entryId,
+          foreign_executive_management: [
             {
               ...data,
               attachment: {
@@ -108,9 +108,9 @@ const SeniorManagement = ({
                 size: attachmentFile?.size,
                 type: attachmentFile?.type,
               },
-              step: 'foreign_senior_management',
+              step: 'foreign_executive_management',
             },
-            ...foreign_senior_management,
+            ...foreign_executive_management,
           ],
         })
       );
@@ -147,7 +147,7 @@ const SeniorManagement = ({
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                if (status === 'is_amending') return;
+                if (status === 'IS_AMENDING') return;
                 setConfirmModalData(row?.original);
                 setConfirmModal(true);
               }}
@@ -669,8 +669,8 @@ const SeniorManagement = ({
             </h2>
             <Table
               rowClickHandler={undefined}
-              data={foreign_senior_management?.map(
-                (member: business_senior_management, index: number) => {
+              data={foreign_executive_management?.map(
+                (member: business_executive_management, index: number) => {
                   return {
                     ...member,
                     no: index + 1,
@@ -704,7 +704,7 @@ const SeniorManagement = ({
                 );
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 value={'Complete Amendment'}
                 onClick={(e) => {
@@ -715,13 +715,13 @@ const SeniorManagement = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value="Save & Complete Review"
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!foreign_senior_management?.length) {
+                  if (!foreign_executive_management?.length) {
                     setError('board_of_directors', {
                       type: 'manual',
                       message: 'Add at least one board member',
@@ -732,7 +732,7 @@ const SeniorManagement = ({
                     return;
                   }
                   dispatch(
-                    setForeignBusinessCompletedStep('foreign_senior_management')
+                    setForeignBusinessCompletedStep('foreign_executive_management')
                   );
                   dispatch(
                     setForeignBusinessActiveTab('foreign_preview_submission')
@@ -745,7 +745,7 @@ const SeniorManagement = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                if (!foreign_senior_management?.length) {
+                if (!foreign_executive_management?.length) {
                   setError('submit', {
                     type: 'manual',
                     message: 'Add at least one member',
@@ -756,10 +756,10 @@ const SeniorManagement = ({
                   return;
                 }
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
                 dispatch(
-                  setForeignBusinessCompletedStep('foreign_senior_management')
+                  setForeignBusinessCompletedStep('foreign_executive_management')
                 );
                 dispatch(
                   setForeignBusinessActiveStep('foreign_employment_info')
@@ -785,8 +785,8 @@ const SeniorManagement = ({
           e.preventDefault();
           dispatch(
             setUserApplications({
-              entry_id,
-              foreign_senior_management: foreign_senior_management?.filter(
+              entryId,
+              foreign_executive_management: foreign_executive_management?.filter(
                 (_: unknown, index: number) => {
                   return index !== confirmModalData?.no - 1;
                 }

@@ -54,7 +54,7 @@ const ApproveApplication = () => {
               e.preventDefault();
               dispatch(
                 setUserApplications({
-                  entry_id: selectedApplication?.entry_id,
+                  entryId: selectedApplication?.entryId,
                   status: 'approved',
                 })
               );

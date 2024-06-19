@@ -9,7 +9,7 @@ const NotFound = () => {
         <Button value={<menu className="flex items-center gap-3">
             <FontAwesomeIcon icon={faHome} />
             Go to dashboard
-        </menu>} route="/" primary />
+        </menu>} route="/services" primary />
     </main>
   )
 }

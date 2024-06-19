@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import ApplicationSuccess from "./ApplicationSuccess";
 
 type PreviewSubmissionProps = {
-  entry_id: string | null;
+  entryId: string | null;
   collateral_attachments: any;
   debtor_info: any;
   collateral_infos: any;
@@ -24,7 +24,7 @@ type PreviewSubmissionProps = {
 };
 
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
-  entry_id,
+  entryId,
   collateral_attachments,
   debtor_info,
   collateral_infos,
@@ -64,7 +64,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {debtor_info && (
         <PreviewCard
           header="Debtor Information"
-          entry_id={entry_id}
+          entryId={entryId}
           tabName="debtor_information"
           stepName="debtor_information"
           setActiveStep={setCollateralActiveStep}
@@ -87,7 +87,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {
         <PreviewCard
           header="Loan Amount"
-          entry_id={entry_id}
+          entryId={entryId}
           tabName="collateral_information"
           stepName="collateral_information"
           setActiveStep={setCollateralActiveStep}
@@ -103,7 +103,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {
         <PreviewCard
           header="Collateral Information"
-          entry_id={entry_id}
+          entryId={entryId}
           tabName="collateral_information"
           stepName="collateral_information"
           setActiveStep={setCollateralActiveStep}
@@ -139,7 +139,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       {
         <PreviewCard
           header="Attachments"
-          entry_id={entry_id}
+          entryId={entryId}
           tabName="attachments"
           stepName="attachments"
           setActiveStep={setCollateralActiveStep}
@@ -179,7 +179,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               if (isAOMADownloaded) {
                 dispatch(
                   setCollateralApplications({
-                    entry_id,
+                    entryId,
                     status: "Pending for approval",
                   })
                 );
@@ -194,7 +194,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           setOpenSuccessModal(false);
           if (isAOMADownloaded) navigate("/admin/collaterals");
         }}
-        entry_id={entry_id}
+        entryId={entryId}
         isAOMADownloaded={isAOMADownloaded}
       />
     </section>

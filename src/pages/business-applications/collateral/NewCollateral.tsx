@@ -24,13 +24,13 @@ const NewCollateral = () => {
   } = useSelector((state: RootState) => state.collateralRegistration);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entryId = queryParams.get("entryId");
 
   const { collateral_applications } = useSelector(
     (state: RootState) => state.collateralRegistration
   );
   const application = collateral_applications.find(
-    (app) => app.entry_id === entry_id
+    (app) => app.entryId === entryId
   );
 
   return (
@@ -61,13 +61,13 @@ const NewCollateral = () => {
                   <>
                     {activeStepName === "debtor_information" && (
                       <DebtorInformation
-                        entry_id={entry_id}
+                        entryId={entryId}
                         debtor_info={application?.debtor_info}
                       />
                     )}
                     {activeStepName === "collateral_information" && (
                       <CollateralInformation
-                        entry_id={entry_id}
+                        entryId={entryId}
                         collateral_infos={application?.collateral_infos || []}
                         debtor_info={application?.debtor_info}
                         collateral_type={application?.collateral_type}
@@ -77,7 +77,7 @@ const NewCollateral = () => {
                     )}
                     {activeStepName === "attachments" && (
                       <CollateralAttachments
-                        entry_id={entry_id}
+                        entryId={entryId}
                         attachments={application?.attachments?.fileNames || []}
                         isAOMADownloaded={
                           application?.isAOMADownloaded || false
@@ -86,7 +86,7 @@ const NewCollateral = () => {
                     )}
                     {activeStepName === "preview" && (
                       <PreviewSubmission
-                        entry_id={entry_id}
+                        entryId={entryId}
                         collateral_attachments={application?.attachments}
                         debtor_info={application?.debtor_info}
                         collateral_infos={application?.collateral_infos}

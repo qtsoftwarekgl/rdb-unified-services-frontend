@@ -16,12 +16,12 @@ const ReviewComments = () => {
   );
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entryId = queryParams.get("entryId");
   const dispatch = useDispatch();
 
   const my_reviews = applicationReviewComments.filter(
     (comment: ReviewComment) =>
-      comment?.entry_id === entry_id && comment?.checked !== true
+      comment?.entryId === entryId && comment?.checked !== true
   );
 
   if (my_reviews.length === 0) return null;

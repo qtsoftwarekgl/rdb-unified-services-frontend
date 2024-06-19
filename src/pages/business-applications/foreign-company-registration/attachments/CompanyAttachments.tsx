@@ -17,13 +17,13 @@ import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import Table from "../../../../components/table/Table";
 
 interface CompanyAttachmentsProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_company_attachments: any;
   foreign_company_details: any;
 }
 
 const CompanyAttachments = ({
-  entry_id,
+  entryId,
   foreign_company_attachments,
   foreign_company_details,
 }: CompanyAttachmentsProps) => {
@@ -52,7 +52,7 @@ const CompanyAttachments = ({
       setIsLoading(false);
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_company_attachments: {
             attachments: Array.from(attachmentFiles)?.map((file: File) => {
               return {

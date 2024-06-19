@@ -4,17 +4,17 @@ import { RootState } from '@/states/store';
 import { useSelector } from 'react-redux';
 
 type NameReservationProps = {
-  entry_id: string;
+  entryId: string;
 };
 
-const NameReservationSuccess = ({ entry_id }: NameReservationProps) => {
+const NameReservationSuccess = ({ entryId }: NameReservationProps) => {
   // STATE VARIABLES
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
   );
 
   const reservedName = user_applications?.find(
-    (application: { entry_id: string }) => application?.entry_id === entry_id
+    (application: { entryId: string }) => application?.entryId === entryId
   );
 
   return (

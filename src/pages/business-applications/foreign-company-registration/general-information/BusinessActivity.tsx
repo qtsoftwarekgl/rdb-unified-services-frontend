@@ -23,13 +23,13 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface BusinessActivityProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_company_activities: any;
   status?: string;
 }
 
 const BusinessActivity = ({
-  entry_id,
+  entryId,
   foreign_company_activities,
   status,
 }: BusinessActivityProps) => {
@@ -62,7 +62,7 @@ const BusinessActivity = ({
       // UPDATE COMPANY ACTIVITIES
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_company_activities: {
             vat: data?.vat,
             turnover: data?.turnover,
@@ -72,7 +72,7 @@ const BusinessActivity = ({
         })
       );
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         // SET THE NEXT TAB AS ACTIVE
@@ -184,7 +184,7 @@ const BusinessActivity = ({
                                             subActivity,
                                           ],
                                         },
-                                        entry_id,
+                                        entryId,
                                       })
                                     );
                                   } else {
@@ -194,7 +194,7 @@ const BusinessActivity = ({
                                           ...foreign_company_activities,
                                           business_lines: [subActivity],
                                         },
-                                        entry_id,
+                                        entryId,
                                       })
                                     );
                                   }
@@ -262,7 +262,7 @@ const BusinessActivity = ({
                                                 }
                                               ),
                                           },
-                                          entry_id,
+                                          entryId,
                                         })
                                       );
                                     }}
@@ -295,7 +295,7 @@ const BusinessActivity = ({
                                               }
                                             ),
                                         },
-                                        entry_id,
+                                        entryId,
                                       })
                                     );
                                     clearErrors("business_lines");
@@ -325,7 +325,7 @@ const BusinessActivity = ({
                                       ...foreign_company_activities,
                                       business_lines: updatedSubActivities,
                                     },
-                                    entry_id,
+                                    entryId,
                                   })
                                 );
                               }}
@@ -364,7 +364,7 @@ const BusinessActivity = ({
                         <Input
                           type="radio"
                           label="Yes"
-                          checked={watch("vat") === "yes"}
+                          defaultChecked={watch("vat") === "yes"}
                           value={"yes"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
@@ -374,7 +374,7 @@ const BusinessActivity = ({
                         <Input
                           type="radio"
                           label="No"
-                          checked={watch("vat") === "no"}
+                          defaultChecked={watch("vat") === "no"}
                           value={"no"}
                           onChange={(e) => {
                             field.onChange(e?.target.value);
@@ -449,7 +449,7 @@ const BusinessActivity = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (
@@ -491,7 +491,7 @@ const BusinessActivity = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

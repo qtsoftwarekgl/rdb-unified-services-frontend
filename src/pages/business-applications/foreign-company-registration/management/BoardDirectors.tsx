@@ -26,17 +26,17 @@ import {
 } from "../../../../constants/Users";
 import ConfirmModal from "../../../../components/confirm-modal/ConfirmModal";
 import ViewDocument from "../../../user-company-details/ViewDocument";
-import { business_board_of_directors } from "@/pages/business-applications/business-registration/management/BoardDirectors";
+import { business_board_of_directors } from "@/pages/business-applications/domestic-business-registration/management/BoardDirectors";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 
 interface BoardDirectorsProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_board_of_directors: any;
   status?: string;
 }
 
 const BoardDirectors = ({
-  entry_id,
+  entryId,
   foreign_board_of_directors,
   status,
 }: BoardDirectorsProps) => {
@@ -108,7 +108,7 @@ const BoardDirectors = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_board_of_directors: [
             {
               ...data,
@@ -183,7 +183,7 @@ const BoardDirectors = ({
               name="position"
               rules={{
                 required:
-                  status !== 'in_preview' ? "Select member's position" : false,
+                  status !== 'IN_PREVIEW' ? "Select member's position" : false,
               }}
               control={control}
               render={({ field }) => {
@@ -738,7 +738,7 @@ const BoardDirectors = ({
                 dispatch(setForeignBusinessActiveTab('general_information'));
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 value={'Complete Amendment'}
                 onClick={(e) => {
@@ -749,7 +749,7 @@ const BoardDirectors = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={'Save & Complete Review'}
                 primary
@@ -810,13 +810,13 @@ const BoardDirectors = ({
                   return;
                 }
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
                 dispatch(
                   setForeignBusinessCompletedStep('foreign_board_of_directors')
                 );
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_senior_management')
+                  setForeignBusinessActiveStep('foreign_executive_management')
                 );
               }}
             />
@@ -839,7 +839,7 @@ const BoardDirectors = ({
           e.preventDefault();
           dispatch(
             setUserApplications({
-              entry_id,
+              entryId,
               foreign_board_of_directors: foreign_board_of_directors?.filter(
                 (_: unknown, index: number) => {
                   return index !== confirmModalData?.no - 1;

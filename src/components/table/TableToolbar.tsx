@@ -1,19 +1,19 @@
-import { useState } from "react";
-import { Table, ColumnDef } from "@tanstack/react-table";
-import { DataTableViewOptions } from "./TableViewOptions";
-import DateRangePicker from "../inputs/DateRangePicker";
-import { DataTableFacetedFilter } from "./FacetedFilter";
-import { DateRange } from "react-day-picker";
-import moment from "moment";
-import Select from "../inputs/SingleSelect";
-import { capitalizeString } from "@/helpers/strings";
-import exportPDF from "./Export";
-import { Button } from "../ui/button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile } from "@fortawesome/free-regular-svg-icons";
-import { Cross2Icon } from "@radix-ui/react-icons";
-import { useLocation, useNavigate } from "react-router-dom";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import { useState } from 'react';
+import { Table, ColumnDef } from '@tanstack/react-table';
+import { DataTableViewOptions } from './TableViewOptions';
+import DateRangePicker from '../inputs/DateRangePicker';
+import { DataTableFacetedFilter } from './FacetedFilter';
+import { DateRange } from 'react-day-picker';
+import moment from 'moment';
+import Select from '../inputs/SingleSelect';
+import { capitalizeString } from '@/helpers/strings';
+import exportPDF from './Export';
+import { Button } from '../ui/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-regular-svg-icons';
+import { Cross2Icon } from '@radix-ui/react-icons';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 interface TableToolbarProps<TData, TValue> {
   table: Table<TData>;
@@ -36,7 +36,7 @@ export default function TableToolbar<TData, TValue>({
   const isFiltered =
     table.getState().columnFilters.length > 0 ||
     Array.from(queryParams).length > 0;
-    const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
 
   // NAVIGATE
   const navigate = useNavigate();
@@ -48,9 +48,9 @@ export default function TableToolbar<TData, TValue>({
       to: undefined,
     };
   });
-  const [globalFilterValue, setGlobalFilterValue] = useState<string>("");
-  const [searchColumn, setSearchColumn] = useState<string>("");
-  const [searchType, setSearchType] = useState<string>("");
+  const [globalFilterValue, setGlobalFilterValue] = useState<string>('');
+  const [searchColumn, setSearchColumn] = useState<string>('');
+  const [searchType, setSearchType] = useState<string>('');
 
   // HANDLE GLOBAL FILTER CHANGE
   const handleGlobalFilterChange = (value: string) => {
@@ -68,10 +68,10 @@ export default function TableToolbar<TData, TValue>({
   };
 
   const handleDateRangeChange = (dateRange: DateRange | undefined) => {
-    const column = table.getColumn("date");
+    const column = table.getColumn('date');
     const selectedDate = {
-      from: dateRange?.from && moment(dateRange?.from).format("YYYY-MM-DD"),
-      to: dateRange?.to && moment(dateRange?.to).format("YYYY-MM-DD"),
+      from: dateRange?.from && moment(dateRange?.from).format('YYYY-MM-DD'),
+      to: dateRange?.to && moment(dateRange?.to).format('YYYY-MM-DD'),
     };
     setDateRange(selectedDate as DateRange);
     column?.setFilterValue(selectedDate?.from);
@@ -106,7 +106,8 @@ export default function TableToolbar<TData, TValue>({
                         )
                         .map((column) => {
                           return {
-                            label: capitalizeString(column.accessorKey),
+                            label: table.getColumn(column?.accessorKey)
+                              ?.columnDef.header,
                             value: column?.accessorKey,
                           };
                         }),
@@ -131,20 +132,6 @@ export default function TableToolbar<TData, TValue>({
             />
           </menu>
         </nav>
-        {isFiltered && (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              table.resetColumnFilters();
-              setDateRange(undefined);
-              navigate(``);
-            }}
-            className="h-8 px-2 lg:px-3 text-[12px] font-normal hover:font-medium"
-          >
-            Reset
-            <Cross2Icon className="w-4 h-4 ml-2" />
-          </Button>
-        )}
         <Button
           variant={'outline'}
           className="flex items-center gap-2"
@@ -177,6 +164,20 @@ export default function TableToolbar<TData, TValue>({
           </Button>
         )}
         <DataTableViewOptions table={table} />
+        {isFiltered && (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              table.resetColumnFilters();
+              setDateRange(undefined);
+              navigate(``);
+            }}
+            className="h-8 px-2 lg:px-3 text-[12px] font-normal hover:font-medium"
+          >
+            Reset
+            <Cross2Icon className="w-4 h-4 ml-2" />
+          </Button>
+        )}
       </section>
       <menu
         className={`${
@@ -202,7 +203,7 @@ export default function TableToolbar<TData, TValue>({
                 key={column?.accessorKey}
                 table={table}
                 column={table.getColumn(column?.accessorKey)}
-                title={capitalizeString(column?.accessorKey)}
+                title={table.getColumn(column?.accessorKey)?.columnDef.header}
                 options={Array.from(
                   table
                     .getColumn(column?.accessorKey)

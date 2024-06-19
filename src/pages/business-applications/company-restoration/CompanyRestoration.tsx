@@ -113,12 +113,12 @@ const CompanyRestoration = () => {
                     label="Select Company"
                     options={user_applications?.map((app) => {
                       return {
-                        label: `${app?.entry_id
+                        label: `${app?.entryId
                           ?.split('-')[0]
                           ?.toUpperCase()} - ${
                           app?.company_details?.name || 'N/A'
                         }`,
-                        value: app?.entry_id,
+                        value: app?.entryId,
                       };
                     })}
                     {...field}

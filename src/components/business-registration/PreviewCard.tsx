@@ -20,6 +20,7 @@ import {
   setApplicationReviewTabName,
 } from '@/states/features/applicationReviewSlice';
 import { ReviewComment } from '../applications-review/AddReviewComments';
+import { businessId } from '@/types/models/business';
 
 interface PreviewCardProps {
   header: string;
@@ -28,7 +29,7 @@ interface PreviewCardProps {
   children: ReactNode;
   stepName: string;
   tabName: string;
-  entry_id?: string | null;
+  businessId?: businessId;
   status: string;
 }
 
@@ -39,7 +40,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   setActiveStep,
   stepName,
   tabName,
-  entry_id,
+  businessId,
   status,
 }) => {
   // STATE VARIABLES
@@ -58,10 +59,10 @@ const PreviewCard: FC<PreviewCardProps> = ({
         (comment: ReviewComment) =>
           comment?.step.name === stepName &&
           comment?.tab.name === tabName &&
-          comment?.entry_id === entry_id
+          comment?.businessId === businessId
       )
     );
-  }, [applicationReviewComments, entry_id, stepName, tabName]);
+  }, [applicationReviewComments, businessId, stepName, tabName]);
 
   // ADD/UPDATE COMMENT
   const handleAddComment = () => {
@@ -98,7 +99,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 dispatch(setActiveStep(stepName));
                 dispatch(setActiveTab(tabName));
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_preview' })
+                  setUserApplications({ businessId, status: 'IN_PREVIEW' })
                 );
               }}
               className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
@@ -184,7 +185,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
       )}
       {!RDBAdminEmailPattern.test(user?.email) &&
         existingComments?.filter((comment) => !comment.checked)?.length > 0 &&
-        status === 'action_required' && (
+        status === 'ACTION_REQUIRED' && (
           <menu className="flex items-center w-full justify-center">
             <Button
               styled={false}

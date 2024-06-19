@@ -21,7 +21,7 @@ import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 import { setUserApplications } from "../../../states/features/userApplicationSlice";
 import moment from "moment";
 import { RootState } from "../../../states/store";
-import ReviewNavigation from "../business-registration/ReviewNavigation";
+import ReviewNavigation from "../domestic-business-registration/ReviewNavigation";
 import AddReviewComments from "../../../components/applications-review/AddReviewComments";
 import ListReviewComments from "../../../components/applications-review/ListReviewComments";
 import { RDBAdminEmailPattern } from "../../../constants/Users";
@@ -36,7 +36,7 @@ const ForeignBranchRegistration = () => {
 
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entryId = queryParams.get("entryId");
   const dispatch = useDispatch();
   const { user_applications } = useSelector(
     (state: RootState) => state.userApplication
@@ -44,35 +44,35 @@ const ForeignBranchRegistration = () => {
   const { user } = useSelector((state: RootState) => state.user);
   const current_application = user_applications?.find(
     (app: {
-      entry_id: string;
+      entryId: string;
       status: string;
       path: string;
       type: string;
       owner: string;
-    }) => app.entry_id === entry_id
+    }) => app.entryId === entryId
   );
 
   // APPLICATION STATUS
-  let status = "in_progress";
+  let status = "IN_PROGRESS";
   if (current_application) {
     status = current_application.status;
   }
   if (RDBAdminEmailPattern.test(user?.email)) {
-    status = "in_review";
+    status = "IN_REVIEW";
   }
 
   useEffect(() => {
     dispatch(
       setUserApplications({
-        entry_id,
+        entryId,
         status,
         type: "foreign_branch",
-        path: `/foreign-branch-registration?entry_id=${entry_id}`,
+        path: `/foreign-branch-registration?entryId=${entryId}`,
         createdAt: moment(Date.now()).format("DD/MM/YYYY"),
         owner: user?.email,
       })
     );
-  }, [entry_id, dispatch]);
+  }, [entryId, dispatch]);
 
   return (
     <UserLayout>
@@ -91,7 +91,7 @@ const ForeignBranchRegistration = () => {
                 <Tab
                   isOpen={isActiveTab}
                   steps={tab?.steps}
-                  key={`${String(index)}-${entry_id}`}
+                  key={`${String(index)}-${entryId}`}
                   setActiveStep={setForeignBusinessActiveStep}
                   active_tab={foreign_business_active_tab}
                 >
@@ -99,14 +99,14 @@ const ForeignBranchRegistration = () => {
                     <>
                       {activeStepName === 'company_details' && (
                         <CompanyDetails
-                          entry_id={entry_id}
+                          entryId={entryId}
                           company_details={current_application?.company_details}
                           status={status}
                         />
                       )}
                       {activeStepName === 'foreign_company_address' && (
                         <CompanyAddress
-                          entry_id={entry_id}
+                          entryId={entryId}
                           foreign_company_address={
                             current_application?.foreign_company_address
                           }
@@ -115,7 +115,7 @@ const ForeignBranchRegistration = () => {
                       )}
                       {activeStepName === 'foreign_business_activity_vat' && (
                         <BusinessActivity
-                          entry_id={entry_id}
+                          entryId={entryId}
                           foreign_company_activities={
                             current_application?.foreign_company_activities
                           }
@@ -124,7 +124,7 @@ const ForeignBranchRegistration = () => {
                       )}
                       {activeStepName === 'foreign_board_of_directors' && (
                         <BoardDirectors
-                          entry_id={entry_id}
+                          entryId={entryId}
                           foreign_board_of_directors={
                             current_application?.foreign_board_of_directors ||
                             []
@@ -132,18 +132,18 @@ const ForeignBranchRegistration = () => {
                           status={status}
                         />
                       )}
-                      {activeStepName === 'foreign_senior_management' && (
+                      {activeStepName === 'foreign_executive_management' && (
                         <SeniorManagement
-                          entry_id={entry_id}
-                          foreign_senior_management={
-                            current_application?.foreign_senior_management || []
+                          entryId={entryId}
+                          foreign_executive_management={
+                            current_application?.foreign_executive_management || []
                           }
                           status={status}
                         />
                       )}
                       {activeStepName === 'foreign_employment_info' && (
                         <EmploymentInfo
-                          entry_id={entry_id}
+                          entryId={entryId}
                           foreign_employment_info={
                             current_application?.foreign_employment_info
                           }
@@ -152,7 +152,7 @@ const ForeignBranchRegistration = () => {
                       )}
                       {activeStepName === 'foreign_beneficial_owners' && (
                         <BeneficialOwners
-                          entry_id={entry_id}
+                          entryId={entryId}
                           foreign_beneficial_owners={
                             current_application?.foreign_beneficial_owners || []
                           }
@@ -161,7 +161,7 @@ const ForeignBranchRegistration = () => {
                       )}
                       {activeStepName === 'foreign_attachments' && (
                         <CompanyAttachments
-                          entry_id={entry_id}
+                          entryId={entryId}
                           foreign_company_attachments={
                             current_application?.foreign_company_attachments
                           }
@@ -172,7 +172,7 @@ const ForeignBranchRegistration = () => {
                       )}
                       {activeStepName === 'foreign_preview_submission' && (
                         <PreviewSubmission
-                          entry_id={entry_id}
+                          entryId={entryId}
                           current_application={current_application}
                           status={status}
                         />
@@ -188,7 +188,7 @@ const ForeignBranchRegistration = () => {
         {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <ReviewNavigation
-              entry_id={entry_id}
+              entryId={entryId}
               setActiveStep={setForeignBusinessActiveStep}
               setActiveTab={setForeignBusinessActiveTab}
               tabs={foreign_business_registration_tabs}
@@ -199,12 +199,12 @@ const ForeignBranchRegistration = () => {
               setApplication={setUserApplications}
             />
             <AddReviewComments
-              entry_id={entry_id}
+              entryId={entryId}
               activeStep={foreign_business_active_step}
               activeTab={foreign_business_active_tab}
             />
             <ListReviewComments
-              entry_id={entry_id}
+              entryId={entryId}
               setActiveStep={setForeignBusinessActiveStep}
               setActiveTab={setForeignBusinessActiveTab}
               title="Branch of Foreign Company Registration Review Comments"

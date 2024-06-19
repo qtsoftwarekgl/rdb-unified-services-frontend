@@ -12,7 +12,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
 import {
   Table as DataTable,
@@ -21,11 +21,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
-import { DataTablePagination } from "./TablePagination";
-import TableToolbar from "./TableToolbar";
-import { useState } from "react";
+import { DataTablePagination } from './TablePagination';
+import TableToolbar from './TableToolbar';
+import { useState } from 'react';
+import { UnknownAction } from '@reduxjs/toolkit';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,6 +35,12 @@ interface DataTableProps<TData, TValue> {
   showFilter?: boolean;
   showPagination?: boolean;
   showExport?: boolean;
+  page?: number;
+  size?: number;
+  totalElements?: number;
+  totalPages?: number;
+  setPage?: (page: number) => UnknownAction;
+  setSize?: (size: number) => UnknownAction;
 }
 
 export default function Table<TData, TValue>({
@@ -43,6 +50,12 @@ export default function Table<TData, TValue>({
   showFilter = true,
   showPagination = true,
   showExport = true,
+  page = 1,
+  size = 10,
+  totalElements,
+  totalPages,
+  setPage,
+  setSize,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -57,6 +70,10 @@ export default function Table<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      pagination: {
+        pageIndex: page - 1,
+        pageSize: size,
+      },
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -112,7 +129,7 @@ export default function Table<TData, TValue>({
                       e.preventDefault();
                       rowClickHandler &&
                         row?.id !== 'no' &&
-                        rowClickHandler(row as Row<TData>['original']);
+                        rowClickHandler(row.original as Row<TData>['original']);
                     }}
                   >
                     {row.getVisibleCells().map((cell) => {
@@ -158,7 +175,17 @@ export default function Table<TData, TValue>({
           </TableBody>
         </DataTable>
       </div>
-      {showPagination && <DataTablePagination table={table} />}
+      {showPagination && (
+        <DataTablePagination
+          page={page}
+          size={size}
+          totalElements={totalElements}
+          totalPages={totalPages}
+          table={table}
+          setPage={setPage}
+          setSize={setSize}
+        />
+      )}
     </div>
   );
 }

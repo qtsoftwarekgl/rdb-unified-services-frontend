@@ -11,9 +11,14 @@ export const formatDate = (date: string | Date | undefined) => {
   return moment(date).format('DD/MM/YYYY');
 };
 
-export const capitalizeString = (string: string) => {
+export const convertDecimalToPercentage = (number: number | string) => {
+  if (!number) return '';
+  return Number(Number(number).toFixed(2)) * 100;
+};
+
+export const capitalizeString = (string: string | undefined | null) => {
   if (!string) return '';
-  const words = string?.split('_');
+  const words = string?.toLowerCase()?.split('_');
   const capitalizedWords =
     words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
@@ -34,9 +39,9 @@ export const formatCompanyData = (business: any) => {
       company_name: business?.name || 'N/A',
       status: business?.status,
       id: business?.id || Math.floor(Math.random() * 9000) + 1000,
-      entry_id: business?.entry_id,
+      entryId: business?.entryId,
       reference_no: `REG-${(
-        business?.entry_id?.split('-')[0] || ''
+        business?.entryId?.split('-')[0] || ''
       ).toUpperCase()}`,
       service_name: business?.type,
       createdAt: formatDate(business?.createdAt),
@@ -53,9 +58,9 @@ export const formatCompanyData = (business: any) => {
     company_name: company?.name || 'N/A',
     status: business?.status,
     id: business?.id || Math.floor(Math.random() * 9000) + 1000,
-    entry_id: business?.entry_id,
+    entryId: business?.entryId,
     reference_no: `REG-${(
-      business?.entry_id?.split('-')[0] || ''
+      business?.entryId?.split('-')[0] || ''
     ).toUpperCase()}`,
     service_name: business?.type,
     createdAt: formatDate(business?.createdAt),

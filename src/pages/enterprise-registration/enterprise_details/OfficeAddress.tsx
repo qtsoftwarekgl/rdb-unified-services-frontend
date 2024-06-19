@@ -22,13 +22,13 @@ import { cellsList } from "../../../constants/cells";
 import { villagesList } from "../../../constants/villages";
 
 interface OfficeAddressProps {
-  entry_id: string | null;
+  entryId: string | null;
   enterprise_office_address: any;
   status?: string;
 }
 
 const OfficeAddress = ({
-  entry_id,
+  entryId,
   enterprise_office_address,
   status,
 }: OfficeAddressProps) => {
@@ -75,7 +75,7 @@ const OfficeAddress = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           office_address: {
             ...data,
             step: { ...enterprise_registration_active_step },
@@ -83,7 +83,7 @@ const OfficeAddress = ({
         })
       );
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend) {
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend) {
         dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
       } else {
         // SET ACTIVE STEP
@@ -107,10 +107,10 @@ const OfficeAddress = ({
   };
 
   // RESET COMPANY ADDRESS
-  const resetCompanyLocation = () => {
+  const resetBusinessLocation = () => {
     dispatch(
       setUserApplications({
-        entry_id,
+        entryId,
         office_address: {
           ...enterprise_office_address,
           province: "",
@@ -157,7 +157,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -220,7 +220,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -289,7 +289,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -354,7 +354,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -420,7 +420,7 @@ const OfficeAddress = ({
                             className="!text-[12px] hover:underline"
                             onClick={(e) => {
                               e.preventDefault();
-                              resetCompanyLocation();
+                              resetBusinessLocation();
                             }}
                           />
                         </ul>
@@ -614,7 +614,7 @@ const OfficeAddress = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview ? <Loader /> : "Save & Complete Review"
@@ -626,7 +626,7 @@ const OfficeAddress = ({
                     return;
                   }
                   dispatch(
-                    setUserApplications({ entry_id, status: "in_preview" })
+                    setUserApplications({ entryId, status: "in_preview" })
                   );
 
                   setIsLoading({
@@ -653,9 +653,9 @@ const OfficeAddress = ({
                   submit: true,
                   amend: false,
                 });
-                if ((['in_preview', 'action_required'].includes(status)))
+                if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)))
                   dispatch(
-                    setUserApplications({ entry_id, status: "in_progress" })
+                    setUserApplications({ entryId, status: "IN_PROGRESS" })
                   );
               }}
               primary

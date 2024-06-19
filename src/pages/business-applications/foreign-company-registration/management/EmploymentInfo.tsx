@@ -15,13 +15,13 @@ import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import moment from 'moment';
 
 interface EmploymentInfoProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_employment_info: any;
   status?: string;
 }
 
 const EmploymentInfo = ({
-  entry_id,
+  entryId,
   foreign_employment_info,
   status,
 }: EmploymentInfoProps) => {
@@ -60,7 +60,7 @@ const EmploymentInfo = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_employment_info: {
             ...data,
             step: 'foreign_employment_info',
@@ -68,7 +68,7 @@ const EmploymentInfo = ({
         })
       );
       if (
-        ['in_preview', 'action_required'].includes(status) ||
+        ['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) ||
         isLoading.amend
       ) {
         dispatch(setForeignBusinessActiveTab('foreign_preview_submission'));
@@ -136,7 +136,7 @@ const EmploymentInfo = ({
                     <Input
                       type="radio"
                       label="Yes"
-                      checked={watch('has_employees') === 'yes'}
+                      defaultChecked={watch('has_employees') === 'yes'}
                       name={field?.name}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -148,7 +148,7 @@ const EmploymentInfo = ({
                       type="radio"
                       label="No"
                       name={field?.name}
-                      checked={watch('has_employees') === 'no'}
+                      defaultChecked={watch('has_employees') === 'no'}
                       onChange={(e) => {
                         if (e.target.checked) {
                           setValue(field?.name, 'no');
@@ -239,11 +239,11 @@ const EmploymentInfo = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_senior_management')
+                  setForeignBusinessActiveStep('foreign_executive_management')
                 );
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 value={'Complete Amendment'}
                 onClick={(e) => {
@@ -254,7 +254,7 @@ const EmploymentInfo = ({
                 }}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (
@@ -296,7 +296,7 @@ const EmploymentInfo = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
               }}
               primary

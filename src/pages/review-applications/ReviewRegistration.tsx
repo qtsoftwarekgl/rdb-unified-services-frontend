@@ -4,7 +4,7 @@ import { formatCompanyData } from '../../helpers/strings';
 import AdminLayout from '../../containers/AdminLayout';
 import ApplicatinsList from './ApplicationsList';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { business_application } from '../business-applications/business-registration/preview-submission/BusinessPreviewSubmission';
+import { business_application } from '../business-applications/domestic-business-registration/preview-submission/BusinessPreviewSubmission';
 
 const ReviewRegistration = () => {
   const { user_applications } = useSelector(
@@ -31,18 +31,18 @@ const ReviewRegistration = () => {
   };
 
   let applications = user_applications
-    ?.filter((application: business_application) => application?.status !== 'in_progress')
+    ?.filter((application: business_application) => application?.status !== 'IN_PROGRESS')
     ?.map(formatCompanyData)
     .sort(sortBySubmissionDate);
 
   if (user?.email?.includes('infoverifier@rdb'))
     applications = applications.filter((company) => {
-      return !['approved', 'pending_approval', 'pending_rejection'].includes(company?.status);
+      return !['approved', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(company?.status);
     });
 
   if (user?.email?.includes('infoapprover@rdb'))
     applications = applications.filter((company) => {
-      return ['pending_approval', 'in_review', 'pending_rejection'].includes(company?.status);
+      return ['PENDING_APPROVAL', 'IN_REVIEW', 'PENDING_REJECTION'].includes(company?.status);
     });
 
   return (

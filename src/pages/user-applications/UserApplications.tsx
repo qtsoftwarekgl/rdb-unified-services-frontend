@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { ReviewComment } from "../../components/applications-review/AddReviewComments";
 import { Row } from "@tanstack/react-table";
 import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { business_application } from "../business-applications/business-registration/preview-submission/BusinessPreviewSubmission";
+import { business_application } from "../business-applications/domestic-business-registration/preview-submission/BusinessPreviewSubmission";
 
 const UserApplications = () => {
   const { user_applications } = useSelector(
@@ -33,7 +33,7 @@ const UserApplications = () => {
         'submitted',
         'approved',
         'rejected',
-        'action_required',
+        'ACTION_REQUIRED',
         're_submitted',
       ].includes(app.status)
     )
@@ -47,7 +47,7 @@ const UserApplications = () => {
       approved: "bg-[#cfeaff] text-secondary",
       action_required: "bg-red-500 text-white",
       submitted: "bg-[#e8ffef] text-black",
-      in_progress: "bg-[#f7f7f7] text-black",
+      IN_PROGRESS: "bg-[#f7f7f7] text-black",
     };
     return colorMap[status] || "";
   };
@@ -115,17 +115,17 @@ const UserApplications = () => {
     );
   }
 
-  const hasComments = (applicationId: string) => {
+  const hasComments = (businessId: string) => {
     return applicationReviewComments.some(
       (comment: ReviewComment) =>
-        comment?.entry_id === applicationId && !comment?.checked
+        comment?.entryId === businessId && !comment?.checked
     );
   };
 
   const handleEditClick = (row: {
     original: {
       path: string;
-      entry_id: string;
+      entryId: string;
     };
   }) => {
     dispatch(setBusinessActiveTab("preview_submission"));
@@ -138,7 +138,7 @@ const UserApplications = () => {
   }: {
     row: {
       original: {
-        entry_id: string;
+        entryId: string;
         status: string;
       };
     };
@@ -158,10 +158,10 @@ const UserApplications = () => {
           }
           onClick={(e) => {
             e.preventDefault();
-            navigate(`/company-details/${row?.original?.entry_id}`);
+            navigate(`/company-details/${row?.original?.entryId}`);
           }}
         />
-        {hasComments(row?.original?.entry_id) &&
+        {hasComments(row?.original?.entryId) &&
           !['rejected'].includes(row?.original?.status) && (
             <Button
               onClick={(e) => {
@@ -170,7 +170,7 @@ const UserApplications = () => {
                   row as {
                     original: {
                       path: string;
-                      entry_id: string;
+                      entryId: string;
                       status: string;
                     };
                   }
@@ -216,10 +216,10 @@ const UserApplications = () => {
             data={registeredBusinesses}
             rowClickHandler={(row: {
               original: {
-                entry_id: string;
+                entryId: string;
               }
             }) => {
-              navigate(`/company-details/${row?.original?.entry_id}`);
+              navigate(`/company-details/${row?.original?.entryId}`);
             }}
           />
         ) : (

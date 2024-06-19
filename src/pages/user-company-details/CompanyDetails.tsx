@@ -11,7 +11,6 @@ import Table from '../../components/table/Table';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { setViewedCompany } from '../../states/features/userCompaniesSlice';
 import { capitalizeString } from '../../helpers/strings';
 import { countriesList } from '../../constants/countries';
 import Button from '../../components/inputs/Button';
@@ -22,8 +21,8 @@ import { districtsList } from '../../constants/districts';
 import { sectorsList } from '../../constants/sectors';
 import { cellsList } from '../../constants/cells';
 import { villagesList } from '../../constants/villages';
-import { business_company_details } from '../business-applications/business-registration/general-information/CompanyDetails';
-import { business_shareholders } from '../business-applications/business-registration/capital-information/ShareHolders';
+import { business_company_details } from '../business-applications/domestic-business-registration/general-information/CompanyDetails';
+import { business_shareholders } from '../business-applications/domestic-business-registration/capital-information/ShareHolders';
 
 const CompanyDetails = () => {
   const { id } = useParams();
@@ -41,13 +40,7 @@ const CompanyDetails = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (id) {
-      dispatch(
-        setViewedCompany(
-          user_applications?.find(
-            (business: { entry_id: string }) => business.entry_id === id
-          )
-        )
-      );
+console.log(id)
     }
 
     return () => {
@@ -69,8 +62,8 @@ const CompanyDetails = () => {
     viewedCompany?.foreign_company_activities ||
     null;
   const companyManagementMembers =
-    viewedCompany?.senior_management ||
-    viewedCompany?.foreign_senior_management ||
+    viewedCompany?.executive_management ||
+    viewedCompany?.foreign_executive_management ||
     [];
   const employment_info =
     viewedCompany?.employment_info ||

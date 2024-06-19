@@ -19,10 +19,10 @@ import { generateUUID } from "@/helpers/strings";
 
 type Props = {
   isOpen: boolean;
-  entry_id: string
+  entryId: string
 };
 
-const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
+const NameReservationSearch = ({ isOpen, entryId }: Props) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -63,13 +63,13 @@ const NameReservationSearch = ({ isOpen, entry_id }: Props) => {
       dispatch(setNameReservation(null));
       dispatch(
         setUserApplications({
-          entry_id: entryId,
+          entryId: entryId,
           type: 'name_reservation',
           status: 'submitted',
           registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
           createdAt: moment().format(),
           name: data.name,
-          path: `/name-reservation?entry_id=${entryId}`,
+          path: `/name-reservation?entryId=${entryId}`,
           active_tab: 'name_reservation',
           active_step: 'name_reservation',
         })

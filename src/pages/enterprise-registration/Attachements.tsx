@@ -19,7 +19,7 @@ import ViewDocument from "../user-company-details/ViewDocument";
 import { faEye } from "@fortawesome/free-regular-svg-icons";
 
 type AttachmentsProps = {
-  entry_id: string | null;
+  entryId: string | null;
   enterprise_attachments: any;
 };
 
@@ -29,7 +29,7 @@ type Attachment = {
 };
 
 const Attachments = ({
-  entry_id,
+  entryId,
   enterprise_attachments,
 }: AttachmentsProps) => {
   const {
@@ -64,7 +64,7 @@ const Attachments = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           enterprise_attachments: {
             fileNames,
             step: { ...enterprise_registration_active_step },

@@ -22,15 +22,11 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface CompanyDetailsProps {
-  entry_id: string | null;
-  company_details: any;
-  status: string;
+  businessId: string | undefined;
 }
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({
-  entry_id,
-  company_details,
-  status,
+  businessId,
 }) => {
   // REACT HOOK FORM
   const {
@@ -63,22 +59,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entry_id,
-          company_details: {
-            ...company_details,
-            name: data?.name,
-            category: data?.category,
-            type: data?.type,
-            position: data?.position,
-            articles_of_association: data?.articles_of_association,
-            step: "company_details",
-          },
-        })
-      );
 
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         // SET ACTIVE STEP
@@ -94,26 +76,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
       });
     }, 1000);
   };
-
-  // HANDLE DEFAULT VALUES
-  useEffect(() => {
-    if (company_details) {
-      setValue("name", company_details?.name);
-      setSearchCompany({
-        ...searchCompany,
-        name: company_details?.name,
-        success: true,
-        error: false,
-      });
-      setValue("category", company_details?.category);
-      setValue("type", company_details?.type);
-      setValue("position", company_details?.position);
-      setValue(
-        "articles_of_association",
-        company_details?.articles_of_association
-      );
-    }
-  }, [company_details, setValue]);
 
   return (
     <section className="flex flex-col w-full gap-4">
@@ -387,7 +349,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       type="radio"
                       label="Yes"
                       value={"yes"}
-                      checked={
+                      defaultChecked={
                         watch("articles_of_association") === "yes" ||
                         company_details?.articles_of_association === "yes"
                       }
@@ -403,7 +365,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                       type="radio"
                       label="No"
                       value={"no"}
-                      checked={
+                      defaultChecked={
                         watch("articles_of_association") === "no" ||
                         company_details?.articles_of_association === "no"
                       }
@@ -448,7 +410,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 onClick={async () => {
                   await trigger();
@@ -494,7 +456,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

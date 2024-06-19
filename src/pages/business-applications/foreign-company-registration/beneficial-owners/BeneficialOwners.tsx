@@ -56,13 +56,13 @@ export interface business_beneficial_owners {
 
 interface BeneficialOwnersProps {
   foreign_beneficial_owners: any[];
-  entry_id: string | null;
+  entryId: string | null;
   status: string;
 }
 
 const BeneficialOwners: FC<BeneficialOwnersProps> = ({
   foreign_beneficial_owners = [],
-  entry_id,
+  entryId,
   status,
 }) => {
   // REACT HOOK FORM
@@ -111,7 +111,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
         setIsLoading(false);
         dispatch(
           setUserApplications({
-            entry_id,
+            entryId,
             foreign_beneficial_owners: [
               {
                 ...data,
@@ -221,7 +221,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       );
                       dispatch(
                         setUserApplications({
-                          entry_id,
+                          entryId,
                           foreign_beneficial_owners: newBeneficialOwners,
                         })
                       );
@@ -407,7 +407,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               type="radio"
                               label="Yes"
                               value="yes"
-                              checked={watch('rwandan_company') === 'yes'}
+                              defaultChecked={watch('rwandan_company') === 'yes'}
                               onChange={(e) => {
                                 setSearchMember({
                                   ...searchMember,
@@ -801,7 +801,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       <menu className="flex items-center gap-4 mt-2">
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Male'
                           }
@@ -811,7 +811,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         />
                         <Input
                           type="radio"
-                          checked={
+                          defaultChecked={
                             searchMember?.data?.gender === 'Female' ||
                             watch('gender') === 'Female'
                           }
@@ -1620,7 +1620,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             }}
           />
         )}
-        {['in_preview', 'action_required'].includes(status) && (
+        {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
           <Button
             value={"Save & Complete Review"}
             primary
@@ -1645,7 +1645,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             dispatch(
               setForeignBusinessCompletedStep("foreign_beneficial_owners")
             );
-            dispatch(setUserApplications({ entry_id, status: "in_progress" }));
+            dispatch(setUserApplications({ entryId, status: "IN_PROGRESS" }));
             dispatch(setForeignBusinessActiveStep("foreign_attachments"));
             dispatch(setForeignBusinessActiveTab("foreign_attachments"));
           }}

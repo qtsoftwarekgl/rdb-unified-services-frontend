@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Step, TabType } from "./types";
+import { Step, TabType } from "../../types/navigationTypes";
 
 export const nameReservationSlice = createSlice({
   name: "nameReservation",
@@ -238,7 +238,7 @@ export const nameReservationSlice = createSlice({
       state.reservedNames = state.reservedNames?.filter(
         (reserved: {
           name: string,
-          entry_id?: string
+          entryId?: string
         }) => reserved?.name !== action.payload
       );
       localStorage.setItem(

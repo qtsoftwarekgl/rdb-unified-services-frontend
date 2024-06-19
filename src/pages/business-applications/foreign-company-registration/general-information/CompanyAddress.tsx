@@ -18,13 +18,13 @@ import { setUserApplications } from "../../../../states/features/userApplication
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 
 interface CompanyAddressProps {
-  entry_id: string | null;
+  entryId: string | null;
   foreign_company_address: any;
   status?: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
-  entry_id,
+  entryId,
   foreign_company_address,
   status,
 }) => {
@@ -66,14 +66,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     setTimeout(() => {
       dispatch(
         setUserApplications({
-          entry_id,
+          entryId,
           foreign_company_address: {
             ...data,
             step: "foreign_company_address",
           },
         })
       );
-      if ((['in_preview', 'action_required'].includes(status)) || isLoading?.amend)
+      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend)
         dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
       else {
         dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
@@ -322,7 +322,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 value={
                   isLoading?.preview && !Object.keys(errors)?.length ? (
@@ -363,7 +363,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: "in_progress" })
+                  setUserApplications({ entryId, status: "IN_PROGRESS" })
                 );
               }}
               submit

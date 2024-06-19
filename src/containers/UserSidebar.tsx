@@ -4,15 +4,13 @@ import {
   faGear,
   faHouse,
   faClockRotateLeft,
-  faRightFromBracket,
   faCircleInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import { motion, useAnimation } from 'framer-motion';
 import rdb_logo from '/rdb-logo.png';
 import rdb_icon from '/rdb-icon.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Button from '../components/inputs/Button';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../states/store';
 import { toggleSidebar } from '../states/features/sidebarSlice';
@@ -25,15 +23,9 @@ const UserSidebar = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.sidebar);
-  const { viewedCompany } = useSelector(
-    (state: RootState) => state.userCompanies
-  );
   const { applicationReviewComments } = useSelector(
     (state: RootState) => state.userApplication
   );
-
-  // NAVIGATE
-  const navigate = useNavigate();
 
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
 
@@ -62,22 +54,22 @@ const UserSidebar = () => {
   const companyDetailsSideBar = [
     {
       title: 'Company Details',
-      path: `/company-details/${viewedCompany?.entry_id}`,
+      path: `/company-details`,
       icon: faCircleInfo,
     },
     {
       title: 'Company Documents',
-      path: `/company-documents/${viewedCompany?.entry_id}`,
+      path: `/company-documents`,
       icon: faBook,
     },
     {
       title: 'Company History',
-      path: `/company-history/${viewedCompany?.entry_id}`,
+      path: `/company-history`,
       icon: faClockRotateLeft,
     },
   ];
 
-  const sidebarNav = viewedCompany ? companyDetailsSideBar : defaultUserSideBar;
+  const sidebarNav = false ? companyDetailsSideBar : defaultUserSideBar;
 
   // ANIMATION
   const controls = useAnimation();
@@ -199,26 +191,6 @@ const UserSidebar = () => {
             );
           })}
         </menu>
-        <Button
-          className={`w-full max-w-[90%]`}
-          primary
-          route="/auth/login"
-          value={
-            <menu
-              className={`flex items-center w-full gap-4 ${
-                isOpen ? 'justify-start w-full' : 'justify-center'
-              }`}
-            >
-              <FontAwesomeIcon icon={faRightFromBracket} />
-              {isOpen ? 'Logout' : null}
-            </menu>
-          }
-          onClick={(e) => {
-            e.preventDefault();
-            sessionStorage.clear();
-            navigate('/auth/login');
-          }}
-        />
       </motion.div>
     </aside>
   );

@@ -5,7 +5,6 @@ import Table from "../../components/table/Table";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setViewedCompany } from "../../states/features/userCompaniesSlice";
 import { RootState } from "../../states/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward } from "@fortawesome/free-solid-svg-icons";
@@ -23,16 +22,8 @@ const CompanyHistory = () => {
 
   useEffect(() => {
     if (id) {
-      dispatch(
-        setViewedCompany(
-          user_applications?.find((business) => business.entry_id === id)
-        )
-      );
+      console.log(id);
     }
-
-    return () => {
-      dispatch(setViewedCompany(null));
-    };
   }, [id, dispatch, user_applications, location]);
 
   const columns = [

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { TabType } from "../../states/features/types";
+import { TabType } from "../../types/navigationTypes";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { ReviewComment } from "../applications-review/AddReviewComments";
 import {
@@ -22,14 +22,14 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   );
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entry_id = queryParams.get("entry_id");
+  const entryId = queryParams.get("entryId");
   const { user } = useSelector((state: RootState) => state.user);
 
   const countUnresolvedTabComments = (tab: TabType) => {
     return applicationReviewComments.filter(
       (comment: ReviewComment) =>
         comment?.tab.name === tab?.name &&
-        comment?.entry_id === entry_id &&
+        comment?.entryId === entryId &&
         !comment?.checked
     ).length;
   };
@@ -38,7 +38,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
     return applicationReviewComments.filter(
       (comment: ReviewComment) =>
         comment?.tab.name === tab?.name &&
-        comment?.entry_id === entry_id &&
+        comment?.entryId === entryId &&
         comment?.checked
     ).length;
   }
@@ -68,7 +68,7 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
                     const tabComments = applicationReviewComments.filter(
                       (comment: ReviewComment) =>
                         comment?.tab.name === tab?.name &&
-                        comment?.entry_id === entry_id
+                        comment?.entryId === entryId
                     );
                     dispatch(setUserReviewTabComments(tabComments));
                     dispatch(setUserReviewTabCommentsModal(true));

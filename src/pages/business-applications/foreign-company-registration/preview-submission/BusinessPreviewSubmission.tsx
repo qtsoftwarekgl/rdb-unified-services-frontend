@@ -24,13 +24,13 @@ import { cellsList } from "../../../../constants/cells";
 import { villagesList } from "../../../../constants/villages";
 
 interface PreviewSubmissionProps {
-  entry_id: string | null;
+  entryId: string | null;
   current_application: any;
   status: string;
 }
 
 const PreviewSubmission = ({
-  entry_id,
+  entryId,
   current_application,
   status,
 }: PreviewSubmissionProps) => {
@@ -45,8 +45,8 @@ const PreviewSubmission = ({
     current_application?.foreign_company_activities;
   const foreign_board_of_directors =
     current_application?.foreign_board_of_directors || [];
-  const foreign_senior_management =
-    current_application?.foreign_senior_management || [];
+  const foreign_executive_management =
+    current_application?.foreign_executive_management || [];
   const foreign_employment_info = current_application?.foreign_employment_info;
   const foreign_beneficial_owners =
     current_application?.foreign_beneficial_owners || [];
@@ -102,7 +102,7 @@ const PreviewSubmission = ({
         stepName="company_details"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         {foreign_company_details &&
           Object?.entries(foreign_company_details)
@@ -126,7 +126,7 @@ const PreviewSubmission = ({
           stepName="foreign_company_address"
           setActiveStep={setForeignBusinessActiveStep}
           setActiveTab={setForeignBusinessActiveTab}
-          entry_id={entry_id}
+          entryId={entryId}
         >
           {Object?.entries(foreign_company_address)
             ?.filter(([key]) => key !== "step")
@@ -161,7 +161,7 @@ const PreviewSubmission = ({
         stepName="foreign_business_activity_vat"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         <p className="font-semibold">
           Register for VAT:{" "}
@@ -198,7 +198,7 @@ const PreviewSubmission = ({
         stepName="foreign_board_of_directors"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         <Table
           rowClickHandler={undefined}
@@ -223,17 +223,17 @@ const PreviewSubmission = ({
       <PreviewCard
         header="Senior Management"
         tabName="foreign_management"
-        stepName="foreign_senior_management"
+        stepName="foreign_executive_management"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         <Table
           rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
           columns={managementColumns}
-          data={foreign_senior_management?.map((director) => {
+          data={foreign_executive_management?.map((director) => {
             return {
               ...director,
               name: `${director?.first_name} ${director?.last_name}`,
@@ -254,7 +254,7 @@ const PreviewSubmission = ({
         stepName="foreign_employment_info"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         <p className="font-semibold">
           Company has employees:{" "}
@@ -287,7 +287,7 @@ const PreviewSubmission = ({
         stepName="foreign_beneficial_owners"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         <Table
           rowClickHandler={undefined}
@@ -314,7 +314,7 @@ const PreviewSubmission = ({
         stepName="foreign_attachments"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
-        entry_id={entry_id}
+        entryId={entryId}
       >
         <section className="flex flex-col gap-5">
           <menu className="flex flex-col gap-3">
@@ -344,7 +344,7 @@ const PreviewSubmission = ({
             <h3 className="font-semibold uppercase text-md">
               Senior management
             </h3>
-            {foreign_senior_management?.map((senior, index) => {
+            {foreign_executive_management?.map((senior, index) => {
               if (
                 senior?.attachment &&
                 Object.keys(senior?.attachment).length
@@ -425,7 +425,7 @@ const PreviewSubmission = ({
               setIsLoading(false);
               dispatch(
                 setUserApplications({
-                  entry_id,
+                  entryId,
                   status:
                     status === "action_required" ? "re_submitted" : "submitted",
                 })

@@ -17,7 +17,7 @@ import {
 } from "@/states/features/collateralRegistrationSlice";
 
 type AttachmentsProps = {
-  entry_id: string | null;
+  entryId: string | null;
   attachments: any;
   isAOMADownloaded: boolean;
 };
@@ -28,7 +28,7 @@ type Attachment = {
 };
 
 const CollateralAttachments = ({
-  entry_id,
+  entryId,
   attachments,
   isAOMADownloaded,
 }: AttachmentsProps) => {
@@ -65,7 +65,7 @@ const CollateralAttachments = ({
     setTimeout(() => {
       dispatch(
         setCollateralApplications({
-          entry_id,
+          entryId,
           attachments: {
             fileNames: [...fileNames, ...attachments],
           },

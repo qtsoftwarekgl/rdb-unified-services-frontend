@@ -1,62 +1,60 @@
-import "react-toastify/dist/ReactToastify.css";
-import AdminProfile from "./pages/profiles/AdminProfile";
-import "react-toastify/dist/ReactToastify.css";
-import { Routes as Router, Route } from "react-router-dom";
-import AuthenticatedRoutes from "./outlets/AuthenticatedRoutes";
-import Home from "./pages/home/Home";
-import Login from "./pages/authentication/Login";
-import NotFound from "./pages/NotFound";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdminDashboard from "./pages/dashboard/AdminDashboard";
-import BusinessRegistration from "./pages/business-applications/business-registration/BusinessRegistration";
-import AdminRoutes from "./outlets/AdminRoutes";
-import ListUsers from "./pages/users-management/ListUsers";
-import ListRoles from "./pages/roles-management/ListRoles";
-import SuperAdminRoutes from "./outlets/SuperAdminRoutes";
-import SuperAdminDashboard from "./pages/dashboard/SuperAdminDashboard";
-import ListInstitutions from "./pages/institutions-management/ListInstitutions";
-import ResetPasswordRequest from "./pages/authentication/ResetPasswordRequest";
-import ResetPasswordVerify from "./pages/authentication/ResetPasswordVerify";
-import ResetPasswordNew from "./pages/authentication/ResetPasswordNew";
-import UserProfile from "./pages/profiles/UserProfile";
-import "react-toastify/dist/ReactToastify.css";
-import Signup from "./pages/user-registration/Signup";
-import SuperAdminProfile from "./pages/profiles/SuperAdminProfile";
-import RegistrationVerify from "./pages/user-registration/RegistrationVerify";
-import RegistrationSuccess from "./pages/user-registration/RegistrationSuccess";
-import UserCompanyDetails from "./pages/user-company-details/CompanyDetails";
-import UserApplications from "./pages/user-applications/UserApplications";
-import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
-import CompanyHistory from "./pages/user-company-details/CompanyHistory";
-import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
-import NewBusinessRegistration from "./pages/business-applications/business-registration/NewBusinessRegistration";
-import EnterpriseRegistration from "./pages/enterprise-registration/EnterpriseRegistration";
-import NewEnterpriseRegistration from "./pages/enterprise-registration/NewEnterpriseRegistration";
-import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
-import CessationToDormant from "./pages/business-applications/cessation-dormancy/CessationToDormant";
-import InstitutionRegistration from "./pages/user-registration/InstitutionRegistration";
-import InstitutionRegistrationSuccess from "./pages/user-registration/InstitutionRegistrationSuccess";
-import TransferRegistration from "./pages/transfer-registration/TransferRegistration";
-import Amalgamation from "./pages/business-applications/amalgamation/Amalgamate";
-import AmendCompanyDetails from "./pages/business-applications/amend-company-details/AmendCompanyDetails";
-import ForeignUsers from "./pages/users-management/ForeignUsers";
-import NameReservation from "./pages/name-reservation/NameReservation";
-import ForeignBranchSplashPage from "./pages/business-applications/foreign-company-registration/SplashPage";
-import SearchCompanyAvailability from "./pages/business-applications/company-availability/SearchCompanyAvailability";
-import ForeignBranchRegistration from "./pages/business-applications/foreign-company-registration/ForeignCompanyRegistration";
-import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
-import SearchCompanyDetails from "./pages/business-applications/company-availability/SearchCompanyDetails";
-import CompanyRestoration from "./pages/business-applications/company-restoration/CompanyRestoration";
-import CloseCompany from "./pages/business-applications/company-closure/CloseCompany";
-import CompanyDormancy from "./pages/business-applications/company-dormancy/CompanyDormancy";
-import ReviewRegistration from "./pages/review-applications/ReviewRegistration";
-import LandingPage from "./pages/home/LandingPage";
-import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
-import CollateralList from "./pages/business-applications/collateral/CollateralList";
-import NewCollateral from "./pages/business-applications/collateral/NewCollateral";
-import CollateralListReview from "./pages/collateral-review/CollateralList";
-import CollateralReview from "./pages/collateral-review/CollateralReview";
+import 'react-toastify/dist/ReactToastify.css';
+import AdminProfile from './pages/profiles/AdminProfile';
+import 'react-toastify/dist/ReactToastify.css';
+import { Routes as Router, Route } from 'react-router-dom';
+import AuthenticatedRoutes from './outlets/AuthenticatedRoutes';
+import Login from './pages/authentication/Login';
+import NotFound from './pages/NotFound';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import BusinessRegistration from './pages/business-applications/domestic-business-registration/BusinessRegistration';
+import AdminRoutes from './outlets/AdminRoutes';
+import ListUsers from './pages/users-management/ListUsers';
+import ListRoles from './pages/roles-management/ListRoles';
+import SuperAdminRoutes from './outlets/SuperAdminRoutes';
+import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import ListInstitutions from './pages/institutions-management/ListInstitutions';
+import ResetPasswordRequest from './pages/authentication/ResetPasswordRequest';
+import ResetPasswordVerify from './pages/authentication/ResetPasswordVerify';
+import ResetPasswordNew from './pages/authentication/ResetPasswordNew';
+import UserProfile from './pages/profiles/UserProfile';
+import 'react-toastify/dist/ReactToastify.css';
+import Signup from './pages/user-registration/Signup';
+import SuperAdminProfile from './pages/profiles/SuperAdminProfile';
+import RegistrationVerify from './pages/user-registration/RegistrationVerify';
+import RegistrationSuccess from './pages/user-registration/RegistrationSuccess';
+import UserCompanyDetails from './pages/user-company-details/CompanyDetails';
+import UserApplications from './pages/user-applications/UserApplications';
+import CompanyDocuments from './pages/user-company-details/CompanyDocuments';
+import CompanyHistory from './pages/user-company-details/CompanyHistory';
+import RegistrationSetPassword from './pages/user-registration/RegistrationSetPassword';
+import EnterpriseRegistration from './pages/enterprise-registration/EnterpriseRegistration';
+import BusinessRegisterSuccess from './pages/BusinessRegisterSuccess';
+import CessationToDormant from './pages/business-applications/cessation-dormancy/CessationToDormant';
+import InstitutionRegistration from './pages/user-registration/InstitutionRegistration';
+import InstitutionRegistrationSuccess from './pages/user-registration/InstitutionRegistrationSuccess';
+import TransferRegistration from './pages/transfer-registration/TransferRegistration';
+import Amalgamation from './pages/business-applications/amalgamation/Amalgamate';
+import AmendCompanyDetails from './pages/business-applications/amend-company-details/AmendCompanyDetails';
+import ForeignUsers from './pages/users-management/ForeignUsers';
+import NameReservation from './pages/name-reservation/NameReservation';
+import SearchCompanyAvailability from './pages/business-applications/company-availability/SearchCompanyAvailability';
+import ForeignBranchRegistration from './pages/business-applications/foreign-company-registration/ForeignCompanyRegistration';
+import BusinessNewBranch from './pages/new-branch/BusinessNewBranch';
+import SearchCompanies from './pages/business-applications/company-availability/SearchCompanies';
+import CompanyRestoration from './pages/business-applications/company-restoration/CompanyRestoration';
+import CloseCompany from './pages/business-applications/company-closure/CloseCompany';
+import CompanyDormancy from './pages/business-applications/company-dormancy/CompanyDormancy';
+import ReviewRegistration from './pages/review-applications/ReviewRegistration';
+import LandingPage from './pages/home/LandingPage';
+import BackOfficeDashboard from './pages/dashboard/BackOfficeDashboard';
+import CollateralList from './pages/business-applications/collateral/CollateralList';
+import NewCollateral from './pages/business-applications/collateral/NewCollateral';
+import CollateralListReview from './pages/collateral-review/CollateralList';
+import CollateralReview from './pages/collateral-review/CollateralReview';
+import ServicesList from './pages/home/ServicesList';
+import NewServiceApplication from './containers/NewServiceApplication';
 
 const Routes = () => {
   return (
@@ -72,7 +70,8 @@ const Routes = () => {
         {/**
          * PUBLIC ROUTES
          */}
-        <Route path="/services" element={<Home />} />
+        <Route path="/services" element={<ServicesList />} />
+        <Route path="/services/:id/new" element={<NewServiceApplication />} />
         <Route path="/" element={<LandingPage />} />
         <Route element={<AuthenticatedRoutes />}>
           {/* USER PROFILE */}
@@ -98,15 +97,6 @@ const Routes = () => {
             path="/enterprise-registration"
             element={<EnterpriseRegistration />}
           />
-
-          <Route
-            path="/business-registration/new"
-            element={<NewBusinessRegistration />}
-          />
-          <Route
-            path="/enterprise-registration/new"
-            element={<NewEnterpriseRegistration />}
-          />
           <Route path="/success" element={<BusinessRegisterSuccess />} />
           <Route
             path="/cessation-to-dormant"
@@ -123,14 +113,10 @@ const Routes = () => {
           />
           <Route path="/name-reservation" element={<NameReservation />} />
           <Route
-            path="/foreign-company-registration"
-            element={<ForeignBranchSplashPage />}
-          />
-          <Route
             path="/name-availability"
             element={<SearchCompanyAvailability />}
           />
-          <Route path="/search-company" element={<SearchCompanyDetails />} />
+          <Route path="/search-company" element={<SearchCompanies />} />
           <Route path="/company-restoration" element={<CompanyRestoration />} />
           <Route path="/company-dormancy" element={<CompanyDormancy />} />
           <Route path="/close-company" element={<CloseCompany />} />

@@ -12,14 +12,14 @@ type ModalProps = {
   onClose: () => void;
   resubmit?: boolean;
   isAOMADownloaded?: boolean;
-  entry_id: string | null;
+  entryId: string | null;
 };
 
 const ApplicationSuccess: FC<ModalProps> = ({
   isOpen,
   onClose,
   isAOMADownloaded = false,
-  entry_id,
+  entryId,
 }) => {
   const dispatch = useDispatch();
   const handleDownload = () => {
@@ -34,7 +34,7 @@ const ApplicationSuccess: FC<ModalProps> = ({
     document.body.removeChild(link);
     dispatch(
       setCollateralApplications({
-        entry_id,
+        entryId,
         isAOMADownloaded: true,
         createdAt: moment(Date.now()).format("DD/MM/YYYY"),
         status: "Pending Notarized AOMA and Payment Receipt",

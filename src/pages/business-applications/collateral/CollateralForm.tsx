@@ -21,13 +21,13 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
-  entry_id: string | null;
+  entryId: string | null;
   collateral_infos: any;
   debtor_info: any;
   collateral_type: string;
 };
 const CollateralForm = ({
-  entry_id,
+  entryId,
   collateral_infos,
   debtor_info,
   collateral_type,
@@ -85,14 +85,14 @@ const CollateralForm = ({
       )
         dispatch(
           setCollateralApplications({
-            entry_id,
+            entryId,
             collateral_infos: [
               {
                 ...filterObject(data),
                 debtor_id_number:
                   debtor_info?.id_number || debtor_info?.tin_number,
                 collateral_id: generateUUID(),
-                loan_id: entry_id,
+                loan_id: entryId,
                 secured_amount: data.secured_amount,
                 secured_amount_in_words: data.value_in_words,
                 owners:
@@ -111,7 +111,7 @@ const CollateralForm = ({
       else
         dispatch(
           setCollateralApplications({
-            entry_id,
+            entryId,
             secured_amount: data.secured_amount,
             secured_amount_in_words: data.value_in_words,
           })
@@ -172,7 +172,7 @@ const CollateralForm = ({
                     <Input
                       type="radio"
                       label="Vehicle"
-                      checked={watch("movable_collateral_type") === "vehicle"}
+                      defaultChecked={watch("movable_collateral_type") === "vehicle"}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -190,7 +190,7 @@ const CollateralForm = ({
                     <Input
                       type="radio"
                       label="Other"
-                      checked={watch("movable_collateral_type") === "other"}
+                      defaultChecked={watch("movable_collateral_type") === "other"}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);

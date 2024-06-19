@@ -64,7 +64,7 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
         },
         {
           label: "Senior Management",
-          name: "foreign_senior_management",
+          name: "foreign_executive_management",
           tab_name: "foreign_management",
           active: false,
           completed: false,

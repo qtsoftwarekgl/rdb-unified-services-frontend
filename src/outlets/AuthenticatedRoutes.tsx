@@ -1,12 +1,14 @@
 import { useSelector } from 'react-redux';
+import store from 'store';
 import { Navigate, Outlet } from 'react-router-dom';
 import { RootState } from '../states/store';
 
 const AuthenticatedRoutes = () => {
   // STATE VARIABLES
-  const { isAuthenticated } = useSelector((state: RootState) => state.user);
+  const { user } = useSelector((state: RootState) => state.user);
 
-  if (!isAuthenticated) {
+  if (!user?.roles?.includes('PUBLIC_USER')) {
+    store.remove('user');
     return <Navigate to="/auth/login" />;
   }
 

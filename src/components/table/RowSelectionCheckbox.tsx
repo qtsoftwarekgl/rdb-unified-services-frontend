@@ -33,7 +33,7 @@ const RowSelectionCheckbox: FC<RowSelectionCheckboxProps> = ({
         e.stopPropagation();
       }}>
         <Checkbox
-        checked={
+        defaultChecked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
@@ -46,7 +46,7 @@ const RowSelectionCheckbox: FC<RowSelectionCheckboxProps> = ({
     return (
       <figure className='px-2'>
         <Checkbox
-        checked={row.getIsSelected()}
+        defaultChecked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />

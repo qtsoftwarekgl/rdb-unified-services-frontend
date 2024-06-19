@@ -22,13 +22,13 @@ import { setUserApplications } from "../../../states/features/userApplicationSli
 import { RDBAdminEmailPattern } from "../../../constants/Users";
 
 interface BusinessActivityProps {
-  entry_id: string | null;
+  entryId: string | null;
   enterprise_business_lines: any;
   status?: string;
 }
 
 const BusinessActivity = ({
-  entry_id,
+  entryId,
   enterprise_business_lines,
   status,
 }: BusinessActivityProps) => {
@@ -78,7 +78,7 @@ const BusinessActivity = ({
             enterprise_business_lines: selectedBusinessLines,
             step: { ...enterprise_registration_active_step },
           },
-          entry_id,
+          entryId,
         })
       );
 
@@ -318,7 +318,7 @@ const BusinessActivity = ({
                 dispatch(setEnterpriseActiveStep('company_details'));
               }}
             />
-            {status === 'is_amending' && (
+            {status === 'IS_AMENDING' && (
               <Button
                 submit
                 value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
@@ -337,7 +337,7 @@ const BusinessActivity = ({
                 disabled={Object.keys(errors)?.length > 0}
               />
             )}
-            {['in_preview', 'action_required'].includes(status) && (
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
               <Button
                 onClick={async () => {
                   await trigger();
@@ -376,7 +376,7 @@ const BusinessActivity = ({
                   amend: false,
                 });
                 dispatch(
-                  setUserApplications({ entry_id, status: 'in_progress' })
+                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
                 );
               }}
               primary

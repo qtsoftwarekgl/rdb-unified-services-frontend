@@ -7,7 +7,7 @@ import {
   setNameReservationActiveStep,
 } from '../../states/features/nameReservationSlice';
 import Tab from '../../components/business-registration/Tab';
-import { TabType } from '../../states/features/types';
+import { TabType } from '../../types/navigationTypes';
 import { useLocation, useNavigate } from 'react-router-dom';
 import OwnerDetails from './OwnerDetails';
 import NameReservationSearch from './NameReservationSearch';
@@ -27,14 +27,14 @@ const NameReservation = () => {
   // STATE VARIABLES
   const dispatch = useDispatch();
   const [entry_id] = useState<string | undefined>(undefined);
-  const entryId = queryParams.get('entry_id');
+  const entryId = queryParams.get('entryId');
 
   // NAVIGATION
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!entryId || entryId === 'null') {
-      navigate(`?entry_id=${generateUUID()}`);
+      navigate(`?entryId=${generateUUID()}`);
       dispatch(setNameReservationActiveStep('owner_details'));
       dispatch(setNameReservationActiveTab('owner_details'));
     }
@@ -54,7 +54,7 @@ const NameReservation = () => {
             <Tab
               isOpen={tab?.active}
               steps={tab?.steps}
-              key={`${String(index)}-${entry_id}`}
+              key={`${String(index)}-${entryId}`}
               setActiveStep={setNameReservationActiveStep}
               active_tab={name_reservation_active_tab}
             >
@@ -65,7 +65,7 @@ const NameReservation = () => {
 
               {/* NAME RESERVATION */}
               <NameReservationSearch
-                entry_id={String(entry_id)}
+                entryId={String(entryId)}
                 isOpen={
                   name_reservation_active_step?.name === 'name_reservation'
                 }
@@ -73,7 +73,7 @@ const NameReservation = () => {
 
               {/* NAME RESERVATION SUCCESS */}
               {name_reservation_active_step?.name === 'success' && (
-                <NameReservationSuccess entry_id={String(entry_id)} />
+                <NameReservationSuccess entryId={String(entryId)} />
               )}
             </Tab>
           );

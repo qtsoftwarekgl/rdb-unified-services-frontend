@@ -113,13 +113,13 @@ const CloseCompany = () => {
                     label="Select company"
                     required
                     options={user_applications
-                      ?.filter((app) => app.status !== 'in_progress')
+                      ?.filter((app) => app.status !== 'IN_PROGRESS')
                       ?.map((application) => {
                         return {
                           ...application,
-                          value: application?.entry_id,
+                          value: application?.entryId,
                           label:
-                            `${application?.entry_id
+                            `${application?.entryId
                               ?.split('-')[0]
                               ?.toUpperCase()} - ${
                               application?.company_details?.name || 'N/A'
