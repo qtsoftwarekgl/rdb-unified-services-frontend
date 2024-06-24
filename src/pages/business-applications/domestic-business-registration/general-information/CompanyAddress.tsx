@@ -15,7 +15,7 @@ import { ErrorResponse, Link } from 'react-router-dom';
 import {
   useCreateCompanyAddressMutation,
   useLazyGetBusinessQuery,
-} from '@/states/api/businessRegistrationApiSlice';
+} from '@/states/api/businessRegApiSlice';
 import {
   useLazyFetchCellsQuery,
   useLazyFetchDistrictsQuery,

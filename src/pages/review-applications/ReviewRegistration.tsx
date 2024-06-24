@@ -1,60 +1,142 @@
 import { useSelector } from 'react-redux';
-import { RootState } from '../../states/store';
-import { formatCompanyData } from '../../helpers/strings';
-import AdminLayout from '../../containers/AdminLayout';
-import ApplicatinsList from './ApplicationsList';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { business_application } from '../business-applications/domestic-business-registration/preview-submission/BusinessPreviewSubmission';
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch } from 'react-redux';
+import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
+import { useEffect } from 'react';
+import {
+  setBusinessTotalElements,
+  setBusinessTotalPages,
+  setBusinessesList,
+} from '@/states/features/businessSlice';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { Business } from '@/types/models/business';
+import Button from '@/components/inputs/Button';
+import Table from '@/components/table/Table';
+import AdminLayout from '@/containers/AdminLayout';
+import Loader from '@/components/Loader';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { capitalizeString, formatDate } from '@/helpers/strings';
 
 const ReviewRegistration = () => {
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-  const { user } = useSelector((state: RootState) => state.user);
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { businessesList } = useSelector((state: RootState) => state.business);
 
-  const sortBySubmissionDate = (
-    a:
-      | Date
-      | {
-          submissionDate: string | Date;
-        },
-    b:
-      | Date
-      | {
-          submissionDate: string | Date;
-        }
-  ) => {
-    return (
-      new Date(b?.submissionDate).getTime() -
-      new Date(a?.submissionDate).getTime()
-    );
-  };
+  // INITIALIZE FETCH BUSINESSES QUERY
+  const [
+    fetchBusinesses,
+    {
+      data: businessesData,
+      isError: businessesIsError,
+      isLoading: businessesIsLoading,
+      isSuccess: businessesIsSuccess,
+      error: businessesError,
+    },
+  ] = useLazyFetchBusinessesQuery();
 
-  let applications = user_applications
-    ?.filter((application: business_application) => application?.status !== 'IN_PROGRESS')
-    ?.map(formatCompanyData)
-    .sort(sortBySubmissionDate);
-
-  if (user?.email?.includes('infoverifier@rdb'))
-    applications = applications.filter((company) => {
-      return !['approved', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(company?.status);
+  // FETCH BUSINESSES
+  useEffect(() => {
+    fetchBusinesses({
+      page: 1,
+      size: 10,
+      applicationStatus: 'SUBMITTED',
     });
+  }, [fetchBusinesses]);
 
-  if (user?.email?.includes('infoapprover@rdb'))
-    applications = applications.filter((company) => {
-      return ['PENDING_APPROVAL', 'IN_REVIEW', 'PENDING_REJECTION'].includes(company?.status);
-    });
+  // HANDLE FETCH BUSINESS RESPONSE
+  useEffect(() => {
+    if (businessesIsSuccess) {
+      dispatch(setBusinessesList(businessesData?.data?.data));
+      dispatch(setBusinessTotalElements(businessesData?.data?.totalElements));
+      dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
+    } else if (businessesIsError) {
+      if ((businessesError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching businesses');
+      } else {
+        toast.error((businessesError as ErrorResponse)?.data?.message);
+      }
+    }
+  }, [
+    businessesData,
+    businessesError,
+    businessesIsError,
+    businessesIsSuccess,
+    dispatch,
+  ]);
+
+  // TABLE COLUMNS
+  const businessesColumns = [
+    {
+      id: 'no',
+      header: 'No',
+      accessorKey: 'no',
+    },
+    {
+      id: 'companyName',
+      header: 'Company Name',
+      accessorKey: 'companyName',
+    },
+    {
+      id: 'companyType',
+      header: 'Company Type',
+      accessorKey: 'companyType',
+    },
+    {
+      id: 'dateOfIncorporation',
+      header: 'Date of Incorporation',
+      accessorKey: 'dateOfIncorporation',
+    },
+    {
+      id: 'applicationStatus',
+      header: 'Status',
+      accessorKey: 'applicationStatus',
+    },
+    {
+      id: 'assignee',
+      header: 'Assigned To',
+      accessorKey: 'assignee',
+    },
+    {
+      id: 'action',
+      header: 'Action',
+      accessorKey: 'action',
+      cell: ({ row }: { row: Row<Business> }) => {
+        return (
+          <Button
+            styled={false}
+            route={`/services/company-details/${row.original.id}`}
+            value="Full info"
+          />
+        );
+      },
+    },
+  ];
 
   return (
     <AdminLayout>
-      <ApplicatinsList
-        title={'Review Applications'}
-        data={applications}
-        description=""
-        actionIcon={faMagnifyingGlass}
-        notDataMessage="No registrations to review for now. Enjoy your day!"
-        handleClickAction={() => {}}
-      />
+      <section className="w-full flex flex-col gap-3 bg-white p-6 rounded-md">
+        {businessesIsLoading ? (
+          <figure className="w-full flex justify-center">
+            <Loader />
+          </figure>
+        ) : (
+          <Table
+            columns={businessesColumns as ColumnDef<Business>[]}
+            data={
+              businessesList?.map((business, index) => {
+                return {
+                  ...business,
+                  no: index + 1,
+                  dateOfIncorporation: formatDate(business?.createdAt),
+                  companyType: capitalizeString(business?.companyType),
+                  assignee: 'RDB Verifier',
+                };
+              }) as unknown as Row<Business>[]
+            }
+          />
+        )}
+      </section>
     </AdminLayout>
   );
 };

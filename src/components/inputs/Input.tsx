@@ -58,7 +58,7 @@ const Input: FC<InputProps> = ({
   prefixIconHandler,
   prefixText = null,
   name,
-  accept = '*',
+  accept = 'application/pdf',
   min,
   readOnly = false,
   labelClassName = '',
@@ -130,9 +130,7 @@ const Input: FC<InputProps> = ({
         </p>
         <menu className="relative flex items-center gap-0">
           <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-            <select
-              className="w-full !text-[12px]"
-            >
+            <select className="w-full !text-[12px]">
               {countriesList?.map((country) => {
                 return (
                   <option key={country?.dial_code} value={country?.dial_code}>
@@ -168,7 +166,11 @@ const Input: FC<InputProps> = ({
             *
           </span>
         </p>
-        <DatePicker selectionType={selectionType} onChange={onChange} value={value as Date | undefined} />
+        <DatePicker
+          selectionType={selectionType}
+          onChange={onChange}
+          value={value as Date | undefined}
+        />
       </label>
     );
   }
@@ -206,7 +208,11 @@ const Input: FC<InputProps> = ({
         {(prefixIcon || prefixText) && (
           <menu className={`${labelClassName} relative w-full`}>
             <label className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-              <Link to={'#'} onClick={prefixIconHandler} className="text-secondary">
+              <Link
+                to={'#'}
+                onClick={prefixIconHandler}
+                className="text-secondary"
+              >
                 {prefixIcon && (
                   <FontAwesomeIcon className="text-current" icon={prefixIcon} />
                 )}

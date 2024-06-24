@@ -74,7 +74,7 @@ const Login = () => {
       if (loginData?.data?.roles?.includes("PUBLIC_USER")) {
         navigate("/services");
       } else if (loginData?.data?.roles?.includes("SYSTEM_ADMIN")) {
-        navigate("/admin/dashboard");
+        navigate("/back-office/dashboard");
       }
     }
   }, [dispatch, loginData, loginError, loginIsError, loginIsSuccess, navigate]);

@@ -13,7 +13,7 @@ import {
 } from '../../../../states/features/businessRegistrationSlice';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
-import { useCreateShareDetailsMutation } from '@/states/api/businessRegistrationApiSlice';
+import { useCreateShareDetailsMutation } from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { businessBaseQueryWithReauth } from "./rootApiSlice";
 
-export const businessRegistrationApiSlice = createApi({
+export const businessRegApiSlice = createApi({
   reducerPath: "businessRegistrationApi",
   baseQuery: businessBaseQueryWithReauth,
   endpoints: (builder) => {
@@ -111,6 +111,15 @@ export const businessRegistrationApiSlice = createApi({
               companyType,
               companyCategory,
             },
+          };
+        },
+      }),
+
+      // FETCH COMPANY DETAILS
+      fetchBusinessDetails: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/details?businessId=${businessId}`,
           };
         },
       }),
@@ -390,6 +399,49 @@ export const businessRegistrationApiSlice = createApi({
           };
         },
       }),
+
+      // FETCH BUSINESS ADDRESS
+      fetchBusinessAddress: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/address?businessId=${businessId}`,
+          };
+        },
+      }),
+
+      // FETCH BUSINESS EMPLOYMENT INFO
+      fetchBusinessEmploymentInfo: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/employment-info?businessId=${businessId}`,
+          };
+        },
+      }),
+
+      // UPDATE BUSINESS
+      updateBusiness: builder.mutation({
+        query: ({ businessId, status }) => {
+          return {
+            url: `/?businessId=${businessId}`,
+            method: 'PATCH',
+            body: {
+              status,
+            },
+          };
+        },
+      }),
+
+      // UPLOAD PERSON ATTACHMENT
+      uploadPersonAttachment: builder.mutation({
+        query: ({ formData }) => {
+          return {
+            url: `/attachment/person-upload`,
+            method: 'POST',
+            body: formData,
+            formData: true,
+          };
+        },
+      }),
     };
   },
 });
@@ -416,6 +468,11 @@ export const {
   useLazyFetchShareholdersQuery,
   useLazyFetchShareDetailsQuery,
   useAssignSharesMutation,
-} = businessRegistrationApiSlice;
+  useLazyFetchBusinessDetailsQuery,
+  useLazyFetchBusinessAddressQuery,
+  useLazyFetchBusinessEmploymentInfoQuery,
+  useUpdateBusinessMutation,
+  useUploadPersonAttachmentMutation,
+} = businessRegApiSlice;
 
-export default businessRegistrationApiSlice;
+export default businessRegApiSlice;

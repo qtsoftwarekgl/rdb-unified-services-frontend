@@ -1,18 +1,18 @@
-import Loader from "@/components/Loader";
-import Table from "@/components/table/Table";
-import { capitalizeString } from "@/helpers/strings";
-import { useLazyFetchManagementOrBoardPeopleQuery } from "@/states/api/businessRegistrationApiSlice";
-import { setBusinessPeopleList } from "@/states/features/businessPeopleSlice";
-import { AppDispatch, RootState } from "@/states/store";
-import { businessId } from "@/types/models/business";
-import { PersonDetail } from "@/types/models/personDetail";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
+import Loader from '@/components/Loader';
+import Table from '@/components/table/Table';
+import { capitalizeString } from '@/helpers/strings';
+import { useLazyFetchManagementOrBoardPeopleQuery } from '@/states/api/businessRegApiSlice';
+import { setBusinessPeopleList } from '@/states/features/businessPeopleSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { businessId } from '@/types/models/business';
+import { PersonDetail } from '@/types/models/personDetail';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 type BusinessPeopleProps = {
   type: string;

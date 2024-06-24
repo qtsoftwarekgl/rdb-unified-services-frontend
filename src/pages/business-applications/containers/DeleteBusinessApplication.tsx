@@ -2,7 +2,7 @@ import Loader from '@/components/Loader';
 import Modal from '@/components/Modal';
 import Button from '@/components/inputs/Button';
 import { formatDate } from '@/helpers/strings';
-import { useDeleteBusinessMutation } from '@/states/api/businessRegistrationApiSlice';
+import { useDeleteBusinessMutation } from '@/states/api/businessRegApiSlice';
 import { setDeleteApplicationModal } from '@/states/features/businessRegistrationSlice';
 import { setBusinessesList, setDeleteBusinessModal } from '@/states/features/businessSlice';
 import { AppDispatch, RootState } from '@/states/store';

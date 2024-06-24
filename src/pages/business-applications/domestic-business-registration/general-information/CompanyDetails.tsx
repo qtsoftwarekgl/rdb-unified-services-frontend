@@ -9,18 +9,18 @@ import {
   companyPositions,
   companyTypes,
   privateCompanyTypes,
-} from "../../../../constants/businessRegistration";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+} from '../../../../constants/businessRegistration';
+import Button from '../../../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
-import { businessId } from "@/types/models/business";
-import { toast } from "react-toastify";
-import { ErrorResponse, Link } from "react-router-dom";
+} from '../../../../states/features/businessRegistrationSlice';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
+import { businessId } from '@/types/models/business';
+import { toast } from 'react-toastify';
+import { ErrorResponse, Link } from 'react-router-dom';
 import {
   setBusiness,
   setNameAvailabilitiesList,
@@ -30,9 +30,9 @@ import {
   useCreateCompanyDetailsMutation,
   useLazyGetBusinessQuery,
   useLazySearchBusinessNameAvailabilityQuery,
-} from "@/states/api/businessRegistrationApiSlice";
-import { convertDecimalToPercentage } from "@/helpers/strings";
-import SimilarBusinessNames from "./SimilarBusinessNames";
+} from '@/states/api/businessRegApiSlice';
+import { convertDecimalToPercentage } from '@/helpers/strings';
+import SimilarBusinessNames from './SimilarBusinessNames';
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -199,7 +199,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
             <Controller
               name="companyName"
               control={control}
-              rules={{ required: "Company name is required" }}
+              rules={{ required: 'Company name is required' }}
               defaultValue={business?.companyName}
               render={({ field }) => {
                 return (
@@ -212,10 +212,10 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
-                        setError("companyName", {
-                          type: "manual",
+                        setError('companyName', {
+                          type: 'manual',
                           message:
-                            "Check if company name is available before proceeding",
+                            'Check if company name is available before proceeding',
                         });
                       }}
                       suffixIconHandler={(e) => {
@@ -223,13 +223,13 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                         if (!field?.value || field?.value?.length < 3) {
                           return;
                         }
-                        clearErrors("companyName");
+                        clearErrors('companyName');
                         searchBusinessNameAvailability({
                           companyName: field?.value,
                         });
                       }}
                     />
-                    <menu className="flex flex-col w-full gap-2">
+                    <menu className="flex w-full flex-col gap-2">
                       {searchBusinessNameIsLoading ||
                         (searchBusinessNameIsFetching && (
                           <figure className="flex items-center gap-2">
@@ -242,7 +242,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                         !errors?.companyName && (
                           <section className="flex flex-col gap-1">
                             <p className="text-[11px] text-red-600">
-                              The given name has a similarity of up to{" "}
+                              The given name has a similarity of up to{' '}
                               {convertDecimalToPercentage(
                                 nameAvailabilitiesList[0]?.similarity
                               )}
@@ -250,7 +250,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                               to avoid conflicts.
                             </p>
                             <Link
-                              to={"#"}
+                              to={'#'}
                               className="text-[11px] underline text-primary"
                               onClick={(e) => {
                                 e.preventDefault();
@@ -281,7 +281,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
             <Controller
               control={control}
               name="companyCategory"
-              rules={{ required: "Select company category" }}
+              rules={{ required: 'Select company category' }}
               defaultValue={business?.companyCategory}
               render={({ field }) => {
                 return (
@@ -317,8 +317,8 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
             <Controller
               control={control}
               name="companyType"
-              rules={{ required: "Select company type" }}
-              defaultValue={watch("companyType") || business?.companyType}
+              rules={{ required: 'Select company type' }}
+              defaultValue={watch('companyType') || business?.companyType}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -351,7 +351,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
             <Controller
               control={control}
               name="position"
-              rules={{ required: "Select your position" }}
+              rules={{ required: 'Select your position' }}
               defaultValue={business?.position}
               render={({ field }) => {
                 return (
@@ -388,7 +388,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
             <Controller
               control={control}
               name="hasArticlesOfAssociation"
-              rules={{ required: "Select one of the choices provided" }}
+              rules={{ required: 'Select one of the choices provided' }}
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
@@ -401,7 +401,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                         field.onChange(e.target.value);
                         await trigger(field?.name);
                       }}
-                      value={"yes"}
+                      value={'yes'}
                     />
                     <Input
                       type="radio"
@@ -412,7 +412,7 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
                         field.onChange(e.target.value);
                         await trigger(field?.name);
                       }}
-                      value={"no"}
+                      value={'no'}
                     />
                     {errors?.hasArticlesOfAssociation && (
                       <p className="text-xs text-red-500">
@@ -435,31 +435,31 @@ const CompanyDetails = ({ businessId }: CompanyDetailsProps) => {
             <Button
               primary
               value={
-                createCompanyDetailsIsLoading ? <Loader /> : "Save & Continue"
+                createCompanyDetailsIsLoading ? <Loader /> : 'Save & Continue'
               }
               submit
             />
           </menu>
-          {["IN_REVIEW"].includes(business.applicationStatus) && (
-            <menu className="flex items-center justify-between w-full gap-3">
+          {['IN_REVIEW'].includes(business.applicationStatus) && (
+            <menu className="flex items-center w-full gap-3 justify-between">
               <Button
                 value="Back"
                 route="/business-registration/new"
                 disabled
               />
               <Button
-                value={"Next"}
+                value={'Next'}
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep("company_address"));
+                  dispatch(setBusinessActiveStep('company_address'));
                 }}
               />
             </menu>
           )}
         </fieldset>
       </form>
-      <SimilarBusinessNames companyName={watch("companyName")} />
+      <SimilarBusinessNames companyName={watch('companyName')} />
     </section>
   );
 };

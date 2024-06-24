@@ -34,7 +34,7 @@ import {
 import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
-} from '@/states/api/businessRegistrationApiSlice';
+} from '@/states/api/businessRegApiSlice';
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -222,7 +222,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
     }
 
     createBusinessActivities({
-      VATRegistered: data?.VATRegistered === 'yes',
+      isVATRegistered: data?.isVATRegistered === 'yes',
       businessLines: selectedBusinessLinesList,
       mainBusinessActivity: selectedMainBusinessLine?.description,
       businessId,
@@ -308,14 +308,15 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
               {(selectedBusinessActivity ||
                 businessActivitiesList?.length > 0) && (
                 <menu className="flex flex-col items-start w-full gap-6">
-                  <section className="flex flex-col w-full gap-4">
-                    <h1 className="text-md">Select business line</h1>
-                    <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                      {businessLinesIsLoading && (
+                  {businessLinesIsLoading && (
                         <figure className="flex items-center justify-center w-full h-full">
                           <Loader />
                         </figure>
                       )}
+                    {businessLinesIsSuccess && 
+                  <section className="flex flex-col w-full gap-4">
+                    <h1 className="text-md">Select business line</h1>
+                    <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                       {!businessLinesIsLoading &&
                         businessLinesList.map(
                           (businessLine: BusinessActivity) => {
@@ -355,7 +356,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                           }
                         )}
                     </ul>
-                  </section>
+                  </section>}
                   {selectedBusinessLinesList?.length > 0 ? (
                     <section className="flex flex-col w-full gap-4">
                       <h1 className="text-md">Selected business activities</h1>
@@ -459,9 +460,9 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                   </h1>
                   <menu className="w-[50%] flex flex-col gap-6">
                     <Controller
-                      name="VATRegistered"
+                      name="isVATRegistered"
                       rules={{ required: 'Select choice' }}
-                      defaultValue={businessActivitiesData?.data?.vatregistered}
+                      defaultValue={businessActivitiesData?.data?.isVATRegistered}
                       control={control}
                       render={({ field }) => {
                         return (
@@ -475,12 +476,12 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                 type="radio"
                                 label="Yes"
                                 defaultChecked={
-                                  businessActivitiesData?.data?.vatregistered
+                                  businessActivitiesData?.data?.isVATRegistered
                                 }
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('VATRegistered');
+                                  clearErrors('isVATRegistered');
                                 }}
                                 value={'yes'}
                               />
@@ -488,18 +489,18 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                 type="radio"
                                 label="No"
                                 defaultChecked={
-                                  !businessActivitiesData?.data?.vatregistered
+                                  !businessActivitiesData?.data?.isVATRegistered
                                 }
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('VATRegistered');
+                                  clearErrors('isVATRegistered');
                                 }}
                                 value={'no'}
                               />
-                              {errors?.VATRegistered && (
+                              {errors?.isVATRegistered && (
                                 <p className="text-[13px] text-red-500">
-                                  {String(errors?.VATRegistered.message)}
+                                  {String(errors?.isVATRegistered.message)}
                                 </p>
                               )}
                             </menu>
@@ -507,7 +508,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                         );
                       }}
                     />
-                    {watch('VATRegistered') === 'yes' && (
+                    {watch('isVATRegistered') === 'yes' && (
                       <Controller
                         name="turnover"
                         control={control}

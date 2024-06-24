@@ -1,42 +1,38 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../../components/inputs/Select";
-import Input from "../../../../components/inputs/Input";
-import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { previewUrl, userData } from "../../../../constants/authentication";
-import { countriesList } from "../../../../constants/countries";
-import Button from "../../../../components/inputs/Button";
+import { useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../../components/inputs/Select';
+import Input from '../../../../components/inputs/Input';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { userData } from '../../../../constants/authentication';
+import { countriesList } from '../../../../constants/countries';
+import Button from '../../../../components/inputs/Button';
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import Table from "../../../../components/table/Table";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { maskPhoneDigits } from "../../../../helpers/strings";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
-import validateInputs from "../../../../helpers/validations";
-import { attachmentFileColumns } from "../../../../constants/businessRegistration";
-import ViewDocument from "../../../user-company-details/ViewDocument";
-import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
-import moment from "moment";
-import { businessId } from "@/types/models/business";
-import { useCreateManagementOrBoardPersonMutation } from "@/states/api/businessRegistrationApiSlice";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
-import Loader from "@/components/Loader";
-import { addBusinessPerson } from "@/states/features/businessPeopleSlice";
-import BusinessPeople from "./BusinessPeople";
-
-export interface business_executive_management {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  attachment: File | null;
-  position: string;
-}
+} from '../../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { maskPhoneDigits } from '../../../../helpers/strings';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
+import validateInputs from '../../../../helpers/validations';
+import ViewDocument from '../../../user-company-details/ViewDocument';
+import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
+import moment from 'moment';
+import { businessId } from '@/types/models/business';
+import {
+  useCreateManagementOrBoardPersonMutation,
+  useUploadPersonAttachmentMutation,
+} from '@/states/api/businessRegApiSlice';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
+import {
+  addBusinessPerson,
+  addBusinessPersonAttachment,
+} from '@/states/features/businessPeopleSlice';
+import BusinessPeople from './BusinessPeople';
+import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
+import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -54,7 +50,6 @@ const ExecutiveManagement = ({
     setError,
     watch,
     trigger,
-    setValue,
     clearErrors,
     reset,
     formState: { errors },
@@ -65,6 +60,9 @@ const ExecutiveManagement = ({
   const { businessPeopleList } = useSelector(
     (state: RootState) => state.businessPeople
   );
+  const { businessPeopleAttachments } = useSelector(
+    (state: RootState) => state.businessPeople
+  );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
@@ -72,6 +70,30 @@ const ExecutiveManagement = ({
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
+
+  // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
+  const [
+    uploadPersonAttachment,
+    {
+      data: uploadAttachmentData,
+      error: uploadAttachmentError,
+      isLoading: uploadAttachmentIsLoading,
+      isSuccess: uploadAttachmentIsSuccess,
+      isError: uploadAttachmentIsError,
+    },
+  ] = useUploadPersonAttachmentMutation();
+
+  // INITIALIZE GET USER INFORMATION QUERY
+  const [
+    getUserInformation,
+    {
+      data: userInformationData,
+      error: userInformationError,
+      isLoading: userInformationIsLoading,
+      isSuccess: userInformationIsSuccess,
+      isError: userInformationIsError,
+    },
+  ] = useLazyGetUserInformationQuery();
 
   // INITIALIZE CREATE MANAGAMENT PERSON MUTATION
   const [
@@ -99,51 +121,90 @@ const ExecutiveManagement = ({
         toast.error((managementPersonError as ErrorResponse).data.message);
       }
     } else if (managementPersonIsSuccess) {
-      reset({
-        position: "",
-        personIdentType: "",
-      });
-      setAttachmentFile(null);
+      const formData = new FormData();
+      formData.append('file', attachmentFile as File);
+      formData.append('personId', managementPersonData?.data?.id);
+      formData.append('attachmentType', String(attachmentFile?.type));
+      formData.append('fileName', String(attachmentFile?.name));
+      uploadPersonAttachment(formData);
+      uploadPersonAttachment({ formData });
       dispatch(addBusinessPerson(managementPersonData?.data));
     }
   }, [
+    attachmentFile,
     dispatch,
     managementPersonData,
     managementPersonError,
     managementPersonIsError,
     managementPersonIsSuccess,
     reset,
+    uploadPersonAttachment,
   ]);
 
-  // ATTACHMENT COLUMNS
-  const attachmentColumns = [
-    ...attachmentFileColumns,
-    {
-      header: "action",
-      accesorKey: "action",
-      cell: () => {
-        return (
-          <menu className="flex items-center gap-4">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[20px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-                setAttachmentPreview(previewUrl);
-              }}
-            />
-            <FontAwesomeIcon
-              className="cursor-pointer text-white bg-red-600 p-2 w-[13px] h-[13px] text-[16px] rounded-full font-bold ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
-          </menu>
+  // HANDLE UPLOAD PERSON ATTACHMENT RESPONSE
+  useEffect(() => {
+    if (uploadAttachmentIsError) {
+      if ((uploadAttachmentError as ErrorResponse).status === 500) {
+        toast.error(
+          'An error occured while uploading attachment. Please try again'
         );
-      },
-    },
-  ];
+      } else {
+        toast.error((uploadAttachmentError as ErrorResponse).data.message);
+      }
+    } else if (uploadAttachmentIsSuccess) {
+      toast.success('Person added successfully');
+      reset({
+        position: '',
+        personIdentType: '',
+        document_no: '',
+        persDocNo: '',
+        persDocIssueDate: '',
+        persDocExpiryDate: '',
+        dateOfBirth: '',
+        firstName: '',
+        middleName: '',
+        lastName: '',
+      });
+      setAttachmentFile(null);
+      dispatch(addBusinessPersonAttachment(uploadAttachmentData?.data));
+    }
+  }, [
+    dispatch,
+    reset,
+    uploadAttachmentData?.data,
+    uploadAttachmentError,
+    uploadAttachmentIsError,
+    uploadAttachmentIsSuccess,
+  ]);
+
+  // HANDLE GET USER INFORMATION RESPONSE
+  useEffect(() => {
+    if (userInformationIsError) {
+      if ((userInformationError as ErrorResponse).status === 500) {
+        toast.error('An error occured while fetching user information');
+      } else {
+        toast.error((userInformationError as ErrorResponse)?.data?.message);
+      }
+    } else if (userInformationIsSuccess) {
+      console.log(userInformationData?.data)
+      reset({
+        position: '',
+        personIdentType: '',
+        document_no: userInformationData?.data?.documentNumber,
+        firstName: userInformationData?.data?.firstName,
+        middleName: userInformationData?.data?.middleName,
+        lastName: userInformationData?.data,
+        phoneNumber: userInformationData?.data?.phoneNumber,
+        email: userInformationData?.data?.email,
+      });
+    }
+  }, [
+    reset,
+    userInformationData,
+    userInformationError,
+    userInformationIsError,
+    userInformationIsSuccess,
+  ]);
 
   return (
     <section className="flex flex-col gap-6">
@@ -269,7 +330,7 @@ const ExecutiveManagement = ({
                               });
                               return;
                             }
-                            console.log(field.value);
+                            getUserInformation({ documentNumber: field.value });
                           }}
                           label="ID Document No"
                           suffixIconPrimary
@@ -280,6 +341,12 @@ const ExecutiveManagement = ({
                             await trigger("document_no");
                           }}
                         />
+                        {userInformationIsLoading && (
+                          <ul className="flex items-center gap-2">
+                            <Loader className="text-primary" />
+                            Fetching user information...
+                          </ul>
+                        )}
                         {errors?.document_no && (
                           <p className="text-red-500 text-[13px]">
                             {String(errors?.document_no?.message)}
@@ -667,19 +734,22 @@ const ExecutiveManagement = ({
                         className="!w-fit max-sm:!w-full self-start"
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
-                          setAttachmentFile(e?.target?.files?.[0]);
-                          clearErrors("attachment");
-                          setValue("attachment", e?.target?.files?.[0]);
+                          setAttachmentFile(e.target.files?.[0]);
+                          dispatch(
+                            addBusinessPersonAttachment({
+                              attachmentType: e.target.files?.[0]?.type,
+                              fileName: e.target.files?.[0]?.name,
+                              size: e.target.files?.[0]?.size,
+                            })
+                          );
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
-                        {attachmentFile && (
-                          <Table
-                            columns={attachmentColumns}
-                            data={[attachmentFile]}
-                            showPagination={false}
-                            showFilter={false}
-                          />
+                        {uploadAttachmentIsLoading && (
+                          <ul className="flex items-center gap-2">
+                            <Loader className="text-primary" />
+                            Uploading attachment...
+                          </ul>
                         )}
                       </ul>
                       {errors?.attachment && (
@@ -692,6 +762,11 @@ const ExecutiveManagement = ({
                 }}
               />
             </menu>
+          </section>
+          <section className="flex w-full flex-col gap-2">
+            <BusinessPeopleAttachments
+              attachments={businessPeopleAttachments}
+            />
           </section>
           <section className="flex items-center justify-end w-full">
             <Button

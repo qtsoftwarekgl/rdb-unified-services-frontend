@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import Select from '@/components/inputs/Select';
 import { capitalizeString, formatDate } from '@/helpers/strings';
 import Table from '@/components/table/Table';
-import { useLazySearchBusinessesQuery } from '@/states/api/businessRegistrationApiSlice';
+import { useLazySearchBusinessesQuery } from '@/states/api/businessRegApiSlice';
 import queryString, { ParsedQuery } from 'query-string';
 import { AppDispatch, RootState } from '@/states/store';
 import { useDispatch } from 'react-redux';
@@ -22,7 +22,7 @@ import {
   setBusinessTotalElements,
   setBusinessTotalPages,
 } from '@/states/features/businessSlice';
-import { AccessorKeyColumnDefBase, Row } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { Business } from '@/types/models/business';
 
 const SearchCompanies = () => {
@@ -150,9 +150,6 @@ const SearchCompanies = () => {
       id: 'companyType',
       header: 'Company Type',
       accessorKey: 'companyType',
-      filterFn: (row: Row<unknown>, id: string, value: string) => {
-        return value.includes(row.getValue(id));
-      },
     },
     {
       id: 'dateOfIncorporation',
@@ -306,7 +303,7 @@ const SearchCompanies = () => {
               setPage={setBusinessPage}
               setSize={setBusinessSize}
               rowClickHandler={(row: Business) => {
-                navigate(`/services/company-details/${row.id}`);
+                console.log(`/services/company-details/${row.id}`);
               }}
               data={businessesList?.map((business: Business, index: number) => {
                 return {
@@ -314,9 +311,10 @@ const SearchCompanies = () => {
                   companyName: business?.companyName?.toUpperCase(),
                   no: index + page,
                   createdAt: formatDate(business.createdAt),
+                  companyType: capitalizeString(business.companyType),
                 };
               })}
-              columns={columns as unknown as AccessorKeyColumnDefBase<Business>}
+              columns={columns as unknown as ColumnDef<Business>}
             />
             <menu className="w-full flex items-center justify-center mt-6">
               <Button

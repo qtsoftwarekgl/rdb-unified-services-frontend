@@ -29,6 +29,7 @@ export type Business = {
   enterpriseBusinessName?: string;
   employmentInfo?: string | object;
   address?: Address;
+  dateOfIncorporation?: Date
 };
 
 export type Details = {
