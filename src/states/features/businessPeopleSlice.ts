@@ -1,5 +1,5 @@
-import { PersonDetail } from '@/types/models/personDetail';
-import { createSlice } from '@reduxjs/toolkit';
+import { PersonDetail } from "@/types/models/personDetail";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {
   businessPeopleList: PersonDetail[];
@@ -10,7 +10,7 @@ const initialState: {
 };
 
 export const businessPeopleSlice = createSlice({
-  name: 'businessPeople',
+  name: "businessPeople",
   initialState,
   reducers: {
     setBusinessPeopleList: (state, action) => {
@@ -20,10 +20,7 @@ export const businessPeopleSlice = createSlice({
       state.selectedBusinessPerson = action.payload;
     },
     addBusinessPerson: (state, action) => {
-      state.businessPeopleList = [
-        action.payload,
-        ...state.businessPeopleList,
-      ];
+      state.businessPeopleList = [action.payload, ...state.businessPeopleList];
     },
     removeBusinessPerson: (state, action) => {
       state.businessPeopleList = state.businessPeopleList.filter(

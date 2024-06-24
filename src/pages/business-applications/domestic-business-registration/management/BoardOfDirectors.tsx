@@ -1,34 +1,34 @@
-import { useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../../components/inputs/Select';
-import Loader from '../../../../components/Loader';
-import Input from '../../../../components/inputs/Input';
-import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { previewUrl, userData } from '../../../../constants/authentication';
-import { countriesList } from '../../../../constants/countries';
-import Button from '../../../../components/inputs/Button';
+import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../../components/inputs/Select";
+import Loader from "../../../../components/Loader";
+import Input from "../../../../components/inputs/Input";
+import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { previewUrl, userData } from "../../../../constants/authentication";
+import { countriesList } from "../../../../constants/countries";
+import Button from "../../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from '../../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../../../components/table/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { maskPhoneDigits } from '../../../../helpers/strings';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
-import validateInputs from '../../../../helpers/validations';
-import { attachmentFileColumns } from '../../../../constants/businessRegistration';
-import ViewDocument from '../../../user-company-details/ViewDocument';
-import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import BusinessPeople from './BusinessPeople';
-import { businessId } from '@/types/models/business';
-import moment from 'moment';
-import { useCreateManagementOrBoardPersonMutation } from '@/states/api/businessRegistrationApiSlice';
-import { addBusinessPerson } from '@/states/features/businessPeopleSlice';
-import { toast } from 'react-toastify';
-import { ErrorResponse } from 'react-router-dom';
+} from "../../../../states/features/businessRegistrationSlice";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Table from "../../../../components/table/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { maskPhoneDigits } from "../../../../helpers/strings";
+import { RDBAdminEmailPattern } from "../../../../constants/Users";
+import validateInputs from "../../../../helpers/validations";
+import { attachmentFileColumns } from "../../../../constants/businessRegistration";
+import ViewDocument from "../../../user-company-details/ViewDocument";
+import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
+import BusinessPeople from "./BusinessPeople";
+import { businessId } from "@/types/models/business";
+import moment from "moment";
+import { useCreateManagementOrBoardPersonMutation } from "@/states/api/businessRegistrationApiSlice";
+import { addBusinessPerson } from "@/states/features/businessPeopleSlice";
+import { toast } from "react-toastify";
+import { ErrorResponse } from "react-router-dom";
 
 type BoardOfDirectorsProps = {
   businessId: businessId;
@@ -57,7 +57,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
@@ -76,21 +76,21 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    createManagementPerson({ ...data, businessId, route: 'board-member' });
+    createManagementPerson({ ...data, businessId, route: "board-member" });
   };
 
   // HANDLE CREATE MANAGEMENT PERSON RESPONSE
   useEffect(() => {
     if (boardPersonIsError) {
       if ((boardPersonError as ErrorResponse).status === 500) {
-        toast.error('An error occured while adding person. Please try again');
+        toast.error("An error occured while adding person. Please try again");
       } else {
         toast.error((boardPersonError as ErrorResponse).data.message);
       }
     } else if (boardPersonIsSuccess) {
       reset({
-        position: '',
-        personIdentType: '',
+        position: "",
+        personIdentType: "",
       });
       setAttachmentFile(null);
       dispatch(addBusinessPerson(boardPersonData?.data));
@@ -107,8 +107,8 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
   const attachmentColumns = [
     ...attachmentFileColumns,
     {
-      header: 'action',
-      accesorKey: 'action',
+      header: "action",
+      accesorKey: "action",
       cell: () => {
         return (
           <menu className="flex items-center gap-4">
@@ -152,12 +152,12 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                       placeholder="Select position"
                       options={[
                         {
-                          value: 'chairman',
-                          label: 'Chairman',
+                          value: "chairman",
+                          label: "Chairman",
                         },
                         {
-                          value: 'member',
-                          label: 'Member',
+                          value: "member",
+                          label: "Member",
                         },
                       ]}
                       {...field}
@@ -179,22 +179,22 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
             />
             <ul
               className={`${
-                watch('position') ? 'flex' : 'hidden'
+                watch("position") ? "flex" : "hidden"
               } items-start w-full gap-6`}
             >
               <Controller
                 name="personIdentType"
-                rules={{ required: 'Select document type' }}
+                rules={{ required: "Select document type" }}
                 control={control}
                 render={({ field }) => {
                   const options = [
-                    { value: 'nid', label: 'National ID' },
-                    { label: 'Passport', value: 'passport' },
+                    { value: "nid", label: "National ID" },
+                    { label: "Passport", value: "passport" },
                   ];
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
-                        watch('personIdentType') !== 'nid' && '!w-[49%]'
+                        watch("personIdentType") !== "nid" && "!w-[49%]"
                       }`}
                     >
                       <Select
@@ -206,7 +206,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                         onChange={(e) => {
                           field.onChange(e);
                           reset({
-                            position: watch('position'),
+                            position: watch("position"),
                             personIdentType: e,
                           });
                         }}
@@ -215,21 +215,21 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                   );
                 }}
               />
-              {watch('personIdentType') === 'nid' && (
+              {watch("personIdentType") === "nid" && (
                 <Controller
                   control={control}
                   name="document_no"
                   rules={{
-                    required: watch('personIdentType')
-                      ? 'Document number is required'
+                    required: watch("personIdentType")
+                      ? "Document number is required"
                       : false,
                     validate: (value) => {
-                      if (watch('personIdentType') !== 'nid') {
+                      if (watch("personIdentType") !== "nid") {
                         return true;
                       }
                       return (
-                        validateInputs(value, 'nid') ||
-                        'National ID must be 16 characters long'
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
                       );
                     },
                   }}
@@ -242,9 +242,9 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError('document_no', {
-                                type: 'manual',
-                                message: 'Document number is required',
+                              setError("document_no", {
+                                type: "manual",
+                                message: "Document number is required",
                               });
                               return;
                             }
@@ -256,7 +256,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger('document_no');
+                            await trigger("document_no");
                           }}
                         />
                         {errors?.document_no && (
@@ -273,16 +273,16 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
           </menu>
           <section
             className={`${
-              !watch('personIdentType') && 'hidden'
+              !watch("personIdentType") && "hidden"
             } flex flex-wrap gap-4 items-start justify-between w-full`}
           >
-            {watch('personIdentType') === 'passport' && (
+            {watch("personIdentType") === "passport" && (
               <>
                 <Controller
                   name="persDocNo"
                   control={control}
                   rules={{
-                    required: 'Passport number is required',
+                    required: "Passport number is required",
                   }}
                   render={({ field }) => {
                     return (
@@ -307,13 +307,13 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 <Controller
                   name="persDocIssueDate"
                   rules={{
-                    required: 'Issue date is required',
+                    required: "Issue date is required",
                     validate: (value) => {
                       if (
                         moment(value).format() >
-                        moment(watch('persDocExpiryDate')).format()
+                        moment(watch("persDocExpiryDate")).format()
                       ) {
-                        return 'Issue date must be before expiry date';
+                        return "Issue date must be before expiry date";
                       }
                       return true;
                     },
@@ -328,10 +328,10 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           type="date"
                           onChange={(e) => {
                             field.onChange(
-                              moment(String(e)).format('YYYY-MM-DD')
+                              moment(String(e)).format("YYYY-MM-DD")
                             );
-                            trigger('persDocIssueDate');
-                            trigger('persDocExpiryDate');
+                            trigger("persDocIssueDate");
+                            trigger("persDocExpiryDate");
                           }}
                         />
                         {errors?.persDocIssueDate && (
@@ -346,13 +346,13 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 <Controller
                   name="persDocExpiryDate"
                   rules={{
-                    required: 'Expiry date is required',
+                    required: "Expiry date is required",
                     validate: (value) => {
                       if (
                         moment(value).format() <
-                        moment(watch('persDocIssueDate')).format()
+                        moment(watch("persDocIssueDate")).format()
                       ) {
-                        return 'Expiry date must be after issue date';
+                        return "Expiry date must be after issue date";
                       }
                       return true;
                     },
@@ -367,10 +367,10 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           type="date"
                           onChange={(e) => {
                             field.onChange(
-                              moment(String(e)).format('YYYY-MM-DD')
+                              moment(String(e)).format("YYYY-MM-DD")
                             );
-                            trigger('persDocExpiryDate');
-                            trigger('persDocIssueDate');
+                            trigger("persDocExpiryDate");
+                            trigger("persDocIssueDate");
                           }}
                         />
                         {errors?.persDocExpiryDate && (
@@ -384,7 +384,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 />
                 <Controller
                   name="dateOfBirth"
-                  rules={{ required: 'Date of birth is required' }}
+                  rules={{ required: "Date of birth is required" }}
                   control={control}
                   render={({ field }) => {
                     return (
@@ -396,7 +396,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           placeholder="Select DOB"
                           onChange={(e) => {
                             field.onChange(
-                              moment(String(e)).format('YYYY-MM-DD')
+                              moment(String(e)).format("YYYY-MM-DD")
                             );
                           }}
                         />
@@ -414,13 +414,13 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
             <Controller
               name="firstName"
               control={control}
-              rules={{ required: 'First name is required' }}
+              rules={{ required: "First name is required" }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
                       required
-                      readOnly={watch('personIdentType') === 'nid'}
+                      readOnly={watch("personIdentType") === "nid"}
                       placeholder="First name"
                       label="First name"
                       {...field}
@@ -441,7 +441,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      readOnly={watch('personIdentType') === 'nid'}
+                      readOnly={watch("personIdentType") === "nid"}
                       placeholder="Middle name"
                       label="Middle name"
                       {...field}
@@ -457,7 +457,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      readOnly={watch('personIdentType') === 'nid'}
+                      readOnly={watch("personIdentType") === "nid"}
                       placeholder="Last name"
                       label="Last name"
                       {...field}
@@ -471,8 +471,8 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
               control={control}
               rules={{
                 required:
-                  watch('personIdentType') === 'passport'
-                    ? 'Select gender'
+                  watch("personIdentType") === "passport"
+                    ? "Select gender"
                     : false,
               }}
               render={({ field }) => {
@@ -486,13 +486,13 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                         type="radio"
                         label="Male"
                         {...field}
-                        value={'Male'}
+                        value={"Male"}
                       />
                       <Input
                         type="radio"
                         label="Female"
                         {...field}
-                        value={'Female'}
+                        value={"Female"}
                       />
                     </menu>
                     {errors?.gender && (
@@ -508,12 +508,12 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
               name="phoneNumber"
               control={control}
               rules={{
-                required: 'Phone number is required',
+                required: "Phone number is required",
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
-                    {watch('personIdentType') === 'passport' ? (
+                    {watch("personIdentType") === "passport" ? (
                       <Input
                         label="Phone number"
                         required
@@ -547,9 +547,9 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
             <Controller
               name="email"
               rules={{
-                required: 'Email address is required',
+                required: "Email address is required",
                 validate: (value) => {
-                  return validateInputs(value, 'email');
+                  return validateInputs(value, "email");
                 },
               }}
               control={control}
@@ -571,12 +571,12 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 );
               }}
             />
-            {watch('personIdentType') !== 'nid' ? (
+            {watch("personIdentType") !== "nid" ? (
               <>
                 <Controller
                   name="persDocIssuePlace"
                   control={control}
-                  rules={{ required: 'Country is required' }}
+                  rules={{ required: "Country is required" }}
                   render={({ field }) => {
                     return (
                       <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -584,7 +584,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           label="Country"
                           placeholder="Select country"
                           options={countriesList
-                            ?.filter((country) => country?.code !== 'RW')
+                            ?.filter((country) => country?.code !== "RW")
                             ?.map((country) => {
                               return {
                                 ...country,
@@ -622,7 +622,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
             )}
             <menu
               className={`${
-                watch('personIdentType') === 'passport' ? 'flex' : 'hidden'
+                watch("personIdentType") === "passport" ? "flex" : "hidden"
               } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
             >
               <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
@@ -632,8 +632,8 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 name="attachment"
                 rules={{
                   required:
-                    watch('personIdentType') === 'passport'
-                      ? 'Passport is required'
+                    watch("personIdentType") === "passport"
+                      ? "Passport is required"
                       : false,
                 }}
                 control={control}
@@ -647,8 +647,8 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
                           setAttachmentFile(e?.target?.files?.[0]);
-                          clearErrors('attachment');
-                          setValue('attachment', e?.target?.files?.[0]);
+                          clearErrors("attachment");
+                          setValue("attachment", e?.target?.files?.[0]);
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
@@ -675,17 +675,17 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
           <section className="flex items-center justify-end w-full">
             <Button
               submit
-              value={boardPersonIsLoading ? <Loader /> : 'Add position'}
+              value={boardPersonIsLoading ? <Loader /> : "Add position"}
               primary
               disabled={disableForm}
             />
           </section>
           <BusinessPeople type="boardOfDirectors" businessId={businessId} />
           {[
-            'IN_PREVIEW',
-            'IN_PROGRESS',
-            'IS_AMENDING',
-            'ACTION_REQUIRED',
+            "IN_PREVIEW",
+            "IN_PROGRESS",
+            "IS_AMENDING",
+            "ACTION_REQUIRED",
           ].includes(status) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -695,16 +695,16 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('board_of_directors'));
+                  dispatch(setBusinessActiveStep("board_of_directors"));
                 }}
               />
-              {status === 'IS_AMENDING' && (
+              {status === "IS_AMENDING" && (
                 <Button
-                  value={'Complete Amendment'}
+                  value={"Complete Amendment"}
                   disabled={Object.keys(errors).length > 0 || disableForm}
                 />
               )}
-              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+              {["IN_PREVIEW", "ACTION_REQUIRED"].includes(status) && (
                 <Button
                   value="Save & Complete Review"
                   primary
@@ -718,33 +718,33 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   if (!businessPeopleList?.length) {
-                    setError('submit', {
-                      type: 'manual',
-                      message: 'Add at least one member',
+                    setError("submit", {
+                      type: "manual",
+                      message: "Add at least one member",
                     });
                     setTimeout(() => {
-                      clearErrors('submit');
+                      clearErrors("submit");
                     }, 5000);
                     return;
                   }
-                  dispatch(setBusinessCompletedStep('board_of_directors'));
-                  dispatch(setBusinessActiveStep('employment_info'));
+                  dispatch(setBusinessCompletedStep("board_of_directors"));
+                  dispatch(setBusinessActiveStep("employment_info"));
                 }}
               />
             </menu>
           )}
           {[
-            'IN_REVIEW',
-            'IS_APPROVED',
-            'PENDING_APPROVAL',
-            'PENDING_REJECTION',
+            "IN_REVIEW",
+            "IS_APPROVED",
+            "PENDING_APPROVAL",
+            "PENDING_REJECTION",
           ].includes(status) && (
-            <menu className="flex items-center gap-3 justify-between">
+            <menu className="flex items-center justify-between gap-3">
               <Button
                 value="Back"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('business_activity_vat'));
+                  dispatch(setBusinessActiveStep("business_activity_vat"));
                 }}
               />
               <Button
@@ -752,7 +752,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('board_of_directors'));
+                  dispatch(setBusinessActiveStep("board_of_directors"));
                 }}
               />
             </menu>
@@ -771,7 +771,7 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
           setShowVerifyPhone(false);
           handleSubmit(onSubmit)();
         }}
-        phone={watch('phone')}
+        phone={watch("phone")}
       />
     </section>
   );

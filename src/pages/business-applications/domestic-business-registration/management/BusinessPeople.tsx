@@ -1,18 +1,18 @@
-import Loader from '@/components/Loader';
-import Table from '@/components/table/Table';
-import { capitalizeString } from '@/helpers/strings';
-import { useLazyFetchManagementOrBoardPeopleQuery } from '@/states/api/businessRegistrationApiSlice';
-import { setBusinessPeopleList } from '@/states/features/businessPeopleSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { businessId } from '@/types/models/business';
-import { PersonDetail } from '@/types/models/personDetail';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import Loader from "@/components/Loader";
+import Table from "@/components/table/Table";
+import { capitalizeString } from "@/helpers/strings";
+import { useLazyFetchManagementOrBoardPeopleQuery } from "@/states/api/businessRegistrationApiSlice";
+import { setBusinessPeopleList } from "@/states/features/businessPeopleSlice";
+import { AppDispatch, RootState } from "@/states/store";
+import { businessId } from "@/types/models/business";
+import { PersonDetail } from "@/types/models/personDetail";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
 
 type BusinessPeopleProps = {
   type: string;
@@ -42,7 +42,7 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
   useEffect(() => {
     fetchBoardPeople({
       businessId,
-      route: type === 'executiveManagement' ? 'management' : 'board-member',
+      route: type === "executiveManagement" ? "management" : "board-member",
     });
   }, [businessId, fetchBoardPeople, type]);
 
@@ -51,7 +51,7 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
     if (managementPeopleIsError) {
       if ((managementPeopleError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while fetching people. Please try again later'
+          "An error occured while fetching people. Please try again later"
         );
       } else {
         toast.error((managementPeopleError as ErrorResponse).data?.message);
@@ -70,36 +70,36 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
   // MANAGEMENT PEOPLE COLUMNS
   const managementPeopleColumns = [
     {
-      header: 'No',
-      accessorKey: 'no',
+      header: "No",
+      accessorKey: "no",
     },
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Phone',
-      accessorKey: 'phoneNumber',
+      header: "Phone",
+      accessorKey: "phoneNumber",
     },
     {
-      header: 'Email',
-      accessorKey: 'email',
+      header: "Email",
+      accessorKey: "email",
     },
     {
-      header: 'Gender',
-      accessorKey: 'gender',
+      header: "Gender",
+      accessorKey: "gender",
     },
     {
-      header: 'Nationality',
-      accessorKey: 'nationality',
+      header: "Nationality",
+      accessorKey: "nationality",
     },
     {
-      header: 'Position',
-      accessorKey: 'position',
+      header: "Position",
+      accessorKey: "position",
     },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: () => {
         return (
           <menu className="flex items-center justify-center gap-6 w-fit">
@@ -117,11 +117,11 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
   ];
 
   return (
-    <section className="w-full flex items-center flex-col gap-2">
-      <h1 className="text-primary font-medium uppercase">
-        {type === 'executiveManagement'
-          ? 'Executive Management List'
-          : 'Board of Directors List'}
+    <section className="flex flex-col items-center w-full gap-2">
+      <h1 className="font-medium uppercase text-primary">
+        {type === "executiveManagement"
+          ? "Executive Management List"
+          : "Board of Directors List"}
       </h1>
       {managementPeopleIsLoading && (
         <figure className="min-h-[40vh] flex items-center justify-center">
@@ -129,8 +129,8 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
         </figure>
       )}
       {businessPeopleList?.length <= 0 && (
-        <p className="text-center text-sm text-gray-500">
-          No {type === 'executiveManagement' ? 'management' : 'board'} people
+        <p className="text-sm text-center text-gray-500">
+          No {type === "executiveManagement" ? "management" : "board"} people
           found
         </p>
       )}
@@ -142,8 +142,8 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
                 ...person,
                 no: index + 1,
                 position: capitalizeString(person?.roleDescription),
-                name: `${person.firstName} ${person.middleName || ''} ${
-                  person.lastName || ''
+                name: `${person.firstName} ${person.middleName || ""} ${
+                  person.lastName || ""
                 }`,
               };
             }

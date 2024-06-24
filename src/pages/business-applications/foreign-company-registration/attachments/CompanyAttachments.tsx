@@ -15,15 +15,16 @@ import Loader from "../../../../components/Loader";
 import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import Table from "../../../../components/table/Table";
+import { businessId } from "@/types/models/business";
 
 interface CompanyAttachmentsProps {
-  entryId: string | null;
+  businessId: businessId;
   foreign_company_attachments: any;
   foreign_company_details: any;
 }
 
 const CompanyAttachments = ({
-  entryId,
+  businessId,
   foreign_company_attachments,
   foreign_company_details,
 }: CompanyAttachmentsProps) => {
@@ -52,7 +53,7 @@ const CompanyAttachments = ({
       setIsLoading(false);
       dispatch(
         setUserApplications({
-          entryId,
+          businessId,
           foreign_company_attachments: {
             attachments: Array.from(attachmentFiles)?.map((file: File) => {
               return {

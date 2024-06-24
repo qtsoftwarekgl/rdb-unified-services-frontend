@@ -1,14 +1,14 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import store from 'store';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import store from "store";
 
 export const businessRegistrationApiSlice = createApi({
-  reducerPath: 'businessRegistrationApi',
+  reducerPath: "businessRegistrationApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8051/api/v1/business',
+    baseUrl: "http://localhost:8051/api/v1/business",
     prepareHeaders: (headers) => {
-      const user = store.get('user');
+      const user = store.get("user");
       if (user) {
-        headers.set('authorization', `Bearer ${user.token}`);
+        headers.set("authorization", `Bearer ${user.token}`);
       }
       return headers;
     },
@@ -49,12 +49,30 @@ export const businessRegistrationApiSlice = createApi({
         },
       }),
 
+      //GET BUSINESS DETAILS
+      getBusinessDetails: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/details?businessId=${id}`,
+          };
+        },
+      }),
+
+      // GET BUSINESS ADDRESS
+      getBusinessAddress: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/address?businessId=${id}`,
+          };
+        },
+      }),
+
       // CREATE BUSINESS
       createBusiness: builder.mutation({
         query: ({ isForeign, serviceId }) => {
           return {
-            url: '/register',
-            method: 'POST',
+            url: "/register",
+            method: "POST",
             body: {
               isForeign,
               serviceId,
@@ -68,7 +86,7 @@ export const businessRegistrationApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/${id}`,
-            method: 'DELETE',
+            method: "DELETE",
           };
         },
       }),
@@ -94,7 +112,7 @@ export const businessRegistrationApiSlice = createApi({
         }) => {
           return {
             url: `/details?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               companyName,
               position,
@@ -118,7 +136,7 @@ export const businessRegistrationApiSlice = createApi({
         }) => {
           return {
             url: `/address?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               villageId,
               address,
@@ -134,15 +152,15 @@ export const businessRegistrationApiSlice = createApi({
       createBusinessActivities: builder.mutation({
         query: ({
           businessId,
-          VATRegistered,
+          isVATRegistered,
           mainBusinessActivity,
           businessLines,
         }) => {
           return {
             url: `/business-activities?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
-              VATRegistered,
+              isVATRegistered,
               mainBusinessActivity,
               businessLines,
             },
@@ -162,7 +180,7 @@ export const businessRegistrationApiSlice = createApi({
       // CREATE MANAGEMENT OR BOARD PEOPLE
       createManagementOrBoardPerson: builder.mutation({
         query: ({
-          route = 'management',
+          route = "management",
           businessId,
           position,
           firstName,
@@ -191,7 +209,7 @@ export const businessRegistrationApiSlice = createApi({
         }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               position,
               firstName,
@@ -224,7 +242,7 @@ export const businessRegistrationApiSlice = createApi({
 
       // FETCH MANAGEMENT OR BOARD PEOPLE
       fetchManagementOrBoardPeople: builder.query({
-        query: ({ businessId, route = 'management' }) => {
+        query: ({ businessId, route = "management" }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
           };
@@ -245,7 +263,7 @@ export const businessRegistrationApiSlice = createApi({
         }) => {
           return {
             url: `/employment-info?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               workingStartTime,
               workingEndTime,
@@ -259,12 +277,21 @@ export const businessRegistrationApiSlice = createApi({
         },
       }),
 
+      // GET EMPLOYMENT INFO
+      getEmploymentInfo: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/employment-info?businessId=${id}`,
+          };
+        },
+      }),
+
       // CREATE SHARE DETAILS
       createShareDetails: builder.mutation({
         query: ({ businessId, shareDetails }) => {
           return {
             url: `/share-details?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: shareDetails,
           };
         },
@@ -307,7 +334,7 @@ export const businessRegistrationApiSlice = createApi({
         }) => {
           return {
             url: `/founder-details?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               shareHolderType,
               description,
@@ -367,7 +394,7 @@ export const businessRegistrationApiSlice = createApi({
         query: ({ founderId, shareDetails }) => {
           return {
             url: `/assign-share?founderId=${founderId}`,
-            method: 'POST',
+            method: "POST",
             body: shareDetails,
           };
         },
@@ -380,6 +407,8 @@ export const {
   useLazySearchBusinessesQuery,
   useLazyFetchBusinessesQuery,
   useLazyGetBusinessQuery,
+  useLazyGetBusinessDetailsQuery,
+  useLazyGetBusinessAddressQuery,
   useCreateBusinessMutation,
   useDeleteBusinessMutation,
   useLazySearchBusinessNameAvailabilityQuery,
@@ -390,6 +419,7 @@ export const {
   useCreateManagementOrBoardPersonMutation,
   useLazyFetchManagementOrBoardPeopleQuery,
   useCreateEmploymentInfoMutation,
+  useLazyGetEmploymentInfoQuery,
   useCreateShareDetailsMutation,
   useCreateShareholderMutation,
   useLazyFetchShareholdersQuery,

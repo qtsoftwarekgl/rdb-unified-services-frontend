@@ -1,45 +1,52 @@
-import { useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../../components/inputs/Select';
-import Loader from '../../../../components/Loader';
-import Input from '../../../../components/inputs/Input';
-import { faSearch, faTrash, faX } from '@fortawesome/free-solid-svg-icons';
-import { userData } from '../../../../constants/authentication';
-import { countriesList } from '../../../../constants/countries';
-import Button from '../../../../components/inputs/Button';
+import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../../components/inputs/Select";
+import Loader from "../../../../components/Loader";
+import Input from "../../../../components/inputs/Input";
+import { faSearch, faX } from "@fortawesome/free-solid-svg-icons";
+import { userData } from "../../../../constants/authentication";
+import { countriesList } from "../../../../constants/countries";
+import Button from "../../../../components/inputs/Button";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
-} from '../../../../states/features/foreignCompanyRegistrationSlice';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Table from '../../../../components/table/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { capitalizeString, maskPhoneDigits } from '../../../../helpers/strings';
-import { setUserApplications } from '../../../../states/features/userApplicationSlice';
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import {
   RDBAdminEmailPattern,
   validNationalID,
-} from '../../../../constants/Users';
-import ConfirmModal from '../../../../components/confirm-modal/ConfirmModal';
-import ViewDocument from '../../../user-company-details/ViewDocument';
-import validateInputs from '../../../../helpers/validations';
-import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import { business_executive_management } from '@/pages/business-applications/domestic-business-registration/management/SeniorManagement';
+} from "../../../../constants/Users";
+import ViewDocument from "../../../user-company-details/ViewDocument";
+import validateInputs from "../../../../helpers/validations";
+import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
+import { businessId } from "@/types/models/business";
+import {
+  useCreateManagementOrBoardMemberMutation,
+  useLazyFetchManagementOrBoardMembersQuery,
+} from "@/states/api/foreignCompanyRegistrationApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  addExecutiveManager,
+  setExecutiveManagersList,
+} from "@/states/features/executiveManagerSlice";
+import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
+import { maskPhoneDigits } from "@/helpers/strings";
 
-interface SeniorManagementProps {
-  entryId: string | null;
-  foreign_executive_management: any;
-  status?: string;
+interface ExecutiveManagementProps {
+  businessId: businessId;
+  applicationStatus: string;
 }
 
-const SeniorManagement = ({
-  entryId,
-  foreign_executive_management,
-  status,
-}: SeniorManagementProps) => {
+const ExecutiveManagement = ({
+  businessId,
+  applicationStatus,
+}: ExecutiveManagementProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -61,15 +68,104 @@ const SeniorManagement = ({
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user.email);
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmModalData, setConfirmModalData] = useState({});
-  const [previewAttachment, setPreviewAttachment] = useState<string>('');
-  const [confirmModal, setConfirmModal] = useState(false);
+  const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
     data: null,
   });
-  const [showVerifyPhone, setShowVerifyPhone] = useState(false);
+  const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
+  const { executiveManagersList } = useSelector(
+    (state: RootState) => state.executiveManager
+  );
+
+  // INITIALIZE CREATE MANAGEMENT PEOPLE
+  const [
+    createManagementMember,
+    {
+      data: createManagementMemberData,
+      error: createManagementMemberError,
+      isLoading: createManagementMemberIsLoading,
+      isError: createManagementMemberIsError,
+      isSuccess: createManagementMemberIsSuccess,
+    },
+  ] = useCreateManagementOrBoardMemberMutation();
+
+  // HANDLE SUMBIT
+  const onSubmit = (data: FieldValues) => {
+    createManagementMember({ ...data, businessId });
+  };
+
+  // HANDLE CREATE MANAGEMENT MEMBER RESPONSE
+  useEffect(() => {
+    if (createManagementMemberIsError) {
+      if ((createManagementMemberError as ErrorResponse).status === 500) {
+        toast.error(
+          "An error occured while creating member. Please try again later"
+        );
+      } else {
+        toast.error(
+          (createManagementMemberError as ErrorResponse).data?.message
+        );
+      }
+    } else if (createManagementMemberIsSuccess) {
+      reset({
+        position: "",
+        personIdentType: "",
+      });
+      setAttachmentFile(null);
+      dispatch(addExecutiveManager(createManagementMemberData?.data));
+    }
+  }, [
+    dispatch,
+    createManagementMemberData,
+    createManagementMemberError,
+    createManagementMemberIsError,
+    createManagementMemberIsSuccess,
+    reset,
+  ]);
+
+  // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
+  const [
+    fetchManagementMember,
+    {
+      data: managementMemberData,
+      error: managementMemberError,
+      isLoading: managementMemberIsLoading,
+      isError: managementMemberIsError,
+      isSuccess: managementMemberIsSuccess,
+    },
+  ] = useLazyFetchManagementOrBoardMembersQuery();
+
+  // FETCH MANAGEMENT PEOPLE
+  useEffect(() => {
+    if (!businessId) return;
+    fetchManagementMember({
+      businessId,
+      route: "management",
+    });
+  }, [businessId, fetchManagementMember]);
+
+  // HANDLE MANAGEMENT PEOPLE RESPONSE
+  useEffect(() => {
+    if (managementMemberIsError) {
+      if ((managementMemberError as ErrorResponse).status === 500) {
+        toast.error(
+          "An error occured while fetching people. Please try again later"
+        );
+      } else {
+        toast.error((managementMemberError as ErrorResponse).data?.message);
+      }
+    } else if (managementMemberIsSuccess) {
+      dispatch(setExecutiveManagersList(managementMemberData?.data));
+    }
+  }, [
+    dispatch,
+    managementMemberData?.data,
+    managementMemberError,
+    managementMemberIsSuccess,
+    managementMemberIsError,
+  ]);
 
   // CLEAR FORM
   useEffect(() => {
@@ -80,83 +176,16 @@ const SeniorManagement = ({
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    if (watch('document_type') === 'passport') {
-      setValue('country', '');
-      setValue('phone', '');
-      setValue('street_name', '');
-      setValue('first_name', '');
-      setValue('middle_name', '');
-      setValue('last_name', '');
-      setValue('gender', '');
+    if (watch("personIdentType") === "passport") {
+      setValue("nationality", "");
+      setValue("phoneNumber", "");
+      setValue("streetNumber", "");
+      setValue("firstName", "");
+      setValue("middleName", "");
+      setValue("lastName", "");
+      setValue("gender", "");
     }
-  }, [setValue, watch('document_type')]);
-
-  // HANDLE FORM SUBMIT
-  const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      clearErrors('submit');
-      dispatch(
-        setUserApplications({
-          entryId,
-          foreign_executive_management: [
-            {
-              ...data,
-              attachment: {
-                name: attachmentFile?.name,
-                size: attachmentFile?.size,
-                type: attachmentFile?.type,
-              },
-              step: 'foreign_executive_management',
-            },
-            ...foreign_executive_management,
-          ],
-        })
-      );
-      reset();
-      setValue('attachment', null);
-    }, 1000);
-    return data;
-  };
-
-  // TABLE COLUMNS
-  const columns = [
-    {
-      header: 'Name',
-      accessorKey: 'name',
-    },
-    {
-      header: 'Position',
-      accessorKey: 'position',
-    },
-    {
-      header: 'Action',
-      accessorKey: 'action',
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: object;
-        };
-      }) => {
-        return (
-          <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-                if (status === 'IS_AMENDING') return;
-                setConfirmModalData(row?.original);
-                setConfirmModal(true);
-              }}
-            />
-          </menu>
-        );
-      },
-    },
-  ];
+  }, [setValue, watch("personIdentType"), watch]);
 
   return (
     <section className="flex flex-col gap-6">
@@ -174,20 +203,20 @@ const SeniorManagement = ({
               render={({ field }) => {
                 const options = [
                   {
-                    value: 'md/gm',
-                    label: 'MD / GM',
+                    value: "md/gm",
+                    label: "MD / GM",
                   },
                   {
-                    value: 'secretary',
-                    label: 'Secretary',
+                    value: "secretary",
+                    label: "Secretary",
                   },
                   {
-                    value: 'accountant',
-                    label: 'Accountant',
+                    value: "accountant",
+                    label: "Accountant",
                   },
                   {
-                    value: 'auditor',
-                    label: 'Auditor',
+                    value: "auditor",
+                    label: "Auditor",
                   },
                 ];
                 return (
@@ -213,22 +242,22 @@ const SeniorManagement = ({
             />
             <ul
               className={`${
-                watch('position') ? 'flex' : 'hidden'
+                watch("position") ? "flex" : "hidden"
               } items-start w-full gap-6`}
             >
               <Controller
-                name="document_type"
-                rules={{ required: 'Select document type' }}
+                name="personIdentType"
+                rules={{ required: "Select document type" }}
                 control={control}
                 render={({ field }) => {
                   const options = [
-                    { value: 'nid', label: 'National ID' },
-                    { label: 'Passport', value: 'passport' },
+                    { value: "nid", label: "National ID" },
+                    { label: "Passport", value: "passport" },
                   ];
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
-                        watch('document_type') !== 'nid' && '!w-[49%]'
+                        watch("personIdentType") !== "nid" && "!w-[49%]"
                       }`}
                     >
                       <Select
@@ -242,18 +271,18 @@ const SeniorManagement = ({
                   );
                 }}
               />
-              {watch('document_type') === 'nid' && (
+              {watch("personIdentType") === "nid" && (
                 <Controller
                   control={control}
-                  name="document_no"
+                  name="personDocNo"
                   rules={{
-                    required: watch('document_type')
-                      ? 'Document number is required'
+                    required: watch("personIdentType")
+                      ? "Document number is required"
                       : false,
                     validate: (value) => {
                       return (
-                        validateInputs(value, 'nid') ||
-                        'National ID must be 16 characters long'
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
                       );
                     },
                   }}
@@ -266,9 +295,9 @@ const SeniorManagement = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError('document_no', {
-                                type: 'manual',
-                                message: 'Document number is required',
+                              setError("personDocNo", {
+                                type: "manual",
+                                message: "Document number is required",
                               });
                               return;
                             }
@@ -300,13 +329,10 @@ const SeniorManagement = ({
                                   loading: false,
                                   error: false,
                                 });
-                                setValue('first_name', userDetails?.first_name);
-                                setValue(
-                                  'middle_name',
-                                  userDetails?.middle_name
-                                );
-                                setValue('last_name', userDetails?.last_name);
-                                setValue('gender', userDetails?.data?.gender);
+                                setValue("firstName", userDetails?.firstName);
+                                setValue("middleName", userDetails?.middleName);
+                                setValue("lastName", userDetails?.lastName);
+                                setValue("gender", userDetails?.data?.gender);
                               }
                             }, 700);
                           }}
@@ -315,7 +341,7 @@ const SeniorManagement = ({
                           placeholder="1 XXXX X XXXXXXX X XX"
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger('document_no');
+                            await trigger("personDocNo");
                           }}
                         />
                         {searchMember?.loading && (
@@ -328,9 +354,9 @@ const SeniorManagement = ({
                             Invalid document number
                           </span>
                         )}
-                        {errors?.document_no && (
+                        {errors?.personDocNo && (
                           <p className="text-red-500 text-[13px]">
-                            {String(errors?.document_no?.message)}
+                            {String(errors?.personDocNo?.message)}
                           </p>
                         )}
                       </label>
@@ -338,18 +364,18 @@ const SeniorManagement = ({
                   }}
                 />
               )}
-              {watch('document_type') === 'passport' && (
+              {watch("personIdentType") === "passport" && (
                 <Controller
-                  name="document_no"
+                  name="personDocNo"
                   rules={{
-                    required: 'Passport number is required',
+                    required: "Passport number is required",
                   }}
                   control={control}
                   render={({ field }) => {
                     return (
                       <label
                         className={`flex flex-col gap-1 w-full items-start ${
-                          watch('document_type') !== 'nid' && '!w-[49%]'
+                          watch("personIdentType") !== "nid" && "!w-[49%]"
                         }`}
                       >
                         <Input
@@ -358,9 +384,9 @@ const SeniorManagement = ({
                           label="Passport number"
                           {...field}
                         />
-                        {errors?.document_no && (
+                        {errors?.personDocNo && (
                           <span className="text-sm text-red-500">
-                            {String(errors?.document_no?.message)}
+                            {String(errors?.personDocNo?.message)}
                           </span>
                         )}
                       </label>
@@ -372,30 +398,30 @@ const SeniorManagement = ({
           </menu>
           <section
             className={`${
-              (watch('document_type') === 'nid' && searchMember?.data) ||
-              watch('document_type') === 'passport'
-                ? 'flex'
-                : 'hidden'
+              (watch("personIdentType") === "nid" && searchMember?.data) ||
+              watch("personIdentType") === "passport"
+                ? "flex"
+                : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             <Controller
-              name="first_name"
+              name="firstName"
               control={control}
-              defaultValue={searchMember?.data?.first_name}
-              rules={{ required: 'First name is required' }}
+              defaultValue={searchMember?.data?.firstName}
+              rules={{ required: "First name is required" }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
                       required
-                      defaultValue={searchMember?.data?.first_name}
+                      defaultValue={searchMember?.data?.firstName}
                       placeholder="First name"
                       label="First name"
                       {...field}
                     />
-                    {errors?.first_name && (
+                    {errors?.firstName && (
                       <span className="text-sm text-red-500">
-                        {String(errors?.first_name?.message)}
+                        {String(errors?.firstName?.message)}
                       </span>
                     )}
                   </label>
@@ -403,14 +429,14 @@ const SeniorManagement = ({
               }}
             />
             <Controller
-              name="middle_name"
+              name="middleName"
               control={control}
-              defaultValue={searchMember?.data?.middle_name}
+              defaultValue={searchMember?.data?.middleName}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      defaultValue={searchMember?.data?.middle_name}
+                      defaultValue={searchMember?.data?.middleName}
                       placeholder="Middle name"
                       label="Middle name"
                       {...field}
@@ -420,14 +446,14 @@ const SeniorManagement = ({
               }}
             />
             <Controller
-              name="last_name"
+              name="lastName"
               control={control}
-              defaultValue={searchMember?.data?.last_name}
+              defaultValue={searchMember?.data?.lastName}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      defaultValue={searchMember?.last_name}
+                      defaultValue={searchMember?.lastName}
                       placeholder="Last name"
                       label="Last name"
                       {...field}
@@ -439,11 +465,11 @@ const SeniorManagement = ({
             <Controller
               control={control}
               name="gender"
-              defaultValue={watch('gender') || searchMember?.data?.gender}
+              defaultValue={watch("gender") || searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('document_type') === 'passport'
-                    ? 'Select gender'
+                  watch("personIdentType") === "passport"
+                    ? "Select gender"
                     : false,
               }}
               render={({ field }) => {
@@ -452,10 +478,10 @@ const SeniorManagement = ({
                     <p className="flex items-center gap-1 text-[15px]">
                       Gender<span className="text-red-500">*</span>
                     </p>
-                    {watch('document_type') !== 'passport' ? (
+                    {watch("personIdentType") !== "passport" ? (
                       <menu className="flex items-center gap-4">
                         <p className="px-2 py-1 rounded-md bg-background">
-                          {searchMember?.data?.gender || watch('gender')}
+                          {searchMember?.data?.gender || watch("gender")}
                         </p>
                       </menu>
                     ) : (
@@ -466,9 +492,9 @@ const SeniorManagement = ({
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e.target.value);
-                            await trigger('gender');
+                            await trigger("gender");
                           }}
-                          value={'Male'}
+                          value={"Male"}
                         />
                         <Input
                           type="radio"
@@ -476,9 +502,9 @@ const SeniorManagement = ({
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e.target.value);
-                            await trigger('gender');
+                            await trigger("gender");
                           }}
-                          value={'Female'}
+                          value={"Female"}
                         />
                       </menu>
                     )}
@@ -492,50 +518,52 @@ const SeniorManagement = ({
               }}
             />
             <Controller
-              name="phone"
+              name="phoneNumber"
               control={control}
               rules={{
-                required: 'Phone number is required',
+                required: "phone number is required",
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
-                    {watch('document_type') === 'passport' ? (
+                    {watch("personIdentType") === "passport" ? (
                       <Input
-                        label="Phone number"
+                        label="phone number"
                         required
                         type="tel"
                         {...field}
                       />
                     ) : (
                       <Select
-                        label="Phone number"
+                        label="phone number"
                         required
                         placeholder="Select phone number"
                         options={userData?.slice(0, 3)?.map((user) => {
                           return {
                             ...user,
-                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
-                            value: user?.phone,
+                            label: `(+250) ${maskPhoneDigits(
+                              user?.phoneNumber
+                            )}`,
+                            value: user?.phoneNumber,
                           };
                         })}
                         {...field}
                       />
                     )}
-                    {errors?.phone && (
+                    {errors?.phoneNumber && (
                       <p className="text-sm text-red-500">
-                        {String(errors?.phone?.message)}
+                        {String(errors?.phoneNumber?.message)}
                       </p>
                     )}
                   </label>
                 );
               }}
             />
-            {watch('document_type') !== 'nid' ? (
+            {watch("personIdentType") !== "nid" ? (
               <Controller
-                name="country"
+                name="nationality"
                 control={control}
-                rules={{ required: 'Nationality is required' }}
+                rules={{ required: "Nationality is required" }}
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1 items-start">
@@ -552,12 +580,12 @@ const SeniorManagement = ({
                         })}
                         onChange={async (e) => {
                           field.onChange(e);
-                          await trigger('country');
+                          await trigger("nationality");
                         }}
                       />
-                      {errors?.country && (
+                      {errors?.nationality && (
                         <p className="text-sm text-red-500">
-                          {String(errors?.country?.message)}
+                          {String(errors?.nationality?.message)}
                         </p>
                       )}
                     </label>
@@ -567,7 +595,7 @@ const SeniorManagement = ({
             ) : (
               <Controller
                 control={control}
-                name="street_name"
+                name="streetNumber"
                 render={({ field }) => {
                   return (
                     <label className="w-[49%] flex flex-col gap-1">
@@ -581,7 +609,7 @@ const SeniorManagement = ({
                 }}
               />
             )}
-            {watch('document_type') === 'passport' && (
+            {watch("personIdentType") === "passport" && (
               <menu className="flex flex-col items-start w-full gap-3 my-3 max-md:items-center">
                 <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
                   Passport copy <span className="text-red-600">*</span>
@@ -589,7 +617,7 @@ const SeniorManagement = ({
                 <menu className="flex gap-4">
                   <Controller
                     name="attachment"
-                    rules={{ required: 'Passport is required' }}
+                    rules={{ required: "Passport is required" }}
                     control={control}
                     render={({ field }) => {
                       return (
@@ -633,7 +661,7 @@ const SeniorManagement = ({
                         onClick={(e) => {
                           e.preventDefault();
                           setAttachmentFile(null);
-                          setValue('attachment', null);
+                          setValue("attachment", null);
                         }}
                       />
                     </p>
@@ -644,47 +672,19 @@ const SeniorManagement = ({
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
-              value={isLoading ? <Loader /> : 'Add position'}
-              onClick={async (e) => {
-                e.preventDefault();
-                await trigger();
-                if (Object.keys(errors).length) return;
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  if (watch('document_type') === 'nid') {
-                    setShowVerifyPhone(true);
-                    return;
-                  } else {
-                    handleSubmit(onSubmit)();
-                  }
-                }, 1000);
-              }}
+              submit
+              value={
+                createManagementMemberIsLoading ? <Loader /> : "Add position"
+              }
               primary
+              disabled={isFormDisabled}
             />
           </section>
           <section className={`flex members-table flex-col w-full`}>
-            <h2 className="text-lg font-semibold uppercase text-primary">
-              Management Members
-            </h2>
-            <Table
-              rowClickHandler={undefined}
-              data={foreign_executive_management?.map(
-                (member: business_executive_management, index: number) => {
-                  return {
-                    ...member,
-                    no: index + 1,
-                    name: `${member?.first_name} ${member?.middle_name ?? ''} ${
-                      member?.last_name ?? ''
-                    }`,
-                    position:
-                      member?.position && capitalizeString(member?.position),
-                  };
-                }
-              )}
-              columns={columns}
-              showFilter={false}
-              showPagination={false}
+            <BusinessPeopleTable
+              businessPeopleList={executiveManagersList}
+              isLoading={managementMemberIsLoading}
+              type="executiveManagement"
             />
             {errors?.submit && (
               <p className="text-red-500 text-[15px] text-center">
@@ -700,42 +700,44 @@ const SeniorManagement = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(
-                  setForeignBusinessActiveStep('foreign_board_of_directors')
+                  setForeignBusinessActiveStep("foreign_board_of_directors")
                 );
               }}
             />
-            {status === 'IS_AMENDING' && (
+            {applicationStatus === "IS_AMENDING" && (
               <Button
-                value={'Complete Amendment'}
+                value={"Complete Amendment"}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(
-                    setForeignBusinessActiveTab('foreign_preview_submission')
+                    setForeignBusinessActiveTab("foreign_preview_submission")
                   );
                 }}
               />
             )}
-            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+            {["IN_PREVIEW", "ACTION_REQUIRED"].includes(applicationStatus) && (
               <Button
                 value="Save & Complete Review"
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!foreign_executive_management?.length) {
-                    setError('board_of_directors', {
-                      type: 'manual',
-                      message: 'Add at least one board member',
+                  if (!executiveManagersList?.length) {
+                    setError("board_of_directors", {
+                      type: "manual",
+                      message: "Add at least one board member",
                     });
                     setTimeout(() => {
-                      clearErrors('board_of_directors');
+                      clearErrors("board_of_directors");
                     }, 4000);
                     return;
                   }
                   dispatch(
-                    setForeignBusinessCompletedStep('foreign_executive_management')
+                    setForeignBusinessCompletedStep(
+                      "foreign_executive_management"
+                    )
                   );
                   dispatch(
-                    setForeignBusinessActiveTab('foreign_preview_submission')
+                    setForeignBusinessActiveTab("foreign_preview_submission")
                   );
                 }}
               />
@@ -745,25 +747,23 @@ const SeniorManagement = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                if (!foreign_executive_management?.length) {
-                  setError('submit', {
-                    type: 'manual',
-                    message: 'Add at least one member',
+                if (!executiveManagersList?.length) {
+                  setError("submit", {
+                    type: "manual",
+                    message: "Add at least one member",
                   });
                   setTimeout(() => {
-                    clearErrors('submit');
+                    clearErrors("submit");
                   }, 5000);
                   return;
                 }
                 dispatch(
-                  setUserApplications({ entryId, status: 'IN_PROGRESS' })
+                  setUserApplications({ businessId, status: "IN_PROGRESS" })
                 );
                 dispatch(
-                  setForeignBusinessCompletedStep('foreign_executive_management')
+                  setForeignBusinessCompletedStep("executive_management")
                 );
-                dispatch(
-                  setForeignBusinessActiveStep('foreign_employment_info')
-                );
+                dispatch(setForeignBusinessActiveStep("board_of_directors"));
               }}
             />
           </menu>
@@ -775,33 +775,11 @@ const SeniorManagement = ({
           setDocumentUrl={setPreviewAttachment}
         />
       )}
-      <ConfirmModal
-        isOpen={confirmModal}
-        onClose={() => {
-          setConfirmModal(false);
-          setConfirmModalData({});
-        }}
-        onConfirm={(e) => {
-          e.preventDefault();
-          dispatch(
-            setUserApplications({
-              entryId,
-              foreign_executive_management: foreign_executive_management?.filter(
-                (_: unknown, index: number) => {
-                  return index !== confirmModalData?.no - 1;
-                }
-              ),
-            })
-          );
-        }}
-        message="Are you sure you want to delete this member?"
-        description="This action cannot be undone"
-      />
       <OTPVerificationCard
-        phone={watch('phone')}
-        isOpen={showVerifyPhone}
+        phoneNumber={watch("phoneNumber")}
+        isOpen={showVerifyphoneNumber}
         onClose={() => {
-          setShowVerifyPhone(false);
+          setShowVerifyphoneNumber(false);
           handleSubmit(onSubmit)();
         }}
       />
@@ -809,4 +787,4 @@ const SeniorManagement = ({
   );
 };
 
-export default SeniorManagement;
+export default ExecutiveManagement;
