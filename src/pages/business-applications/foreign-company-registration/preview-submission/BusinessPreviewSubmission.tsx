@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import PreviewCard from "../../../../components/business-registration/PreviewCard";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-  setForeignBusinessCompletedStep,
-  setForeignBusinessRegistrationTabs,
-  foreign_business_registration_tabs_initial_state,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import {
   capitalizeCamelCase,
@@ -19,14 +16,13 @@ import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
 import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import { BusinessActivity, businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyGetBusinessAddressQuery,
   useLazyGetBusinessDetailsQuery,
   useLazyGetEmploymentInfoQuery,
+  useUpdateBusinessMutation,
 } from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
 import {
@@ -42,6 +38,9 @@ import {
   setSelectedMainBusinessLine,
   setVatRegistred,
 } from "@/states/features/businessActivitySlice";
+import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/coreApiSlice";
+import { setBusinessAttachments } from "@/states/features/businessPeopleSlice";
+import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 
 interface PreviewSubmissionProps {
   businessId: businessId;
@@ -54,8 +53,6 @@ const PreviewSubmission = ({
 }: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { user } = useSelector((state: RootState) => state.user);
   const { businessDetails, businessAddress } = useSelector(
     (state: RootState) => state.business
   );
@@ -68,6 +65,10 @@ const PreviewSubmission = ({
     (state: RootState) => state.executiveManager
   );
   const { employmentInfo } = useSelector((state: RootState) => state.business);
+  const navigate = useNavigate();
+  const { businessAttachments } = useSelector(
+    (state: RootState) => state.businessPeople
+  );
 
   // GET BUSINESS DETAILS
   const [
@@ -308,8 +309,85 @@ const PreviewSubmission = ({
     } else dispatch(setEmploymentInfo(employmentInfoData?.data));
   }, [dispatch, employmentInfoData?.data, employmentInfoError]);
 
-  // NAVIGATION
-  const navigate = useNavigate();
+  // INITIALIZE UPDATE BUSINESS MUTATION
+  const [
+    updateBusiness,
+    {
+      data: updateBusinessData,
+      error: updateBusinessError,
+      isLoading: updateBusinessIsLoading,
+      isSuccess: updateBusinessIsSuccess,
+      isError: updateBusinessIsError,
+    },
+  ] = useUpdateBusinessMutation();
+
+  // HANDLE UPDATE BUSINESS RESPONSE
+  useEffect(() => {
+    if (updateBusinessIsError) {
+      if ((updateBusinessError as ErrorResponse).status === 500) {
+        toast.error("An error occurred while updating business");
+      } else {
+        toast.error(
+          (updateBusinessError as ErrorResponse).data?.message ??
+            "An error occurred while updating business"
+        );
+      }
+    } else if (updateBusinessIsSuccess) {
+      toast.success("Business updated successfully");
+      dispatch(setForeignBusinessActiveStep("company_details"));
+      dispatch(setForeignBusinessActiveTab("general_information"));
+      navigate("/success", {
+        state: { redirectUrl: "/services" },
+      });
+    }
+  }, [
+    dispatch,
+    navigate,
+    updateBusinessData,
+    updateBusinessError,
+    updateBusinessIsError,
+    updateBusinessIsSuccess,
+  ]);
+
+  // INITIALIZE FETC BUSINESS ATTACHMENTS
+  const [
+    fetchBusinessAttachments,
+    {
+      data: businessAttachmentsData,
+      isLoading: businessAttachmentsIsLoading,
+      error: businessAttachmentsError,
+      isSuccess: businessAttachmentsIsSuccess,
+      isError: businessAttachmentsIsError,
+    },
+  ] = useLazyFetchBusinessAttachmentsQuery();
+
+  // FETCH BUSINESS ATTACHMENTS
+  useEffect(() => {
+    if (businessId) {
+      fetchBusinessAttachments({ businessId });
+    }
+  }, [businessId, fetchBusinessAttachments]);
+
+  // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
+  useEffect(() => {
+    if (businessAttachmentsIsError) {
+      if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business attachments. Please try again later."
+        );
+      } else {
+        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessAttachmentsIsSuccess) {
+      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
+    }
+  }, [
+    businessAttachmentsData,
+    businessAttachmentsError,
+    businessAttachmentsIsError,
+    businessAttachmentsIsSuccess,
+    dispatch,
+  ]);
 
   // TABLE COLUMNS
   const managementColumns = [
@@ -332,7 +410,7 @@ const PreviewSubmission = ({
   ];
 
   return (
-    <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
+    <section className="flex flex-col w-full h-full gap-6">
       {employmentInfoIsLoading ||
         businessAddressIsLoading ||
         businessIsLoading ||
@@ -537,6 +615,19 @@ const PreviewSubmission = ({
       </PreviewCard>
       {/* BENEFICIAL OWNERS */}
       {/* ATTACHMENTS */}
+      <PreviewCard
+        header="Attachments"
+        tabName="attachments"
+        stepName="attachments"
+        setActiveStep={setForeignBusinessActiveStep}
+        setActiveTab={setForeignBusinessActiveTab}
+        businessId={businessId}
+        status={applicationStatus}
+      >
+        {businessAttachments?.length > 0 && (
+          <BusinessPeopleAttachments attachments={businessAttachments} />
+        )}
+      </PreviewCard>
       <menu
         className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
       >
@@ -549,36 +640,12 @@ const PreviewSubmission = ({
           }}
         />
         <Button
-          value={isLoading ? <Loader /> : "Submit"}
-          disabled={RDBAdminEmailPattern.test(user?.email)}
-          primary
           onClick={(e) => {
             e.preventDefault();
-            setIsLoading(true);
-            setTimeout(() => {
-              setIsLoading(false);
-              dispatch(
-                setUserApplications({
-                  businessId,
-                  status:
-                    status === "action_required" ? "re_submitted" : "submitted",
-                })
-              );
-              dispatch(
-                setForeignBusinessCompletedStep("foreign_preview_submission")
-              );
-              dispatch(setForeignBusinessActiveTab("general_information"));
-              dispatch(setForeignBusinessActiveStep("company_details"));
-              dispatch(
-                setForeignBusinessRegistrationTabs(
-                  foreign_business_registration_tabs_initial_state
-                )
-              );
-              navigate("/success", {
-                state: { redirectUrl: "/user-applications" },
-              });
-            }, 1000);
+            updateBusiness({ businessId, status: "SUBMITTED" });
           }}
+          value={updateBusinessIsLoading ? <Loader /> : "Submit"}
+          primary
         />
       </menu>
     </section>

@@ -1,210 +1,339 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Input from "../../../../components/inputs/Input";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-  setForeignBusinessCompletedStep,
-  setForeignBusinessCompletedTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
-import Table from "../../../../components/table/Table";
 import { businessId } from "@/types/models/business";
+import {
+  useLazyFetchBusinessAttachmentsQuery,
+  useUploadBusinessAttachmentMutation,
+} from "@/states/api/coreApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  addBusinessAttachment,
+  setBusinessAttachments,
+} from "@/states/features/businessPeopleSlice";
+import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
+import { setBusinessDetails } from "@/states/features/businessSlice";
+import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 
 interface CompanyAttachmentsProps {
   businessId: businessId;
-  foreign_company_attachments: any;
-  foreign_company_details: any;
 }
 
-const CompanyAttachments = ({
-  businessId,
-  foreign_company_attachments,
-  foreign_company_details,
-}: CompanyAttachmentsProps) => {
+const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   // REACT HOOK FORM
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
-    watch,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [attachmentFiles, setAttachmentFiles] = useState<
-    FileList | Array<File>
-  >([]);
+
+  const { businessAttachments } = useSelector(
+    (state: RootState) => state.businessPeople
+  );
+
+  // INITIALIZE UPLOAD BUSINESS ATTACHMENT
+  const [
+    uploadBusinessAttachment,
+    {
+      data: uploadBusinessAttachmentData,
+      isLoading: uploadBusinessAttachmentIsLoading,
+      error: uploadBusinessAttachmentError,
+      isSuccess: uploadBusinessAttachmentIsSuccess,
+      isError: uploadBusinessAttachmentIsError,
+    },
+  ] = useUploadBusinessAttachmentMutation();
+
+  // HANDLE UPLOAD BUSINESS ATTACHMENT RESPONSE
+  useEffect(() => {
+    if (uploadBusinessAttachmentIsError) {
+      if ((uploadBusinessAttachmentError as ErrorResponse).status === 500)
+        toast.error(
+          "An error occurred while uploading attachments. Please try again later."
+        );
+      else {
+        toast.error(
+          (uploadBusinessAttachmentError as ErrorResponse)?.data?.message
+        );
+      }
+    } else if (uploadBusinessAttachmentIsSuccess) {
+      // TO DO
+      toast.success("Attachments uploaded successfully");
+      dispatch(addBusinessAttachment(uploadBusinessAttachmentData?.data));
+    }
+  }, [
+    businessId,
+    dispatch,
+    uploadBusinessAttachmentData,
+    uploadBusinessAttachmentError,
+    uploadBusinessAttachmentIsError,
+    uploadBusinessAttachmentIsSuccess,
+  ]);
 
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const { businessDetails } = useSelector((state: RootState) => state.business);
 
-  const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      dispatch(
-        setUserApplications({
-          businessId,
-          foreign_company_attachments: {
-            attachments: Array.from(attachmentFiles)?.map((file: File) => {
-              return {
-                name: file.name,
-                size: file.size,
-                type: file.type,
-              };
-            }),
-            step: "foreign_attachments",
-          },
-        })
-      );
-      dispatch(setForeignBusinessCompletedStep("attachments"));
-      dispatch(setForeignBusinessActiveStep("preview_submission"));
-      dispatch(setForeignBusinessActiveTab("preview_submission"));
-      dispatch(setForeignBusinessCompletedTab("attachments"));
-    }, 1000);
-    return data;
-  };
+  // GET BUSINESS DETAILS
+  const [
+    getBusinessDetails,
+    {
+      data: businessDetailsData,
+      isLoading: businessIsLoading,
+      error: businessError,
+      isError: businessIsError,
+      isSuccess: businessIsSuccess,
+    },
+  ] = useLazyGetBusinessDetailsQuery();
 
-  // ATTACHMENTS TABLE COLUMNS
-  const columns = [
-    {
-      header: "File name",
-      accessorKey: "name",
-    },
-    {
-      header: "File size",
-      accessorKey: "size",
-    },
-    {
-      header: "File type",
-      accessorKey: "type",
-    },
-    {
-      header: "Action",
-      accessorKey: "action",
-      cell: ({ row }) => {
-        return (
-          <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              icon={faCircleInfo}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
-            <FontAwesomeIcon
-              className={`${
-                isFormDisabled
-                  ? "text-secondary cursor-default"
-                  : "text-red-600 cursor-pointer"
-              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-                if (isFormDisabled) return;
-                setAttachmentFiles((prevFiles) => {
-                  return prevFiles?.filter(
-                    (file: File) => file?.name !== row?.original?.name
-                  );
-                });
-              }}
-            />
-          </menu>
+  // GET BUSINESS DETAILS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessDetails({ id: businessId });
+    }
+  }, [businessId, getBusinessDetails]);
+
+  // HANDLE BUSINESS DETAILS DATA RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      if ((businessError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business details. Please try again later."
         );
-      },
+      } else {
+        toast.error((businessError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessIsSuccess) {
+      dispatch(setBusinessDetails(businessDetailsData?.data));
+    }
+  }, [
+    businessDetailsData,
+    businessError,
+    businessIsError,
+    businessIsSuccess,
+    dispatch,
+  ]);
+
+  // INITIALIZE FETC BUSINESS ATTACHMENTS
+  const [
+    fetchBusinessAttachments,
+    {
+      data: businessAttachmentsData,
+      isLoading: businessAttachmentsIsLoading,
+      error: businessAttachmentsError,
+      isSuccess: businessAttachmentsIsSuccess,
+      isError: businessAttachmentsIsError,
     },
-  ];
+  ] = useLazyFetchBusinessAttachmentsQuery();
+
+  // FETCH BUSINESS ATTACHMENTS
+  useEffect(() => {
+    if (businessId) {
+      fetchBusinessAttachments({ businessId });
+    }
+  }, [businessId, fetchBusinessAttachments]);
+
+  // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
+  useEffect(() => {
+    if (businessAttachmentsIsError) {
+      if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business attachments. Please try again later."
+        );
+      } else {
+        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessAttachmentsIsSuccess) {
+      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
+    }
+  }, [
+    businessAttachmentsData,
+    businessAttachmentsError,
+    businessAttachmentsIsError,
+    businessAttachmentsIsSuccess,
+    dispatch,
+  ]);
+
+  const uploadHelper = (file: File, attachmentType: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("businessId", String(businessId));
+    formData.append("attachmentType", attachmentType);
+    formData.append("fileName", file.name);
+    uploadBusinessAttachment({ formData });
+  };
 
   return (
     <main className="flex flex-col w-full gap-8">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      {businessAttachmentsIsLoading ||
+        (businessIsLoading && (
+          <figure className="flex items-center justify-center">
+            <Loader />
+          </figure>
+        ))}
+      <form onSubmit={handleSubmit(() => {})}>
         <fieldset
           className="flex flex-col w-full gap-6"
           disabled={isFormDisabled}
         >
           <section
             className={`${
-              foreign_company_details?.articles_of_association === "yes"
-                ? "flex"
-                : "hidden"
+              businessDetails?.hasArticlesOfAssociation ? "flex" : "hidden"
             } w-full flex flex-col gap-3`}
           >
             <h1 className="text-lg font-medium uppercase">Company Details</h1>
             <Controller
               name="articles_of_association"
               rules={{
-                required:
-                  foreign_company_details?.articles_of_association === "yes" &&
-                  !watch("articles_of_association") &&
-                  !foreign_company_attachments?.attachments?.length
-                    ? "Upload company articles of association"
-                    : false,
+                required: "Upload company articles of association",
               }}
               control={control}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-2">
                     <ul className="flex items-center justify-between w-full gap-3">
-                      <p className="flex items-center w-full gap-1">
+                      <p className="flex items-center gap-1">
                         Article of association{" "}
                         <span className="text-red-600">*</span>
                       </p>
-                      {watch("articles_of_association") ? (
-                        <menu className="flex items-center w-full gap-5">
-                          <p>{watch("articles_of_association")?.name}</p>
-                          <FontAwesomeIcon
-                            icon={faX}
-                            className="text-red-600 cursor-pointer"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setAttachmentFiles(
-                                Array.from(attachmentFiles).filter(
-                                  (file: File) =>
-                                    file !== watch("articles_of_association")
-                                )
-                              );
-                              setValue("articles_of_association", null);
-                            }}
-                          />
-                        </menu>
-                      ) : (
-                        <Input
-                          label="Articles of association"
-                          type="file"
-                          required
-                          className="!w-fit"
-                          name={field?.name}
-                          onChange={(e) => {
-                            e.preventDefault();
-                            setValue(
-                              "articles_of_association",
-                              e?.target?.files && e.target.files[0]
+                      <Input
+                        label="Articles of association"
+                        type="file"
+                        required
+                        className="!w-fit"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0]);
+                          if (e.target.files?.[0])
+                            uploadHelper(
+                              e.target.files?.[0] as File,
+                              "Articles of Association"
                             );
-                            e.target.files &&
-                              Object.values(e.target.files)?.forEach(
-                                (file: File) => {
-                                  setAttachmentFiles([
-                                    file,
-                                    ...attachmentFiles,
-                                  ]);
-                                }
-                              );
-                          }}
-                        />
-                      )}
+                        }}
+                      />
                     </ul>
                     {errors?.articles_of_association && (
                       <p className="text-red-600 text-[13px]">
                         {String(errors?.articles_of_association?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+          </section>
+          <section className="flex flex-col w-full gap-3">
+            <h1 className="text-lg font-medium uppercase">
+              Required attachments
+            </h1>
+            <Controller
+              name="certificationOfIncorporation"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-full gap-3">
+                    <ul className="flex items-center justify-between w-full gap-3">
+                      <p>
+                        Certification of incorporation{" "}
+                        <span className="text-red-600">*</span>
+                      </p>
+                      <Input
+                        type="file"
+                        className="!w-fit"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0]);
+                          if (e.target.files?.[0])
+                            uploadHelper(
+                              e.target.files?.[0] as File,
+                              "Certification of Incorporation"
+                            );
+                        }}
+                      />
+                    </ul>
+                    {errors?.certificationOfIncorporation && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.certificationOfIncorporation?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="resolution"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-full gap-3">
+                    <ul className="flex items-center justify-between w-full gap-3">
+                      <p>
+                        Resolution attachment{" "}
+                        <span className="text-red-600">*</span>
+                      </p>
+                      <Input
+                        type="file"
+                        className="!w-fit"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0]);
+                          if (e.target.files?.[0])
+                            uploadHelper(
+                              e.target.files?.[0] as File,
+                              "Resolution Attachment"
+                            );
+                        }}
+                      />
+                    </ul>
+                    {errors?.resolution && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.resolution?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="licensesOfBusinessActivities"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-full gap-3">
+                    <ul className="flex items-center justify-between w-full gap-3">
+                      <p>
+                        Licenses of business activities{" "}
+                        <span className="text-red-600">*</span>
+                      </p>
+                      <Input
+                        type="file"
+                        className="!w-fit"
+                        name={field?.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0]);
+                          if (e.target.files?.[0])
+                            uploadHelper(
+                              e.target.files?.[0] as File,
+                              "Licenses of Business Activities"
+                            );
+                        }}
+                      />
+                    </ul>
+                    {errors?.licensesOfBusinessActivities && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors?.licensesOfBusinessActivities?.message)}
                       </p>
                     )}
                   </label>
@@ -221,19 +350,18 @@ const CompanyAttachments = ({
                 return (
                   <label className="flex flex-col w-full gap-3">
                     <ul className="flex items-center justify-between w-full gap-3">
-                      <p className="w-full">Other attachments</p>
+                      <p>Other attachments</p>
                       <Input
                         type="file"
-                        multiple
                         className="!w-fit"
                         name={field?.name}
                         onChange={(e) => {
-                          field.onChange(e);
-                          const files =
-                            e.target.files &&
-                            Object.values(e.target.files)?.concat();
-                          files &&
-                            setAttachmentFiles([...files, ...attachmentFiles]);
+                          field.onChange(e.target.files?.[0]);
+                          if (e.target.files?.[0])
+                            uploadHelper(
+                              e.target.files?.[0] as File,
+                              "Other Attachments"
+                            );
                         }}
                       />
                     </ul>
@@ -242,21 +370,17 @@ const CompanyAttachments = ({
               }}
             />
           </section>
-          <menu className="flex items-center w-full gap-6">
-            {(attachmentFiles?.length > 0 ||
-              foreign_company_attachments?.attachments.length > 0) && (
-              <Table
-                data={
-                  attachmentFiles?.length > 0
-                    ? attachmentFiles
-                    : foreign_company_attachments.attachments
-                }
-                columns={columns}
-                showFilter={false}
-                showPagination={false}
-              />
-            )}
-          </menu>
+          {uploadBusinessAttachmentIsLoading && (
+            <ul className="flex flex-col items-center gap-3">
+              <ul className="flex items-center gap-2">
+                <Loader className="text-primary" />
+                Uploading attachment...
+              </ul>
+            </ul>
+          )}
+          {businessAttachments?.length > 0 && (
+            <BusinessPeopleAttachments attachments={businessAttachments} />
+          )}
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -264,18 +388,18 @@ const CompanyAttachments = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(
-                  setForeignBusinessActiveStep("foreign_beneficial_owners")
-                );
-                dispatch(
-                  setForeignBusinessActiveTab("foreign_beneficial_owners")
-                );
+                dispatch(setForeignBusinessActiveStep("executive_management"));
+                dispatch(setForeignBusinessActiveTab("management"));
               }}
             />
             <Button
-              value={isLoading ? <Loader /> : "Save & Continue"}
+              value={"Save & Continue"}
               primary
-              submit
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setForeignBusinessActiveStep("preview_submission"));
+                dispatch(setForeignBusinessActiveTab("preview_submission"));
+              }}
               disabled={isFormDisabled}
             />
           </menu>

@@ -3,8 +3,7 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../../components/inputs/Select";
 import Loader from "../../../../components/Loader";
 import Input from "../../../../components/inputs/Input";
-import { faSearch, faX } from "@fortawesome/free-solid-svg-icons";
-import { userData } from "../../../../constants/authentication";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
 import {
@@ -14,13 +13,8 @@ import {
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
 import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import {
-  RDBAdminEmailPattern,
-  validNationalID,
-} from "../../../../constants/Users";
+import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import ViewDocument from "../../../user-company-details/ViewDocument";
 import validateInputs from "../../../../helpers/validations";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
@@ -37,6 +31,18 @@ import {
 } from "@/states/features/executiveManagerSlice";
 import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
 import { maskPhoneDigits } from "@/helpers/strings";
+import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
+import {
+  addBusinessPersonAttachment,
+  setBusinessPeopleAttachments,
+  setUserInformation,
+} from "@/states/features/businessPeopleSlice";
+import {
+  useLazySearchVillageQuery,
+  useUploadPersonAttachmentMutation,
+} from "@/states/api/coreApiSlice";
+import { genderOptions } from "@/constants/inputs.constants";
+import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 
 interface ExecutiveManagementProps {
   businessId: businessId;
@@ -67,17 +73,101 @@ const ExecutiveManagement = ({
   );
   const { user } = useSelector((state: RootState) => state.user);
   const isFormDisabled = RDBAdminEmailPattern.test(user.email);
-  const [isLoading, setIsLoading] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
-  const [searchMember, setSearchMember] = useState({
-    loading: false,
-    error: false,
-    data: null,
-  });
   const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
+  const { userInformation } = useSelector(
+    (state: RootState) => state.businessPeople
+  );
   const { executiveManagersList } = useSelector(
     (state: RootState) => state.executiveManager
   );
+  const { businessPeopleAttachments } = useSelector(
+    (state: RootState) => state.businessPeople
+  );
+
+  // INITIALIZE GET USER INFORMATION QUERY
+  const [
+    getUserInformation,
+    {
+      data: userInformationData,
+      error: userInformationError,
+      isFetching: userInformationIsFetching,
+      isSuccess: userInformationIsSuccess,
+      isError: userInformationIsError,
+    },
+  ] = useLazyGetUserInformationQuery();
+
+  // INITIALIZE SEARCH VILLAGE QUERY
+  const [
+    searchVillage,
+    {
+      data: searchVillageData,
+      isFetching: searchVillageIsFetching,
+      isSuccess: searchVillageIsSuccess,
+      isError: searchVillageIsError,
+      error: searchVillageError,
+    },
+  ] = useLazySearchVillageQuery();
+
+  // HANDLE GET USER INFORMATION RESPONSE
+  useEffect(() => {
+    if (userInformationIsError) {
+      if ((userInformationError as ErrorResponse).status === 500) {
+        toast.error("An error occured while fetching user information");
+      } else {
+        toast.error((userInformationError as ErrorResponse)?.data?.message);
+      }
+    } else if (userInformationIsSuccess) {
+      searchVillage({
+        villageName: userInformationData?.data?.village,
+        cellName: userInformationData?.data?.cell,
+        sectorName: userInformationData?.data?.sector,
+        districtName: userInformationData?.data?.district,
+        provinceName: userInformationData?.data?.province,
+      });
+      dispatch(setUserInformation(userInformationData?.data));
+    }
+  }, [
+    dispatch,
+    reset,
+    searchVillage,
+    userInformationData,
+    userInformationError,
+    userInformationIsError,
+    userInformationIsSuccess,
+  ]);
+
+  // HANDLE SEARCH VILLAGE RESPONSE
+  useEffect(() => {
+    if (userInformation && searchVillageIsSuccess) {
+      reset({
+        position: watch("position"),
+        personIdentType: "nid",
+        personDocNo: watch("personDocNo"),
+        firstName: userInformation?.foreName,
+        lastName: userInformation?.surnames,
+        gender: userInformation?.gender,
+        nationality: userInformation?.nationality,
+        village: searchVillageData?.data?.id,
+        persDocIssuePlace: userInformation?.nationality,
+        isFromNida: true,
+      });
+    } else if (searchVillageIsError) {
+      if ((searchVillageError as ErrorResponse)?.status === 500) {
+        toast.error("An error occured while fetching village information");
+      } else {
+        toast.error((searchVillageError as ErrorResponse)?.data?.message);
+      }
+    }
+  }, [
+    reset,
+    searchVillageData,
+    userInformation,
+    searchVillageIsError,
+    searchVillageError,
+    searchVillageIsSuccess,
+    watch,
+  ]);
 
   // INITIALIZE CREATE MANAGEMENT PEOPLE
   const [
@@ -90,6 +180,18 @@ const ExecutiveManagement = ({
       isSuccess: createManagementMemberIsSuccess,
     },
   ] = useCreateManagementOrBoardMemberMutation();
+
+  // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
+  const [
+    uploadPersonAttachment,
+    {
+      data: uploadAttachmentData,
+      error: uploadAttachmentError,
+      isLoading: uploadAttachmentIsLoading,
+      isSuccess: uploadAttachmentIsSuccess,
+      isError: uploadAttachmentIsError,
+    },
+  ] = useUploadPersonAttachmentMutation();
 
   // HANDLE SUMBIT
   const onSubmit = (data: FieldValues) => {
@@ -109,11 +211,29 @@ const ExecutiveManagement = ({
         );
       }
     } else if (createManagementMemberIsSuccess) {
-      reset({
-        position: "",
-        personIdentType: "",
-      });
-      setAttachmentFile(null);
+      if (watch("nationality") !== "RW") {
+        const formData = new FormData();
+        formData.append("file", attachmentFile as File);
+        formData.append("personId", createManagementMemberData?.data?.id);
+        formData.append("attachmentType", String(attachmentFile?.type));
+        formData.append("businessId", String(businessId));
+        formData.append("fileName", String(attachmentFile?.name));
+        uploadPersonAttachment({ formData });
+      } else {
+        reset({
+          position: "",
+          personIdentType: "",
+          document_no: "",
+          persDocNo: "",
+          persDocIssueDate: "",
+          persDocExpiryDate: "",
+          dateOfBirth: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+        });
+        dispatch(setUserInformation(undefined));
+      }
       dispatch(addExecutiveManager(createManagementMemberData?.data));
     }
   }, [
@@ -123,6 +243,46 @@ const ExecutiveManagement = ({
     createManagementMemberIsError,
     createManagementMemberIsSuccess,
     reset,
+    watch,
+    attachmentFile,
+    businessId,
+    uploadPersonAttachment,
+  ]);
+
+  // HANDLE UPLOAD PERSON ATTACHMENT RESPONSE
+  useEffect(() => {
+    if (uploadAttachmentIsError) {
+      if ((uploadAttachmentError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occured while uploading attachment. Please try again"
+        );
+      } else {
+        toast.error((uploadAttachmentError as ErrorResponse)?.data?.message);
+      }
+    } else if (uploadAttachmentIsSuccess) {
+      toast.success("Person added successfully");
+      reset({
+        position: "",
+        personIdentType: "",
+        document_no: "",
+        persDocNo: "",
+        persDocIssueDate: "",
+        persDocExpiryDate: "",
+        dateOfBirth: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+      });
+      setAttachmentFile(null);
+      dispatch(setBusinessPeopleAttachments([]));
+    }
+  }, [
+    dispatch,
+    reset,
+    uploadAttachmentData,
+    uploadAttachmentError,
+    uploadAttachmentIsError,
+    uploadAttachmentIsSuccess,
   ]);
 
   // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
@@ -210,14 +370,6 @@ const ExecutiveManagement = ({
                     value: "secretary",
                     label: "Secretary",
                   },
-                  {
-                    value: "accountant",
-                    label: "Accountant",
-                  },
-                  {
-                    value: "auditor",
-                    label: "Auditor",
-                  },
                 ];
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
@@ -301,40 +453,7 @@ const ExecutiveManagement = ({
                               });
                               return;
                             }
-                            setSearchMember({
-                              ...searchMember,
-                              loading: true,
-                              error: false,
-                            });
-                            setTimeout(() => {
-                              const index =
-                                field?.value.trim() === validNationalID
-                                  ? Math.floor(Math.random() * 10)
-                                  : Math.floor(Math.random() * 11) + 11;
-                              const userDetails = userData[index];
-
-                              if (
-                                String(field?.value) !== String(validNationalID)
-                              ) {
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: null,
-                                  loading: false,
-                                  error: true,
-                                });
-                              } else {
-                                setSearchMember({
-                                  ...searchMember,
-                                  data: userDetails,
-                                  loading: false,
-                                  error: false,
-                                });
-                                setValue("firstName", userDetails?.firstName);
-                                setValue("middleName", userDetails?.middleName);
-                                setValue("lastName", userDetails?.lastName);
-                                setValue("gender", userDetails?.data?.gender);
-                              }
-                            }, 700);
+                            getUserInformation({ documentNumber: field.value });
                           }}
                           label="ID Document No"
                           suffixIconPrimary
@@ -344,15 +463,14 @@ const ExecutiveManagement = ({
                             await trigger("personDocNo");
                           }}
                         />
-                        {searchMember?.loading && (
-                          <span className="flex items-center gap-[2px] text-[13px]">
-                            <Loader size={4} /> Validating document
-                          </span>
-                        )}
-                        {searchMember?.error && !searchMember?.loading && (
-                          <span className="text-red-600 text-[13px]">
-                            Invalid document number
-                          </span>
+                        {(userInformationIsFetching ||
+                          searchVillageIsFetching) && (
+                          <ul className="flex items-center gap-2">
+                            <Loader className="text-primary" />
+                            <p className="text-[13px]">
+                              Fetching user information...
+                            </p>
+                          </ul>
                         )}
                         {errors?.personDocNo && (
                           <p className="text-red-500 text-[13px]">
@@ -398,7 +516,7 @@ const ExecutiveManagement = ({
           </menu>
           <section
             className={`${
-              (watch("personIdentType") === "nid" && searchMember?.data) ||
+              watch("personIdentType") === "nid" ||
               watch("personIdentType") === "passport"
                 ? "flex"
                 : "hidden"
@@ -407,14 +525,12 @@ const ExecutiveManagement = ({
             <Controller
               name="firstName"
               control={control}
-              defaultValue={searchMember?.data?.firstName}
               rules={{ required: "First name is required" }}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
                       required
-                      defaultValue={searchMember?.data?.firstName}
                       placeholder="First name"
                       label="First name"
                       {...field}
@@ -431,12 +547,10 @@ const ExecutiveManagement = ({
             <Controller
               name="middleName"
               control={control}
-              defaultValue={searchMember?.data?.middleName}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      defaultValue={searchMember?.data?.middleName}
                       placeholder="Middle name"
                       label="Middle name"
                       {...field}
@@ -448,12 +562,10 @@ const ExecutiveManagement = ({
             <Controller
               name="lastName"
               control={control}
-              defaultValue={searchMember?.data?.lastName}
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
                     <Input
-                      defaultValue={searchMember?.lastName}
                       placeholder="Last name"
                       label="Last name"
                       {...field}
@@ -465,7 +577,7 @@ const ExecutiveManagement = ({
             <Controller
               control={control}
               name="gender"
-              defaultValue={watch("gender") || searchMember?.data?.gender}
+              defaultValue={watch("gender")}
               rules={{
                 required:
                   watch("personIdentType") === "passport"
@@ -474,42 +586,15 @@ const ExecutiveManagement = ({
               }}
               render={({ field }) => {
                 return (
-                  <label className="flex items-center w-full gap-2 py-4">
-                    <p className="flex items-center gap-1 text-[15px]">
-                      Gender<span className="text-red-500">*</span>
-                    </p>
-                    {watch("personIdentType") !== "passport" ? (
-                      <menu className="flex items-center gap-4">
-                        <p className="px-2 py-1 rounded-md bg-background">
-                          {searchMember?.data?.gender || watch("gender")}
-                        </p>
-                      </menu>
-                    ) : (
-                      <menu className="flex items-center gap-4 mt-2">
-                        <Input
-                          type="radio"
-                          label="Male"
-                          {...field}
-                          onChange={async (e) => {
-                            field.onChange(e.target.value);
-                            await trigger("gender");
-                          }}
-                          value={"Male"}
-                        />
-                        <Input
-                          type="radio"
-                          label="Female"
-                          {...field}
-                          onChange={async (e) => {
-                            field.onChange(e.target.value);
-                            await trigger("gender");
-                          }}
-                          value={"Female"}
-                        />
-                      </menu>
-                    )}
+                  <label className="flex flex-col gap-2 items-start w-[49%]">
+                    <Select
+                      options={genderOptions}
+                      label="Sex"
+                      required
+                      {...field}
+                    />
                     {errors?.gender && (
-                      <span className="text-sm text-red-500">
+                      <span className="text-red-500 text-[13px]">
                         {String(errors?.gender?.message)}
                       </span>
                     )}
@@ -521,30 +606,27 @@ const ExecutiveManagement = ({
               name="phoneNumber"
               control={control}
               rules={{
-                required: "phone number is required",
+                required: "Phone number is required",
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-[49%] gap-1">
                     {watch("personIdentType") === "passport" ? (
                       <Input
-                        label="phone number"
+                        label="Phone number"
                         required
                         type="tel"
                         {...field}
                       />
                     ) : (
                       <Select
-                        label="phone number"
+                        label="Phone number"
                         required
                         placeholder="Select phone number"
-                        options={userData?.slice(0, 3)?.map((user) => {
+                        options={userInformation?.phones?.map((phone) => {
                           return {
-                            ...user,
-                            label: `(+250) ${maskPhoneDigits(
-                              user?.phoneNumber
-                            )}`,
-                            value: user?.phoneNumber,
+                            label: maskPhoneDigits(phone?.msidn),
+                            value: phone?.msidn,
                           };
                         })}
                         {...field}
@@ -553,6 +635,33 @@ const ExecutiveManagement = ({
                     {errors?.phoneNumber && (
                       <p className="text-sm text-red-500">
                         {String(errors?.phoneNumber?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="email"
+              rules={{
+                required: "Email address is required",
+                validate: (value) => {
+                  return validateInputs(value, "email");
+                },
+              }}
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col gap-1 w-[49%]">
+                    <Input
+                      {...field}
+                      placeholder="Enter email address"
+                      label="Email"
+                      required
+                    />
+                    {errors?.email && (
+                      <p className="text-[13px] text-red-600">
+                        {String(errors.email.message)}
                       </p>
                     )}
                   </label>
@@ -622,16 +731,29 @@ const ExecutiveManagement = ({
                     render={({ field }) => {
                       return (
                         <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                          <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                            <Input
-                              type="file"
-                              accept="application/pdf"
-                              className="!w-fit max-sm:!w-full"
-                              onChange={(e) => {
-                                field.onChange(e?.target?.files?.[0]);
-                                setAttachmentFile(e?.target?.files?.[0]);
-                              }}
-                            />
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            className="!w-fit max-sm:!w-full"
+                            onChange={(e) => {
+                              field.onChange(e?.target?.files?.[0]);
+                              setAttachmentFile(e?.target?.files?.[0]);
+                              dispatch(
+                                addBusinessPersonAttachment({
+                                  attachmentType: e.target.files?.[0]?.type,
+                                  fileName: e.target.files?.[0]?.name,
+                                  size: e.target.files?.[0]?.size,
+                                })
+                              );
+                            }}
+                          />
+                          <ul className="flex flex-col items-center w-full gap-3">
+                            {uploadAttachmentIsLoading && (
+                              <ul className="flex items-center gap-2">
+                                <Loader className="text-primary" />
+                                Uploading attachment...
+                              </ul>
+                            )}
                           </ul>
                           {errors?.attachment && (
                             <p className="text-sm text-red-500">
@@ -642,33 +764,14 @@ const ExecutiveManagement = ({
                       );
                     }}
                   />
-                  {attachmentFile && (
-                    <p className="flex items-center gap-2 text-[14px] text-black font-normal">
-                      <FontAwesomeIcon
-                        className="cursor-pointer text-primary"
-                        icon={faEye}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPreviewAttachment(
-                            URL.createObjectURL(attachmentFile)
-                          );
-                        }}
-                      />
-                      {attachmentFile?.name}
-                      <FontAwesomeIcon
-                        icon={faX}
-                        className="text-red-600 text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setAttachmentFile(null);
-                          setValue("attachment", null);
-                        }}
-                      />
-                    </p>
-                  )}
                 </menu>
               </menu>
             )}
+          </section>
+          <section className="flex flex-col w-full gap-2">
+            <BusinessPeopleAttachments
+              attachments={businessPeopleAttachments}
+            />
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
@@ -776,7 +879,7 @@ const ExecutiveManagement = ({
         />
       )}
       <OTPVerificationCard
-        phoneNumber={watch("phoneNumber")}
+        phone={watch("phoneNumber")}
         isOpen={showVerifyphoneNumber}
         onClose={() => {
           setShowVerifyphoneNumber(false);
