@@ -2,7 +2,7 @@ import Loader from '@/components/Loader';
 import Modal from '@/components/Modal';
 import Button from '@/components/inputs/Button';
 import { formatDate } from '@/helpers/strings';
-import { useDeleteBusinessMutation } from '@/states/api/businessRegistrationApiSlice';
+import { useDeleteBusinessMutation } from '@/states/api/businessRegApiSlice';
 import { setDeleteApplicationModal } from '@/states/features/businessRegistrationSlice';
 import { setBusinessesList, setDeleteBusinessModal } from '@/states/features/businessSlice';
 import { AppDispatch, RootState } from '@/states/store';
@@ -43,7 +43,7 @@ const DeleteBusinessApplication = () => {
       dispatch(setDeleteBusinessModal(false));
       dispatch(
         setBusinessesList(
-          businessesList.filter((b) => b.id !== selectedBusiness.id)
+          businessesList.filter((b) => b.id !== selectedBusiness?.id)
         )
       );
     }
@@ -54,7 +54,7 @@ const DeleteBusinessApplication = () => {
     deleteBusinessIsError,
     deleteBusinessIsSuccess,
     dispatch,
-    selectedBusiness.id,
+    selectedBusiness?.id,
   ]);
 
   return (
@@ -77,7 +77,7 @@ const DeleteBusinessApplication = () => {
             {selectedBusiness?.companyName || 'N/A'}
           </span>
         </p>
-        <p>Date Started: {formatDate(selectedBusiness.createdAt)}</p>
+        <p>Date Started: {formatDate(selectedBusiness?.createdAt)}</p>
       </menu>
       <p className="text-red-600 font-medium"> This action cannot be undone!</p>
       <menu className="flex items-center gap-3 justify-between">
@@ -89,11 +89,11 @@ const DeleteBusinessApplication = () => {
           }}
         />
         <Button
-          value={deleteBusinessIsLoading ? <Loader color="white" /> : 'Confirm'}
+          value={deleteBusinessIsLoading ? <Loader /> : 'Confirm'}
           danger
           onClick={(e) => {
             e.preventDefault();
-            deleteBusiness({ id: selectedBusiness.id });
+            deleteBusiness({ id: selectedBusiness?.id });
           }}
         />
       </menu>

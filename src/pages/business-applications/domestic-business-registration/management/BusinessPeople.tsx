@@ -1,18 +1,18 @@
-import Loader from "@/components/Loader";
-import Table from "@/components/table/Table";
-import { capitalizeString } from "@/helpers/strings";
-import { useLazyFetchManagementOrBoardPeopleQuery } from "@/states/api/businessRegistrationApiSlice";
-import { setBusinessPeopleList } from "@/states/features/businessPeopleSlice";
-import { AppDispatch, RootState } from "@/states/store";
-import { businessId } from "@/types/models/business";
-import { PersonDetail } from "@/types/models/personDetail";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
+import Loader from '@/components/Loader';
+import Table from '@/components/table/Table';
+import { capitalizeString } from '@/helpers/strings';
+import { useLazyFetchManagementOrBoardPeopleQuery } from '@/states/api/businessRegApiSlice';
+import { setBusinessPeopleList } from '@/states/features/businessPeopleSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { businessId } from '@/types/models/business';
+import { PersonDetail } from '@/types/models/personDetail';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 type BusinessPeopleProps = {
   type: string;
@@ -70,24 +70,16 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
   // MANAGEMENT PEOPLE COLUMNS
   const managementPeopleColumns = [
     {
-      header: "No",
-      accessorKey: "no",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Document No',
+      accessorKey: 'personDocNo',
     },
     {
-      header: "Phone",
-      accessorKey: "phoneNumber",
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-    },
-    {
-      header: "Gender",
-      accessorKey: "gender",
+      header: 'Sex',
+      accessorKey: 'gender',
     },
     {
       header: "Nationality",
@@ -137,10 +129,9 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
       {managementPeopleIsSuccess && businessPeopleList?.length > 0 && (
         <Table
           data={businessPeopleList?.map(
-            (person: PersonDetail, index: number) => {
+            (person: PersonDetail) => {
               return {
                 ...person,
-                no: index + 1,
                 position: capitalizeString(person?.roleDescription),
                 name: `${person.firstName} ${person.middleName || ""} ${
                   person.lastName || ""

@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   backOfficeDashboardCards,
   backOfficeRecentAcitivities,
   monthsData,
-} from "../../constants/dashboard";
-import DashboardCard from "../../components/cards/DashboardCard";
-import AdminLayout from "../../containers/AdminLayout";
-import Select from "../../components/inputs/Select";
-import DashboardChart from "../../components/DashboardChart";
-import RecentActivities from "../../components/cards/RecentActivities";
-import { Controller, useForm } from "react-hook-form";
+} from '../../constants/dashboard';
+import DashboardCard from '../../components/cards/DashboardCard';
+import AdminLayout from '../../containers/AdminLayout';
+import Select from '../../components/inputs/Select';
+import DashboardChart from '../../components/DashboardChart';
+import RecentActivities from '../../components/cards/RecentActivities';
+import { Controller, useForm } from 'react-hook-form';
 
 const BackOfficeDashboard = () => {
   const [monthsDataArray, setMonthsDataArray] = useState(monthsData());
@@ -39,7 +39,7 @@ const BackOfficeDashboard = () => {
             <menu className="flex w-full items-center gap-3 justify-between max-[600px]:flex-col">
               <h1 className="text-lg font-medium">User Overview</h1>
               <span className="flex items-center w-full max-w-[20%] max-[600px]:max-w-[80%]">
-              <Controller
+                <Controller
                   name="period"
                   control={control}
                   render={({ field }) => {
@@ -61,7 +61,7 @@ const BackOfficeDashboard = () => {
                 />
               </span>
             </menu>
-            <DashboardChart data={monthsDataArray} dataKey='month' />
+            <DashboardChart data={monthsDataArray} dataKey="month" />
           </section>
         </menu>
       </main>

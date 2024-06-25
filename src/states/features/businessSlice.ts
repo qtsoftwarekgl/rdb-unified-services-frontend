@@ -9,34 +9,34 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState: {
   businessesList: Business[];
   business: Business;
-  businessDetails: Details;
-  businessAddress: Address;
   employmentInfo: EmploymentInfo;
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
-  selectedBusiness: Business;
+  selectedBusiness?: Business;
   deleteBusinessModal: boolean;
   nameAvailabilitiesList: {
     companyName: string;
     similarity: string | number;
   }[];
   similarBusinessNamesModal: boolean;
+  businessDetails?: Details;
+  businessAddress?: Address;
 } = {
   businessesList: [],
   business: {} as Business,
-  businessDetails: {} as Details,
-  businessAddress: {} as Address,
   employmentInfo: {} as EmploymentInfo,
   page: 1,
   size: 10,
   totalElements: 0,
   totalPages: 1,
-  selectedBusiness: {} as Business,
+  selectedBusiness: undefined,
   deleteBusinessModal: false,
   nameAvailabilitiesList: [],
   similarBusinessNamesModal: false,
+  businessDetails: undefined,
+  businessAddress: undefined,
 };
 
 export const businessSlice = createSlice({
@@ -94,11 +94,11 @@ export const {
   setBusinessTotalElements,
   setBusinessTotalPages,
   setBusiness,
-  setBusinessDetails,
-  setBusinessAddress,
   setEmploymentInfo,
   setDeleteBusinessModal,
   setSelectedBusiness,
   setNameAvailabilitiesList,
   setSimilarBusinessNamesModal,
+  setBusinessDetails,
+  setBusinessAddress
 } = businessSlice.actions;

@@ -77,6 +77,21 @@ export const coreApiSlice = createApi({
       },
     }),
 
+    // SEARCH VILLAGE
+    searchVillage: builder.query({
+      query: ({
+        villageName,
+        cellName,
+        sectorName,
+        districtName,
+        provinceName,
+      }) => {
+        return {
+          url: `/location/villages/search?villageName=${villageName}&cellName=${cellName}&sectorName=${sectorName}&districtName=${districtName}&provinceName=${provinceName}`,
+        };
+      },
+    }),
+
     // FETCH BUSINESS ACTIVITY SECTORS
     fetchBusinessActivitiesSectors: builder.query({
       query: () => {
@@ -94,6 +109,18 @@ export const coreApiSlice = createApi({
         };
       },
     }),
+
+    // UPLOAD PERSON ATTACHMENT
+    uploadPersonAttachment: builder.mutation({
+      query: ({ formData }) => {
+        return {
+          url: `/attachment/person-upload`,
+          method: 'POST',
+          body: formData,
+          formData: true,
+        };
+      },
+    }),
   }),
 });
 
@@ -107,6 +134,8 @@ export const {
   useLazyFetchVillagesQuery,
   useLazyFetchBusinessActivitiesSectorsQuery,
   useLazyFetchBusinessLinesQuery,
+  useUploadPersonAttachmentMutation,
+  useLazySearchVillageQuery
 } = coreApiSlice;
 
 export default coreApiSlice;

@@ -65,8 +65,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     row_name: '',
   });
 
-  console.log(businessId);
-
   // HANDLE FORM SUBMIT
   const onSubmit = async (data: FieldValues) => {
     await trigger();
@@ -90,7 +88,7 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
       dispatch(setBusinessCompletedStep('attachments'));
       dispatch(setBusinessActiveStep('preview_submission'));
       dispatch(setBusinessActiveTab('preview_submission'));
-    }, 1000);
+    }, 6000);
     return data;
   };
 

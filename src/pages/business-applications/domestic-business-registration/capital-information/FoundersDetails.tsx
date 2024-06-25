@@ -1,7 +1,7 @@
 import Loader from '@/components/Loader';
 import Table from '@/components/table/Table';
 import { capitalizeString } from '@/helpers/strings';
-import { useLazyFetchShareholdersQuery } from '@/states/api/businessRegistrationApiSlice';
+import { useLazyFetchShareholdersQuery } from '@/states/api/businessRegApiSlice';
 import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { businessId } from '@/types/models/business';

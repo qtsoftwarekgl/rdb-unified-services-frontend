@@ -58,6 +58,11 @@ const AdminSidebar = () => {
         path: "/admin/users",
         icon: faPen,
       },
+      {
+        title: "Applications",
+        path: "/admin/review-applications",
+        icon: faMagnifyingGlassDollar,
+      },
     !RDBVerifierAndApproverEmailPattern.test(user?.email) &&
       !BankEmailPattern.test(user?.email) && {
         title: "Staff",
@@ -76,12 +81,6 @@ const AdminSidebar = () => {
         title: "Foreign Accounts",
         path: "/admin/foreign-applicants",
         icon: faUser,
-      },
-    RDBAdminEmailPattern.test(user?.email) &&
-      !BankEmailPattern.test(user?.email) && {
-        title: "Applications",
-        path: "/admin/review-applications",
-        icon: faMagnifyingGlassDollar,
       },
     BankEmailPattern.test(user?.email) && {
       title: "Collaterals",

@@ -12,7 +12,7 @@ import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
 import { setAssignSharesModal } from '@/states/features/founderDetailSlice';
 import { ShareDetail } from '@/types/models/shareDetail';
-import { useAssignSharesMutation } from '@/states/api/businessRegistrationApiSlice';
+import { useAssignSharesMutation } from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { setShareDetailsList } from '@/states/features/shareDetailSlice';

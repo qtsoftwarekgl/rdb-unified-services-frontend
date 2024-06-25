@@ -7,7 +7,7 @@ import DeleteBusinessApplication from '@/pages/business-applications/containers/
 import {
   useCreateBusinessMutation,
   useLazyFetchBusinessesQuery,
-} from '@/states/api/businessRegistrationApiSlice';
+} from '@/states/api/businessRegApiSlice';
 import { useLazyGetServiceQuery } from '@/states/api/coreApiSlice';
 import {
   setBusinessesList,
@@ -23,7 +23,7 @@ import { AppDispatch, RootState } from '@/states/store';
 import { Business } from '@/types/models/business';
 import { faArrowRight, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Row } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -159,7 +159,7 @@ const NewServiceApplication = () => {
     {
       header: 'Service Name',
       accessorKey: 'serviceName',
-      cell: () => service?.name,
+      cell: () => capitalizeString(service?.name),
     },
     {
       header: 'Progress',
@@ -237,10 +237,10 @@ const NewServiceApplication = () => {
         </figure>
       )}
       {serviceIsSuccess && (
-        <main className="flex min-h-[70vh] flex-col w-full gap-8 px-8 py-6 bg-white rounded-md shadow-sm">
+        <main className="flex min-h-[40vh] flex-col w-full gap-8 px-8 py-6 bg-white rounded-md shadow-sm">
           <menu className="flex items-center justify-between w-full h-full gap-6 p-6 m-auto rounded-lg max-md:flex-col ">
-            <h3 className="text-center w-full">
-              {service?.description || 'N/A'}
+            <h3 className="text-center w-full uppercase font-bold">
+              {capitalizeString(service?.name)}
             </h3>
           </menu>
           <section className="flex flex-col w-full gap-6">
@@ -265,11 +265,13 @@ const NewServiceApplication = () => {
                             ...application,
                             no: index + 1,
                             service,
-                            createdAt: formatDate(application.createdAt),
+                            createdAt: formatDate(
+                              application.createdAt
+                            ) as unknown as Date,
                           };
                         }
                       )}
-                      columns={applicationsInProgressColumns}
+                      columns={applicationsInProgressColumns as ColumnDef<Business>[]}
                       showFilter={false}
                       showPagination={false}
                     />

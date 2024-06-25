@@ -65,10 +65,6 @@ const CompanyDocuments = () => {
   ];
 
   useEffect(() => {
-    if (id) {
-      console.log(id)
-    }
-
     return () => {
       dispatch(setViewedCompany(null));
     };

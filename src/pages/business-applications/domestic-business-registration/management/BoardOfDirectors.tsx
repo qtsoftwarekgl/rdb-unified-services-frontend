@@ -1,34 +1,29 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../../components/inputs/Select";
-import Loader from "../../../../components/Loader";
-import Input from "../../../../components/inputs/Input";
-import { faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { previewUrl, userData } from "../../../../constants/authentication";
-import { countriesList } from "../../../../constants/countries";
-import Button from "../../../../components/inputs/Button";
+import { useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../../components/inputs/Select';
+import Loader from '../../../../components/Loader';
+import Input from '../../../../components/inputs/Input';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { userData } from '../../../../constants/authentication';
+import { countriesList } from '../../../../constants/countries';
+import Button from '../../../../components/inputs/Button';
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import Table from "../../../../components/table/Table";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { maskPhoneDigits } from "../../../../helpers/strings";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
-import validateInputs from "../../../../helpers/validations";
-import { attachmentFileColumns } from "../../../../constants/businessRegistration";
-import ViewDocument from "../../../user-company-details/ViewDocument";
-import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
-import BusinessPeople from "./BusinessPeople";
-import { businessId } from "@/types/models/business";
-import moment from "moment";
-import { useCreateManagementOrBoardPersonMutation } from "@/states/api/businessRegistrationApiSlice";
-import { addBusinessPerson } from "@/states/features/businessPeopleSlice";
-import { toast } from "react-toastify";
-import { ErrorResponse } from "react-router-dom";
+} from '../../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { maskPhoneDigits } from '../../../../helpers/strings';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
+import validateInputs from '../../../../helpers/validations';
+import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
+import BusinessPeople from './BusinessPeople';
+import { businessId } from '@/types/models/business';
+import moment from 'moment';
+import { useCreateManagementOrBoardPersonMutation } from '@/states/api/businessRegApiSlice';
+import { addBusinessPerson } from '@/states/features/businessPeopleSlice';
+import { toast } from 'react-toastify';
+import { ErrorResponse } from 'react-router-dom';
 
 type BoardOfDirectorsProps = {
   businessId: businessId;
@@ -57,7 +52,6 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
@@ -104,34 +98,6 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
     reset,
   ]);
 
-  const attachmentColumns = [
-    ...attachmentFileColumns,
-    {
-      header: "action",
-      accesorKey: "action",
-      cell: () => {
-        return (
-          <menu className="flex items-center gap-4">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[20px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-                setAttachmentPreview(previewUrl);
-              }}
-            />
-            <FontAwesomeIcon
-              className="cursor-pointer text-white bg-red-600 p-2 w-[13px] h-[13px] text-[16px] rounded-full font-bold ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
-          </menu>
-        );
-      },
-    },
-  ];
 
   return (
     <section className="flex flex-col gap-6">
@@ -248,7 +214,6 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                               });
                               return;
                             }
-                            console.log(field.value);
                           }}
                           label="ID Document No"
                           suffixIconPrimary
@@ -651,16 +616,6 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                           setValue("attachment", e?.target?.files?.[0]);
                         }}
                       />
-                      <ul className="flex flex-col items-center w-full gap-3">
-                        {attachmentFile && (
-                          <Table
-                            columns={attachmentColumns}
-                            data={[attachmentFile]}
-                            showPagination={false}
-                            showFilter={false}
-                          />
-                        )}
-                      </ul>
                       {errors?.attachment && (
                         <p className="text-sm text-red-500">
                           {String(errors?.attachment?.message)}
@@ -759,12 +714,6 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
           )}
         </fieldset>
       </form>
-      {attachmentPreview && (
-        <ViewDocument
-          documentUrl={attachmentPreview}
-          setDocumentUrl={setAttachmentPreview}
-        />
-      )}
       <OTPVerificationCard
         isOpen={showVerifyPhone}
         onClose={async () => {

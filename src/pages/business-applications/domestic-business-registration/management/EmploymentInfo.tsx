@@ -15,7 +15,7 @@ import ViewDocument from '@/pages/user-company-details/ViewDocument';
 import { businessId } from '@/types/models/business';
 import Select from '@/components/inputs/Select';
 import { dayHoursArray } from '@/constants/time';
-import { useCreateEmploymentInfoMutation } from '@/states/api/businessRegistrationApiSlice';
+import { useCreateEmploymentInfoMutation } from '@/states/api/businessRegApiSlice';
 import moment from 'moment';
 import { toast } from 'react-toastify';
 

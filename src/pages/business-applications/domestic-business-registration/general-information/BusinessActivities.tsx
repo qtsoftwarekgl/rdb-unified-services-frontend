@@ -34,7 +34,8 @@ import {
 import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
-} from '@/states/api/businessRegistrationApiSlice';
+} from '@/states/api/businessRegApiSlice';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -213,7 +214,6 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
       return toast.error('Please select at least one business line');
     }
     if (!selectedMainBusinessLine) {
-      console.log(selectedMainBusinessLine);
       setError('mainBusinessActivity', {
         type: 'manual',
         message: 'Please select the main business activity',
@@ -222,7 +222,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
     }
 
     createBusinessActivities({
-      VATRegistered: data?.VATRegistered === 'yes',
+      isVATRegistered: data?.isVATRegistered === 'yes',
       businessLines: selectedBusinessLinesList,
       mainBusinessActivity: selectedMainBusinessLine?.description,
       businessId,
@@ -308,14 +308,15 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
               {(selectedBusinessActivity ||
                 businessActivitiesList?.length > 0) && (
                 <menu className="flex flex-col items-start w-full gap-6">
-                  <section className="flex flex-col w-full gap-4">
-                    <h1 className="text-md">Select business line</h1>
-                    <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                      {businessLinesIsLoading && (
+                  {businessLinesIsLoading && (
                         <figure className="flex items-center justify-center w-full h-full">
                           <Loader />
                         </figure>
                       )}
+                    {businessLinesIsSuccess && 
+                  <section className="flex flex-col w-full gap-4">
+                    <h1 className="text-md">Select business line</h1>
+                    <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                       {!businessLinesIsLoading &&
                         businessLinesList.map(
                           (businessLine: BusinessActivity) => {
@@ -326,14 +327,14 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                             return (
                               <li
                                 key={businessLine.code}
-                                className="flex items-center justify-between hover:bg-primary hover:text-white w-full gap-3 p-2 rounded-md cursor-pointer"
+                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                               >
                                 <p className="text-start text-[13px] max-w-[85%]">
                                   {businessLine?.description}
                                 </p>
                                 <Link
                                   to={'#'}
-                                  className="text-[13px] hover:underline w-fit"
+                                  className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     if (isSelected) return;
@@ -345,9 +346,13 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                   {isSelected ? (
                                     <FontAwesomeIcon icon={faCircleCheck} />
                                   ) : (
-                                    <p className="w-fit text-[13px]">
+                                    <menu className="w-fit flex items-center gap-2 text-[13px]">
+                                      <FontAwesomeIcon
+                                        className="text-[12px]"
+                                        icon={faPlus}
+                                      />
                                       Add to list
-                                    </p>
+                                    </menu>
                                   )}
                                 </Link>
                               </li>
@@ -355,7 +360,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                           }
                         )}
                     </ul>
-                  </section>
+                  </section>}
                   {selectedBusinessLinesList?.length > 0 ? (
                     <section className="flex flex-col w-full gap-4">
                       <h1 className="text-md">Selected business activities</h1>
@@ -368,7 +373,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                             return (
                               <li
                                 key={index}
-                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-primary hover:text-white cursor-pointer"
+                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                               >
                                 <menu className="flex items-center gap-2">
                                   <p className="text-start text-[13px]">
@@ -382,7 +387,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                 </menu>
                                 <Link
                                   to={'#'}
-                                  className="text-[13px] hover:underline"
+                                  className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     dispatch(
@@ -390,6 +395,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                     );
                                   }}
                                 >
+                                  <FontAwesomeIcon className='text-[12px]' icon={faMinus} />
                                   Remove from list
                                 </Link>
                               </li>
@@ -459,9 +465,9 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                   </h1>
                   <menu className="w-[50%] flex flex-col gap-6">
                     <Controller
-                      name="VATRegistered"
+                      name="isVATRegistered"
                       rules={{ required: 'Select choice' }}
-                      defaultValue={businessActivitiesData?.data?.vatregistered}
+                      defaultValue={businessActivitiesData?.data?.isVATRegistered}
                       control={control}
                       render={({ field }) => {
                         return (
@@ -475,12 +481,12 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                 type="radio"
                                 label="Yes"
                                 defaultChecked={
-                                  businessActivitiesData?.data?.vatregistered
+                                  businessActivitiesData?.data?.isVATRegistered
                                 }
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('VATRegistered');
+                                  clearErrors('isVATRegistered');
                                 }}
                                 value={'yes'}
                               />
@@ -488,18 +494,18 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                 type="radio"
                                 label="No"
                                 defaultChecked={
-                                  !businessActivitiesData?.data?.vatregistered
+                                  !businessActivitiesData?.data?.isVATRegistered
                                 }
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('VATRegistered');
+                                  clearErrors('isVATRegistered');
                                 }}
                                 value={'no'}
                               />
-                              {errors?.VATRegistered && (
+                              {errors?.isVATRegistered && (
                                 <p className="text-[13px] text-red-500">
-                                  {String(errors?.VATRegistered.message)}
+                                  {String(errors?.isVATRegistered.message)}
                                 </p>
                               )}
                             </menu>
@@ -507,7 +513,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                         );
                       }}
                     />
-                    {watch('VATRegistered') === 'yes' && (
+                    {watch('isVATRegistered') === 'yes' && (
                       <Controller
                         name="turnover"
                         control={control}

@@ -8,12 +8,9 @@ import {
 } from '../../states/features/nameReservationSlice';
 import Tab from '../../components/business-registration/Tab';
 import { TabType } from '../../types/navigationTypes';
-import { useLocation, useNavigate } from 'react-router-dom';
 import OwnerDetails from './OwnerDetails';
 import NameReservationSearch from './NameReservationSearch';
 import NameReservationSuccess from './NameReservationSuccess';
-import { useEffect, useState } from 'react';
-import { generateUUID } from '@/helpers/strings';
 
 const NameReservation = () => {
   const {
@@ -21,24 +18,9 @@ const NameReservation = () => {
     name_reservation_active_tab,
     name_reservation_active_step,
   } = useSelector((state: RootState) => state.nameReservation);
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
 
   // STATE VARIABLES
   const dispatch = useDispatch();
-  const [entry_id] = useState<string | undefined>(undefined);
-  const entryId = queryParams.get('entryId');
-
-  // NAVIGATION
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!entryId || entryId === 'null') {
-      navigate(`?entryId=${generateUUID()}`);
-      dispatch(setNameReservationActiveStep('owner_details'));
-      dispatch(setNameReservationActiveTab('owner_details'));
-    }
-  }, [entryId]);
 
   return (
     <UserLayout>
@@ -54,7 +36,7 @@ const NameReservation = () => {
             <Tab
               isOpen={tab?.active}
               steps={tab?.steps}
-              key={`${String(index)}-${entryId}`}
+              key={`${String(index)}`}
               setActiveStep={setNameReservationActiveStep}
               active_tab={name_reservation_active_tab}
             >
@@ -65,7 +47,6 @@ const NameReservation = () => {
 
               {/* NAME RESERVATION */}
               <NameReservationSearch
-                entryId={String(entryId)}
                 isOpen={
                   name_reservation_active_step?.name === 'name_reservation'
                 }
@@ -73,7 +54,7 @@ const NameReservation = () => {
 
               {/* NAME RESERVATION SUCCESS */}
               {name_reservation_active_step?.name === 'success' && (
-                <NameReservationSuccess entryId={String(entryId)} />
+                <NameReservationSuccess />
               )}
             </Tab>
           );

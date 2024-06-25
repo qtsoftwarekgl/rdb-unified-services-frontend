@@ -1,6 +1,6 @@
-import { User } from "@/types/models/User";
-import { createSlice } from "@reduxjs/toolkit";
-import store from "store";
+import { User } from '@/types/models/user';
+import { createSlice } from '@reduxjs/toolkit';
+import store from 'store';
 
 export const userSlice = createSlice({
   name: "user",

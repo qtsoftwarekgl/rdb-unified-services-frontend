@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
+  setBusinessCompletedStep,
+  setBusinessCompletedTab,
 } from '../../../../states/features/businessRegistrationSlice';
 import CapitalDetailsModal from './AssignShareDetails';
 import Button from '../../../../components/inputs/Button';
@@ -17,7 +19,7 @@ import { businessId } from '@/types/models/business';
 import {
   useLazyFetchShareDetailsQuery,
   useLazyFetchShareholdersQuery,
-} from '@/states/api/businessRegistrationApiSlice';
+} from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
@@ -249,10 +251,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
                 <h2>Unassigned shares</h2>
                 <p>
                   {shareDetailsList?.reduce(
-                    (acc, curr) => acc + Number(curr?.shareQuantity),
-                    0
-                  ) -
-                    shareDetailsList?.reduce(
                       (acc, curr) => acc + Number(curr?.remainingShares),
                       0
                     )}
@@ -348,6 +346,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
                 );
                 return;
               }
+              dispatch(setBusinessCompletedStep('capital_details'));
+              dispatch(setBusinessCompletedTab('capital_information'));
               dispatch(setBusinessActiveStep('attachments'));
               dispatch(setBusinessActiveTab('attachments'));
             }}

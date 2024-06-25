@@ -39,10 +39,6 @@ const CompanyDetails = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (id) {
-console.log(id)
-    }
-
     return () => {
       dispatch(setViewedCompany(null));
     };

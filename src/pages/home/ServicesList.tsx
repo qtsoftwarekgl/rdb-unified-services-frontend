@@ -156,8 +156,7 @@ const ServicesList = () => {
               <figure className="h-[40%] flex items-center justify-center">
                 <Loader />
               </figure>
-            ) : (
-              servicesList?.length != 0 &&
+            ) : servicesList?.length > 0 ? (
               servicesList.map((service: Service, index: number) => {
                 return (
                   <Accordion
@@ -213,6 +212,10 @@ const ServicesList = () => {
                   </Accordion>
                 );
               })
+            ) : (
+              <main className="flex justify-center items-center flex-col w-full mx-auto rounded-md p-12 mt-12  max-w-[600px] border-primary">
+                <h1 className="text-2xl text-red-500">Service Not Found!</h1>
+              </main>
             )}
           </menu>
           {servicesIsSuccess && servicesList.length === 0 && (

@@ -21,7 +21,7 @@ import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import {
   useLazyGetBusinessDetailsQuery,
   useLazySearchBusinessNameAvailabilityQuery,
-} from "@/states/api/businessRegistrationApiSlice";
+} from "@/states/api/businessRegApiSlice";
 import { ErrorResponse, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {

@@ -28,7 +28,7 @@ import { businessId } from '@/types/models/business';
 import Table from '@/components/table/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { useCreateShareholderMutation } from '@/states/api/businessRegistrationApiSlice';
+import { useCreateShareholderMutation } from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import FoundersDetails from './FoundersDetails';
