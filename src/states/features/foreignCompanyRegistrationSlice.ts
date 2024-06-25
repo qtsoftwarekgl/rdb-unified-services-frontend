@@ -331,6 +331,7 @@ export const {
   setForeignBusinessActiveTab,
   setForeignBusinessActiveStep,
   setForeignBusinessCompletedStep,
+  setForeignBusinessCompletedTab,
   removeForeignBusinessCompletedStep,
   setForeignBusinessRegistrationTabs,
 } = foreignCompanyRegistrationSlice.actions;

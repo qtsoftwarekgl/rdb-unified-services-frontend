@@ -9,6 +9,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
+  setForeignBusinessCompletedTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
@@ -66,9 +67,10 @@ const CompanyAttachments = ({
           },
         })
       );
-      dispatch(setForeignBusinessCompletedStep("foreign_attachments"));
-      dispatch(setForeignBusinessActiveStep("foreign_preview_submission"));
-      dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
+      dispatch(setForeignBusinessCompletedStep("attachments"));
+      dispatch(setForeignBusinessActiveStep("preview_submission"));
+      dispatch(setForeignBusinessActiveTab("preview_submission"));
+      dispatch(setForeignBusinessCompletedTab("attachments"));
     }, 1000);
     return data;
   };

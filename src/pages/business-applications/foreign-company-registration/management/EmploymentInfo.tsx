@@ -8,6 +8,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
+  setForeignBusinessCompletedTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Loader from "../../../../components/Loader";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
@@ -129,6 +130,7 @@ const EmploymentInfo = ({
       dispatch(setForeignBusinessCompletedStep("employment_info"));
       dispatch(setForeignBusinessActiveStep("attachments"));
       dispatch(setForeignBusinessActiveTab("attachments"));
+      dispatch(setForeignBusinessCompletedTab("management"));
     }
   }, [
     createEmploymentInfoError,

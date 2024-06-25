@@ -31,11 +31,7 @@ const BusinessPeopleTable = ({
       accessorKey: "phoneNumber",
     },
     {
-      header: "Email",
-      accessorKey: "email",
-    },
-    {
-      header: "Gender",
+      header: "Sex",
       accessorKey: "gender",
     },
     {
@@ -92,6 +88,7 @@ const BusinessPeopleTable = ({
                 ...person,
                 no: index + 1,
                 position: capitalizeString(person?.roleDescription),
+                gender: person?.gender && person?.gender[0],
                 name: `${person.firstName} ${person.middleName || ""} ${
                   person.lastName || ""
                 }`,

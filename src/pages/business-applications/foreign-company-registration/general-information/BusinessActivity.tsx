@@ -8,6 +8,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
+  setForeignBusinessCompletedTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { ErrorResponse, Link } from "react-router-dom";
@@ -251,6 +252,7 @@ const BusinessActivities = ({
       toast.success("Business activities have been successfully created");
       dispatch(setForeignBusinessActiveStep("executive_management"));
       dispatch(setForeignBusinessActiveTab("management"));
+      dispatch(setForeignBusinessCompletedTab("general_information"));
     }
   }, [
     createBusinessActivitiesError,
