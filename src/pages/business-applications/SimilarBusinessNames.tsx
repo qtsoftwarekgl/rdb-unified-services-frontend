@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from '@/states/store';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
-const SimilarBusinessNames = ({ companyName }: { companyName: string }) => {
+const SimilarBusinessNames = ({ businessName }: { businessName: string }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { similarBusinessNamesModal, nameAvailabilitiesList } = useSelector(
@@ -41,7 +41,7 @@ const SimilarBusinessNames = ({ companyName }: { companyName: string }) => {
       }}
     >
       <h1 className="text-center text-primary font-medium uppercase">
-        List of businesses with similar names to {companyName?.toUpperCase()}
+        List of businesses with similar names to {businessName?.toUpperCase()}
       </h1>
       <section className="flex flex-col gap-2">
         <Table

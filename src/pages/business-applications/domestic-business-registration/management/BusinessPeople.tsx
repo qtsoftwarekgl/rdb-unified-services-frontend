@@ -1,5 +1,7 @@
 import Loader from '@/components/Loader';
 import Table from '@/components/table/Table';
+import { countriesList } from '@/constants/countries';
+import { genderOptions } from '@/constants/inputs.constants';
 import { capitalizeString } from '@/helpers/strings';
 import { useLazyFetchManagementOrBoardPeopleQuery } from '@/states/api/businessRegApiSlice';
 import { setBusinessPeopleList } from '@/states/features/businessPeopleSlice';
@@ -136,6 +138,8 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
                 name: `${person.firstName} ${person.middleName || ""} ${
                   person.lastName || ""
                 }`,
+                nationality: countriesList?.find((country) => country?.code === person?.nationality)?.name,
+                gender: genderOptions?.find((gender) => gender?.value === person?.gender)?.label,
               };
             }
           )}

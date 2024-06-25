@@ -27,12 +27,12 @@ import {
   setSimilarBusinessNamesModal,
 } from "@/states/features/businessSlice";
 import {
-  useCreateCompanyDetailsMutation,
+  useCreateBusinessDetailsMutation,
   useLazyGetBusinessDetailsQuery,
   useLazySearchBusinessNameAvailabilityQuery,
 } from '@/states/api/businessRegApiSlice';
 import { convertDecimalToPercentage } from '@/helpers/strings';
-import SimilarBusinessNames from './SimilarBusinessNames';
+import SimilarBusinessNames from '../../SimilarBusinessNames';
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -65,7 +65,7 @@ const CompanyDetails = ({ businessId, applicationStatus }: CompanyDetailsProps) 
     {
       data: businessDetailsData,
       error: businessDetailsError,
-      isLoading: businessDetailsIsLoading,
+      isFetching: businessDetailsIsFetching,
       isError: businessDetailsIsError,
       isSuccess: businessDetailsIsSuccess,
     },
@@ -78,7 +78,7 @@ const CompanyDetails = ({ businessId, applicationStatus }: CompanyDetailsProps) 
     }
   }, [getBusinessDetails, businessId]);
 
-  // HANDLE GET BUSINESS RESPONSE
+  // HANDLE GET BUSINESS DETAILS RESPONSE
   useEffect(() => {
     if (businessDetailsIsError) {
       if ((businessDetailsError as ErrorResponse)?.status === 500) {
@@ -147,14 +147,14 @@ const CompanyDetails = ({ businessId, applicationStatus }: CompanyDetailsProps) 
 
   // INITIALIZE CREATE COMPANY DETAILS MUTATION
   const [
-    createCompanyDetails,
+    createBusinessDetails,
     {
       error: createCompanyDetailsError,
       isLoading: createCompanyDetailsIsLoading,
       isError: createCompanyDetailsIsError,
       isSuccess: createCompanyDetailsIsSuccess,
     },
-  ] = useCreateCompanyDetailsMutation();
+  ] = useCreateBusinessDetailsMutation();
 
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
@@ -168,7 +168,7 @@ const CompanyDetails = ({ businessId, applicationStatus }: CompanyDetailsProps) 
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    createCompanyDetails({
+    createBusinessDetails({
       businessId,
       companyName: data.companyName,
       position: data.position,
@@ -201,7 +201,7 @@ const CompanyDetails = ({ businessId, applicationStatus }: CompanyDetailsProps) 
 
   return (
     <section className="flex flex-col w-full gap-4">
-      {businessDetailsIsLoading && (
+      {businessDetailsIsFetching && (
         <figure className="h-[40vh] flex items-center justify-center">
           <Loader />
         </figure>
@@ -473,7 +473,7 @@ const CompanyDetails = ({ businessId, applicationStatus }: CompanyDetailsProps) 
           )}
         </fieldset>
       </form>
-      <SimilarBusinessNames companyName={watch('companyName')} />
+      <SimilarBusinessNames businessName={watch('companyName')} />
     </section>
   );
 };

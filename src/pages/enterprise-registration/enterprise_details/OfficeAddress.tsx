@@ -1,669 +1,721 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../components/inputs/Select";
-import Input from "../../../components/inputs/Input";
-import Button from "../../../components/inputs/Button";
-import Loader from "../../../components/Loader";
-import validateInputs from "../../../helpers/validations";
-import { AppDispatch, RootState } from "../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../components/inputs/Select';
+import Input from '../../../components/inputs/Input';
+import Button from '../../../components/inputs/Button';
+import Loader from '../../../components/Loader';
+import validateInputs from '../../../helpers/validations';
+import { AppDispatch, RootState } from '../../../states/store';
+import { useDispatch } from 'react-redux';
+import { setEnterpriseActiveStep, setEnterpriseActiveTab, setEnterpriseCompletedStep, setEnterpriseCompletedTab } from '../../../states/features/enterpriseRegistrationSlice';
+import { businessId } from '@/types/models/business';
+import { StaticLocation } from '@/pages/business-applications/domestic-business-registration/general-information/CompanyAddress';
 import {
-  setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
-  setEnterpriseCompletedStep,
-  setEnterpriseCompletedTab,
-} from "../../../states/features/enterpriseRegistrationSlice";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
-import { provicesList } from "../../../constants/provinces";
-import { districtsList } from "../../../constants/districts";
-import { sectorsList } from "../../../constants/sectors";
-import { cellsList } from "../../../constants/cells";
-import { villagesList } from "../../../constants/villages";
+  setCellsList,
+  setDistrictsList,
+  setProvincesList,
+  setSectorsList,
+  setSelectedCell,
+  setSelectedDistrict,
+  setSelectedProvince,
+  setSelectedSector,
+  setVillagesList,
+} from '@/states/features/locationSlice';
+import { useEffect, useState } from 'react';
+import { ErrorResponse, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import {
+  useLazyFetchCellsQuery,
+  useLazyFetchDistrictsQuery,
+  useLazyFetchProvincesQuery,
+  useLazyFetchSectorsQuery,
+  useLazyFetchVillagesQuery,
+} from '@/states/api/coreApiSlice';
+import { setBusinessAddress } from '@/states/features/businessSlice';
+import { useCreateCompanyAddressMutation, useLazyGetBusinessAddressQuery } from '@/states/api/businessRegApiSlice';
 
-interface OfficeAddressProps {
-  entryId: string | null;
-  enterprise_office_address: any;
-  status?: string;
-}
+type OfficeAddressProps = {
+  businessId: businessId;
+  applicationStatus?: string;
+};
 
 const OfficeAddress = ({
-  entryId,
-  enterprise_office_address,
-  status,
+  businessId,
+  applicationStatus,
 }: OfficeAddressProps) => {
   const {
     control,
     handleSubmit,
     trigger,
     formState: { errors },
-    watch,
-    setValue,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { enterprise_registration_active_step } = useSelector(
-    (state: RootState) => state?.enterpriseRegistration
-  );
-  const [isLoading, setIsLoading] = useState({
-    submit: false,
-    preview: false,
-    amend: false,
-  });
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const [showStaticLocation, setShowStaticLocation] = useState(true);
+  const { businessAddress } = useSelector((state: RootState) => state.business);
+  const {
+    provincesList,
+    districtsList,
+    sectorsList,
+    cellsList,
+    villagesList,
+    selectedProvince,
+    selectedCell,
+    selectedDistrict,
+    selectedSector,
+  } = useSelector((state: RootState) => state.location);
 
-  // SET DEFAULT VALUES
+  // INITIALIZE GET BUSINESS QUERY
+  const [
+    getBusinessAddress,
+    {
+      data: businessAddressData,
+      error: businessAddressError,
+      isFetching: businessAddressIsFetching,
+      isError: businessAddressIsError,
+      isSuccess: businessAddressIsSuccess,
+    },
+  ] = useLazyGetBusinessAddressQuery();
+
+  // GET BUSINESS
   useEffect(() => {
-    if (enterprise_office_address) {
-      setValue("province", enterprise_office_address?.province);
-      setValue("district", enterprise_office_address?.district);
-      setValue("sector", enterprise_office_address?.sector);
-      setValue("cell", enterprise_office_address?.cell);
-      setValue("village", enterprise_office_address?.village);
-      setValue("street_name", enterprise_office_address?.street_name);
-      setValue("po_box", enterprise_office_address?.po_box);
-      setValue("fax", enterprise_office_address?.fax);
-      setValue("email", enterprise_office_address?.email);
-      setValue("phone", enterprise_office_address?.phone);
+    if (businessId) {
+      getBusinessAddress({ businessId: businessId });
     }
-  }, [enterprise_office_address, setValue]);
+  }, [getBusinessAddress, businessId]);
 
-  // HANDLE FORM SUBMISSION
-  const onSubmit = (data: FieldValues) => {
-    setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entryId,
-          office_address: {
-            ...data,
-            step: { ...enterprise_registration_active_step },
-          },
-        })
-      );
-
-      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend) {
-        dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
+  // HANDLE GET BUSINESS RESPONSE
+  useEffect(() => {
+    if (businessAddressIsError) {
+      if ((businessAddressError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching business data');
       } else {
-        // SET ACTIVE STEP
-        dispatch(setEnterpriseActiveTab("attachments"));
-        dispatch(setEnterpriseActiveStep("attachments"));
+        toast.error((businessAddressError as ErrorResponse)?.data?.message);
       }
-      // SET CURRENT STEP AS COMPLETED
-      dispatch(setEnterpriseCompletedStep("office_address"));
-      dispatch(setEnterpriseCompletedTab("general_information"));
+    } else if (businessAddressIsSuccess) {
+      dispatch(setBusinessAddress(businessAddressData?.data));
+    }
+  }, [
+    businessAddressData,
+    businessAddressError,
+    businessAddressIsError,
+    businessAddressIsSuccess,
+    dispatch,
+  ]);
 
-      dispatch(setEnterpriseCompletedStep("office_address"));
-      dispatch(setEnterpriseCompletedTab("general_information"));
+  // INITIALIZE FETCH PROVINCES QUERY
+  const [
+    fetchProvinces,
+    {
+      data: provincesData,
+      error: provincesError,
+      isLoading: provincesIsLoading,
+      isError: provincesIsError,
+      isSuccess: provincesIsSuccess,
+    },
+  ] = useLazyFetchProvincesQuery();
 
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-        amend: false,
+  // INITIALIZE FETCH DISTRICTS QUERY
+  const [
+    fetchDistricts,
+    {
+      data: districtsData,
+      error: districtsError,
+      isLoading: districtsIsLoading,
+      isError: districtsIsError,
+      isSuccess: districtsIsSuccess,
+    },
+  ] = useLazyFetchDistrictsQuery();
+
+  // INITIALIZE FETCH SECTORS QUERY
+  const [
+    fetchSectors,
+    {
+      data: sectorsData,
+      error: sectorsError,
+      isLoading: sectorsIsLoading,
+      isError: sectorsIsError,
+      isSuccess: sectorsIsSuccess,
+    },
+  ] = useLazyFetchSectorsQuery();
+
+  // INITIALIZE FETCH CELLS QUERY
+  const [
+    fetchCells,
+    {
+      data: cellsData,
+      error: cellsError,
+      isLoading: cellsIsLoading,
+      isError: cellsIsError,
+      isSuccess: cellsIsSuccess,
+    },
+  ] = useLazyFetchCellsQuery();
+
+  // INITIALIZE FETCH VILLAGES QUERY
+  const [
+    fetchVillages,
+    {
+      data: villagesData,
+      error: villagesError,
+      isLoading: villagesIsLoading,
+      isError: villagesIsError,
+      isSuccess: villagesIsSuccess,
+    },
+  ] = useLazyFetchVillagesQuery();
+
+  // FETCH VILLAGES
+  useEffect(() => {
+    if (selectedCell) {
+      fetchVillages({ cellId: selectedCell?.id });
+    }
+  }, [fetchVillages, selectedCell]);
+
+  // FETCH CELLS
+  useEffect(() => {
+    if (selectedSector) {
+      fetchCells({ sectorId: selectedSector?.id });
+    }
+  }, [fetchCells, selectedSector]);
+
+  // FETCH SECTORS
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetchSectors({ districtId: selectedDistrict?.id });
+    }
+  }, [fetchSectors, selectedDistrict]);
+
+  // FETCH DISTRICTS
+  useEffect(() => {
+    if (selectedProvince) {
+      fetchDistricts({ provinceId: selectedProvince?.id });
+    }
+  }, [fetchDistricts, selectedProvince]);
+
+  // FETCH PROVINCES
+  useEffect(() => {
+    fetchProvinces({});
+  }, [fetchProvinces]);
+
+  // HANDLE FETCH PROVINCES RESPONSE
+  useEffect(() => {
+    if (provincesIsError) {
+      if ((provincesError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching provinces');
+      } else {
+        toast.error((provincesError as ErrorResponse)?.data?.message);
+      }
+    } else if (provincesIsSuccess) {
+      dispatch(setProvincesList(provincesData?.data));
+    }
+  }, [
+    dispatch,
+    provincesData?.data,
+    provincesError,
+    provincesIsError,
+    provincesIsSuccess,
+  ]);
+
+  // HANDLE FETCH DISTRICTS RESPONSE
+  useEffect(() => {
+    if (districtsIsError) {
+      if ((districtsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching districts');
+      } else {
+        toast.error((districtsError as ErrorResponse)?.data?.message);
+      }
+    } else if (districtsIsSuccess) {
+      dispatch(setDistrictsList(districtsData?.data));
+    }
+  }, [
+    dispatch,
+    districtsData?.data,
+    districtsError,
+    districtsIsError,
+    districtsIsSuccess,
+  ]);
+
+  // HANDLE FETCH SECTORS RESPONSE
+  useEffect(() => {
+    if (sectorsIsError) {
+      if ((sectorsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching sectors');
+      } else {
+        toast.error((sectorsError as ErrorResponse)?.data?.message);
+      }
+    } else if (sectorsIsSuccess) {
+      dispatch(setSectorsList(sectorsData?.data));
+    }
+  }, [
+    dispatch,
+    sectorsData?.data,
+    sectorsError,
+    sectorsIsError,
+    sectorsIsSuccess,
+  ]);
+
+  // HANDLE FETCH CELLS RESPONSE
+  useEffect(() => {
+    if (cellsIsError) {
+      if ((cellsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching cells');
+      } else {
+        toast.error((cellsError as ErrorResponse)?.data?.message);
+      }
+    } else if (cellsIsSuccess) {
+      dispatch(setCellsList(cellsData?.data));
+    }
+  }, [dispatch, cellsData?.data, cellsError, cellsIsError, cellsIsSuccess]);
+
+  // HANDLE FETCH VILLAGES RESPONSE
+  useEffect(() => {
+    if (villagesIsError) {
+      if ((villagesError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching villages');
+      } else {
+        toast.error((villagesError as ErrorResponse)?.data?.message);
+      }
+    } else if (villagesIsSuccess) {
+      dispatch(setVillagesList(villagesData?.data));
+    }
+  }, [
+    dispatch,
+    villagesData?.data,
+    villagesError,
+    villagesIsError,
+    villagesIsSuccess,
+  ]);
+
+    // INITIALIZE CREATE OR UPDATE COMPANY ADDRESS MUTATION
+    const [
+      createCompanyAddress,
+      {
+        error: createCompanyAddressError,
+        isLoading: createCompanyAddressIsLoading,
+        isError: createCompanyAddressIsError,
+        isSuccess: createCompanyAddressIsSuccess,
+      },
+    ] = useCreateCompanyAddressMutation();
+
+    // HANDLE FORM SUBMISSION
+    const onSubmit = (data: FieldValues) => {
+      createCompanyAddress({
+        businessId: businessId,
+        villageId: Number(data?.villageId) || 0,
+        email: data?.email || businessAddress?.email,
+        phoneNumber: data?.phoneNumber || businessAddress?.phoneNumber,
+        streetName: data?.streetName || businessAddress?.streetName,
       });
-    }, 1000);
-  };
-
-  // RESET COMPANY ADDRESS
-  const resetBusinessLocation = () => {
-    dispatch(
-      setUserApplications({
-        entryId,
-        office_address: {
-          ...enterprise_office_address,
-          province: "",
-          district: "",
-          sector: "",
-          cell: "",
-          village: "",
-        },
-      })
-    );
-  };
+    };
+  
+    // HANDLE CREATE OR UPDATE COMPANY ADDRESS RESPONSE
+    useEffect(() => {
+      if (createCompanyAddressIsError) {
+        if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
+          toast.error(
+            'An error occurred while creating or updating company address'
+          );
+        } else {
+          toast.error(
+            (createCompanyAddressError as ErrorResponse)?.data?.message
+          );
+        }
+      } else if (createCompanyAddressIsSuccess) {
+        toast.success('Company address created or updated successfully');
+        dispatch(setEnterpriseCompletedStep('office_address'));
+        dispatch(setEnterpriseCompletedTab('general_information'));
+        dispatch(setEnterpriseActiveTab('attachments'));
+        dispatch(setEnterpriseActiveStep('attachments'));
+      }
+    }, [
+      createCompanyAddressError,
+      createCompanyAddressIsError,
+      createCompanyAddressIsSuccess,
+      dispatch,
+    ]);
 
   return (
     <section className="flex flex-col w-full gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset className="flex flex-col gap-4" disabled={isFormDisabled}>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              name="province"
-              control={control}
-              defaultValue={enterprise_office_address?.province}
-              rules={{ required: "Select province of residence" }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    {enterprise_office_address?.province ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Province <span className="text-red-600">*</span>
+        {businessAddressIsFetching ? (
+          <figure className="min-h-[40vh] flex items-center justify-center w-full">
+            <Loader className="text-primary" />
+          </figure>
+        ) : (
+          <fieldset className="flex flex-col gap-4">
+            {businessAddress?.location && !showStaticLocation && (
+              <Link
+                to={'#'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowStaticLocation(true);
+                }}
+                className="text-primary text-[13px] underline text-center"
+              >
+                Show existing location
+              </Link>
+            )}
+            <menu className="flex items-start w-full gap-6">
+              <Controller
+                name="provinceId"
+                control={control}
+                rules={{
+                  required: !showStaticLocation
+                    ? 'Select province of residence'
+                    : false,
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      {businessAddress?.location?.province &&
+                      showStaticLocation ? (
+                        <StaticLocation
+                          location={businessAddress?.location.province}
+                          showStaticLocation={setShowStaticLocation}
+                        />
+                      ) : (
+                        <Select
+                          {...field}
+                          required
+                          placeholder={
+                            provincesIsLoading ? '...' : 'Select province'
+                          }
+                          label="Province"
+                          options={provincesList?.map((province) => {
+                            return {
+                              ...province,
+                              label: province.name,
+                              value: String(province.id),
+                            };
+                          })}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            dispatch(setSelectedProvince(e));
+                            dispatch(setSelectedDistrict(undefined));
+                            dispatch(setSelectedSector(undefined));
+                            dispatch(setSelectedCell(undefined));
+                            dispatch(setVillagesList([]));
+                            dispatch(setCellsList([]));
+                            dispatch(setSectorsList([]));
+                            dispatch(setDistrictsList([]));
+                          }}
+                        />
+                      )}
+                      {errors?.provinceId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.provinceId.message)}
                         </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              provicesList?.find(
-                                (province) =>
-                                  province.code ===
-                                  enterprise_office_address?.province
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetBusinessLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Province"
-                        placeholder="Select province"
-                        options={provicesList?.map((province) => {
-                          return {
-                            label: province.name,
-                            value: province.code,
-                          };
-                        })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("district", "");
-                          setValue("sector", "");
-                          setValue("cell", "");
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
-                    {errors?.province && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.province.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="district"
-              control={control}
-              rules={{ required: "Select district of residence" }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    {enterprise_office_address?.district ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          District <span className="text-red-600">*</span>
-                        </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              districtsList?.find(
-                                (district) =>
-                                  district?.code ===
-                                  enterprise_office_address?.district
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetBusinessLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        required
-                        label="District"
-                        placeholder="Select district"
-                        options={districtsList
-                          ?.filter(
-                            (district) =>
-                              district?.province_code === watch("province")
-                          )
-                          ?.map((district) => {
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                name="districtId"
+                control={control}
+                rules={{
+                  required: !showStaticLocation
+                    ? 'Select district of residence'
+                    : false,
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      {businessAddress?.location?.district &&
+                      showStaticLocation ? (
+                        <StaticLocation
+                          location={businessAddress?.location.district}
+                          showStaticLocation={setShowStaticLocation}
+                        />
+                      ) : (
+                        <Select
+                          required
+                          placeholder={
+                            districtsIsLoading ? '...' : 'Select district'
+                          }
+                          label="District"
+                          options={districtsList?.map((district) => {
                             return {
                               label: district.name,
-                              value: district.code,
+                              value: String(district.id),
                             };
                           })}
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("sector", "");
-                          setValue("cell", "");
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
-                    {errors?.district && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.district.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              name="sector"
-              control={control}
-              rules={{ required: "Select sector of residence" }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    {enterprise_office_address?.sector ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Sector <span className="text-red-600">*</span>
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            dispatch(setSelectedDistrict(e));
+                            dispatch(setSelectedSector(undefined));
+                            dispatch(setSelectedCell(undefined));
+                            dispatch(setVillagesList([]));
+                            dispatch(setCellsList([]));
+                            dispatch(setSectorsList([]));
+                          }}
+                        />
+                      )}
+                      {errors?.districtId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.districtId.message)}
                         </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              sectorsList?.find(
-                                (sector) =>
-                                  sector?.code ===
-                                  enterprise_office_address?.sector
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetBusinessLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Sector"
-                        placeholder="Select sector"
-                        options={sectorsList
-                          ?.filter(
-                            (sector) =>
-                              sector?.district_code === watch("district")
-                          )
-                          ?.map((sector) => {
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            </menu>
+            <menu className="flex items-start w-full gap-6">
+              <Controller
+                name="sectorId"
+                control={control}
+                rules={{
+                  required: !showStaticLocation
+                    ? 'Select sector of residence'
+                    : false,
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      {businessAddress?.location?.sector &&
+                      showStaticLocation ? (
+                        <StaticLocation
+                          location={businessAddress?.location.sector}
+                          showStaticLocation={setShowStaticLocation}
+                        />
+                      ) : (
+                        <Select
+                          {...field}
+                          required
+                          placeholder={
+                            sectorsIsLoading ? '...' : 'Select sector'
+                          }
+                          label="Sector"
+                          options={sectorsList?.map((sector) => {
                             return {
                               label: sector.name,
-                              value: sector.code,
+                              value: String(sector.id),
                             };
                           })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("cell", "");
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
-                    {errors?.sector && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.sector.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="cell"
-              control={control}
-              rules={{ required: "Select cell of residence" }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    {enterprise_office_address?.cell ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Cell <span className="text-red-600">*</span>
+                          onChange={(e) => {
+                            field.onChange(e);
+                            dispatch(setSelectedSector(e));
+                            dispatch(setSelectedCell(undefined));
+                            dispatch(setVillagesList([]));
+                            dispatch(setCellsList([]));
+                          }}
+                        />
+                      )}
+                      {errors?.sectorId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.sectorId.message)}
                         </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              cellsList?.find(
-                                (cell) =>
-                                  cell?.code === enterprise_office_address?.cell
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetBusinessLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Cell"
-                        placeholder="Select cell"
-                        options={cellsList
-                          ?.filter(
-                            (cell) => cell?.sector_code === watch("sector")
-                          )
-                          ?.map((cell) => {
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                name="cellId"
+                control={control}
+                rules={{
+                  required: !showStaticLocation
+                    ? 'Select cell of residence'
+                    : false,
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      {businessAddress?.location?.cell && showStaticLocation ? (
+                        <StaticLocation
+                          location={businessAddress?.location.cell}
+                          showStaticLocation={setShowStaticLocation}
+                        />
+                      ) : (
+                        <Select
+                          {...field}
+                          placeholder={cellsIsLoading ? '...' : 'Select cell'}
+                          required
+                          label="Cell"
+                          options={cellsList?.map((cell) => {
                             return {
                               label: cell.name,
-                              value: cell.code,
+                              value: String(cell.id),
                             };
                           })}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          setValue("village", "");
-                        }}
-                      />
-                    )}
-                    {errors?.cell && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.cell.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              name="village"
-              control={control}
-              rules={{ required: "Select village of residence" }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    {enterprise_office_address?.village ? (
-                      <menu className="flex flex-col gap-2">
-                        <p className="text-[15px]">
-                          Village <span className="text-red-600">*</span>
+                          onChange={(e) => {
+                            field.onChange(e);
+                            dispatch(setSelectedCell(e));
+                            dispatch(setVillagesList([]));
+                          }}
+                        />
+                      )}
+                      {errors?.cellId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.cellId.message)}
                         </p>
-                        <ul className="flex items-center gap-4">
-                          <p className="p-1 px-3 text-[14px] bg-background w-fit rounded-md shadow-sm">
-                            {
-                              villagesList?.find(
-                                (village) =>
-                                  village?.code ===
-                                  enterprise_office_address?.village
-                              )?.name
-                            }
-                          </p>
-                          <Button
-                            styled={false}
-                            value="Change"
-                            className="!text-[12px] hover:underline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              resetBusinessLocation();
-                            }}
-                          />
-                        </ul>
-                      </menu>
-                    ) : (
-                      <Select
-                        {...field}
-                        required
-                        label="Village"
-                        placeholder="Select village"
-                        options={villagesList
-                          ?.filter(
-                            (village) => village?.cell_code === watch("cell")
-                          )
-                          ?.map((village) => {
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            </menu>
+            <menu className="flex items-start w-full gap-6">
+              <Controller
+                name="villageId"
+                control={control}
+                rules={{
+                  required: !showStaticLocation
+                    ? 'Select village of residence'
+                    : false,
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      {businessAddress?.location?.village &&
+                      showStaticLocation ? (
+                        <StaticLocation
+                          location={businessAddress?.location.village}
+                          showStaticLocation={setShowStaticLocation}
+                        />
+                      ) : (
+                        <Select
+                          placeholder={
+                            villagesIsLoading ? '...' : 'Select village'
+                          }
+                          {...field}
+                          required
+                          label="Village"
+                          options={villagesList?.map((village) => {
                             return {
                               label: village.name,
-                              value: village.code,
+                              value: String(village.id),
                             };
                           })}
+                          onChange={(e) => {
+                            field.onChange(e);
+                          }}
+                        />
+                      )}
+                      {errors?.villageId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.villageId.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                control={control}
+                name="streetName"
+                defaultValue={businessAddress?.streetName}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Input
+                        label="Street Name"
+                        placeholder="Street name"
+                        {...field}
+                      />
+                    </label>
+                  );
+                }}
+              />
+            </menu>
+            <menu className="flex items-start w-full gap-6">
+              <Controller
+                name="email"
+                control={control}
+                defaultValue={businessAddress?.email}
+                rules={{
+                  required: 'Email address is required',
+                  validate: (value) => {
+                    return (
+                      validateInputs(String(value), 'email') ||
+                      'Invalid email address'
+                    );
+                  },
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-full gap-1">
+                      <Input
+                        required
+                        label="Email"
+                        placeholder="name@domain.com"
+                        {...field}
                         onChange={(e) => {
                           field.onChange(e);
+                          trigger('email');
                         }}
                       />
-                    )}
-                    {errors?.village && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.village.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              control={control}
-              name="street_name"
-              defaultValue={watch("street_name")}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Input
-                      defaultValue={watch("street_name")}
-                      label="Street Name"
-                      placeholder="Street name"
-                      {...field}
-                    />
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              control={control}
-              defaultValue={
-                watch("po_box") || enterprise_office_address?.po_box
-              }
-              name="po_box"
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Input
-                      label="P.O Box"
-                      placeholder="Postal code"
-                      defaultValue={
-                        watch("po_box") || enterprise_office_address?.po_box
-                      }
-                      {...field}
-                    />
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              control={control}
-              name="fax"
-              defaultValue={watch("fax") || enterprise_office_address?.fax}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Input
-                      label="Fax"
-                      defaultValue={
-                        watch("fax") || enterprise_office_address?.fax
-                      }
-                      placeholder="Fax"
-                      {...field}
-                    />
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu className="flex items-start w-full gap-6">
-            <Controller
-              name="email"
-              control={control}
-              defaultValue={watch("email") || enterprise_office_address?.email}
-              rules={{
-                required: "Email address is required",
-                validate: (value) => {
-                  return (
-                    validateInputs(String(value), "email") ||
-                    "Invalid email address"
+                      {errors?.email && (
+                        <p className="text-sm text-red-500">
+                          {String(errors?.email?.message)}
+                        </p>
+                      )}
+                    </label>
                   );
-                },
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col items-start w-full gap-1">
-                    <Input
-                      required
-                      label="Email"
-                      defaultValue={
-                        watch("email") || enterprise_office_address?.email
-                      }
-                      placeholder="name@domain.com"
-                      {...field}
-                    />
-                    {errors?.email && (
-                      <p className="text-sm text-red-500">
-                        {String(errors?.email?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="phone"
-              defaultValue={watch("phone") || enterprise_office_address?.phone}
-              rules={{
-                required: "Phone number is required",
-                validate: (value) => {
-                  return (
-                    validateInputs(
-                      value?.length < 10 ? `0${value}` : String(value),
-                      "tel"
-                    ) || "Invalid phone number"
-                  );
-                },
-              }}
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col items-start w-full gap-1">
-                    <Input
-                      required
-                      defaultValue={
-                        watch("phone") || enterprise_office_address?.phone
-                      }
-                      label="Phone"
-                      prefixText="+250"
-                      placeholder="Phone number"
-                      {...field}
-                    />
-                    {errors?.phone && (
-                      <p className="text-sm text-red-500">
-                        {String(errors?.phone?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setEnterpriseActiveStep("business_activity_vat"));
-              }}
-            />
-            {status === "is_amending" && (
-              <Button
-                submit
-                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors).length > 0) return;
-                  setIsLoading({
-                    ...isLoading,
-                    preview: false,
-                    submit: false,
-                    amend: true,
-                  });
                 }}
               />
-            )}
-            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+              <Controller
+                name="phoneNumber"
+                defaultValue={businessAddress?.phoneNumber}
+                rules={{
+                  required: 'Phone number is required',
+                  validate: (value) => {
+                    return (
+                      validateInputs(
+                        value?.length < 10 ? `0${value}` : String(value),
+                        'tel'
+                      ) || 'Invalid phone number'
+                    );
+                  },
+                }}
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-full gap-1">
+                      <Input
+                        required
+                        label="Phone"
+                        prefixText="+250"
+                        placeholder="Phone number"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          trigger('phoneNumber');
+                        }}
+                      />
+                      {errors?.phoneNumber && (
+                        <p className="text-sm text-red-500">
+                          {String(errors?.phoneNumber?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            </menu>
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                value={
-                  isLoading?.preview ? <Loader /> : "Save & Complete Review"
-                }
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setEnterpriseActiveStep('business_activity_vat'));
+                }}
+              />
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+                String(applicationStatus)
+              ) && <Button value={'Save & Complete Review'} primary submit />}
+              <Button
+                value={createCompanyAddressIsLoading ? <Loader /> : 'Save & Continue'}
                 primary
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
-                  dispatch(
-                    setUserApplications({ entryId, status: "in_preview" })
-                  );
-
-                  setIsLoading({
-                    ...isLoading,
-                    preview: true,
-                    submit: false,
-                    amend: false,
-                  });
-                }}
                 submit
-                disabled={isFormDisabled}
               />
-            )}
-            <Button
-              value={isLoading?.submit ? <Loader /> : "Save & Continue"}
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors)?.length) {
-                  return;
-                }
-                setIsLoading({
-                  ...isLoading,
-                  preview: false,
-                  submit: true,
-                  amend: false,
-                });
-                if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)))
-                  dispatch(
-                    setUserApplications({ entryId, status: "IN_PROGRESS" })
-                  );
-              }}
-              primary
-              submit
-              disabled={isFormDisabled}
-            />
-          </menu>
-        </fieldset>
+            </menu>
+          </fieldset>
+        )}
       </form>
     </section>
   );

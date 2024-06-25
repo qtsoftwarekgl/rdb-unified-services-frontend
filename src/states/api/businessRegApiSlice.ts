@@ -92,7 +92,7 @@ export const businessRegApiSlice = createApi({
       }),
 
       // CREATE OR UPDATE COMPANY DETAILS
-      createCompanyDetails: builder.mutation({
+      createBusinessDetails: builder.mutation({
         query: ({
           businessId,
           companyName,
@@ -100,6 +100,8 @@ export const businessRegApiSlice = createApi({
           hasArticlesOfAssociation,
           companyType,
           companyCategory,
+          enterpriseName,
+          enterpriseBusinessName
         }) => {
           return {
             url: `/details?businessId=${businessId}`,
@@ -110,6 +112,8 @@ export const businessRegApiSlice = createApi({
               hasArticlesOfAssociation,
               companyType,
               companyCategory,
+              enterpriseName,
+              enterpriseBusinessName
             },
           };
         },
@@ -442,7 +446,7 @@ export const {
   useCreateBusinessMutation,
   useDeleteBusinessMutation,
   useLazySearchBusinessNameAvailabilityQuery,
-  useCreateCompanyDetailsMutation,
+  useCreateBusinessDetailsMutation,
   useCreateCompanyAddressMutation,
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,

@@ -780,7 +780,7 @@ const CompanyAddress = ({
   );
 };
 
-const StaticLocation = ({
+export const StaticLocation = ({
   location,
   showStaticLocation,
 }: {

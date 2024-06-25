@@ -1,409 +1,334 @@
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../states/store";
-import Input from "../../../components/inputs/Input";
-import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../../../components/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
+import Input from '../../../components/inputs/Input';
+import Loader from '../../../components/Loader';
+import Button from '../../../components/inputs/Button';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
+import { businessId } from '@/types/models/business';
+import {
+  useCreateBusinessDetailsMutation,
+  useLazyGetBusinessDetailsQuery,
+  useLazySearchBusinessNameAvailabilityQuery,
+} from '@/states/api/businessRegApiSlice';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import {
+  setBusinessDetails,
+  setNameAvailabilitiesList,
+  setSimilarBusinessNamesModal,
+} from '@/states/features/businessSlice';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { convertDecimalToPercentage } from '@/helpers/strings';
+import SimilarBusinessNames from '@/pages/business-applications/SimilarBusinessNames';
 import {
   setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
   setEnterpriseCompletedStep,
-  setUsedIds,
-} from "../../../states/features/enterpriseRegistrationSlice";
-import Button from "../../../components/inputs/Button";
-import { setUserApplications } from "../../../states/features/userApplicationSlice";
-import { useNavigate } from "react-router-dom";
-import { RDBAdminEmailPattern } from "../../../constants/Users";
+} from '@/states/features/enterpriseRegistrationSlice';
 
 type EnterpriseDetailsProps = {
-  entryId: string | null;
-  company_details: any;
-  status?: string;
+  businessId: businessId;
+  applicationStatus?: string;
 };
 
 export const EnterpriseDetails = ({
-  entryId,
-  company_details,
-  status,
+  businessId,
+  applicationStatus,
 }: EnterpriseDetailsProps) => {
-  const { enterprise_registration_active_step } = useSelector(
-    (state: RootState) => state.enterpriseRegistration
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.user);
+  const { nameAvailabilitiesList, businessDetails } = useSelector(
+    (state: RootState) => state.business
   );
 
-  const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    submit: false,
-    preview: false,
-    amend: false,
-  });
-  const [searchMember, setSearchMember] = useState({
-    loading: false,
-    error: false,
-    data: null,
-  });
+  // INITIALIZE GET BUSINESS QUERY
+  const [
+    getBusinessDetails,
+    {
+      data: businessDetailsData,
+      error: businessDetailsError,
+      isFetching: businessDetailsIsFetching,
+      isError: businessDetailsIsError,
+      isSuccess: businessDetailsIsSuccess,
+    },
+  ] = useLazyGetBusinessDetailsQuery();
 
+  // NAVIGATION
   const navigate = useNavigate();
 
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
-  const [searchEnterprise, setSearchEnterprise] = useState({
-    error: false,
-    success: false,
-    loading: false,
-    name: "",
-  });
-  const [invalidForm, setInvalidForm] = useState(false);
+  // REACT HOOK FORM
   const {
     handleSubmit,
     control,
     formState: { errors },
-    formState,
-    clearErrors,
-    setValue,
-    setError,
-    trigger,
     watch,
+    clearErrors,
+    setError,
   } = useForm();
 
+  // GET BUSINESS
   useEffect(() => {
-    if (company_details?.owner_details) {
-      setValue("document_type", company_details?.owner_details?.document_type);
-      setValue("document_no", company_details?.owner_details?.document_no);
-      setValue("first_name", company_details?.owner_details?.first_name);
-      setValue("middle_name", company_details?.owner_details?.middle_name);
-      setValue("last_name", company_details?.owner_details?.last_name);
-      setValue("gender", company_details?.owner_details?.gender);
-      setValue("country", company_details?.owner_details?.country);
-      setValue("date_of_birth", company_details?.owner_details?.date_of_birth);
-      setValue("phone", company_details?.owner_details?.phone);
-      setValue("passport_no", company_details?.owner_details?.passport_no);
-      setValue("name", company_details?.name);
-      setSearchEnterprise({
-        ...searchEnterprise,
-        name: company_details?.name,
-      });
-      setValue(
-        "passport_expiry_date",
-        company_details?.owner_details?.passport_expiry_date
-      );
-      if (company_details?.owner_details?.document_type === "nid") {
-        setValue("street_name", company_details?.owner_details?.street_name);
-        setSearchMember({
-          ...searchMember,
-          data: {
-            ...company_details?.owner_details,
-            gender: company_details?.owner_details?.gender,
-          },
+    if (businessId) {
+      getBusinessDetails({ id: businessId });
+    }
+  }, [getBusinessDetails, businessId]);
+
+  // HANDLE GET BUSINESS DETAILS RESPONSE
+  useEffect(() => {
+    if (businessDetailsIsError) {
+      if ((businessDetailsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while fetching business data');
+      } else {
+        toast.error((businessDetailsError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessDetailsIsSuccess) {
+      dispatch(setBusinessDetails(businessDetailsData?.data));
+    }
+  }, [
+    businessDetailsData,
+    businessDetailsError,
+    businessDetailsIsError,
+    businessDetailsIsSuccess,
+    dispatch,
+  ]);
+
+  // INITIALIZE SEARCH BUSINESS NAME AVAILABILITY QUERY
+  const [
+    searchBusinessNameAvailability,
+    {
+      data: searchBusinessNameData,
+      error: searchBusinessNameError,
+      isError: searchBusinessNameIsError,
+      isSuccess: searchBusinessNameIsSuccess,
+      isFetching: searchBusinessNameIsFetching,
+    },
+  ] = useLazySearchBusinessNameAvailabilityQuery();
+
+  // HANDLE SEARCH BUSINESS NAME AVAILABILITY RESPONSE
+  useEffect(() => {
+    if (searchBusinessNameIsError) {
+      if ((searchBusinessNameError as ErrorResponse)?.status === 500) {
+        toast.error(
+          'An error occurred while searching for business name availability'
+        );
+      } else {
+        toast.error((searchBusinessNameError as ErrorResponse)?.data?.message);
+      }
+    } else if (searchBusinessNameIsSuccess) {
+      if (
+        searchBusinessNameData?.data?.find(
+          (availability: { similarity: number; companyName: string }) =>
+            availability?.similarity === 1.0
+        ) !== undefined
+      ) {
+        setError('companyName', {
+          type: 'manual',
+          message: 'Company name already exists',
         });
       }
+      dispatch(setNameAvailabilitiesList(searchBusinessNameData?.data));
     }
-  }, [company_details?.owner_details, setValue]);
+  }, [
+    dispatch,
+    searchBusinessNameData?.data,
+    searchBusinessNameError,
+    searchBusinessNameIsError,
+    searchBusinessNameIsSuccess,
+    setError,
+  ]);
 
-  useEffect(() => {
-    if (!company_details?.enterprise_name)
-      setValue("enterprise_name", user?.name);
-  }, [company_details?.enterprise_name, setValue, user?.name]);
+  // INITIALIZE CREATE COMPANY DETAILS MUTATION
+  const [
+    createBusinessDetails,
+    {
+      error: createBusinessDetailsError,
+      isLoading: createBusinessDetailsIsLoading,
+      isError: createBusinessDetailsIsError,
+      isSuccess: createBusinessDetailsIsSuccess,
+    },
+  ] = useCreateBusinessDetailsMutation();
 
-  useEffect(() => {
-    if (Object.keys(errors).length) setInvalidForm(true);
-    else setInvalidForm(false);
-  }, [formState]);
-
-  const onSubmitEnterpriseDetails = (data: FieldValues) => {
-    setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entryId,
-          company_details: {
-            ...company_details,
-            name: data?.name,
-            owner_details: {
-              ...data,
-              gender: data?.gender || searchMember?.data?.gender,
-            },
-            step: {
-              ...enterprise_registration_active_step,
-            },
-          },
-        })
-      );
-      dispatch(setUsedIds(data?.id_no));
-
-      if (
-        ["in_preview", "action_required"].includes(status) ||
-        isLoading?.amend
-      ) {
-        dispatch(setEnterpriseActiveTab("enterprise_preview_submission"));
-      } else {
-        // SET ACTIVE STEP
-        dispatch(setEnterpriseActiveStep("business_activity_vat"));
-      }
-      // SET CURRENT STEP AS COMPLETED
-      dispatch(setEnterpriseCompletedStep("company_details"));
-
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-        amend: false,
-      });
-    }, 1000);
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    createBusinessDetails({
+      businessId,
+      enterpriseName: data?.enterpriseName,
+      enterpriseBusinessName: data?.enterpriseBusinessName,
+    });
   };
 
+  // HANDLE CREATE BUSINESS DETAILS RESPONSE
   useEffect(() => {
-    // SET USER DETAILS FROM ENterprise Details
-    if (company_details) {
-      setSearchMember({
-        ...searchMember,
-        data: company_details?.owner_details,
-      });
+    if (createBusinessDetailsIsError) {
+      if ((createBusinessDetailsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred while creating business details');
+      } else {
+        toast.error(
+          (createBusinessDetailsError as ErrorResponse)?.data?.message
+        );
+      }
+    } else if (createBusinessDetailsIsSuccess) {
+      toast.success('Business details created successfully');
+      dispatch(setEnterpriseActiveStep('business_activity_vat'));
+      dispatch(setEnterpriseCompletedStep('company_details'));
     }
-  }, [company_details]);
+  }, [
+    createBusinessDetailsError,
+    createBusinessDetailsIsError,
+    createBusinessDetailsIsSuccess,
+    dispatch,
+    navigate,
+  ]);
 
   return (
     <section className="flex flex-col w-full gap-4">
-      <form onSubmit={handleSubmit(onSubmitEnterpriseDetails)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={isFormDisabled}
-        >
-          <menu className="flex items-start gap-6 p-8 border">
-            <Controller
-              name="enterprise_name"
-              control={control}
-              defaultValue={
-                company_details?.enterprise_name || watch("enterprise_name")
-              }
-              rules={{
-                required: "Enterprise name is required",
-              }}
-              render={() => {
-                return (
-                  <label className="flex flex-col items-start w-1/2 gap-1">
-                    <Input
-                      label={" Enterprise Name"}
-                      required
-                      value={
-                        company_details?.enterprise_name ||
-                        watch("enterprise_name")
-                      }
-                      readOnly
-                    />
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col items-start w-1/2 gap-1">
-                    <Input
-                      label={`${
-                        company_details?.name_reserved ? "" : "Search"
-                      }  Business Name`}
-                      defaultValue={watch("name") || company_details?.name}
-                      suffixIcon={
-                        company_details?.name_reserved || isFormDisabled
-                          ? undefined
-                          : faSearch
-                      }
-                      readOnly={company_details?.name_reserved ? true : false}
-                      suffixIconPrimary
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSearchEnterprise({
-                          ...searchEnterprise,
-                          name: e.target.value,
-                          error: false,
-                          success: false,
-                          loading: false,
-                        });
-                        if (e.target.value.length === 0) clearErrors("name");
-                        else
-                          setError("name", {
-                            type: "manual",
-                            message:
-                              "Check if company name is available before proceeding",
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {businessDetailsIsFetching ? (
+          <figure className="w-full flex items-center gap-2 justify-center min-h-[40vh]">
+            <Loader className="text-primary" />
+          </figure>
+        ) : (
+          <fieldset className="flex flex-col w-full gap-6">
+            <menu className="flex items-start gap-6 p-8 border">
+              <Controller
+                name="enterpriseName"
+                control={control}
+                rules={{
+                  required: 'Enterprise name is required',
+                }}
+                defaultValue={
+                  user?.username || `${user?.firstName} ${user?.lastName || ''}`
+                }
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-1/2 gap-1">
+                      <Input
+                        label={' Enterprise Name'}
+                        required
+                        readOnly
+                        {...field}
+                      />
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                name="enterpriseBusinessName"
+                control={control}
+                defaultValue={businessDetails?.enterpriseBusinessName || ''}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-1/2 gap-1">
+                      <Input
+                        suffixIcon={faSearch}
+                        suffixIconHandler={(e) => {
+                          e.preventDefault();
+                          if (!field?.value || field?.value?.length < 3) {
+                            return;
+                          }
+                          clearErrors('enterpriseBusinessName');
+                          searchBusinessNameAvailability({
+                            companyName: field?.value,
                           });
-                      }}
-                      suffixIconHandler={(e) => {
-                        e.preventDefault();
-                        if (
-                          !searchEnterprise?.name ||
-                          searchEnterprise?.name.length < 3
-                        ) {
-                          setError("name", {
-                            type: "manual",
-                            message:
-                              "Company name must be at least 3 characters",
-                          });
-                          return;
-                        }
-                        setSearchEnterprise({
-                          ...searchEnterprise,
-                          loading: true,
-                          error: false,
-                          success: false,
-                        });
-                        setTimeout(() => {
-                          if (
-                            searchEnterprise.name.trim().toLowerCase() === "xyz"
-                          ) {
-                            setValue("name", searchEnterprise.name);
-                            setSearchEnterprise({
-                              ...searchEnterprise,
-                              loading: false,
-                              success: true,
-                              error: false,
+                        }}
+                        label={`Business Name`}
+                        readOnly={false}
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          if (e?.target?.value?.length > 0) {
+                            setError('enterpriseBusinessName', {
+                              type: 'manual',
+                              message:
+                                'Check if enterprise name is available before proceeding',
                             });
                           } else {
-                            setSearchEnterprise({
-                              ...searchEnterprise,
-                              loading: false,
-                              success: false,
-                              error: true,
-                            });
+                            clearErrors('enterpriseBusinessName');
                           }
-                          clearErrors("name");
-                        }, 1000);
-                      }}
-                    />
-                    <menu
-                      className={`flex flex-col gap-1 w-full my-1 ${
-                        !Object.values(searchEnterprise)?.includes(true) &&
-                        "hidden"
-                      }`}
-                    >
-                      <article
-                        className={`${
-                          searchEnterprise.loading ? "flex" : "hidden"
-                        } text-[12px] items-center`}
-                      >
-                        <Loader size={4} /> Checking if "{searchEnterprise.name}
-                        " exists
-                      </article>
-                      <p
-                        className={`${
-                          searchEnterprise.error && searchEnterprise?.name
-                            ? "flex"
-                            : "hidden"
-                        } text-[12px] items-center text-red-500 gap-2`}
-                      >
-                        {searchEnterprise.name} is already taken. Please try
-                        another name
-                      </p>
-                      <p
-                        className={`${
-                          searchEnterprise.success ? "flex" : "hidden"
-                        } text-[12px] items-center gap-2 text-secondary`}
-                      >
-                        {searchEnterprise.name} is available{" "}
-                        <span className="w-fit">
-                          <FontAwesomeIcon
-                            icon={faCheck}
-                            className="text-green-600"
-                          />
-                        </span>
-                      </p>
-                    </menu>
-                    {errors.name && (
-                      <p className="text-xs text-red-500">
-                        {String(errors.name.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
-
-          <menu
-            className={`flex items-center mt-8 gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/enterprise-registration/new");
-              }}
-            />
-            {status === "is_amending" && (
-              <Button
-                submit
-                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
-                  setIsLoading({
-                    ...isLoading,
-                    amend: true,
-                    preview: false,
-                    submit: false,
-                  });
+                        }}
+                        suffixIconPrimary
+                      />
+                      {errors?.enterpriseBusinessName && (
+                        <p className="text-xs text-red-500">
+                          {String(errors.enterpriseBusinessName.message)}
+                        </p>
+                      )}
+                      <menu className="flex w-full flex-col gap-2">
+                        {searchBusinessNameIsFetching && (
+                          <figure className="flex items-center gap-2">
+                            <Loader />
+                            <p className="text-[13px]">Searching...</p>
+                          </figure>
+                        )}
+                        {searchBusinessNameIsSuccess &&
+                          nameAvailabilitiesList?.length > 0 &&
+                          !errors?.enterpriseBusinessName && (
+                            <section className="flex flex-col gap-1">
+                              <p className="text-[11px] text-red-600">
+                                The given name has a similarity of up to{' '}
+                                {convertDecimalToPercentage(
+                                  nameAvailabilitiesList[0]?.similarity
+                                )}
+                                % with other business names. Consider changing
+                                it to avoid conflicts.
+                              </p>
+                              <Link
+                                to={'#'}
+                                className="text-[11px] underline text-primary"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  dispatch(setSimilarBusinessNamesModal(true));
+                                }}
+                              >
+                                Click to find conflicting business names
+                              </Link>
+                            </section>
+                          )}
+                        {searchBusinessNameIsSuccess &&
+                          nameAvailabilitiesList?.length === 0 &&
+                          !errors?.enterpriseBusinessName &&
+                          field?.value?.length > 0 && (
+                            <p className="text-[11px] text-green-600 px-2">
+                              {field.value} is available for use
+                            </p>
+                          )}
+                      </menu>
+                    </label>
+                  );
                 }}
-                disabled={Object.keys(errors)?.length > 0}
               />
-            )}
-            {["in_preview", "action_required"].includes(status) && (
+            </menu>
+            <menu
+              className={`flex items-center mt-8 gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
-                  setIsLoading({
-                    ...isLoading,
-                    preview: true,
-                    submit: false,
-                    amend: false,
-                  });
+                value="Back"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/enterprise-registration/new');
                 }}
+              />
+              {['IN_PREVIEW', 'ACTION_PREVIEW'].includes(
+                String(applicationStatus)
+              ) && <Button value={'Save & Complete Review'} primary submit />}
+              <Button
+                disabled={Object.keys(errors)?.length > 0}
                 value={
-                  isLoading?.preview && !Object.keys(errors)?.length ? (
+                  createBusinessDetailsIsLoading ? (
                     <Loader />
                   ) : (
-                    "Save & Complete Review"
+                    'Save & Continue'
                   )
                 }
-                primary
                 submit
-                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
+                primary
               />
-            )}
-            <Button
-              value={isLoading.submit ? <Loader /> : "Save & Continue"}
-              primary={!company_details?.error}
-              disabled={
-                isFormDisabled ||
-                invalidForm ||
-                searchEnterprise?.error ||
-                searchEnterprise?.loading
-              }
-              onClick={() => {
-                if (invalidForm) {
-                  return;
-                }
-                setIsLoading({
-                  ...isLoading,
-                  submit: true,
-                  preview: false,
-                  amend: false,
-                });
-                dispatch(
-                  setUserApplications({ entryId, status: "IN_PROGRESS" })
-                );
-              }}
-              submit
-            />
-          </menu>
-        </fieldset>
+            </menu>
+          </fieldset>
+        )}
       </form>
+      <SimilarBusinessNames businessName={watch('enterpriseBusinessName')} />
     </section>
   );
 };
