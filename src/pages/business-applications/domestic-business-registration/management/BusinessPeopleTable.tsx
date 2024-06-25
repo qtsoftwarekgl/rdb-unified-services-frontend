@@ -27,8 +27,8 @@ const BusinessPeopleTable = ({
       accessorKey: "name",
     },
     {
-      header: "Phone",
-      accessorKey: "phoneNumber",
+      header: "Document No",
+      accessorKey: "personDocNo",
     },
     {
       header: "Sex",

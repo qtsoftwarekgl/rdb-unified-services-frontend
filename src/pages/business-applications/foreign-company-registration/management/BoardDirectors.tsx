@@ -202,7 +202,9 @@ const BoardDirectors = ({
               name="position"
               rules={{
                 required:
-                  status !== "IN_PREVIEW" ? "Select member's position" : false,
+                  applicationStatus !== "IN_PREVIEW"
+                    ? "Select member's position"
+                    : false,
               }}
               control={control}
               render={({ field }) => {
