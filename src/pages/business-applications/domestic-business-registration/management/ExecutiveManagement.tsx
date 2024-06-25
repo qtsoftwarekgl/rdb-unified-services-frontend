@@ -1,42 +1,42 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../../components/inputs/Select';
-import Input from '../../../../components/inputs/Input';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { countriesList } from '../../../../constants/countries';
-import Button from '../../../../components/inputs/Button';
+import { useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../../components/inputs/Select";
+import Input from "../../../../components/inputs/Input";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { countriesList } from "../../../../constants/countries";
+import Button from "../../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from '../../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { maskPhoneDigits } from '../../../../helpers/strings';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
-import validateInputs from '../../../../helpers/validations';
-import ViewDocument from '../../../user-company-details/ViewDocument';
-import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
-import moment from 'moment';
-import { businessId } from '@/types/models/business';
-import { useCreateManagementOrBoardPersonMutation } from '@/states/api/businessRegApiSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import Loader from '@/components/Loader';
+} from "../../../../states/features/businessRegistrationSlice";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { maskPhoneDigits } from "../../../../helpers/strings";
+import { RDBAdminEmailPattern } from "../../../../constants/Users";
+import validateInputs from "../../../../helpers/validations";
+import ViewDocument from "../../../user-company-details/ViewDocument";
+import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
+import moment from "moment";
+import { businessId } from "@/types/models/business";
+import { useCreateManagementOrBoardPersonMutation } from "@/states/api/businessRegApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import Loader from "@/components/Loader";
 import {
   addBusinessPerson,
   addBusinessPersonAttachment,
   setBusinessPeopleAttachments,
   setUserInformation,
-} from '@/states/features/businessPeopleSlice';
-import BusinessPeople from './BusinessPeople';
-import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
-import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+} from "@/states/features/businessPeopleSlice";
+import BusinessPeople from "./BusinessPeople";
+import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
+import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import {
   useLazySearchVillageQuery,
   useUploadPersonAttachmentMutation,
-} from '@/states/api/coreApiSlice';
-import { genderOptions } from '@/constants/inputs.constants';
+} from "@/states/api/coreApiSlice";
+import { genderOptions } from "@/constants/inputs.constants";
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -141,27 +141,26 @@ const ExecutiveManagement = ({
         toast.error((managementPersonError as ErrorResponse)?.data?.message);
       }
     } else if (managementPersonIsSuccess) {
-      if (watch('nationality') !== 'RW') {
+      if (watch("nationality") !== "RW") {
         const formData = new FormData();
-        formData.append('file', attachmentFile as File);
-        formData.append('personId', managementPersonData?.data?.id);
-        formData.append('attachmentType', String(attachmentFile?.type));
-        formData.append('businessId', String(businessId));
-        formData.append('fileName', String(attachmentFile?.name));
-        uploadPersonAttachment(formData);
+        formData.append("file", attachmentFile as File);
+        formData.append("personId", managementPersonData?.data?.id);
+        formData.append("attachmentType", String(attachmentFile?.type));
+        formData.append("businessId", String(businessId));
+        formData.append("fileName", String(attachmentFile?.name));
         uploadPersonAttachment({ formData });
       } else {
         reset({
-          position: '',
-          personIdentType: '',
-          document_no: '',
-          persDocNo: '',
-          persDocIssueDate: '',
-          persDocExpiryDate: '',
-          dateOfBirth: '',
-          firstName: '',
-          middleName: '',
-          lastName: '',
+          position: "",
+          personIdentType: "",
+          document_no: "",
+          persDocNo: "",
+          persDocIssueDate: "",
+          persDocExpiryDate: "",
+          dateOfBirth: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
         });
         dispatch(setUserInformation(undefined));
       }
@@ -183,24 +182,24 @@ const ExecutiveManagement = ({
     if (uploadAttachmentIsError) {
       if ((uploadAttachmentError as ErrorResponse)?.status === 500) {
         toast.error(
-          'An error occured while uploading attachment. Please try again'
+          "An error occured while uploading attachment. Please try again"
         );
       } else {
         toast.error((uploadAttachmentError as ErrorResponse)?.data?.message);
       }
     } else if (uploadAttachmentIsSuccess) {
-      toast.success('Person added successfully');
+      toast.success("Person added successfully");
       reset({
-        position: '',
-        personIdentType: '',
-        document_no: '',
-        persDocNo: '',
-        persDocIssueDate: '',
-        persDocExpiryDate: '',
-        dateOfBirth: '',
-        firstName: '',
-        middleName: '',
-        lastName: '',
+        position: "",
+        personIdentType: "",
+        document_no: "",
+        persDocNo: "",
+        persDocIssueDate: "",
+        persDocExpiryDate: "",
+        dateOfBirth: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
       });
       setAttachmentFile(null);
       dispatch(setBusinessPeopleAttachments([]));
@@ -218,7 +217,7 @@ const ExecutiveManagement = ({
   useEffect(() => {
     if (userInformationIsError) {
       if ((userInformationError as ErrorResponse).status === 500) {
-        toast.error('An error occured while fetching user information');
+        toast.error("An error occured while fetching user information");
       } else {
         toast.error((userInformationError as ErrorResponse)?.data?.message);
       }
@@ -246,9 +245,9 @@ const ExecutiveManagement = ({
   useEffect(() => {
     if (userInformation && searchVillageIsSuccess) {
       reset({
-        position: watch('position'),
-        personIdentType: 'nid',
-        personDocNo: watch('personDocNo'),
+        position: watch("position"),
+        personIdentType: "nid",
+        personDocNo: watch("personDocNo"),
         firstName: userInformation?.foreName,
         lastName: userInformation?.surnames,
         gender: userInformation?.gender,
@@ -259,7 +258,7 @@ const ExecutiveManagement = ({
       });
     } else if (searchVillageIsError) {
       if ((searchVillageError as ErrorResponse)?.status === 500) {
-        toast.error('An error occured while fetching village information');
+        toast.error("An error occured while fetching village information");
       } else {
         toast.error((searchVillageError as ErrorResponse)?.data?.message);
       }
@@ -268,9 +267,10 @@ const ExecutiveManagement = ({
     reset,
     searchVillageData,
     userInformation,
-    watch('position'),
-    watch('personDocNo'),
-    searchVillageIsError, searchVillageError
+    watch("position"),
+    watch("personDocNo"),
+    searchVillageIsError,
+    searchVillageError,
   ]);
 
   return (
@@ -383,9 +383,9 @@ const ExecutiveManagement = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError('personDocNo', {
-                                type: 'manual',
-                                message: 'Document number is required',
+                              setError("personDocNo", {
+                                type: "manual",
+                                message: "Document number is required",
                               });
                               return;
                             }
@@ -397,7 +397,7 @@ const ExecutiveManagement = ({
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger('personDocNo');
+                            await trigger("personDocNo");
                           }}
                         />
                         {(userInformationIsFetching ||
@@ -424,9 +424,9 @@ const ExecutiveManagement = ({
           <section
             className={`${
               !(
-                watch('personIdentType') === 'passport' ||
-                (watch('personIdentType') === 'nid' && userInformation)
-              ) && 'hidden'
+                watch("personIdentType") === "passport" ||
+                (watch("personIdentType") === "nid" && userInformation)
+              ) && "hidden"
             } flex flex-wrap gap-4 items-start justify-between w-full`}
           >
             {watch("personIdentType") === "passport" && (
@@ -767,7 +767,7 @@ const ExecutiveManagement = ({
                     <label className="flex flex-col w-full items-start gap-2 max-sm:!w-full">
                       <Input
                         type="file"
-                        accept="application/pdf,image/*"
+                        accept="application/pdf"
                         className="!w-fit max-sm:!w-full self-start"
                         onChange={(e) => {
                           field.onChange(e?.target?.files?.[0]);
@@ -800,7 +800,7 @@ const ExecutiveManagement = ({
               />
             </menu>
           </section>
-          <section className="flex w-full flex-col gap-2">
+          <section className="flex flex-col w-full gap-2">
             <BusinessPeopleAttachments
               attachments={businessPeopleAttachments}
             />
@@ -899,7 +899,7 @@ const ExecutiveManagement = ({
         />
       )}
       <OTPVerificationCard
-        phone={watch("phone")}
+        phone={watch("phoneNumber")}
         isOpen={showVerifyPhone}
         onClose={() => {
           setShowVerifyPhone(false);

@@ -152,7 +152,7 @@ const ForeignBranchRegistration = () => {
                               businessId={queryParams?.businessId}
                             />
                           )} */}
-                          {activeStepName === "foreign_attachments" && (
+                          {activeStepName === "attachments" && (
                             <CompanyAttachments
                               businessId={queryParams?.businessId}
                             />

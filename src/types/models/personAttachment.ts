@@ -1,13 +1,21 @@
-import { UUID } from 'crypto';
+import { UUID } from "crypto";
 
-export type PersonAttachment = {
+export type BaseAttachment = {
   id: UUID;
-  personId: UUID;
   fileName: string;
   attachmentType?: string;
   attachmentUrl: string;
+  fileSize: string;
   name?: string;
   type?: string;
   url?: string;
   size?: number;
+};
+
+export type PersonAttachment = BaseAttachment & {
+  personId: UUID;
+};
+
+export type BusinessAttachment = BaseAttachment & {
+  businessId: UUID;
 };

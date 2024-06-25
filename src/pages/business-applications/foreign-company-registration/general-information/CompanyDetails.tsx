@@ -347,9 +347,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               control={control}
               name="companyType"
               rules={{ required: "Select company type" }}
-              defaultValue={
-                watch("companyType") || businessDetails?.companyType
-              }
+              defaultValue={businessDetails?.companyType}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -481,7 +479,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               submit
             />
             {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-              businessDetails?.applicationStatus
+              businessDetails?.applicationStatus || ""
             ) && (
               <menu className="flex items-center justify-between w-full gap-3">
                 <Button
