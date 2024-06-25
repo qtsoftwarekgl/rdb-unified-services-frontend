@@ -1,16 +1,16 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../components/inputs/Select';
+import Select from '../../../../components/inputs/Select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../states/store';
+import { AppDispatch, RootState } from '../../../../states/store';
 import {
   setEnterpriseActiveStep,
   setEnterpriseCompletedStep,
-} from '../../../states/features/enterpriseRegistrationSlice';
+} from '../../../../states/features/enterpriseRegistrationSlice';
 import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import Button from '../../../components/inputs/Button';
-import Loader from '../../../components/Loader';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
 import { BusinessActivity, businessId } from '@/types/models/business';
 import { ErrorResponse, Link } from 'react-router-dom';
 import {

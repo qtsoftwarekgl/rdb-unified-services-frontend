@@ -30,11 +30,11 @@ import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
 
 interface PreviewSubmissionProps {
   businessId: businessId;
-  status: string;
+  applicationStatus?: string;
 }
 
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
-  status,
+  applicationStatus,
   businessId,
 }) => {
   // STATE VARIABLES
@@ -133,7 +133,14 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         state: { redirectUrl: '/services' },
       });
     }
-  }, [dispatch, navigate, updateBusinessData, updateBusinessError, updateBusinessIsError, updateBusinessIsSuccess]);
+  }, [
+    dispatch,
+    navigate,
+    updateBusinessData,
+    updateBusinessError,
+    updateBusinessIsError,
+    updateBusinessIsSuccess,
+  ]);
 
   // INITIALIZE FETCHING BUSINESS EMPLOYMENT INFO
   const [
@@ -154,7 +161,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     }
   }, [businessId, fetchBusinessEmploymentInfo]);
 
-  // FETCH BUSINESS ADDRESS
+  // FETCH BUSINESS ACTIVITIES
   useEffect(() => {
     if (businessId) {
       fetchBusinessActivities({ businessId });
@@ -528,7 +535,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       </PreviewCard> */}
 
       {['IN_PROGRESS', 'ACTION_REQUIRED', 'IN_PREVIEW', 'IS_AMENDING'].includes(
-        status
+        String(applicationStatus)
       ) && (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}

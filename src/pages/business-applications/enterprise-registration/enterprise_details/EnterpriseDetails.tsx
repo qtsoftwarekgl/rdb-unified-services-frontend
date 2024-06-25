@@ -1,9 +1,9 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../states/store';
-import Input from '../../../components/inputs/Input';
-import Loader from '../../../components/Loader';
-import Button from '../../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../../../states/store';
+import Input from '../../../../components/inputs/Input';
+import Loader from '../../../../components/Loader';
+import Button from '../../../../components/inputs/Button';
 import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import { businessId } from '@/types/models/business';
 import {

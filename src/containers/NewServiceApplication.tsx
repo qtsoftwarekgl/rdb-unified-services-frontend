@@ -268,6 +268,11 @@ const NewServiceApplication = () => {
                             createdAt: formatDate(
                               application.createdAt
                             ) as unknown as Date,
+                            companyName:
+                              application?.companyName ||
+                              application?.enterpriseBusinessName ||
+                              application?.enterpriseName ||
+                              'N/A',
                           };
                         }
                       )}

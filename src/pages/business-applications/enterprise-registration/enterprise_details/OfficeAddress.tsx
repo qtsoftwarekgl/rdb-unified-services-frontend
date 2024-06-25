@@ -1,12 +1,17 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../components/inputs/Select';
-import Input from '../../../components/inputs/Input';
-import Button from '../../../components/inputs/Button';
-import Loader from '../../../components/Loader';
-import validateInputs from '../../../helpers/validations';
-import { AppDispatch, RootState } from '../../../states/store';
+import Select from '../../../../components/inputs/Select';
+import Input from '../../../../components/inputs/Input';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
+import validateInputs from '../../../../helpers/validations';
+import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch } from 'react-redux';
-import { setEnterpriseActiveStep, setEnterpriseActiveTab, setEnterpriseCompletedStep, setEnterpriseCompletedTab } from '../../../states/features/enterpriseRegistrationSlice';
+import {
+  setEnterpriseActiveStep,
+  setEnterpriseActiveTab,
+  setEnterpriseCompletedStep,
+  setEnterpriseCompletedTab,
+} from '../../../../states/features/enterpriseRegistrationSlice';
 import { businessId } from '@/types/models/business';
 import { StaticLocation } from '@/pages/business-applications/domestic-business-registration/general-information/CompanyAddress';
 import {
@@ -32,7 +37,10 @@ import {
   useLazyFetchVillagesQuery,
 } from '@/states/api/coreApiSlice';
 import { setBusinessAddress } from '@/states/features/businessSlice';
-import { useCreateCompanyAddressMutation, useLazyGetBusinessAddressQuery } from '@/states/api/businessRegApiSlice';
+import {
+  useCreateCompanyAddressMutation,
+  useLazyGetBusinessAddressQuery,
+} from '@/states/api/businessRegApiSlice';
 
 type OfficeAddressProps = {
   businessId: businessId;
@@ -286,53 +294,53 @@ const OfficeAddress = ({
     villagesIsSuccess,
   ]);
 
-    // INITIALIZE CREATE OR UPDATE COMPANY ADDRESS MUTATION
-    const [
-      createCompanyAddress,
-      {
-        error: createCompanyAddressError,
-        isLoading: createCompanyAddressIsLoading,
-        isError: createCompanyAddressIsError,
-        isSuccess: createCompanyAddressIsSuccess,
-      },
-    ] = useCreateCompanyAddressMutation();
+  // INITIALIZE CREATE OR UPDATE COMPANY ADDRESS MUTATION
+  const [
+    createCompanyAddress,
+    {
+      error: createCompanyAddressError,
+      isLoading: createCompanyAddressIsLoading,
+      isError: createCompanyAddressIsError,
+      isSuccess: createCompanyAddressIsSuccess,
+    },
+  ] = useCreateCompanyAddressMutation();
 
-    // HANDLE FORM SUBMISSION
-    const onSubmit = (data: FieldValues) => {
-      createCompanyAddress({
-        businessId: businessId,
-        villageId: Number(data?.villageId) || 0,
-        email: data?.email || businessAddress?.email,
-        phoneNumber: data?.phoneNumber || businessAddress?.phoneNumber,
-        streetName: data?.streetName || businessAddress?.streetName,
-      });
-    };
-  
-    // HANDLE CREATE OR UPDATE COMPANY ADDRESS RESPONSE
-    useEffect(() => {
-      if (createCompanyAddressIsError) {
-        if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
-          toast.error(
-            'An error occurred while creating or updating company address'
-          );
-        } else {
-          toast.error(
-            (createCompanyAddressError as ErrorResponse)?.data?.message
-          );
-        }
-      } else if (createCompanyAddressIsSuccess) {
-        toast.success('Company address created or updated successfully');
-        dispatch(setEnterpriseCompletedStep('office_address'));
-        dispatch(setEnterpriseCompletedTab('general_information'));
-        dispatch(setEnterpriseActiveTab('attachments'));
-        dispatch(setEnterpriseActiveStep('attachments'));
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    createCompanyAddress({
+      businessId: businessId,
+      villageId: Number(data?.villageId) || 0,
+      email: data?.email || businessAddress?.email,
+      phoneNumber: data?.phoneNumber || businessAddress?.phoneNumber,
+      streetName: data?.streetName || businessAddress?.streetName,
+    });
+  };
+
+  // HANDLE CREATE OR UPDATE COMPANY ADDRESS RESPONSE
+  useEffect(() => {
+    if (createCompanyAddressIsError) {
+      if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
+        toast.error(
+          'An error occurred while creating or updating company address'
+        );
+      } else {
+        toast.error(
+          (createCompanyAddressError as ErrorResponse)?.data?.message
+        );
       }
-    }, [
-      createCompanyAddressError,
-      createCompanyAddressIsError,
-      createCompanyAddressIsSuccess,
-      dispatch,
-    ]);
+    } else if (createCompanyAddressIsSuccess) {
+      toast.success('Company address created or updated successfully');
+      dispatch(setEnterpriseCompletedStep('office_address'));
+      dispatch(setEnterpriseCompletedTab('general_information'));
+      dispatch(setEnterpriseActiveTab('attachments'));
+      dispatch(setEnterpriseActiveStep('attachments'));
+    }
+  }, [
+    createCompanyAddressError,
+    createCompanyAddressIsError,
+    createCompanyAddressIsSuccess,
+    dispatch,
+  ]);
 
   return (
     <section className="flex flex-col w-full gap-6">
@@ -709,7 +717,9 @@ const OfficeAddress = ({
                 String(applicationStatus)
               ) && <Button value={'Save & Complete Review'} primary submit />}
               <Button
-                value={createCompanyAddressIsLoading ? <Loader /> : 'Save & Continue'}
+                value={
+                  createCompanyAddressIsLoading ? <Loader /> : 'Save & Continue'
+                }
                 primary
                 submit
               />
