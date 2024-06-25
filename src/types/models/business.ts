@@ -1,4 +1,4 @@
-import { UUID } from 'crypto';
+import { UUID } from "crypto";
 
 export type Business = {
   id: UUID;
@@ -31,7 +31,23 @@ export type Business = {
   address?: Address;
 };
 
-type Address = {
+export type Details = {
+  id: UUID;
+  branchName?: string;
+  companyName: string;
+  enterpriseName?: string;
+  companyType: string;
+  companyCategory: string;
+  applicationReferenceId: string;
+  position: string;
+  hasArticlesOfAssociation: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  applicationStatus: string;
+  enterpriseBusinessName?: string;
+};
+
+export type Address = {
   id: UUID;
   countryOfIncorporation?: string;
   streetName?: string;
@@ -47,6 +63,16 @@ type Address = {
     cell: string;
     village: string;
   };
+};
+
+export type EmploymentInfo = {
+  workingStartTime: string;
+  workingEndTime: string;
+  numberOfEmployees: number;
+  hiringDate: string;
+  employmentDeclarationDate: string;
+  financialYearStartDate: string;
+  financialYearEndDate: string;
 };
 
 export type businessId = string | number | (string | number | null)[] | null;

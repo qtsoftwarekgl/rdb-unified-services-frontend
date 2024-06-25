@@ -1,12 +1,12 @@
-import { User } from '@/types/models/User';
-import { createSlice } from '@reduxjs/toolkit';
-import store from 'store';
+import { User } from "@/types/models/User";
+import { createSlice } from "@reduxjs/toolkit";
+import store from "store";
 
 export const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: {
-    token: store.get('token') || '',
-    user: store.get('user') || ({} as User),
+    token: store.get("token") || "",
+    user: store.get("user") || ({} as User),
     usersList: [],
     pagination: {
       page: 1,
@@ -18,11 +18,11 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
-      store.set('user', action.payload);
+      store.set("user", action.payload);
     },
     setToken: (state, action) => {
       state.token = action.payload;
-      store.set('token', action.payload);
+      store.set("token", action.payload);
     },
     setUsersList: (state, action) => {
       state.usersList = action.payload;

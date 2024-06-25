@@ -1,30 +1,30 @@
-import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
-import Input from '../../components/inputs/Input';
-import Navbar from '../../containers/Navbar';
-import { useEffect, useRef, useState } from 'react';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useLazyFetchServicesQuery } from '@/states/api/coreApiSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import { setServicesList } from '@/states/features/serviceSlice';
-import { toast } from 'react-toastify';
-import { Accordion } from '@radix-ui/react-accordion';
+import { ErrorResponse, Link, useNavigate } from "react-router-dom";
+import Input from "../../components/inputs/Input";
+import Navbar from "../../containers/Navbar";
+import { useEffect, useRef, useState } from "react";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useLazyFetchServicesQuery } from "@/states/api/coreApiSlice";
+import { AppDispatch, RootState } from "@/states/store";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { setServicesList } from "@/states/features/serviceSlice";
+import { toast } from "react-toastify";
+import { Accordion } from "@radix-ui/react-accordion";
 import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '../../components/Accordion';
-import { Service } from '@/types/models/service';
-import { capitalizeString } from '@/helpers/strings';
-import Loader from '@/components/Loader';
+} from "../../components/Accordion";
+import { Service } from "@/types/models/service";
+import { capitalizeString } from "@/helpers/strings";
+import Loader from "@/components/Loader";
 
 const ServicesList = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { servicesList } = useSelector((state: RootState) => state.service);
-  const [serviceCategory, setServiceCategory] = useState<string>('business');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [serviceCategory, setServiceCategory] = useState<string>("business");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // DOM REFERENCES
   const accordionsRef = useRef<Array<HTMLButtonElement | null>>([]);
@@ -54,7 +54,7 @@ const ServicesList = () => {
     if (servicesIsError) {
       if ((servicesError as ErrorResponse)?.status === 500) {
         toast.error(
-          'An error occurred while fetching services. Please try again later.'
+          "An error occurred while fetching services. Please try again later."
         );
       } else {
         toast.error((servicesError as ErrorResponse)?.data?.message);
@@ -98,13 +98,13 @@ const ServicesList = () => {
   const categoryTabs = [
     {
       no: 1,
-      name: 'Business Registration Services',
-      category: 'business',
+      name: "Business Registration Services",
+      category: "business",
     },
     {
       no: 2,
-      name: 'Mortgage Registration Services',
-      category: 'mortgage',
+      name: "Mortgage Registration Services",
+      category: "mortgage",
     },
   ];
 
@@ -114,7 +114,7 @@ const ServicesList = () => {
       <section className="absolute w-full h-full top-[2vh]">
         <section className="flex flex-col items-center justify-center gap-6 py-32 bg-primary">
           <article className="flex flex-col items-center justify-center gap-6 w-[40%]">
-            <h1 className="text-white font-semibold text-3xl">
+            <h1 className="text-3xl font-semibold text-white">
               Register your business in a click!
             </h1>
             <Input
@@ -135,11 +135,11 @@ const ServicesList = () => {
               return (
                 <Link
                   key={index}
-                  to={'#'}
+                  to={"#"}
                   className={`w-1/2 max-md:w-full rounded text-center p-4 py-3 font-medium ${
                     selected
-                      ? 'bg-primary text-white shadow-xl'
-                      : 'border border-primary'
+                      ? "bg-primary text-white shadow-xl"
+                      : "border border-primary"
                   }`}
                   onClick={(e) => {
                     e.preventDefault();
@@ -151,13 +151,13 @@ const ServicesList = () => {
               );
             })}
           </nav>
-          <menu className="flex flex-col gap-6 items-center w-full my-4 p-2">
+          <menu className="flex flex-col items-center w-full gap-6 p-2 my-4">
             {servicesIsLoading ? (
               <figure className="h-[40%] flex items-center justify-center">
                 <Loader />
               </figure>
             ) : (
-              servicesList?.length &&
+              servicesList?.length != 0 &&
               servicesList.map((service: Service, index: number) => {
                 return (
                   <Accordion
@@ -174,26 +174,26 @@ const ServicesList = () => {
                       <AccordionTrigger
                         ref={(ref) => (accordionsRef.current[index] = ref)}
                         id={`accordion-${index + 1}`}
-                        className="text-xl font-bold w-full"
+                        className="w-full text-xl font-bold"
                       >
                         {capitalizeString(service?.section)}
                       </AccordionTrigger>
                       <AccordionContent className="w-full border-none">
-                        <menu className="w-full grid grid-cols-1 gap-6 p-4 px-2 mb-8 md:grid-cols-2 lg:grid-cols-3">
+                        <menu className="grid w-full grid-cols-1 gap-6 p-4 px-2 mb-8 md:grid-cols-2 lg:grid-cols-3">
                           {service?.items.map(
                             (item: Service, index: number) => {
                               return (
                                 <Link
                                   className="w-full text-[15px]"
                                   key={index}
-                                  to={'#'}
+                                  to={"#"}
                                   onClick={(e) => {
                                     e.preventDefault();
                                     if (
                                       [
-                                        '/business-registration',
-                                        '/foreign-company-registration',
-                                        '/enterprise-registration',
+                                        "/business-registration",
+                                        "/foreign-company-registration",
+                                        "/enterprise-registration",
                                       ].includes(item.path)
                                     ) {
                                       navigate(`${item?.id}/new`);

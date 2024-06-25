@@ -1,9 +1,17 @@
-import { Business } from '@/types/models/business';
-import { createSlice } from '@reduxjs/toolkit';
+import {
+  Address,
+  Business,
+  Details,
+  EmploymentInfo,
+} from "@/types/models/business";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {
   businessesList: Business[];
   business: Business;
+  businessDetails: Details;
+  businessAddress: Address;
+  employmentInfo: EmploymentInfo;
   page: number;
   size: number;
   totalElements: number;
@@ -18,6 +26,9 @@ const initialState: {
 } = {
   businessesList: [],
   business: {} as Business,
+  businessDetails: {} as Details,
+  businessAddress: {} as Address,
+  employmentInfo: {} as EmploymentInfo,
   page: 1,
   size: 10,
   totalElements: 0,
@@ -29,7 +40,7 @@ const initialState: {
 };
 
 export const businessSlice = createSlice({
-  name: 'business',
+  name: "business",
   initialState,
   reducers: {
     setBusinessesList: (state, action) => {
@@ -49,6 +60,15 @@ export const businessSlice = createSlice({
     },
     setBusiness: (state, action) => {
       state.business = action.payload;
+    },
+    setBusinessDetails: (state, action) => {
+      state.businessDetails = action.payload;
+    },
+    setBusinessAddress: (state, action) => {
+      state.businessAddress = action.payload;
+    },
+    setEmploymentInfo: (state, action) => {
+      state.employmentInfo = action.payload;
     },
     setSelectedBusiness: (state, action) => {
       state.selectedBusiness = action.payload;
@@ -74,6 +94,9 @@ export const {
   setBusinessTotalElements,
   setBusinessTotalPages,
   setBusiness,
+  setBusinessDetails,
+  setBusinessAddress,
+  setEmploymentInfo,
   setDeleteBusinessModal,
   setSelectedBusiness,
   setNameAvailabilitiesList,

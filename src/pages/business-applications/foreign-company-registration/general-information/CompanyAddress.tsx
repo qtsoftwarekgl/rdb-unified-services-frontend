@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../../components/inputs/Input";
 import Button from "../../../../components/inputs/Button";
@@ -7,26 +7,27 @@ import validateInputs from "../../../../helpers/validations";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  removeForeignBusinessCompletedStep,
   setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Select from "../../../../components/inputs/Select";
 import { countriesList } from "../../../../constants/countries";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
+import { businessId } from "@/types/models/business";
+import { useLazyGetBusinessAddressQuery } from "@/states/api/businessRegistrationApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import { setBusinessAddress } from "@/states/features/businessSlice";
+import { useCreateOrUpdateCompanyAddressMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
 
 interface CompanyAddressProps {
-  entryId: string | null;
-  foreign_company_address: any;
-  status?: string;
+  businessId: businessId;
+  applicationStatus: string;
 }
 
 const CompanyAddress: FC<CompanyAddressProps> = ({
-  entryId,
-  foreign_company_address,
-  status,
+  businessId,
+  applicationStatus,
 }) => {
   // REACT HOOK FORM
   const {
@@ -35,62 +36,131 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     formState: { errors },
     watch,
     setValue,
-    trigger,
   } = useForm();
 
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const [isLoading, setIsLoading] = useState({
-    submit: false,
-    preview: false,
-    amend: false,
-  });
+  const { businessAddress } = useSelector((state: RootState) => state.business);
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+
+  // INITIALIZE GET BUSINESS QUERY
+  const [
+    getBusinessAddress,
+    {
+      data: businessAddressData,
+      error: businessAddressError,
+      isLoading: businessAddressIsLoading,
+      isError: businessAddressIsError,
+      isSuccess: businessAddressIsSuccess,
+    },
+  ] = useLazyGetBusinessAddressQuery();
+
+  // GET BUSINESS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessAddress({ id: businessId });
+    }
+  }, [getBusinessAddress, businessId]);
+
+  // HANDLE GET BUSINESS RESPONSE
+  useEffect(() => {
+    if (businessAddressIsError) {
+      if ((businessAddressError as ErrorResponse)?.status === 500) {
+        toast.error("An error occurred while fetching business data");
+      } else {
+        toast.error((businessAddressError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessAddressIsSuccess) {
+      dispatch(setBusinessAddress(businessAddressData?.data));
+    }
+  }, [
+    businessAddressData,
+    businessAddressError,
+    businessAddressIsError,
+    businessAddressIsSuccess,
+    dispatch,
+  ]);
 
   // SET DEFAULT VALUES
   useEffect(() => {
-    if (foreign_company_address) {
-      setValue("country", foreign_company_address?.country);
-      setValue("city", foreign_company_address?.city);
-      setValue("street_name", foreign_company_address?.street_name);
-      setValue("zip_code", foreign_company_address?.zip_code);
-      setValue("email", foreign_company_address?.email);
-      setValue("phone", foreign_company_address?.phone);
-    } else {
-      dispatch(removeForeignBusinessCompletedStep("foreign_company_address"));
+    if (businessAddress && Object.keys(businessAddress).length > 0) {
+      setValue(
+        "countryOfIncorporation",
+        businessAddress?.countryOfIncorporation
+      );
     }
-  }, [foreign_company_address, dispatch, setValue]);
+  }, [businessAddress, dispatch, setValue]);
+
+  // INITIALIZE CREATE OR UPDATE COMPANY ADDRESS MUTATION
+  const [
+    createCompanyAddress,
+    {
+      error: createCompanyAddressError,
+      isLoading: createCompanyAddressIsLoading,
+      isError: createCompanyAddressIsError,
+      isSuccess: createCompanyAddressIsSuccess,
+    },
+  ] = useCreateOrUpdateCompanyAddressMutation();
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setTimeout(() => {
-      dispatch(
-        setUserApplications({
-          entryId,
-          foreign_company_address: {
-            ...data,
-            step: "foreign_company_address",
-          },
-        })
-      );
-      if ((['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status)) || isLoading?.amend)
-        dispatch(setForeignBusinessActiveTab("foreign_preview_submission"));
-      else {
-        dispatch(setForeignBusinessActiveStep("foreign_business_activity_vat"));
-      }
-      // SET CURRENT STEP AS COMPLETED
-      dispatch(setForeignBusinessCompletedStep("foreign_company_address"));
-      setIsLoading({
-        ...isLoading,
-        submit: false,
-        preview: false,
-        amend: false,
-      });
-    }, 1000);
+    createCompanyAddress({
+      businessId: businessId,
+      countryOfIncorporation: data?.countryOfIncorporation,
+      city: data?.city,
+      zipCode: data.zipCode,
+      email: data?.email,
+      phoneNumber: data?.phoneNumber,
+      streetName: data?.streetName,
+    });
   };
+
+  // HANDLE CREATE OR UPDATE COMPANY ADDRESS RESPONSE
+  useEffect(() => {
+    if (createCompanyAddressIsError) {
+      if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while creating or updating company address"
+        );
+      } else {
+        toast.error(
+          (createCompanyAddressError as ErrorResponse)?.data?.message
+        );
+      }
+    } else if (createCompanyAddressIsSuccess) {
+      toast.success("Company address created or updated successfully");
+      dispatch(setForeignBusinessCompletedStep("company_address"));
+      dispatch(setForeignBusinessActiveStep("business_activity_vat"));
+    }
+  }, [
+    createCompanyAddressError,
+    createCompanyAddressIsError,
+    createCompanyAddressIsSuccess,
+    dispatch,
+  ]);
+
+  // SET DEFAULT VALUES FROM BUSINESS ADDRESS
+  useEffect(() => {
+    if (businessAddress && Object.keys(businessAddress).length > 0) {
+      setValue(
+        "countryOfIncorporation",
+        businessAddress?.countryOfIncorporation
+      );
+      setValue("city", businessAddress?.city);
+      setValue("zipCode", businessAddress?.zipCode);
+      setValue("email", businessAddress?.email);
+      setValue("phoneNumber", businessAddress?.phoneNumber);
+      setValue("streetName", businessAddress?.streetName);
+    }
+  }, [businessAddress, setValue]);
 
   return (
     <section className="flex flex-col w-full gap-6">
+      {businessAddressIsLoading && (
+        <figure className="min-h-[40vh] flex items-center justify-center w-full">
+          <Loader />
+        </figure>
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
@@ -98,11 +168,9 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
         >
           <menu className="flex items-start w-full gap-6">
             <Controller
-              name="country"
+              name="countryOfIncorporation"
               control={control}
-              defaultValue={
-                watch("country") || foreign_company_address?.country
-              }
+              defaultValue={watch("countryOfIncorporation")}
               rules={{ required: "Country is required" }}
               render={({ field }) => {
                 return (
@@ -111,10 +179,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       placeholder="Select country of incorporation"
                       {...field}
                       required
-                      defaultValue={foreign_company_address?.country}
+                      defaultValue={watch("countryOfIncorporation")}
                       label="Country of Incorporation"
                       options={countriesList
-                        ?.filter((country) => country.code !== 'RW')
+                        ?.filter((country) => country.code !== "RW")
                         .map((country) => {
                           return {
                             ...country,
@@ -126,9 +194,9 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                         field.onChange(e);
                       }}
                     />
-                    {errors?.country && (
+                    {errors?.countryOfIncorporation && (
                       <p className="text-red-500 text-[13px]">
-                        {String(errors?.country.message)}
+                        {String(errors?.countryOfIncorporation.message)}
                       </p>
                     )}
                   </label>
@@ -138,16 +206,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="city"
               control={control}
-              defaultValue={watch("city") || foreign_company_address?.city}
+              defaultValue={watch("city") || businessAddress?.city}
               rules={{ required: "city is required" }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       label="City"
-                      defaultValue={
-                        watch("city") || foreign_company_address?.city
-                      }
+                      defaultValue={watch("city") || businessAddress?.city}
                       placeholder="City"
                       {...field}
                     />
@@ -164,17 +230,14 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           <menu className="flex items-start w-full gap-6">
             <Controller
               control={control}
-              name="street_name"
-              defaultValue={
-                watch("street_name") || foreign_company_address?.street_name
-              }
+              name="streetName"
+              defaultValue={watch("streetName") || businessAddress?.streetName}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       defaultValue={
-                        watch("street_name") ||
-                        foreign_company_address?.street_name
+                        watch("streetName") || businessAddress?.streetName
                       }
                       label="Street Name"
                       placeholder="Street name"
@@ -186,10 +249,8 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             />
             <Controller
               control={control}
-              defaultValue={
-                watch("zip_code") || foreign_company_address?.zip_code
-              }
-              name="zip_code"
+              defaultValue={watch("zipCode") || businessAddress?.zipCode}
+              name="zipCode"
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -197,7 +258,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       label="ZIP Code"
                       placeholder="ZIP code"
                       defaultValue={
-                        watch("zip_code") || foreign_company_address?.zip_code
+                        watch("zipCode") || businessAddress?.zipCode
                       }
                       {...field}
                     />
@@ -210,7 +271,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
             <Controller
               name="email"
               control={control}
-              defaultValue={watch("email") || foreign_company_address?.email}
+              defaultValue={watch("email") || businessAddress?.email}
               rules={{
                 required: watch("email") ? "Email address is required" : false,
                 validate: (value) => {
@@ -226,9 +287,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                     <Input
                       required
                       label="Email"
-                      defaultValue={
-                        watch("email") || foreign_company_address?.email
-                      }
+                      defaultValue={watch("email") || businessAddress?.email}
                       placeholder="name@domain.com"
                       {...field}
                     />
@@ -242,9 +301,11 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               }}
             />
             <Controller
-              name="phone"
+              name="phoneNumber"
               control={control}
-              defaultValue={watch("phone") || foreign_company_address?.phone}
+              defaultValue={
+                watch("phoneNumber") || businessAddress?.phoneNumber
+              }
               rules={{
                 required: "Phone number is required",
               }}
@@ -277,15 +338,15 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       <input
                         onChange={field.onChange}
                         defaultValue={
-                          watch("phone") || foreign_company_address?.phone
+                          watch("phoneNumber") || businessAddress?.phoneNumber
                         }
                         className="ps-[96px] py-[8px] px-4 font-normal placeholder:!font-light placeholder:italic placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
                         type="text"
                       />
                     </menu>
-                    {errors?.phone && (
+                    {errors?.phoneNumber && (
                       <p className="text-sm text-red-500">
-                        {String(errors?.phone?.message)}
+                        {String(errors?.phoneNumber?.message)}
                       </p>
                     )}
                   </label>
@@ -293,82 +354,73 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               }}
             />
           </menu>
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
-            <Button
-              value="Back"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setForeignBusinessActiveStep("company_details"));
-              }}
-            />
-            {status === "is_amending" && (
+          {/* TO DO status should be passed from the parent component by fetch the business */}
+          {[
+            "IN_PROGRESS",
+            "ACTION_REQUIRED",
+            "IS_AMENDING",
+            "IN_PREVIEW",
+          ].includes(applicationStatus) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
               <Button
-                submit
-                value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
-                  setIsLoading({
-                    ...isLoading,
-                    amend: true,
-                    preview: false,
-                    submit: false,
-                  });
+                value="Back"
+                disabled={isFormDisabled}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setForeignBusinessActiveStep("company_details"));
                 }}
-                disabled={Object.keys(errors)?.length > 0}
               />
-            )}
-            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+              {["IS_AMENDING"].includes(applicationStatus) && (
+                <Button submit value={"Complete Amendment"} />
+              )}
+              {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
+                applicationStatus
+              ) && (
+                <Button
+                  value={"Save & Complete Preview"}
+                  primary
+                  submit
+                  disabled={isFormDisabled}
+                />
+              )}
               <Button
                 value={
-                  isLoading?.preview && !Object.keys(errors)?.length ? (
-                    <Loader />
-                  ) : (
-                    "Save & Complete Review"
-                  )
+                  createCompanyAddressIsLoading ? <Loader /> : "Save & Continue"
                 }
                 primary
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors)?.length) {
-                    return;
-                  }
-                  setIsLoading({
-                    ...isLoading,
-                    preview: true,
-                    submit: false,
-                    amend: false,
-                  });
-                }}
                 submit
-                disabled={isFormDisabled || Object.keys(errors)?.length > 0}
+                disabled={isFormDisabled}
               />
-            )}
-            <Button
-              value={isLoading.submit ? <Loader /> : "Save & Continue"}
-              primary
-              onClick={async () => {
-                await trigger();
-                if (Object.keys(errors)?.length) {
-                  return;
-                }
-                setIsLoading({
-                  ...isLoading,
-                  submit: true,
-                  preview: false,
-                  amend: false,
-                });
-                dispatch(
-                  setUserApplications({ entryId, status: "IN_PROGRESS" })
-                );
-              }}
-              submit
-            />
-          </menu>
+            </menu>
+          )}
+          {[
+            "IN_REVIEW",
+            "IS_APPROVED",
+            "PENDING_APPROVAL",
+            "PENDING_REJECTION",
+          ].includes(applicationStatus) && (
+            <menu className="flex items-center justify-between gap-3">
+              <Button
+                value={"Back"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setForeignBusinessActiveStep("company_details"));
+                }}
+              />
+              <Button
+                value={"Next"}
+                primary
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    setForeignBusinessActiveStep("business_activity_vat")
+                  );
+                }}
+              />
+            </menu>
+          )}
         </fieldset>
       </form>
     </section>
