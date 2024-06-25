@@ -14,7 +14,7 @@ import Select from "../../../../components/inputs/Select";
 import { countriesList } from "../../../../constants/countries";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import { businessId } from "@/types/models/business";
-import { useLazyGetBusinessAddressQuery } from "@/states/api/businessRegistrationApiSlice";
+import { useLazyGetBusinessAddressQuery } from "@/states/api/businessRegApiSlice";
 import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setBusinessAddress } from "@/states/features/businessSlice";

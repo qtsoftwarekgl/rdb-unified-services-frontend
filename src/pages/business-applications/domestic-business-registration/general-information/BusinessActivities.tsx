@@ -35,6 +35,7 @@ import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
 } from '@/states/api/businessRegApiSlice';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -213,7 +214,6 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
       return toast.error('Please select at least one business line');
     }
     if (!selectedMainBusinessLine) {
-      console.log(selectedMainBusinessLine);
       setError('mainBusinessActivity', {
         type: 'manual',
         message: 'Please select the main business activity',
@@ -327,14 +327,14 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                             return (
                               <li
                                 key={businessLine.code}
-                                className="flex items-center justify-between hover:bg-primary hover:text-white w-full gap-3 p-2 rounded-md cursor-pointer"
+                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                               >
                                 <p className="text-start text-[13px] max-w-[85%]">
                                   {businessLine?.description}
                                 </p>
                                 <Link
                                   to={'#'}
-                                  className="text-[13px] hover:underline w-fit"
+                                  className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     if (isSelected) return;
@@ -346,9 +346,13 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                   {isSelected ? (
                                     <FontAwesomeIcon icon={faCircleCheck} />
                                   ) : (
-                                    <p className="w-fit text-[13px]">
+                                    <menu className="w-fit flex items-center gap-2 text-[13px]">
+                                      <FontAwesomeIcon
+                                        className="text-[12px]"
+                                        icon={faPlus}
+                                      />
                                       Add to list
-                                    </p>
+                                    </menu>
                                   )}
                                 </Link>
                               </li>
@@ -369,7 +373,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                             return (
                               <li
                                 key={index}
-                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-primary hover:text-white cursor-pointer"
+                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                               >
                                 <menu className="flex items-center gap-2">
                                   <p className="text-start text-[13px]">
@@ -383,7 +387,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                 </menu>
                                 <Link
                                   to={'#'}
-                                  className="text-[13px] hover:underline"
+                                  className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     dispatch(
@@ -391,6 +395,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                     );
                                   }}
                                 >
+                                  <FontAwesomeIcon className='text-[12px]' icon={faMinus} />
                                   Remove from list
                                 </Link>
                               </li>

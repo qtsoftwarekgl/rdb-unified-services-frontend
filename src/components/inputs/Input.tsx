@@ -40,6 +40,7 @@ interface InputProps {
   labelClassName?: string;
   range?: boolean;
   selectionType?: 'date' | 'month' | 'year' | 'recurringDate';
+  checked?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -65,6 +66,7 @@ const Input: FC<InputProps> = ({
   multiple = false,
   defaultChecked = false,
   selectionType,
+  checked
 }) => {
   const hiddenFileInput = useRef<HTMLButtonElement>(null);
 
@@ -86,6 +88,7 @@ const Input: FC<InputProps> = ({
           name={name}
           value={value}
           defaultChecked={defaultChecked}
+          checked={checked}
           onChange={onChange}
           className={`w-4 h-4 border-[1.5px] rounded-xl cursor-pointer border-secondary outline-none focus:outline-none accent-primary focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}`}
         />

@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../../components/inputs/Select';
 import Input from '../../../../components/inputs/Input';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { userData } from '../../../../constants/authentication';
 import { countriesList } from '../../../../constants/countries';
 import Button from '../../../../components/inputs/Button';
 import {
@@ -19,20 +19,24 @@ import ViewDocument from '../../../user-company-details/ViewDocument';
 import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
 import moment from 'moment';
 import { businessId } from '@/types/models/business';
-import {
-  useCreateManagementOrBoardPersonMutation,
-  useUploadPersonAttachmentMutation,
-} from '@/states/api/businessRegApiSlice';
+import { useCreateManagementOrBoardPersonMutation } from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
 import {
   addBusinessPerson,
   addBusinessPersonAttachment,
+  setBusinessPeopleAttachments,
+  setUserInformation,
 } from '@/states/features/businessPeopleSlice';
 import BusinessPeople from './BusinessPeople';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
 import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+import {
+  useLazySearchVillageQuery,
+  useUploadPersonAttachmentMutation,
+} from '@/states/api/coreApiSlice';
+import { genderOptions } from '@/constants/inputs.constants';
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -57,7 +61,7 @@ const ExecutiveManagement = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessPeopleList } = useSelector(
+  const { businessPeopleList, userInformation } = useSelector(
     (state: RootState) => state.businessPeople
   );
   const { businessPeopleAttachments } = useSelector(
@@ -70,6 +74,18 @@ const ExecutiveManagement = ({
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
+
+  // INITIALIZE SEARCH VILLAGE QUERY
+  const [
+    searchVillage,
+    {
+      data: searchVillageData,
+      isFetching: searchVillageIsFetching,
+      isSuccess: searchVillageIsSuccess,
+      isError: searchVillageIsError,
+      error: searchVillageError,
+    },
+  ] = useLazySearchVillageQuery();
 
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
   const [
@@ -89,7 +105,7 @@ const ExecutiveManagement = ({
     {
       data: userInformationData,
       error: userInformationError,
-      isLoading: userInformationIsLoading,
+      isFetching: userInformationIsFetching,
       isSuccess: userInformationIsSuccess,
       isError: userInformationIsError,
     },
@@ -109,7 +125,11 @@ const ExecutiveManagement = ({
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
-    createManagementPerson({ ...data, businessId });
+    createManagementPerson({
+      ...data,
+      businessId,
+      nationality: data?.nationality || data?.persDocIssuePlace,
+    });
   };
 
   // HANDLE CREATE MANAGEMENT PERSON RESPONSE
@@ -118,16 +138,33 @@ const ExecutiveManagement = ({
       if ((managementPersonError as ErrorResponse).status === 500) {
         toast.error("An error occured while adding person. Please try again");
       } else {
-        toast.error((managementPersonError as ErrorResponse).data.message);
+        toast.error((managementPersonError as ErrorResponse)?.data?.message);
       }
     } else if (managementPersonIsSuccess) {
-      const formData = new FormData();
-      formData.append('file', attachmentFile as File);
-      formData.append('personId', managementPersonData?.data?.id);
-      formData.append('attachmentType', String(attachmentFile?.type));
-      formData.append('fileName', String(attachmentFile?.name));
-      uploadPersonAttachment(formData);
-      uploadPersonAttachment({ formData });
+      if (watch('nationality') !== 'RW') {
+        const formData = new FormData();
+        formData.append('file', attachmentFile as File);
+        formData.append('personId', managementPersonData?.data?.id);
+        formData.append('attachmentType', String(attachmentFile?.type));
+        formData.append('businessId', String(businessId));
+        formData.append('fileName', String(attachmentFile?.name));
+        uploadPersonAttachment(formData);
+        uploadPersonAttachment({ formData });
+      } else {
+        reset({
+          position: '',
+          personIdentType: '',
+          document_no: '',
+          persDocNo: '',
+          persDocIssueDate: '',
+          persDocExpiryDate: '',
+          dateOfBirth: '',
+          firstName: '',
+          middleName: '',
+          lastName: '',
+        });
+        dispatch(setUserInformation(undefined));
+      }
       dispatch(addBusinessPerson(managementPersonData?.data));
     }
   }, [
@@ -144,12 +181,12 @@ const ExecutiveManagement = ({
   // HANDLE UPLOAD PERSON ATTACHMENT RESPONSE
   useEffect(() => {
     if (uploadAttachmentIsError) {
-      if ((uploadAttachmentError as ErrorResponse).status === 500) {
+      if ((uploadAttachmentError as ErrorResponse)?.status === 500) {
         toast.error(
           'An error occured while uploading attachment. Please try again'
         );
       } else {
-        toast.error((uploadAttachmentError as ErrorResponse).data.message);
+        toast.error((uploadAttachmentError as ErrorResponse)?.data?.message);
       }
     } else if (uploadAttachmentIsSuccess) {
       toast.success('Person added successfully');
@@ -166,12 +203,12 @@ const ExecutiveManagement = ({
         lastName: '',
       });
       setAttachmentFile(null);
-      dispatch(addBusinessPersonAttachment(uploadAttachmentData?.data));
+      dispatch(setBusinessPeopleAttachments([]));
     }
   }, [
     dispatch,
     reset,
-    uploadAttachmentData?.data,
+    uploadAttachmentData,
     uploadAttachmentError,
     uploadAttachmentIsError,
     uploadAttachmentIsSuccess,
@@ -186,24 +223,54 @@ const ExecutiveManagement = ({
         toast.error((userInformationError as ErrorResponse)?.data?.message);
       }
     } else if (userInformationIsSuccess) {
-      console.log(userInformationData?.data)
-      reset({
-        position: '',
-        personIdentType: '',
-        document_no: userInformationData?.data?.documentNumber,
-        firstName: userInformationData?.data?.firstName,
-        middleName: userInformationData?.data?.middleName,
-        lastName: userInformationData?.data,
-        phoneNumber: userInformationData?.data?.phoneNumber,
-        email: userInformationData?.data?.email,
+      searchVillage({
+        villageName: userInformationData?.data?.village,
+        cellName: userInformationData?.data?.cell,
+        sectorName: userInformationData?.data?.sector,
+        districtName: userInformationData?.data?.district,
+        provinceName: userInformationData?.data?.province,
       });
+      dispatch(setUserInformation(userInformationData?.data));
     }
   }, [
+    dispatch,
     reset,
+    searchVillage,
     userInformationData,
     userInformationError,
     userInformationIsError,
     userInformationIsSuccess,
+  ]);
+
+  // HANDLE SEARCH VILLAGE RESPONSE
+  useEffect(() => {
+    if (userInformation && searchVillageIsSuccess) {
+      reset({
+        position: watch('position'),
+        personIdentType: 'nid',
+        personDocNo: watch('personDocNo'),
+        firstName: userInformation?.foreName,
+        lastName: userInformation?.surnames,
+        gender: userInformation?.gender,
+        nationality: userInformation?.nationality,
+        village: searchVillageData?.data?.id,
+        persDocIssuePlace: userInformation?.nationality,
+        isFromNida: true,
+      });
+    } else if (searchVillageIsError) {
+      if ((searchVillageError as ErrorResponse)?.status === 500) {
+        toast.error('An error occured while fetching village information');
+      } else {
+        toast.error((searchVillageError as ErrorResponse)?.data?.message);
+      }
+    }
+  }, [
+    reset,
+    searchVillageData,
+    userInformation,
+    watch('position'),
+    watch('personDocNo'),
+    searchVillageIsError, searchVillageError
   ]);
 
   return (
@@ -225,14 +292,6 @@ const ExecutiveManagement = ({
                   {
                     value: "secretary",
                     label: "Secretary",
-                  },
-                  {
-                    value: "accountant",
-                    label: "Accountant",
-                  },
-                  {
-                    value: "auditor",
-                    label: "Auditor",
                   },
                 ];
                 return (
@@ -300,7 +359,7 @@ const ExecutiveManagement = ({
               {watch("personIdentType") === "nid" && (
                 <Controller
                   control={control}
-                  name="document_no"
+                  name="personDocNo"
                   rules={{
                     required: watch("personIdentType")
                       ? "Document number is required"
@@ -324,9 +383,9 @@ const ExecutiveManagement = ({
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError("document_no", {
-                                type: "manual",
-                                message: "Document number is required",
+                              setError('personDocNo', {
+                                type: 'manual',
+                                message: 'Document number is required',
                               });
                               return;
                             }
@@ -338,18 +397,21 @@ const ExecutiveManagement = ({
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger("document_no");
+                            await trigger('personDocNo');
                           }}
                         />
-                        {userInformationIsLoading && (
+                        {(userInformationIsFetching ||
+                          searchVillageIsFetching) && (
                           <ul className="flex items-center gap-2">
                             <Loader className="text-primary" />
-                            Fetching user information...
+                            <p className="text-[13px]">
+                              Fetching user information...
+                            </p>
                           </ul>
                         )}
-                        {errors?.document_no && (
+                        {errors?.personDocNo && (
                           <p className="text-red-500 text-[13px]">
-                            {String(errors?.document_no?.message)}
+                            {String(errors?.personDocNo?.message)}
                           </p>
                         )}
                       </label>
@@ -361,7 +423,10 @@ const ExecutiveManagement = ({
           </menu>
           <section
             className={`${
-              !watch("personIdentType") && "hidden"
+              !(
+                watch('personIdentType') === 'passport' ||
+                (watch('personIdentType') === 'nid' && userInformation)
+              ) && 'hidden'
             } flex flex-wrap gap-4 items-start justify-between w-full`}
           >
             {watch("personIdentType") === "passport" && (
@@ -523,22 +588,6 @@ const ExecutiveManagement = ({
               }}
             />
             <Controller
-              name="middleName"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="w-[49%] flex flex-col gap-1 items-start">
-                    <Input
-                      readOnly={watch("personIdentType") === "nid"}
-                      placeholder="Middle name"
-                      label="Middle name"
-                      {...field}
-                    />
-                  </label>
-                );
-              }}
-            />
-            <Controller
               name="lastName"
               control={control}
               render={({ field }) => {
@@ -566,23 +615,12 @@ const ExecutiveManagement = ({
               render={({ field }) => {
                 return (
                   <label className="flex flex-col gap-2 items-start w-[49%]">
-                    <p className="flex items-center gap-1 text-[15px]">
-                      Gender<span className="text-red-500">*</span>
-                    </p>
-                    <menu className="flex items-center gap-4 mt-2">
-                      <Input
-                        type="radio"
-                        label="Male"
-                        {...field}
-                        value={"Male"}
-                      />
-                      <Input
-                        type="radio"
-                        label="Female"
-                        {...field}
-                        value={"Female"}
-                      />
-                    </menu>
+                    <Select
+                      options={genderOptions}
+                      label="Sex"
+                      required
+                      {...field}
+                    />
                     {errors?.gender && (
                       <span className="text-red-500 text-[13px]">
                         {String(errors?.gender?.message)}
@@ -613,11 +651,10 @@ const ExecutiveManagement = ({
                         label="Phone number"
                         required
                         placeholder="Select phone number"
-                        options={userData?.slice(0, 3)?.map((user) => {
+                        options={userInformation?.phones?.map((phone) => {
                           return {
-                            ...user,
-                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
-                            value: user?.phone,
+                            label: maskPhoneDigits(phone?.msidn),
+                            value: phone?.msidn,
                           };
                         })}
                         {...field}
@@ -677,7 +714,7 @@ const ExecutiveManagement = ({
                               return {
                                 ...country,
                                 label: country.name,
-                                value: country?.name,
+                                value: country?.code,
                               };
                             })}
                           {...field}

@@ -34,7 +34,7 @@ import { toast } from "react-toastify";
 import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
-} from "@/states/api/businessRegistrationApiSlice";
+} from "@/states/api/businessRegApiSlice";
 import { setBusinessActiveStep } from "@/states/features/businessRegistrationSlice";
 
 interface BusinessActivityProps {
@@ -220,7 +220,6 @@ const BusinessActivities = ({
       return toast.error("Please select at least one business line");
     }
     if (!selectedMainBusinessLine) {
-      console.log(selectedMainBusinessLine);
       setError("mainBusinessActivity", {
         type: "manual",
         message: "Please select the main business activity",

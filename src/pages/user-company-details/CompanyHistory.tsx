@@ -2,29 +2,14 @@ import { useTranslation } from "react-i18next";
 import UserLayout from "../../containers/UserLayout";
 import { companyHistories } from "../../constants/Users";
 import Table from "../../components/table/Table";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../states/store";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/inputs/Button";
 
 const CompanyHistory = () => {
   const { t } = useTranslation();
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (id) {
-      console.log(id);
-    }
-  }, [id, dispatch, user_applications, location]);
 
   const columns = [
     {

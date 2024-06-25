@@ -93,7 +93,6 @@ const DebtorInformation: FC<Props> = ({ entryId, debtor_info }) => {
     }
   }, [debtor_info, setValue]);
 
-  console.log("&&&&&&&&&&&&&&&&&&&&&", searchInfo);
 
   useEffect(() => {
     if (searchInfo?.data) {

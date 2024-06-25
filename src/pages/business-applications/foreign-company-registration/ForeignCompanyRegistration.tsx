@@ -21,7 +21,7 @@ import CompanyAttachments from "./attachments/CompanyAttachments";
 import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 import { AppDispatch, RootState } from "../../../states/store";
 import UserReviewTabComments from "../../../components/applications-review/UserReviewTabComments";
-import { useLazyGetBusinessQuery } from "@/states/api/businessRegistrationApiSlice";
+import { useLazyGetBusinessQuery } from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
 import { setBusiness } from "@/states/features/businessSlice";
 import { Loader } from "lucide-react";

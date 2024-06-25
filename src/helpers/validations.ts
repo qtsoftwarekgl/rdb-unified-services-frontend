@@ -90,7 +90,6 @@ export const validatePassword = (password: string) => {
     }
   }
   if (password && /(?=.*[a-z])/.test(password)) {
-    console.log(password);
     const lowercaseCharacter = missingCharacters.find(
       (character) => character.type === 'lowercase'
     );

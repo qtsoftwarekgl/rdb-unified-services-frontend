@@ -27,7 +27,7 @@ import {
   useLazyGetBusinessAddressQuery,
   useLazyGetBusinessDetailsQuery,
   useLazyGetEmploymentInfoQuery,
-} from "@/states/api/businessRegistrationApiSlice";
+} from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
 import {
   setBusinessAddress,

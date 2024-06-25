@@ -214,7 +214,6 @@ const BoardOfDirectors = ({ businessId, status }: BoardOfDirectorsProps) => {
                               });
                               return;
                             }
-                            console.log(field.value);
                           }}
                           label="ID Document No"
                           suffixIconPrimary

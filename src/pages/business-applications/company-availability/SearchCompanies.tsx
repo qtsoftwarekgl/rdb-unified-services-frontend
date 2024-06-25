@@ -302,9 +302,6 @@ const SearchCompanies = () => {
               totalPages={totalPages}
               setPage={setBusinessPage}
               setSize={setBusinessSize}
-              rowClickHandler={(row: Business) => {
-                console.log(`/services/company-details/${row.id}`);
-              }}
               data={businessesList?.map((business: Business, index: number) => {
                 return {
                   ...business,

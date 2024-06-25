@@ -70,24 +70,16 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
   // MANAGEMENT PEOPLE COLUMNS
   const managementPeopleColumns = [
     {
-      header: "No",
-      accessorKey: "no",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Document No',
+      accessorKey: 'personDocNo',
     },
     {
-      header: "Phone",
-      accessorKey: "phoneNumber",
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-    },
-    {
-      header: "Gender",
-      accessorKey: "gender",
+      header: 'Sex',
+      accessorKey: 'gender',
     },
     {
       header: "Nationality",
@@ -137,10 +129,9 @@ const BusinessPeople = ({ type, businessId }: BusinessPeopleProps) => {
       {managementPeopleIsSuccess && businessPeopleList?.length > 0 && (
         <Table
           data={businessPeopleList?.map(
-            (person: PersonDetail, index: number) => {
+            (person: PersonDetail) => {
               return {
                 ...person,
-                no: index + 1,
                 position: capitalizeString(person?.roleDescription),
                 name: `${person.firstName} ${person.middleName || ""} ${
                   person.lastName || ""

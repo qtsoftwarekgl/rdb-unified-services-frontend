@@ -107,7 +107,6 @@ export const EnterpriseDetails = ({
   }, [company_details?.enterprise_name, setValue, user?.name]);
 
   useEffect(() => {
-    console.log(errors);
     if (Object.keys(errors).length) setInvalidForm(true);
     else setInvalidForm(false);
   }, [formState]);

@@ -6,15 +6,18 @@ import Button from '../../../../components/inputs/Button';
 import validateInputs from '../../../../helpers/validations';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setBusinessActiveStep, setBusinessCompletedStep } from '../../../../states/features/businessRegistrationSlice';
+import {
+  setBusinessActiveStep,
+  setBusinessCompletedStep,
+} from '../../../../states/features/businessRegistrationSlice';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
-import { setBusiness } from '@/states/features/businessSlice';
+import { setBusinessAddress } from '@/states/features/businessSlice';
 import { toast } from 'react-toastify';
 import { ErrorResponse, Link } from 'react-router-dom';
 import {
   useCreateCompanyAddressMutation,
-  useLazyGetBusinessQuery,
+  useLazyGetBusinessAddressQuery,
 } from '@/states/api/businessRegApiSlice';
 import {
   useLazyFetchCellsQuery,
@@ -38,20 +41,24 @@ import Loader from '@/components/Loader';
 
 type CompanyAddressProps = {
   businessId: businessId;
+  applicationStatus?: string;
 };
 
-const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
+const CompanyAddress = ({
+  businessId,
+  applicationStatus,
+}: CompanyAddressProps) => {
   // REACT HOOK FORM
   const {
     control,
     handleSubmit,
     formState: { errors },
-    trigger
+    trigger,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { business } = useSelector((state: RootState) => state.business);
+  const { businessAddress } = useSelector((state: RootState) => state.business);
   const {
     provincesList,
     districtsList,
@@ -69,39 +76,39 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
 
   // INITIALIZE GET BUSINESS QUERY
   const [
-    getBusiness,
+    getBusinessAddress,
     {
-      data: businessData,
-      error: businessError,
-      isLoading: businessIsLoading,
-      isError: businessIsError,
-      isSuccess: businessIsSuccess,
+      data: businessAddressData,
+      error: businessAddressError,
+      isFetching: businessAddressIsFetching,
+      isError: businessAddressIsError,
+      isSuccess: businessAddressIsSuccess,
     },
-  ] = useLazyGetBusinessQuery();
+  ] = useLazyGetBusinessAddressQuery();
 
   // GET BUSINESS
   useEffect(() => {
     if (businessId) {
-      getBusiness({ id: businessId });
+      getBusinessAddress({ businessId: businessId });
     }
-  }, [getBusiness, businessId]);
+  }, [getBusinessAddress, businessId]);
 
   // HANDLE GET BUSINESS RESPONSE
   useEffect(() => {
-    if (businessIsError) {
-      if ((businessError as ErrorResponse)?.status === 500) {
+    if (businessAddressIsError) {
+      if ((businessAddressError as ErrorResponse)?.status === 500) {
         toast.error('An error occurred while fetching business data');
       } else {
-        toast.error((businessError as ErrorResponse)?.data?.message);
+        toast.error((businessAddressError as ErrorResponse)?.data?.message);
       }
-    } else if (businessIsSuccess) {
-      dispatch(setBusiness(businessData?.data));
+    } else if (businessAddressIsSuccess) {
+      dispatch(setBusinessAddress(businessAddressData?.data));
     }
   }, [
-    businessData,
-    businessError,
-    businessIsError,
-    businessIsSuccess,
+    businessAddressData,
+    businessAddressError,
+    businessAddressIsError,
+    businessAddressIsSuccess,
     dispatch,
   ]);
 
@@ -303,9 +310,9 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
     createCompanyAddress({
       businessId: businessId,
       villageId: Number(data?.villageId) || 0,
-      email: data?.email || business?.address?.email,
-      phoneNumber: data?.phoneNumber || business?.address?.phoneNumber,
-      streetName: data?.streetName || business?.address?.streetName,
+      email: data?.email || businessAddress?.email,
+      phoneNumber: data?.phoneNumber || businessAddress?.phoneNumber,
+      streetName: data?.streetName || businessAddress?.streetName,
     });
   };
 
@@ -335,18 +342,18 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
 
   return (
     <section className="flex flex-col w-full gap-6">
-      {businessIsLoading && (
+      {businessAddressIsFetching && (
         <figure className="min-h-[40vh] flex items-center justify-center w-full">
           <Loader />
         </figure>
       )}
-      {businessIsSuccess && business && (
+      {businessAddressIsSuccess && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <fieldset
             className="flex flex-col w-full gap-6"
             disabled={disableForm}
           >
-            {business?.address?.location && !showStaticLocation && (
+            {businessAddress?.location && !showStaticLocation && (
               <Link
                 to={'#'}
                 onClick={(e) => {
@@ -370,10 +377,10 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
-                      {business?.address?.location?.province &&
+                      {businessAddress?.location?.province &&
                       showStaticLocation ? (
                         <StaticLocation
-                          location={business.address.location.province}
+                          location={businessAddress?.location.province}
                           showStaticLocation={setShowStaticLocation}
                         />
                       ) : (
@@ -424,10 +431,10 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
-                      {business?.address?.location?.district &&
+                      {businessAddress?.location?.district &&
                       showStaticLocation ? (
                         <StaticLocation
-                          location={business.address.location.district}
+                          location={businessAddress?.location.district}
                           showStaticLocation={setShowStaticLocation}
                         />
                       ) : (
@@ -477,10 +484,10 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
-                      {business?.address?.location?.sector &&
+                      {businessAddress?.location?.sector &&
                       showStaticLocation ? (
                         <StaticLocation
-                          location={business.address.location.sector}
+                          location={businessAddress?.location.sector}
                           showStaticLocation={setShowStaticLocation}
                         />
                       ) : (
@@ -526,10 +533,9 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
-                      {business?.address?.location?.cell &&
-                      showStaticLocation ? (
+                      {businessAddress?.location?.cell && showStaticLocation ? (
                         <StaticLocation
-                          location={business.address.location.cell}
+                          location={businessAddress?.location.cell}
                           showStaticLocation={setShowStaticLocation}
                         />
                       ) : (
@@ -573,10 +579,10 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
-                      {business?.address?.location?.village &&
+                      {businessAddress?.location?.village &&
                       showStaticLocation ? (
                         <StaticLocation
-                          location={business.address.location.village}
+                          location={businessAddress?.location.village}
                           showStaticLocation={setShowStaticLocation}
                         />
                       ) : (
@@ -610,7 +616,7 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
               <Controller
                 control={control}
                 name="streetName"
-                defaultValue={business?.address?.streetName}
+                defaultValue={businessAddress?.streetName}
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col w-full gap-1">
@@ -628,7 +634,7 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
               <Controller
                 name="email"
                 control={control}
-                defaultValue={business?.address?.email}
+                defaultValue={businessAddress?.email}
                 rules={{
                   required: 'Email address is required',
                   validate: (value) => {
@@ -662,7 +668,7 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
               />
               <Controller
                 name="phoneNumber"
-                defaultValue={business?.address?.phoneNumber}
+                defaultValue={businessAddress?.phoneNumber}
                 rules={{
                   required: 'Phone number is required',
                   validate: (value) => {
@@ -704,7 +710,7 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
               'ACTION_REQUIRED',
               'IS_AMENDING',
               'IN_PREVIEW',
-            ].includes(business.applicationStatus) && (
+            ].includes(String(applicationStatus)) && (
               <menu
                 className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
               >
@@ -716,11 +722,11 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
                     dispatch(setBusinessActiveStep('company_details'));
                   }}
                 />
-                {['IS_AMENDING'].includes(business.applicationStatus) && (
+                {['IS_AMENDING'].includes(String(applicationStatus)) && (
                   <Button submit value={'Complete Amendment'} />
                 )}
                 {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
-                  business.applicationStatus
+                  String(applicationStatus)
                 ) && (
                   <Button
                     value={'Save & Complete Preview'}
@@ -748,7 +754,7 @@ const CompanyAddress = ({ businessId }: CompanyAddressProps) => {
               'IS_APPROVED',
               'PENDING_APPROVAL',
               'PENDING_REJECTION',
-            ].includes(business.applicationStatus) && (
+            ].includes(String(applicationStatus)) && (
               <menu className="flex items-center gap-3 justify-between">
                 <Button
                   value={'Back'}

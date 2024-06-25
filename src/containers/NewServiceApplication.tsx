@@ -23,7 +23,7 @@ import { AppDispatch, RootState } from '@/states/store';
 import { Business } from '@/types/models/business';
 import { faArrowRight, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Row } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -265,11 +265,13 @@ const NewServiceApplication = () => {
                             ...application,
                             no: index + 1,
                             service,
-                            createdAt: formatDate(application.createdAt),
+                            createdAt: formatDate(
+                              application.createdAt
+                            ) as unknown as Date,
                           };
                         }
                       )}
-                      columns={applicationsInProgressColumns}
+                      columns={applicationsInProgressColumns as ColumnDef<Business>[]}
                       showFilter={false}
                       showPagination={false}
                     />

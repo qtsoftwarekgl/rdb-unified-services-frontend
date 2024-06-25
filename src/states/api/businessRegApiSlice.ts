@@ -430,18 +430,6 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
-
-      // UPLOAD PERSON ATTACHMENT
-      uploadPersonAttachment: builder.mutation({
-        query: ({ formData }) => {
-          return {
-            url: `/attachment/person-upload`,
-            method: 'POST',
-            body: formData,
-            formData: true,
-          };
-        },
-      }),
     };
   },
 });
@@ -450,7 +438,6 @@ export const {
   useLazySearchBusinessesQuery,
   useLazyFetchBusinessesQuery,
   useLazyGetBusinessQuery,
-  useLazyGetBusinessDetailsQuery,
   useLazyGetBusinessAddressQuery,
   useCreateBusinessMutation,
   useDeleteBusinessMutation,
@@ -472,7 +459,7 @@ export const {
   useLazyFetchBusinessAddressQuery,
   useLazyFetchBusinessEmploymentInfoQuery,
   useUpdateBusinessMutation,
-  useUploadPersonAttachmentMutation,
+  useLazyGetBusinessDetailsQuery,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

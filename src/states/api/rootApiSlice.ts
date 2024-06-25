@@ -16,7 +16,7 @@ const prepareHeaders = (headers: Headers) => {
 };
 
 export const businessBaseQuery = fetchBaseQuery({
-  baseUrl: `${import.meta.env.VITE_LOCAL_APP_API_URL}/business`,
+  baseUrl: `${import.meta.env.VITE_APP_BUSINESS_REG_LOCAL_API}/business`,
   prepareHeaders,
 });
 

@@ -17,7 +17,7 @@ import { businessId } from "@/types/models/business";
 import {
   useCreateEmploymentInfoMutation,
   useLazyGetEmploymentInfoQuery,
-} from "@/states/api/businessRegistrationApiSlice";
+} from "@/states/api/businessRegApiSlice";
 import { ErrorResponse, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setEmploymentInfo } from "@/states/features/businessSlice";

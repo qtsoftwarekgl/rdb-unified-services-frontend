@@ -1,15 +1,18 @@
 import { PersonAttachment } from '@/types/models/personAttachment';
 import { PersonDetail } from '@/types/models/personDetail';
+import { UserInformation } from '@/types/models/userInformation';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: {
   businessPeopleList: PersonDetail[];
-  selectedBusinessPerson: PersonDetail;
+  selectedBusinessPerson?: PersonDetail;
   businessPeopleAttachments: PersonAttachment[];
+  userInformation?: UserInformation;
 } = {
   businessPeopleList: [],
-  selectedBusinessPerson: {} as PersonDetail,
+  selectedBusinessPerson: undefined,
   businessPeopleAttachments: [],
+  userInformation: undefined,
 };
 
 export const businessPeopleSlice = createSlice({
@@ -44,6 +47,9 @@ export const businessPeopleSlice = createSlice({
         (attachment: PersonAttachment) => attachment.id !== action.payload
       );
     },
+    setUserInformation: (state, action) => {
+      state.userInformation = action.payload;
+    }
   },
 });
 
@@ -55,6 +61,7 @@ export const {
   setBusinessPeopleAttachments,
   addBusinessPersonAttachment,
   removeBusinessPersonAttachment,
+  setUserInformation,
 } = businessPeopleSlice.actions;
 
 export default businessPeopleSlice.reducer;
