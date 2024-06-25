@@ -159,7 +159,6 @@ const BoardDirectors = ({
   // HANDLE SEARCH VILLAGE RESPONSE
   useEffect(() => {
     if (userInformation && searchVillageIsSuccess) {
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", searchVillageData?.data);
       reset({
         position: watch("position"),
         personIdentType: "nid",

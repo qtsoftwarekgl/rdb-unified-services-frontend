@@ -43,7 +43,6 @@ const BusinessPeopleAttachments = ({
           <menu className="flex items-center gap-4">
             <Button
               onClick={(e) => {
-                console.log(row);
                 e.preventDefault();
                 setPreviewAttachmentUrl(row?.original?.attachmentUrl);
               }}
