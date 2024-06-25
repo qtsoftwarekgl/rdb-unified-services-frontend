@@ -1,18 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import store from "store";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { businessBaseQueryWithReauth } from "./rootApiSlice";
 
 export const foreignCompanyRegistrationApiSlice = createApi({
   reducerPath: "foreignCompanyRegistrationApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_LOCAL_APP_API_URL}/business`,
-    prepareHeaders: (headers) => {
-      const user = store.get("user");
-      if (user) {
-        headers.set("authorization", `Bearer ${user.token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: businessBaseQueryWithReauth,
   endpoints: (builder) => ({
     getForeignCompanyRegistration: builder.query({
       query: ({ id }) => {

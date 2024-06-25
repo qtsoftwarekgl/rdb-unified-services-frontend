@@ -97,7 +97,7 @@ export const foreign_business_registration_tabs_initial_state: Array<Registratio
     {
       no: 6,
       label: "Preview & Submission",
-      name: "foreign_preview_submission",
+      name: "preview_submission",
       completed: false,
       active: false,
       steps: [

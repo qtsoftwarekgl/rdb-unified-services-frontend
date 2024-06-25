@@ -147,19 +147,20 @@ const ForeignBranchRegistration = () => {
                               applicationStatus={business.applicationStatus}
                             />
                           )}
-                          {activeStepName === "foreign_beneficial_owners" && (
+                          {/* {activeStepName === "foreign_beneficial_owners" && (
                             <BeneficialOwners
                               businessId={queryParams?.businessId}
                             />
-                          )}
+                          )} */}
                           {activeStepName === "foreign_attachments" && (
                             <CompanyAttachments
                               businessId={queryParams?.businessId}
                             />
                           )}
-                          {activeStepName === "foreign_preview_submission" && (
+                          {activeStepName === "preview_submission" && (
                             <PreviewSubmission
                               businessId={queryParams?.businessId}
+                              applicationStatus={business.applicationStatus}
                             />
                           )}
                         </>

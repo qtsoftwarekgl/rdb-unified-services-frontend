@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import PreviewCard from "../../../../components/business-registration/PreviewCard";
@@ -9,48 +9,304 @@ import {
   setForeignBusinessRegistrationTabs,
   foreign_business_registration_tabs_initial_state,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
-import { capitalizeString } from "../../../../helpers/strings";
+import {
+  capitalizeCamelCase,
+  capitalizeString,
+  formatDate,
+} from "../../../../helpers/strings";
 import Table from "../../../../components/table/Table";
 import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
-import { useNavigate } from "react-router-dom";
+import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
 import { setUserApplications } from "../../../../states/features/userApplicationSlice";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
-import { provicesList } from "../../../../constants/provinces";
-import { districtsList } from "../../../../constants/districts";
-import { sectorsList } from "../../../../constants/sectors";
-import { cellsList } from "../../../../constants/cells";
-import { villagesList } from "../../../../constants/villages";
-import { businessId } from "@/types/models/business";
+import { BusinessActivity, businessId } from "@/types/models/business";
+import {
+  useLazyFetchBusinessActivitiesQuery,
+  useLazyGetBusinessAddressQuery,
+  useLazyGetBusinessDetailsQuery,
+  useLazyGetEmploymentInfoQuery,
+} from "@/states/api/businessRegistrationApiSlice";
+import { toast } from "react-toastify";
+import {
+  setBusinessAddress,
+  setBusinessDetails,
+  setEmploymentInfo,
+} from "@/states/features/businessSlice";
+import { useLazyFetchManagementOrBoardMembersQuery } from "@/states/api/foreignCompanyRegistrationApiSlice";
+import { setBoardOfDirectorsList } from "@/states/features/boardOfDirectorSlice";
+import { setExecutiveManagersList } from "@/states/features/executiveManagerSlice";
+import {
+  setSelectedBusinessLinesList,
+  setSelectedMainBusinessLine,
+  setVatRegistred,
+} from "@/states/features/businessActivitySlice";
 
 interface PreviewSubmissionProps {
   businessId: businessId;
-  current_application: any;
-  status: string;
+  applicationStatus: string;
 }
 
 const PreviewSubmission = ({
   businessId,
-  current_application,
-  status,
+  applicationStatus,
 }: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.user);
+  const { businessDetails, businessAddress } = useSelector(
+    (state: RootState) => state.business
+  );
+  const { selectedBusinessLinesList, selectedMainBusinessLine, vatRegistred } =
+    useSelector((state: RootState) => state.businessActivity);
+  const { boardMemberList } = useSelector(
+    (state: RootState) => state.boardOfDirector
+  );
+  const { executiveManagersList } = useSelector(
+    (state: RootState) => state.executiveManager
+  );
+  const { employmentInfo } = useSelector((state: RootState) => state.business);
 
-  const foreign_company_details = current_application?.company_details;
-  const foreign_company_address = current_application?.foreign_company_address;
-  const foreign_company_activities =
-    current_application?.foreign_company_activities;
-  const foreign_board_of_directors =
-    current_application?.foreign_board_of_directors || [];
-  const foreign_executive_management =
-    current_application?.foreign_executive_management || [];
-  const foreign_employment_info = current_application?.foreign_employment_info;
-  const foreign_beneficial_owners =
-    current_application?.foreign_beneficial_owners || [];
+  // GET BUSINESS DETAILS
+  const [
+    getBusinessDetails,
+    {
+      data: businessDetailsData,
+      isLoading: businessIsLoading,
+      error: businessError,
+      isError: businessIsError,
+      isSuccess: businessIsSuccess,
+    },
+  ] = useLazyGetBusinessDetailsQuery();
+
+  // GET BUSINESS DETAILS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessDetails({ id: businessId });
+    }
+  }, [businessId, getBusinessDetails]);
+
+  // HANDLE BUSINESS DETAILS DATA RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      if ((businessError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business details. Please try again later."
+        );
+      } else {
+        toast.error((businessError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessIsSuccess) {
+      dispatch(setBusinessDetails(businessDetailsData?.data));
+    }
+  }, [
+    businessDetailsData,
+    businessError,
+    businessIsError,
+    businessIsSuccess,
+    dispatch,
+  ]);
+
+  // INITIALIZE GET BUSINESS QUERY
+  const [
+    getBusinessAddress,
+    {
+      data: businessAddressData,
+      error: businessAddressError,
+      isLoading: businessAddressIsLoading,
+      isError: businessAddressIsError,
+      isSuccess: businessAddressIsSuccess,
+    },
+  ] = useLazyGetBusinessAddressQuery();
+
+  // GET BUSINESS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessAddress({ id: businessId });
+    }
+  }, [getBusinessAddress, businessId]);
+
+  // HANDLE GET BUSINESS RESPONSE
+  useEffect(() => {
+    if (businessAddressIsError) {
+      if ((businessAddressError as ErrorResponse)?.status === 500) {
+        toast.error("An error occurred while fetching business data");
+      } else {
+        toast.error((businessAddressError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessAddressIsSuccess) {
+      dispatch(setBusinessAddress(businessAddressData?.data));
+    }
+  }, [
+    businessAddressData,
+    businessAddressError,
+    businessAddressIsError,
+    businessAddressIsSuccess,
+    dispatch,
+  ]);
+
+  // INITIALIZE FETCH BUSINESS ACTIVITIES QUERY
+  const [
+    fetchBusinessActivities,
+    {
+      data: businessActivitiesData,
+      isLoading: businessActivitiesIsLoading,
+      isSuccess: businessActivitiesIsSuccess,
+      isError: businessActivitiesIsError,
+      error: businessActivitiesError,
+    },
+  ] = useLazyFetchBusinessActivitiesQuery();
+
+  // FETCH BUSINESS ACTIVITIES
+  useEffect(() => {
+    fetchBusinessActivities({ businessId });
+  }, [businessId, fetchBusinessActivities]);
+
+  // HANDLE FETCH BUSINESS ACTIVITIES RESPONSE
+  useEffect(() => {
+    if (businessActivitiesIsError) {
+      if ((businessActivitiesError as ErrorResponse).status === 500) {
+        toast.error(
+          "An error occured while fetching business activities. Please try again later."
+        );
+      }
+    } else if (businessActivitiesIsSuccess) {
+      dispatch(
+        setSelectedBusinessLinesList(businessActivitiesData?.data?.businessLine)
+      );
+      dispatch(setVatRegistred(businessActivitiesData?.data?.vatregistered));
+      if (
+        selectedMainBusinessLine === undefined ||
+        Object.keys(selectedMainBusinessLine).length === 0
+      ) {
+        dispatch(
+          setSelectedMainBusinessLine(
+            businessActivitiesData?.data?.businessLine?.find(
+              (activity: BusinessActivity) =>
+                activity.description ===
+                businessActivitiesData?.data?.mainBusinessActivity
+            )
+          )
+        );
+      }
+    }
+  }, [
+    businessActivitiesData,
+    businessActivitiesError,
+    businessActivitiesIsError,
+    businessActivitiesIsSuccess,
+    dispatch,
+    selectedMainBusinessLine,
+  ]);
+
+  // INITIALIZE FETCH BOARD MEMEBER QUERY
+  const [
+    fetchBoardMembers,
+    {
+      data: boardMemberData,
+      error: boardMemberError,
+      isLoading: boardMemberIsLoading,
+      isError: boardMemberIsError,
+      isSuccess: boardMemberIsSuccess,
+    },
+  ] = useLazyFetchManagementOrBoardMembersQuery();
+
+  // FETCH BOARD MEMBERS
+  useEffect(() => {
+    if (!businessId) return;
+    fetchBoardMembers({ businessId, route: "board-member" });
+  }, [fetchBoardMembers, businessId]);
+
+  // HANDLE FETCH BOARD MEMBERS RESPONSE
+  useEffect(() => {
+    if (boardMemberIsError) {
+      if ((boardMemberError as ErrorResponse)?.status === 500) {
+        toast.error("An error occurred while fetching board members");
+      } else {
+        toast.error((boardMemberError as ErrorResponse)?.data?.message);
+      }
+    } else if (boardMemberIsSuccess) {
+      dispatch(setBoardOfDirectorsList(boardMemberData.data));
+    }
+  }, [
+    boardMemberData,
+    boardMemberError,
+    boardMemberIsError,
+    boardMemberIsSuccess,
+    dispatch,
+  ]);
+
+  // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
+  const [
+    fetchManagementMember,
+    {
+      data: managementMemberData,
+      error: managementMemberError,
+      isLoading: managementMemberIsLoading,
+      isError: managementMemberIsError,
+      isSuccess: managementMemberIsSuccess,
+    },
+  ] = useLazyFetchManagementOrBoardMembersQuery();
+
+  // FETCH MANAGEMENT PEOPLE
+  useEffect(() => {
+    if (!businessId) return;
+    fetchManagementMember({
+      businessId,
+      route: "management",
+    });
+  }, [businessId, fetchManagementMember]);
+
+  // HANDLE MANAGEMENT PEOPLE RESPONSE
+  useEffect(() => {
+    if (managementMemberIsError) {
+      if ((managementMemberError as ErrorResponse).status === 500) {
+        toast.error(
+          "An error occured while fetching people. Please try again later"
+        );
+      } else {
+        toast.error((managementMemberError as ErrorResponse).data?.message);
+      }
+    } else if (managementMemberIsSuccess) {
+      dispatch(setExecutiveManagersList(managementMemberData?.data));
+    }
+  }, [
+    dispatch,
+    managementMemberData?.data,
+    managementMemberError,
+    managementMemberIsSuccess,
+    managementMemberIsError,
+  ]);
+
+  // GET EMPLOYMENT INFO
+  const [
+    fetchEmploymentInfo,
+    {
+      data: employmentInfoData,
+      isLoading: employmentInfoIsLoading,
+      error: employmentInfoError,
+      isSuccess: employmentInfoIsSuccess,
+    },
+  ] = useLazyGetEmploymentInfoQuery();
+
+  // FETCH EMPLOYMENT INFO
+  useEffect(() => {
+    if (!businessId) return;
+    fetchEmploymentInfo({ id: businessId });
+  }, [businessId, fetchEmploymentInfo]);
+
+  // HANDLE FETCH EMPLOYMENT INFO QUERY
+  useEffect(() => {
+    if (employmentInfoError) {
+      if ((employmentInfoError as ErrorResponse)?.status === 500)
+        toast.error(
+          "An error occurred while fetching employment info. Please try again later."
+        );
+      else toast.error((employmentInfoError as ErrorResponse)?.data?.message);
+    } else dispatch(setEmploymentInfo(employmentInfoData?.data));
+  }, [dispatch, employmentInfoData?.data, employmentInfoError]);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -62,8 +318,8 @@ const PreviewSubmission = ({
       accessorKey: "name",
     },
     {
-      header: "Phone number",
-      accessorKey: "phone",
+      header: "Document Number (NID/Passport)",
+      accessorKey: "documentNumber",
     },
     {
       header: "Position",
@@ -75,28 +331,19 @@ const PreviewSubmission = ({
     },
   ];
 
-  const beneficialOwnersColumns = [
-    {
-      header: "Name",
-      accessorKey: "name",
-    },
-    {
-      header: "Phone number",
-      accessorKey: "phone",
-    },
-    {
-      header: "Control type",
-      accessorKey: "control_type",
-    },
-    {
-      header: "Ownership type",
-      accessorKey: "ownership_type",
-    },
-  ];
-
   return (
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
-      {/* COMPANY DETAILS */}
+      {employmentInfoIsLoading ||
+        businessAddressIsLoading ||
+        businessIsLoading ||
+        businessActivitiesIsLoading ||
+        boardMemberIsLoading ||
+        employmentInfoIsSuccess ||
+        (managementMemberIsLoading && (
+          <figure className="h-[40vh] flex items-center justify-center">
+            <Loader />
+          </figure>
+        ))}
       <PreviewCard
         header="Company Details"
         tabName="general_information"
@@ -104,14 +351,15 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
+        status={applicationStatus}
       >
-        {foreign_company_details &&
-          Object?.entries(foreign_company_details)
-            ?.filter(([key]) => key !== "step")
+        {businessDetails &&
+          Object?.entries(businessDetails)
+            ?.filter(([key]) => key !== "step" && key !== "id")
             ?.map(([key, value], index: number) => {
               return (
                 <p key={index} className="flex items-center gap-2">
-                  <span className="">{capitalizeString(key)}:</span>{" "}
+                  <span className="">{capitalizeCamelCase(key)}:</span>{" "}
                   <span className="font-bold">
                     {String(value) && capitalizeString(String(value))}
                   </span>
@@ -120,72 +368,66 @@ const PreviewSubmission = ({
             })}
       </PreviewCard>
       {/* COMPANY ADDRESS */}
-      {foreign_company_address && (
+      {businessAddress && (
         <PreviewCard
           header="Company Address"
           tabName="general_information"
-          stepName="foreign_company_address"
+          stepName="company_address"
           setActiveStep={setForeignBusinessActiveStep}
           setActiveTab={setForeignBusinessActiveTab}
           businessId={businessId}
+          status={applicationStatus}
         >
-          {Object?.entries(foreign_company_address)
-            ?.filter(([key]) => key !== "step")
+          {Object?.entries(businessAddress)
+            ?.filter(
+              ([key]) => key !== "step" && key !== "id" && key !== "location"
+            )
             ?.map(([key, value], index: number) => {
               return (
                 <p key={index} className="flex items-center gap-2">
-                  <span className="">{capitalizeString(key)}:</span>{" "}
-                  <span className="font-bold">
-                    {String(
-                      provicesList.find((province) => province.code === value)
-                        ?.name ||
-                        districtsList.find(
-                          (district) => district.code === value
-                        )?.name ||
-                        sectorsList.find((sector) => sector.code === value)
-                          ?.name ||
-                        cellsList.find((cell) => cell.code === value)?.name ||
-                        villagesList.find((village) => village.code === value)
-                          ?.name ||
-                        value
-                    ) ?? ""}
-                  </span>
+                  <span className="">{capitalizeCamelCase(key)}:</span>{" "}
+                  <span className="font-bold">{String(value) ?? ""}</span>
                 </p>
               );
             })}
         </PreviewCard>
       )}
-      COMPANY ACTIVITIES
       <PreviewCard
         header="Business Activities & VAT"
         tabName="general_information"
-        stepName="foreign_business_activity_vat"
+        stepName="business_activity_vat"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
+        status={applicationStatus}
       >
         <p className="font-semibold">
           Register for VAT:{" "}
           <span className="font-normal">
-            {foreign_company_activities?.vat &&
-              capitalizeString(foreign_company_activities?.vat)}
+            {capitalizeString(vatRegistred ? "yes" : "no")}
           </span>
         </p>
         <p className="font-semibold">
+          Main business line:{" "}
+          <span className="font-normal">
+            {selectedMainBusinessLine.description}
+          </span>
+        </p>
+        {/* <p className="font-semibold">
           Annual turnover:{" "}
           <span className="font-normal">
             {foreign_company_activities?.turnover
               ? String(capitalizeString(foreign_company_activities?.turnover))
               : "N/A"}
           </span>
-        </p>
+        </p> */}
         <menu className="flex flex-col gap-3">
           <h3 className="font-semibold underline text-md">Business lines: </h3>
           <ul className="flex flex-col gap-2">
-            {foreign_company_activities?.business_lines?.map((line, index) => {
+            {selectedBusinessLinesList?.map((line, index) => {
               return (
                 <li key={index} className="flex items-center gap-1">
-                  {line?.name}
+                  {line?.description}
                 </li>
               );
             })}
@@ -195,26 +437,28 @@ const PreviewSubmission = ({
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
         header="Board of Directors"
-        tabName="foreign_management"
-        stepName="foreign_board_of_directors"
+        tabName="management"
+        stepName="board_of_directors"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
+        status={applicationStatus}
       >
         <Table
           rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
           columns={managementColumns}
-          data={foreign_board_of_directors?.map((director) => {
+          data={boardMemberList?.map((director) => {
             return {
               ...director,
-              name: `${director?.first_name} ${director?.last_name}`,
-              phone: director?.phone,
+              name: `${director?.firstName} ${director?.lastName}`,
+              documentNumber: director?.personDocNo,
               position:
-                director?.position && capitalizeString(director?.position),
+                director?.roleDescription &&
+                capitalizeString(director?.roleDescription),
               country: countriesList?.find(
-                (country) => country?.code === director?.country
+                (country) => country?.code === director?.nationality
               )?.name,
             };
           })}
@@ -222,27 +466,29 @@ const PreviewSubmission = ({
       </PreviewCard>
       {/* SENIOR MANAGEMENT */}
       <PreviewCard
-        header="Senior Management"
-        tabName="foreign_management"
-        stepName="foreign_executive_management"
+        header="Executive Management"
+        tabName="management"
+        stepName="executive_management"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
+        status={applicationStatus}
       >
         <Table
           rowClickHandler={undefined}
           showFilter={false}
           showPagination={false}
           columns={managementColumns}
-          data={foreign_executive_management?.map((director) => {
+          data={executiveManagersList?.map((director) => {
             return {
               ...director,
-              name: `${director?.first_name} ${director?.last_name}`,
-              phone: director?.phone,
+              name: `${director?.firstName} ${director?.lastName}`,
+              documentNumber: director?.personDocNo,
               position:
-                director?.position && capitalizeString(director?.position),
+                director?.roleDescription &&
+                capitalizeString(director?.roleDescription),
               country: countriesList?.find(
-                (country) => country?.code === director?.country
+                (country) => country?.code === director?.nationality
               )?.name,
             };
           })}
@@ -251,159 +497,46 @@ const PreviewSubmission = ({
       {/* EMPLOYMENT INFO */}
       <PreviewCard
         header="Employment Information"
-        tabName="foreign_management"
-        stepName="foreign_employment_info"
+        tabName="management"
+        stepName="employment_info"
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
+        status={applicationStatus}
       >
-        <p className="font-semibold">
+        <p>
           Company has employees:{" "}
-          <span className="font-normal">
-            {foreign_employment_info?.has_employees &&
-              capitalizeString(foreign_employment_info?.has_employees)}
+          <span className="font-semibold">
+            {employmentInfo?.numberOfEmployees > 0 ? "yes" : "no"}
           </span>
         </p>
-        {foreign_employment_info?.has_employees !== "no" && (
-          <p className="font-semibold">
+        {employmentInfo?.numberOfEmployees > 0 && (
+          <p>
             Number of employees:{" "}
-            <span className="font-normal">
-              {foreign_employment_info?.employees_no}
+            <span className="font-semibold">
+              {employmentInfo?.numberOfEmployees}
             </span>
           </p>
         )}
         <p>
-          <span className="font-semibold">
-            Account reference date:{" "}
-            <span className="font-normal">
-              {foreign_employment_info?.reference_date || "N/A"}
+          <span>
+            Financial year start date:{" "}
+            <span className="font-semibold">
+              {formatDate(employmentInfo?.financialYearStartDate) || "N/A"}
+            </span>
+          </span>
+        </p>
+        <p>
+          <span>
+            Financial year end date:{" "}
+            <span className="font-semibold">
+              {formatDate(employmentInfo?.financialYearEndDate) || "N/A"}
             </span>
           </span>
         </p>
       </PreviewCard>
       {/* BENEFICIAL OWNERS */}
-      <PreviewCard
-        header="Beneficial Owners"
-        tabName="foreign_beneficial_owners"
-        stepName="foreign_beneficial_owners"
-        setActiveStep={setForeignBusinessActiveStep}
-        setActiveTab={setForeignBusinessActiveTab}
-        businessId={businessId}
-      >
-        <Table
-          rowClickHandler={undefined}
-          data={foreign_beneficial_owners?.map((owner) => {
-            return {
-              ...owner,
-              name: owner?.company_name
-                ? owner?.company_name
-                : `${owner?.first_name ?? ""}  ${owner?.last_name ?? ""}`,
-              phone: owner?.phone || owner?.company_phone,
-              control_type: capitalizeString(owner?.control_type),
-              ownership_type: capitalizeString(owner?.ownership_type),
-            };
-          })}
-          columns={beneficialOwnersColumns}
-          showFilter={false}
-          showPagination={false}
-        />
-      </PreviewCard>
       {/* ATTACHMENTS */}
-      <PreviewCard
-        header="Attachments"
-        tabName="foreign_attachments"
-        stepName="foreign_attachments"
-        setActiveStep={setForeignBusinessActiveStep}
-        setActiveTab={setForeignBusinessActiveTab}
-        businessId={businessId}
-      >
-        <section className="flex flex-col gap-5">
-          <menu className="flex flex-col gap-3">
-            <h3 className="font-semibold uppercase text-md">
-              Board of directors
-            </h3>
-            {foreign_board_of_directors?.map((director, index) => {
-              if (
-                director?.attachment &&
-                Object.keys(director?.attachment).length
-              ) {
-                return (
-                  <p
-                    key={index}
-                    className="flex items-center justify-between w-full gap-6 font-normal"
-                  >
-                    {director?.first_name || ""} {director?.last_name || ""}:{" "}
-                    <span className="font-semibold">
-                      {director?.attachment}
-                    </span>
-                  </p>
-                );
-              }
-            })}
-          </menu>
-          <menu className="flex flex-col gap-3">
-            <h3 className="font-semibold uppercase text-md">
-              Senior management
-            </h3>
-            {foreign_executive_management?.map((senior, index) => {
-              if (
-                senior?.attachment &&
-                Object.keys(senior?.attachment).length
-              ) {
-                return (
-                  <p
-                    key={index}
-                    className="flex items-center justify-between w-full gap-6 font-normal"
-                  >
-                    {senior?.first_name || ""} {senior?.last_name || ""}:{" "}
-                    <span className="font-semibold">
-                      {senior?.attachment.name}
-                    </span>
-                  </p>
-                );
-              }
-            })}
-          </menu>
-          <menu className="flex flex-col gap-3">
-            <h3 className="font-semibold uppercase text-md">
-              Beneficial owners
-            </h3>
-            {foreign_beneficial_owners?.map((beneficial_owner, index) => {
-              if (
-                beneficial_owner?.attachment &&
-                Object.keys(beneficial_owner?.attachment).length
-              ) {
-                if (beneficial_owner?.type === "person") {
-                  return (
-                    <p
-                      key={index}
-                      className="flex items-center justify-between w-full gap-6 font-normal"
-                    >
-                      {beneficial_owner?.first_name || ""}{" "}
-                      {beneficial_owner?.last_name || ""}:{" "}
-                      <span className="font-semibold">
-                        {beneficial_owner?.attachment?.name}
-                      </span>
-                    </p>
-                  );
-                } else {
-                  return (
-                    <p
-                      key={index}
-                      className="flex items-center justify-between w-full gap-6 font-normal"
-                    >
-                      {beneficial_owner?.company_name || ""}:{" "}
-                      <span className="font-semibold">
-                        {beneficial_owner?.attachment?.name}
-                      </span>
-                    </p>
-                  );
-                }
-              }
-            })}
-          </menu>
-        </section>
-      </PreviewCard>
       <menu
         className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
       >

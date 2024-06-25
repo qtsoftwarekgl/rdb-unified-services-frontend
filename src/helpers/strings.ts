@@ -88,3 +88,12 @@ export function filterObject(
 export const maskPhoneDigits = (phone: string) => {
   return `${phone?.slice(0, 3)}X XXX ${phone?.slice(-3)}`;
 };
+
+export const capitalizeCamelCase = (string: string) => {
+  return string
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, function (str) {
+      return str.toUpperCase();
+    })
+    .trim();
+};
