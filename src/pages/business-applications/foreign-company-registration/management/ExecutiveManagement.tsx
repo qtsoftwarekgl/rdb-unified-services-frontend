@@ -37,10 +37,7 @@ import {
   setBusinessPeopleAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
-import {
-  useLazySearchVillageQuery,
-  useUploadPersonAttachmentMutation,
-} from "@/states/api/coreApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 
@@ -97,18 +94,6 @@ const ExecutiveManagement = ({
     },
   ] = useLazyGetUserInformationQuery();
 
-  // INITIALIZE SEARCH VILLAGE QUERY
-  const [
-    searchVillage,
-    {
-      data: searchVillageData,
-      isFetching: searchVillageIsFetching,
-      isSuccess: searchVillageIsSuccess,
-      isError: searchVillageIsError,
-      error: searchVillageError,
-    },
-  ] = useLazySearchVillageQuery();
-
   // HANDLE GET USER INFORMATION RESPONSE
   useEffect(() => {
     if (userInformationIsError) {
@@ -118,28 +103,20 @@ const ExecutiveManagement = ({
         toast.error((userInformationError as ErrorResponse)?.data?.message);
       }
     } else if (userInformationIsSuccess) {
-      searchVillage({
-        villageName: userInformationData?.data?.village,
-        cellName: userInformationData?.data?.cell,
-        sectorName: userInformationData?.data?.sector,
-        districtName: userInformationData?.data?.district,
-        provinceName: userInformationData?.data?.province,
-      });
       dispatch(setUserInformation(userInformationData?.data));
     }
   }, [
     dispatch,
     reset,
-    searchVillage,
     userInformationData,
     userInformationError,
     userInformationIsError,
     userInformationIsSuccess,
   ]);
 
-  // HANDLE SEARCH VILLAGE RESPONSE
+  // HANDLE SET USER INFORMATION
   useEffect(() => {
-    if (userInformation && searchVillageIsSuccess) {
+    if (userInformation && Object.keys(userInformation).length) {
       reset({
         position: watch("position"),
         personIdentType: "nid",
@@ -148,26 +125,11 @@ const ExecutiveManagement = ({
         lastName: userInformation?.surnames,
         gender: userInformation?.gender,
         nationality: userInformation?.nationality,
-        village: searchVillageData?.data?.id,
         persDocIssuePlace: userInformation?.nationality,
         isFromNida: true,
       });
-    } else if (searchVillageIsError) {
-      if ((searchVillageError as ErrorResponse)?.status === 500) {
-        toast.error("An error occured while fetching village information");
-      } else {
-        toast.error((searchVillageError as ErrorResponse)?.data?.message);
-      }
     }
-  }, [
-    reset,
-    searchVillageData,
-    userInformation,
-    searchVillageIsError,
-    searchVillageError,
-    searchVillageIsSuccess,
-    watch,
-  ]);
+  }, [reset, userInformation, watch]);
 
   // INITIALIZE CREATE MANAGEMENT PEOPLE
   const [
@@ -463,8 +425,7 @@ const ExecutiveManagement = ({
                             await trigger("personDocNo");
                           }}
                         />
-                        {(userInformationIsFetching ||
-                          searchVillageIsFetching) && (
+                        {userInformationIsFetching && (
                           <ul className="flex items-center gap-2">
                             <Loader className="text-primary" />
                             <p className="text-[13px]">
@@ -802,9 +763,8 @@ const ExecutiveManagement = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(
-                  setForeignBusinessActiveStep("foreign_board_of_directors")
-                );
+                dispatch(setForeignBusinessActiveStep("business_activity_vat"));
+                dispatch(setForeignBusinessActiveTab("general_information"));
               }}
             />
             {applicationStatus === "IS_AMENDING" && (
@@ -835,13 +795,9 @@ const ExecutiveManagement = ({
                     return;
                   }
                   dispatch(
-                    setForeignBusinessCompletedStep(
-                      "foreign_executive_management"
-                    )
+                    setForeignBusinessCompletedStep("executive_management")
                   );
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
+                  dispatch(setForeignBusinessActiveTab("preview_submission"));
                 }}
               />
             )}

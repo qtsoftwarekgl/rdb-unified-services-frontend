@@ -32,6 +32,7 @@ import {
 import { useCreateOrUpdateCompanyDetailsMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { convertDecimalToPercentage } from "@/helpers/strings";
 import { businessId } from "@/types/models/business";
+import SimilarBusinessNames from "../../domestic-business-registration/general-information/SimilarBusinessNames";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -46,7 +47,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     trigger,
     setError,
     clearErrors,
-    setValue,
+    reset,
     watch,
   } = useForm();
 
@@ -192,16 +193,17 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
 
   useEffect(() => {
     if (businessDetails && Object.keys(businessDetails).length > 0) {
-      setValue("companyName", businessDetails?.companyName);
-      setValue("companyCategory", businessDetails?.companyCategory);
-      setValue("companyType", businessDetails?.companyType);
-      setValue("position", businessDetails?.position);
-      setValue(
-        "hasArticlesOfAssociation",
-        businessDetails?.hasArticlesOfAssociation ? "yes" : "no"
-      );
+      reset({
+        companyName: businessDetails?.companyName,
+        companyCategory: businessDetails?.companyCategory,
+        companyType: businessDetails?.companyType,
+        position: businessDetails?.position,
+        hasArticlesOfAssociation: businessDetails?.hasArticlesOfAssociation
+          ? "yes"
+          : "no",
+      });
     }
-  }, [businessDetails, setValue]);
+  }, [businessDetails, reset]);
 
   return (
     <section className="flex flex-col w-full gap-4">
@@ -500,6 +502,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           </menu>
         </fieldset>
       </form>
+      <SimilarBusinessNames companyName={watch("companyName")} />
     </section>
   );
 };
