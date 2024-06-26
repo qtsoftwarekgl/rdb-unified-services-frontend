@@ -24,10 +24,39 @@ import {
 import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
 import { setBusinessDetails } from "@/states/features/businessSlice";
 import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface CompanyAttachmentsProps {
   businessId: businessId;
 }
+
+const attachmentFields = [
+  {
+    name: "certificationOfIncorporation",
+    label: "Certification of incorporation",
+    required: true,
+    attachmentType: "Certification of Incorporation",
+  },
+  {
+    name: "resolution",
+    label: "Resolution attachment",
+    required: true,
+    attachmentType: "Resolution Attachment",
+  },
+  {
+    name: "licensesOfBusinessActivities",
+    label: "Licenses of business activities",
+    required: true,
+    attachmentType: "Licenses of Business Activities",
+  },
+  {
+    name: "other_attachments",
+    label: "Other attachments",
+    required: false,
+    attachmentType: "Other Attachments",
+  },
+];
 
 const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   // REACT HOOK FORM
@@ -39,7 +68,6 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-
   const { businessAttachments } = useSelector(
     (state: RootState) => state.businessPeople
   );
@@ -59,17 +87,11 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   // HANDLE UPLOAD BUSINESS ATTACHMENT RESPONSE
   useEffect(() => {
     if (uploadBusinessAttachmentIsError) {
-      if ((uploadBusinessAttachmentError as ErrorResponse).status === 500)
-        toast.error(
-          "An error occurred while uploading attachments. Please try again later."
-        );
-      else {
-        toast.error(
-          (uploadBusinessAttachmentError as ErrorResponse)?.data?.message
-        );
-      }
+      const errorMessage =
+        (uploadBusinessAttachmentError as ErrorResponse)?.data?.message ||
+        "An error occurred while uploading attachments. Please try again later.";
+      toast.error(errorMessage);
     } else if (uploadBusinessAttachmentIsSuccess) {
-      // TO DO
       toast.success("Attachments uploaded successfully");
       dispatch(addBusinessAttachment(uploadBusinessAttachmentData?.data));
     }
@@ -108,13 +130,10 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   // HANDLE BUSINESS DETAILS DATA RESPONSE
   useEffect(() => {
     if (businessIsError) {
-      if ((businessError as ErrorResponse)?.status === 500) {
-        toast.error(
-          "An error occurred while fetching business details. Please try again later."
-        );
-      } else {
-        toast.error((businessError as ErrorResponse)?.data?.message);
-      }
+      const errorMessage =
+        (businessError as ErrorResponse)?.data?.message ||
+        "An error occurred while fetching business details. Please try again later.";
+      toast.error(errorMessage);
     } else if (businessIsSuccess) {
       dispatch(setBusinessDetails(businessDetailsData?.data));
     }
@@ -126,7 +145,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     dispatch,
   ]);
 
-  // INITIALIZE FETC BUSINESS ATTACHMENTS
+  // INITIALIZE FETCH BUSINESS ATTACHMENTS
   const [
     fetchBusinessAttachments,
     {
@@ -148,13 +167,10 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
   useEffect(() => {
     if (businessAttachmentsIsError) {
-      if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
-        toast.error(
-          "An error occurred while fetching business attachments. Please try again later."
-        );
-      } else {
-        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
-      }
+      const errorMessage =
+        (businessAttachmentsError as ErrorResponse)?.data?.message ||
+        "An error occurred while fetching business attachments. Please try again later.";
+      toast.error(errorMessage);
     } else if (businessAttachmentsIsSuccess) {
       dispatch(setBusinessAttachments(businessAttachmentsData?.data));
     }
@@ -175,201 +191,154 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     uploadBusinessAttachment({ formData });
   };
 
+  // VALIDATE REQUIRED ATTACHMENTS
+  const validateRequiredAttachments = () => {
+    const requiredAttachments = attachmentFields.filter(
+      (field) => field.required
+    );
+    return requiredAttachments.every(({ attachmentType }) =>
+      businessAttachments.some(
+        (attachment) => attachment.attachmentType === attachmentType
+      )
+    );
+  };
+
+  const onSubmit = () => {
+    if (!validateRequiredAttachments()) {
+      toast.error("Please upload all required attachments before continuing.");
+      return;
+    }
+
+    dispatch(setForeignBusinessActiveStep("preview_submission"));
+    dispatch(setForeignBusinessActiveTab("preview_submission"));
+  };
+
   return (
     <main className="flex flex-col w-full gap-8">
-      {businessAttachmentsIsLoading ||
-        (businessIsLoading && (
-          <figure className="flex items-center justify-center">
-            <Loader />
-          </figure>
-        ))}
-      <form onSubmit={handleSubmit(() => {})}>
+      {(businessAttachmentsIsLoading || businessIsLoading) && (
+        <figure className="flex items-center justify-center">
+          <Loader />
+        </figure>
+      )}
+      <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
           disabled={isFormDisabled}
         >
-          <section
-            className={`${
-              businessDetails?.hasArticlesOfAssociation ? "flex" : "hidden"
-            } w-full flex flex-col gap-3`}
-          >
-            <h1 className="text-lg font-medium uppercase">Company Details</h1>
-            <Controller
-              name="articles_of_association"
-              rules={{
-                required: "Upload company articles of association",
-              }}
-              control={control}
-              render={({ field }) => {
-                return (
+          {businessDetails?.hasArticlesOfAssociation && (
+            <section className="flex flex-col w-full gap-3 ">
+              <h1 className="text-lg font-medium uppercase">Company Details</h1>
+              <Controller
+                name="articles_of_association"
+                rules={{
+                  required: businessAttachments.some(
+                    (attachment) =>
+                      attachment.attachmentType === "Articles of Association"
+                  )
+                    ? false
+                    : "Upload company articles of association",
+                }}
+                control={control}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-2">
+                      <ul className="flex items-center justify-between w-full gap-3">
+                        <p className="flex items-center gap-1">
+                          Article of association{" "}
+                          <span className="text-red-600">*</span>
+                          {businessAttachments.some(
+                            (attachment) =>
+                              attachment.attachmentType ===
+                              "Articles of Association"
+                          ) && (
+                            <FontAwesomeIcon
+                              icon={faCheckCircle}
+                              className="text-primary"
+                            />
+                          )}
+                        </p>
+                        <Input
+                          label="Articles of association"
+                          type="file"
+                          className="!w-fit"
+                          name={field?.name}
+                          onChange={(e) => {
+                            field.onChange(e.target.files?.[0]);
+                            if (e.target.files?.[0])
+                              uploadHelper(
+                                e.target.files?.[0] as File,
+                                "Articles of Association"
+                              );
+                          }}
+                        />
+                      </ul>
+                      {errors?.articles_of_association && (
+                        <p className="text-red-600 text-[13px]">
+                          {String(errors?.articles_of_association?.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            </section>
+          )}
+          {attachmentFields.map(({ name, label, required, attachmentType }) => (
+            <section key={name} className={`flex flex-col w-full gap-3`}>
+              <h1 className="text-lg font-medium uppercase">{label}</h1>
+              <Controller
+                name={name}
+                control={control}
+                rules={
+                  required
+                    ? {
+                        required: businessAttachments.some(
+                          (attachment) =>
+                            attachment.attachmentType === attachmentType
+                        )
+                          ? false
+                          : `Upload ${label.toLowerCase()}`,
+                      }
+                    : {}
+                }
+                render={({ field }) => (
                   <label className="flex flex-col w-full gap-2">
                     <ul className="flex items-center justify-between w-full gap-3">
                       <p className="flex items-center gap-1">
-                        Article of association{" "}
-                        <span className="text-red-600">*</span>
+                        {label}{" "}
+                        {required && <span className="text-red-600">*</span>}
+                        {businessAttachments.some(
+                          (attachment) =>
+                            attachment.attachmentType === attachmentType
+                        ) && (
+                          <FontAwesomeIcon
+                            icon={faCheckCircle}
+                            className="text-primary"
+                          />
+                        )}
                       </p>
                       <Input
-                        label="Articles of association"
                         type="file"
-                        required
+                        required={required}
                         className="!w-fit"
-                        name={field?.name}
+                        name={field.name}
                         onChange={(e) => {
                           field.onChange(e.target.files?.[0]);
                           if (e.target.files?.[0])
-                            uploadHelper(
-                              e.target.files?.[0] as File,
-                              "Articles of Association"
-                            );
+                            uploadHelper(e.target.files[0], attachmentType);
                         }}
                       />
                     </ul>
-                    {errors?.articles_of_association && (
+                    {errors[name] && (
                       <p className="text-red-600 text-[13px]">
-                        {String(errors?.articles_of_association?.message)}
+                        {String(errors[name]?.message)}
                       </p>
                     )}
                   </label>
-                );
-              }}
-            />
-          </section>
-          <section className="flex flex-col w-full gap-3">
-            <h1 className="text-lg font-medium uppercase">
-              Required attachments
-            </h1>
-            <Controller
-              name="certificationOfIncorporation"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-3">
-                    <ul className="flex items-center justify-between w-full gap-3">
-                      <p>
-                        Certification of incorporation{" "}
-                        <span className="text-red-600">*</span>
-                      </p>
-                      <Input
-                        type="file"
-                        className="!w-fit"
-                        name={field?.name}
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0]);
-                          if (e.target.files?.[0])
-                            uploadHelper(
-                              e.target.files?.[0] as File,
-                              "Certification of Incorporation"
-                            );
-                        }}
-                      />
-                    </ul>
-                    {errors?.certificationOfIncorporation && (
-                      <p className="text-red-600 text-[13px]">
-                        {String(errors?.certificationOfIncorporation?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="resolution"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-3">
-                    <ul className="flex items-center justify-between w-full gap-3">
-                      <p>
-                        Resolution attachment{" "}
-                        <span className="text-red-600">*</span>
-                      </p>
-                      <Input
-                        type="file"
-                        className="!w-fit"
-                        name={field?.name}
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0]);
-                          if (e.target.files?.[0])
-                            uploadHelper(
-                              e.target.files?.[0] as File,
-                              "Resolution Attachment"
-                            );
-                        }}
-                      />
-                    </ul>
-                    {errors?.resolution && (
-                      <p className="text-red-600 text-[13px]">
-                        {String(errors?.resolution?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="licensesOfBusinessActivities"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-3">
-                    <ul className="flex items-center justify-between w-full gap-3">
-                      <p>
-                        Licenses of business activities{" "}
-                        <span className="text-red-600">*</span>
-                      </p>
-                      <Input
-                        type="file"
-                        className="!w-fit"
-                        name={field?.name}
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0]);
-                          if (e.target.files?.[0])
-                            uploadHelper(
-                              e.target.files?.[0] as File,
-                              "Licenses of Business Activities"
-                            );
-                        }}
-                      />
-                    </ul>
-                    {errors?.licensesOfBusinessActivities && (
-                      <p className="text-red-600 text-[13px]">
-                        {String(errors?.licensesOfBusinessActivities?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </section>
-          <section className="flex flex-col w-full gap-3">
-            <h1 className="text-lg font-medium uppercase">Others</h1>
-            <Controller
-              name="attachments"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-3">
-                    <ul className="flex items-center justify-between w-full gap-3">
-                      <p>Other attachments</p>
-                      <Input
-                        type="file"
-                        className="!w-fit"
-                        name={field?.name}
-                        onChange={(e) => {
-                          field.onChange(e.target.files?.[0]);
-                          if (e.target.files?.[0])
-                            uploadHelper(
-                              e.target.files?.[0] as File,
-                              "Other Attachments"
-                            );
-                        }}
-                      />
-                    </ul>
-                  </label>
-                );
-              }}
-            />
-          </section>
+                )}
+              />
+            </section>
+          ))}
           {uploadBusinessAttachmentIsLoading && (
             <ul className="flex flex-col items-center gap-3">
               <ul className="flex items-center gap-2">
@@ -381,25 +350,19 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
           {businessAttachments?.length > 0 && (
             <BusinessPeopleAttachments attachments={businessAttachments} />
           )}
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-          >
+          <menu className="flex items-center justify-between w-full gap-3 mx-auto max-sm:flex-col-reverse">
             <Button
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setForeignBusinessActiveStep("executive_management"));
+                dispatch(setForeignBusinessActiveStep("employment_info"));
                 dispatch(setForeignBusinessActiveTab("management"));
               }}
             />
             <Button
               value={"Save & Continue"}
               primary
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setForeignBusinessActiveStep("preview_submission"));
-                dispatch(setForeignBusinessActiveTab("preview_submission"));
-              }}
+              submit
               disabled={isFormDisabled}
             />
           </menu>

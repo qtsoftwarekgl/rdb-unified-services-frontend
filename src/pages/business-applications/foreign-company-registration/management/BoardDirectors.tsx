@@ -33,10 +33,7 @@ import {
 import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
 import { PersonDetail } from "@/types/models/personDetail";
 import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
-import {
-  useLazySearchVillageQuery,
-  useUploadPersonAttachmentMutation,
-} from "@/states/api/coreApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import {
   addBusinessPersonAttachment,
   setBusinessPeopleAttachments,
@@ -73,12 +70,6 @@ const BoardDirectors = ({
     null
   );
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
-
-  const [searchMember, setSearchMember] = useState({
-    loading: false,
-    error: false,
-    data: null,
-  });
   const { user } = useSelector((state: RootState) => state.user);
   const { boardMemberList } = useSelector(
     (state: RootState) => state.boardOfDirector
@@ -116,18 +107,6 @@ const BoardDirectors = ({
     },
   ] = useLazyGetUserInformationQuery();
 
-  // INITIALIZE SEARCH VILLAGE QUERY
-  const [
-    searchVillage,
-    {
-      data: searchVillageData,
-      isFetching: searchVillageIsFetching,
-      isSuccess: searchVillageIsSuccess,
-      isError: searchVillageIsError,
-      error: searchVillageError,
-    },
-  ] = useLazySearchVillageQuery();
-
   // HANDLE GET USER INFORMATION RESPONSE
   useEffect(() => {
     if (userInformationIsError) {
@@ -137,28 +116,20 @@ const BoardDirectors = ({
         toast.error((userInformationError as ErrorResponse)?.data?.message);
       }
     } else if (userInformationIsSuccess) {
-      searchVillage({
-        villageName: userInformationData?.data?.village,
-        cellName: userInformationData?.data?.cell,
-        sectorName: userInformationData?.data?.sector,
-        districtName: userInformationData?.data?.district,
-        provinceName: userInformationData?.data?.province,
-      });
       dispatch(setUserInformation(userInformationData?.data));
     }
   }, [
     dispatch,
     reset,
-    searchVillage,
     userInformationData,
     userInformationError,
     userInformationIsError,
     userInformationIsSuccess,
   ]);
 
-  // HANDLE SEARCH VILLAGE RESPONSE
+  // HANDLE SET USER INFORMATION
   useEffect(() => {
-    if (userInformation && searchVillageIsSuccess) {
+    if (userInformation && Object.keys(userInformation).length) {
       reset({
         position: watch("position"),
         personIdentType: "nid",
@@ -167,27 +138,11 @@ const BoardDirectors = ({
         lastName: userInformation?.surnames,
         gender: userInformation?.gender,
         nationality: userInformation?.nationality,
-        village: searchVillageData?.data?.id,
         persDocIssuePlace: userInformation?.nationality,
         isFromNida: true,
       });
-    } else if (searchVillageIsError) {
-      if ((searchVillageError as ErrorResponse)?.status === 500) {
-        toast.error("An error occured while fetching village information");
-      } else {
-        toast.error((searchVillageError as ErrorResponse)?.data?.message);
-      }
     }
-  }, [
-    reset,
-    searchVillageData,
-    userInformation,
-    searchVillageIsError,
-    searchVillageError,
-    searchVillageIsSuccess,
-    watch,
-  ]);
-
+  }, [reset, userInformation, watch]);
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
   const [
     uploadPersonAttachment,
@@ -330,27 +285,21 @@ const BoardDirectors = ({
     if (isSubmitSuccessful) {
       reset();
       setAttachmentFile(null);
-      setSearchMember({
-        loading: false,
-        error: false,
-        data: null,
-      });
     }
   }, [isSubmitSuccessful, reset]);
 
   // HANDLE DOCUMENT CHANGE
   useEffect(() => {
-    setValue("nationality", "");
-    setValue("phoneNumber", "");
-    setValue("streetName", "");
-    setValue("firstName", "");
-    setValue("middleName", "");
-    setValue("lastName", "");
-    setSearchMember({
-      ...searchMember,
-      data: null,
-    });
-  }, [setValue, watch("personIdentType")]);
+    if (watch("personIdentType") === "passport") {
+      setValue("nationality", "");
+      setValue("phoneNumber", "");
+      setValue("streetNumber", "");
+      setValue("firstName", "");
+      setValue("middleName", "");
+      setValue("lastName", "");
+      setValue("gender", "");
+    }
+  }, [setValue, watch("personIdentType"), watch]);
 
   return (
     <section className="flex flex-col gap-6">
@@ -364,10 +313,7 @@ const BoardDirectors = ({
             <Controller
               name="position"
               rules={{
-                required:
-                  applicationStatus !== "IN_PREVIEW"
-                    ? "Select member's position"
-                    : false,
+                required: "Select member's position",
               }}
               control={control}
               render={({ field }) => {
@@ -472,8 +418,7 @@ const BoardDirectors = ({
                             await trigger("personDocNo");
                           }}
                         />
-                        {(userInformationIsFetching ||
-                          searchVillageIsFetching) && (
+                        {userInformationIsFetching && (
                           <ul className="flex items-center gap-2">
                             <Loader className="text-primary" />
                             <p className="text-[13px]">
@@ -531,7 +476,7 @@ const BoardDirectors = ({
           </menu>
           <section
             className={`${
-              (watch("personIdentType") === "nid" && searchMember?.data) ||
+              watch("personIdentType") === "nid" ||
               watch("personIdentType") === "passport"
                 ? "flex"
                 : "hidden"

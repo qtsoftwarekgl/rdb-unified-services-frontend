@@ -5,8 +5,6 @@ import {
   BusinessAttachment,
   PersonAttachment,
 } from "@/types/models/personAttachment";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
 type BusinessPeopleAttachmentsProps = {

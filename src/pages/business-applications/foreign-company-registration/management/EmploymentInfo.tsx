@@ -23,6 +23,7 @@ import { toast } from "react-toastify";
 import { setEmploymentInfo } from "@/states/features/businessSlice";
 import Select from "@/components/inputs/Select";
 import { dayHoursArray } from "@/constants/time";
+import { formatDate } from "@/helpers/strings";
 
 interface EmploymentInfoProps {
   businessId: businessId;
@@ -82,8 +83,14 @@ const EmploymentInfo = ({
           "An error occurred while fetching employment info. Please try again later."
         );
       else toast.error((employmentInfoError as ErrorResponse)?.data?.message);
-    } else dispatch(setEmploymentInfo(employmentInfoData?.data));
-  }, [dispatch, employmentInfoData?.data, employmentInfoError]);
+    } else if (employmentInfoIsSuccess)
+      dispatch(setEmploymentInfo(employmentInfoData?.data));
+  }, [
+    dispatch,
+    employmentInfoData?.data,
+    employmentInfoError,
+    employmentInfoIsSuccess,
+  ]);
 
   // INITIALIZE CREATE EMPLOYMENT INFO MUTATIon
   const [
@@ -98,11 +105,15 @@ const EmploymentInfo = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
+    console.log(data);
     createEmploymentInfo({
       businessId,
-      workingStartTime:
-        data?.workingStartTime && data?.workingStartTime + ":00:00",
-      workingEndTime: data?.workingEndTime && data?.workingEndTime + ":00:00",
+      workingStartTime: data?.workingStartTime
+        ? data?.workingStartTime + ":00:00"
+        : employmentInfo?.workingStartTime,
+      workingEndTime: data?.workingEndTime
+        ? data?.workingEndTime + ":00:00"
+        : employmentInfo?.workingEndTime,
       numberOfEmployees:
         data?.numberOfEmployees && Number(data?.numberOfEmployees),
       hiringDate: data.hiringDate,
@@ -175,9 +186,7 @@ const EmploymentInfo = ({
           <Controller
             name="financialYearStartDate"
             defaultValue={
-              moment().format("0000-MM-DD") ||
-              watch("financialYearStartDate") ||
-              employmentInfo?.financialYearStartDate
+              watch("financialYearStartDate") || moment().format("0000-MM-DD")
             }
             control={control}
             rules={{
@@ -223,7 +232,8 @@ const EmploymentInfo = ({
                           <span className="text-red-600">*</span>
                         </p>
                         <p className="text-[13px] p-1 px-2 bg-secondary text-white w-fit rounded-md">
-                          December 31
+                          {formatDate(watch("financialYearStartDate")) ||
+                            "December 31"}
                         </p>
                       </label>
                       <ul className="flex flex-col items-start gap-1">
@@ -295,7 +305,7 @@ const EmploymentInfo = ({
           <menu
             className={`${
               watch("has_employees") === "yes" ||
-              (employmentInfo && Object.keys(employmentInfo).length > 0)
+              employmentInfo?.numberOfEmployees > 0
                 ? "grid"
                 : "hidden"
             } w-full grid-cols-2 gap-6`}
@@ -356,10 +366,9 @@ const EmploymentInfo = ({
               }}
             />
             <Controller
+              control={control}
               name="workingStartTime"
-              defaultValue={
-                watch("workingStartTime") || employmentInfo?.workingStartTime
-              }
+              defaultValue={employmentInfo?.workingStartTime}
               rules={{
                 validate: (value) => {
                   if (watch("has_employees") === "yes") {
@@ -371,17 +380,16 @@ const EmploymentInfo = ({
                   }
                 },
               }}
-              control={control}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
+                      label="Working Start Time"
                       defaultValue={
                         watch("workingStartTime") ||
                         employmentInfo?.workingStartTime
                       }
                       options={dayHoursArray}
-                      label="Working Start Time"
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
@@ -493,7 +501,7 @@ const EmploymentInfo = ({
                 disabled={isFormDisabled}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setForeignBusinessActiveStep("board_of_director"));
+                  dispatch(setForeignBusinessActiveStep("board_of_directors"));
                 }}
               />
               {applicationStatus === "IS_AMENDING" && (
@@ -543,7 +551,7 @@ const EmploymentInfo = ({
                 value="Back"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setForeignBusinessActiveStep("board_of_director"));
+                  dispatch(setForeignBusinessActiveStep("board_of_directors"));
                 }}
               />
               <Button
