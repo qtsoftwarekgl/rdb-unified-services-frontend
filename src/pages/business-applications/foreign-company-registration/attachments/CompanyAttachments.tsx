@@ -191,24 +191,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     uploadBusinessAttachment({ formData });
   };
 
-  // VALIDATE REQUIRED ATTACHMENTS
-  const validateRequiredAttachments = () => {
-    const requiredAttachments = attachmentFields.filter(
-      (field) => field.required
-    );
-    return requiredAttachments.every(({ attachmentType }) =>
-      businessAttachments.some(
-        (attachment) => attachment.attachmentType === attachmentType
-      )
-    );
-  };
-
   const onSubmit = () => {
-    if (!validateRequiredAttachments()) {
-      toast.error("Please upload all required attachments before continuing.");
-      return;
-    }
-
     dispatch(setForeignBusinessActiveStep("preview_submission"));
     dispatch(setForeignBusinessActiveTab("preview_submission"));
   };
