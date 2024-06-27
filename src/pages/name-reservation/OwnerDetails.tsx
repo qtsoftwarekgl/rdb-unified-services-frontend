@@ -81,7 +81,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
   useEffect(() => {
     if (owner_details) {
       setValue('document_type', owner_details?.document_type);
-      setValue('document_no', owner_details?.document_no);
+      setValue('documentNumber', owner_details?.documentNumber);
       setValue('first_name', owner_details?.first_name);
       setValue('middle_name', owner_details?.middle_name);
       setValue('last_name', owner_details?.last_name);
@@ -167,7 +167,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       onChange={(e) => {
                         reset({
                           document_type: e,
-                          document_no: '',
+                          documentNumber: '',
                           first_name: '',
                           middle_name: '',
                           last_name: '',
@@ -189,8 +189,8 @@ const OwnerDetails = ({ isOpen }: Props) => {
             {watch('document_type') === 'nid' && (
               <Controller
                 control={control}
-                defaultValue={owner_details?.document_no}
-                name="document_no"
+                defaultValue={owner_details?.documentNumber}
+                name="documentNumber"
                 rules={{
                   required:
                     watch('document_type') === 'nid'
@@ -209,7 +209,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       <Input
                         required
                         suffixIcon={faSearch}
-                        defaultValue={owner_details?.document_no}
+                        defaultValue={owner_details?.documentNumber}
                         suffixIconHandler={async (e) => {
                           e.preventDefault();
                           setSearchMember({
@@ -229,12 +229,12 @@ const OwnerDetails = ({ isOpen }: Props) => {
                                 loading: false,
                                 error: true,
                               });
-                              setError('document_no', {
+                              setError('documentNumber', {
                                 type: 'manual',
                                 message: 'Document number not found',
                               });
                             } else {
-                              clearErrors('document_no');
+                              clearErrors('documentNumber');
                               setSearchMember({
                                 ...searchMember,
                                 data: userDetails,
@@ -258,7 +258,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                             ...searchMember,
                             data: null,
                           });
-                          await trigger('document_no');
+                          await trigger('documentNumber');
                         }}
                       />
                       {searchMember?.loading && (
@@ -266,9 +266,9 @@ const OwnerDetails = ({ isOpen }: Props) => {
                           <Loader size={4} /> Searching...
                         </p>
                       )}
-                      {errors?.document_no && (
+                      {errors?.documentNumber && (
                         <p className="text-red-500 text-[13px]">
-                          {String(errors?.document_no?.message)}
+                          {String(errors?.documentNumber?.message)}
                         </p>
                       )}
                     </label>

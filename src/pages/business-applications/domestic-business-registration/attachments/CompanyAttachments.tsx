@@ -10,6 +10,7 @@ import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
+  setBusinessCompletedTab,
 } from "../../../../states/features/businessRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
@@ -80,14 +81,15 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
     setIsLoading({
       submit: isLoading?.isSubmitting ? true : false,
       amend:
-        status === "IS_AMENDING" && !isLoading?.isSubmitting ? true : false,
+        status === 'IS_AMENDING' && !isLoading?.isSubmitting ? true : false,
       isSubmitting: false,
     });
 
     setTimeout(() => {
-      dispatch(setBusinessCompletedStep("attachments"));
-      dispatch(setBusinessActiveStep("preview_submission"));
-      dispatch(setBusinessActiveTab("preview_submission"));
+      dispatch(setBusinessCompletedStep('attachments'));
+      dispatch(setBusinessCompletedTab('attachments'));
+      dispatch(setBusinessActiveStep('preview_submission'));
+      dispatch(setBusinessActiveTab('preview_submission'));
     }, 6000);
     return data;
   };
@@ -450,13 +452,6 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                   dispatch(setBusinessActiveTab("beneficial_owners"));
                 }}
               />
-              {status === "IS_AMENDING" && (
-                <Button
-                  disabled={disableForm || Object.keys(errors).length > 0}
-                  value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
-                  submit
-                />
-              )}
               <Button
                 value={isLoading?.submit ? <Loader /> : "Save & Continue"}
                 primary
@@ -491,6 +486,8 @@ const CompanyAttachments: FC<CompanyAttachmentsProps> = ({
                 primary
                 onClick={(e) => {
                   e.preventDefault();
+                  dispatch(setBusinessCompletedStep("attachments"));
+                  dispatch(setBusinessCompletedTab("attachments"));
                   dispatch(setBusinessActiveStep("preview_submission"));
                   dispatch(setBusinessActiveTab("preview_submission"));
                 }}

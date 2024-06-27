@@ -1,13 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
-import { AppDispatch, RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { TabType } from "../../types/navigationTypes";
-import { UnknownAction } from "@reduxjs/toolkit";
-import { ReviewComment } from "../applications-review/AddReviewComments";
-import {
-  setUserReviewTabComments,
-  setUserReviewTabCommentsModal,
-} from "../../states/features/userApplicationSlice";
+import { Link } from 'react-router-dom';
+import { AppDispatch } from '../../states/store';
+import { useDispatch } from 'react-redux';
+import { TabType } from '../../types/navigationTypes';
+import { UnknownAction } from '@reduxjs/toolkit';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   tabs: TabType[];
@@ -17,31 +14,6 @@ interface Props {
 const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { applicationReviewComments } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
-  const entryId = queryParams.get("entryId");
-  const { user } = useSelector((state: RootState) => state.user);
-
-  const countUnresolvedTabComments = (tab: TabType) => {
-    return applicationReviewComments.filter(
-      (comment: ReviewComment) =>
-        comment?.tab.name === tab?.name &&
-        comment?.entryId === entryId &&
-        !comment?.checked
-    ).length;
-  };
-
-  const countCheckedTabComments = (tab: TabType) => {
-    return applicationReviewComments.filter(
-      (comment: ReviewComment) =>
-        comment?.tab.name === tab?.name &&
-        comment?.entryId === entryId &&
-        comment?.checked
-    ).length;
-  }
 
   return (
     <nav className="flex items-center gap-4 bg-white h-fit py-[5px] rounded-md shadow-sm w-full justify-evenly px-4">
@@ -56,34 +28,17 @@ const ProgressNavigation = ({ tabs, setActiveTab }: Props) => {
             }}
             className={`step rounded-none w-full h-full py-[6px] px-2 flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white ${
               index < arr.length - 1 && 'border-r border-gray-500'
-            } ${tab?.active && 'bg-primary text-white !rounded-md'}`}
+            } ${tab?.active && 'bg-primary text-white !rounded-md'} ${tab?.completed && '!rounded-md !border-none'}`}
           >
-            <h1 className="text-[14px] tab-name">{tab?.label}</h1>
-            {!/info|admin/.test(user.email) && (countUnresolvedTabComments(tab) > 0 ||
-                countCheckedTabComments(tab) > 0) && (
-                <menu
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const tabComments = applicationReviewComments.filter(
-                      (comment: ReviewComment) =>
-                        comment?.tab.name === tab?.name &&
-                        comment?.entryId === entryId
-                    );
-                    dispatch(setUserReviewTabComments(tabComments));
-                    dispatch(setUserReviewTabCommentsModal(true));
-                  }}
-                  className={`flex items-center text-[12px] w-2 h-2 p-3 text-white justify-center transition-all rounded-full cursor-pointer hover:scale-102 ${
-                    countUnresolvedTabComments(tab) <= 0
-                      ? 'bg-secondary'
-                      : 'bg-red-500'
-                  }`}
-                >
-                  <p className="text-[12px]">
-                    {countUnresolvedTabComments(tab)}
-                  </p>
-                </menu>
-              )}
+            <h1 className="text-[14px] tab-name flex items-center gap-2">
+              {tab?.completed && (
+                <FontAwesomeIcon
+                  className="text-primary size-4"
+                  icon={faCircleCheck}
+                />
+              )}{' '}
+              {tab?.label}
+            </h1>
           </Link>
         );
       })}

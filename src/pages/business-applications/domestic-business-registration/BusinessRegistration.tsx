@@ -134,42 +134,42 @@ const BusinessRegistration = () => {
                   {business_active_step?.name === 'business_activity_vat' && (
                     <BusinessActivities
                       businessId={queryParams?.businessId}
-                      status={business?.applicationStatus}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'executive_management' && (
                     <ExecutiveManagement
                       businessId={queryParams?.businessId}
-                      status={business?.applicationStatus}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'board_of_directors' && (
                     <BoardOfDirectors
                       businessId={queryParams?.businessId}
-                      status={business?.applicationStatus}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'employment_info' && (
                     <EmploymentInfo
                       businessId={queryParams?.businessId}
-                      status={business?.applicationStatus}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'share_details' && (
                     <ShareDetails
                       businessId={queryParams?.businessId}
-                      status={business?.applicationStatus}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'shareholders' && (
                     <ShareHolders
                       businessId={queryParams?.businessId}
-                      status={business?.applicationStatus}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 

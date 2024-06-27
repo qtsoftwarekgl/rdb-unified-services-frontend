@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../../components/inputs/Input';
 import Button from '../../../../components/inputs/Button';
@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
+  setBusinessCompletedStep,
+  setBusinessCompletedTab,
 } from '../../../../states/features/businessRegistrationSlice';
 import Loader from '../../../../components/Loader';
 import { RDBAdminEmailPattern } from '../../../../constants/Users';
@@ -19,12 +21,15 @@ import { useCreateEmploymentInfoMutation } from '@/states/api/businessRegApiSlic
 import moment from 'moment';
 import { toast } from 'react-toastify';
 
-interface EmploymentInfoProps {
+type EmploymentInfoProps = {
   businessId: businessId;
-  status: string;
-}
+  applicationStatus: string;
+};
 
-const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
+const EmploymentInfo = ({
+  businessId,
+  applicationStatus,
+}: EmploymentInfoProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -37,11 +42,6 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    submit: false,
-    preview: false,
-    amend: false,
-  });
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
   const [customReferenceDate, setCustomReferenceDate] =
@@ -90,8 +90,10 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
-      dispatch(setBusinessActiveStep('share_details'));
-      dispatch(setBusinessActiveTab('capital_information'));
+      dispatch(setBusinessCompletedStep('employment_info'));
+      dispatch(setBusinessCompletedTab('management'));
+      dispatch(setBusinessActiveStep('attachments'));
+      dispatch(setBusinessActiveTab('attachments'));
     }
   }, [
     createEmploymentInfoError,
@@ -247,6 +249,12 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
                       required
                       label="Hiring Date"
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        if (!watch('employeeDeclarationDate')) {
+                          setValue('employeeDeclarationDate', e);
+                        }
+                      }}
                     />
                     {errors?.hiringDate && (
                       <p className="text-red-600 text-[13px]">
@@ -260,12 +268,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
             <Controller
               name="employeeDeclarationDate"
               control={control}
-              rules={{
-                required:
-                  watch('has_employees') === 'yes'
-                    ? 'Hiring date is required'
-                    : false,
-              }}
+              defaultValue={watch('hiringDate')}
               render={({ field }) => {
                 return (
                   <label className="w-full flex flex-col gap-1">
@@ -274,13 +277,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
                       required
                       label="Employee Declaration Date"
                       {...field}
-                      value={field?.value || watch('hiringDate')}
                     />
-                    {errors?.employeeDeclarationDate && (
-                      <p className="text-red-600 text-[13px]">
-                        {String(errors?.employeeDeclarationDate?.message)}
-                      </p>
-                    )}
                   </label>
                 );
               }}
@@ -400,7 +397,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
             'ACTION_REQUIRED',
             'IS_AMENDING',
             'IN_PROGRESS',
-          ].includes(status) && (
+          ].includes(String(applicationStatus)) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
@@ -409,33 +406,9 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
                 disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('executive_management'));
+                  dispatch(setBusinessActiveStep('board_of_directors'));
                 }}
               />
-              {status === 'IS_AMENDING' && (
-                <Button
-                  value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
-                  onClick={() => {
-                    setIsLoading({
-                      ...isLoading,
-                      amend: true,
-                      submit: false,
-                      preview: false,
-                    });
-                  }}
-                  submit
-                />
-              )}
-              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
-                <Button
-                  value={
-                    isLoading?.preview ? <Loader /> : 'Save & Complete Review'
-                  }
-                  submit
-                  primary
-                  disabled={disableForm}
-                />
-              )}
               <Button
                 value={
                   createEmploymentInfoIsLoading ? <Loader /> : 'Save & Continue'
@@ -451,7 +424,7 @@ const EmploymentInfo: FC<EmploymentInfoProps> = ({ businessId, status }) => {
             'IS_APPROVED',
             'PENDING_APPROVAL',
             'PENDING_REJECTION',
-          ].includes(status) && (
+          ].includes(String(applicationStatus)) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"

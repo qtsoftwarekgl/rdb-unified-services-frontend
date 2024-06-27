@@ -9,7 +9,7 @@ export type BaseAttachment = {
   name?: string;
   type?: string;
   url?: string;
-  size?: number;
+  size?: number | string;
 };
 
 export type PersonAttachment = BaseAttachment & {

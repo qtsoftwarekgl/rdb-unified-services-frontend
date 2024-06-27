@@ -185,8 +185,8 @@ const BoardDirectors = ({
         reset({
           position: "",
           personIdentType: "",
-          document_no: "",
-          persDocNo: "",
+          documentNumber: "",
+          personDocNo: "",
           persDocIssueDate: "",
           persDocExpiryDate: "",
           dateOfBirth: "",
@@ -224,8 +224,8 @@ const BoardDirectors = ({
       reset({
         position: "",
         personIdentType: "",
-        document_no: "",
-        persDocNo: "",
+        documentNumber: "",
+        personDocNo: "",
         persDocIssueDate: "",
         persDocExpiryDate: "",
         dateOfBirth: "",
@@ -734,7 +734,7 @@ const BoardDirectors = ({
                                 addBusinessPersonAttachment({
                                   attachmentType: "passport",
                                   fileName: e.target.files?.[0]?.name,
-                                  size: e.target.files?.[0]?.size,
+                                  fileSize: e.target.files?.[0]?.size,
                                 })
                               );
                             }}

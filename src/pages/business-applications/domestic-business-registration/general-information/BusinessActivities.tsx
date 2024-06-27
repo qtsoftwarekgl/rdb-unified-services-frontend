@@ -39,10 +39,10 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 type BusinessActivityProps = {
   businessId: businessId;
-  status: string;
+  applicationStatus?: string;
 };
 
-const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
+const BusinessActivities = ({ businessId, applicationStatus }: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -243,8 +243,10 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success('Business activities have been successfully created');
-      dispatch(setBusinessActiveStep('executive_management'));
-      dispatch(setBusinessActiveTab('management'));
+      dispatch(setBusinessCompletedTab('general_information'));
+      dispatch(setBusinessCompletedStep('business_activity_vat'));
+      dispatch(setBusinessActiveStep('share_details'));
+      dispatch(setBusinessActiveTab('capital_information'));
     }
   }, [
     createBusinessActivitiesError,
@@ -543,7 +545,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                 'IN_PREVIEW',
                 'ACTION_REQUIRED',
                 'IS_AMENDING',
-              ].includes(status) && (
+              ].includes(String(applicationStatus)) && (
                 <menu
                   className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
                 >
@@ -555,14 +557,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                       dispatch(setBusinessActiveStep('company_address'));
                     }}
                   />
-                  {status === 'IS_AMENDING' && (
-                    <Button
-                      submit
-                      value={'Complete Amendment'}
-                      disabled={Object.keys(errors).length > 0 || disableForm}
-                    />
-                  )}
-                  {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+                  {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(String(applicationStatus)) && (
                     <Button
                       value={'Save & Complete Review'}
                       submit
@@ -589,7 +584,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                 'IS_APPROVED',
                 'PENDING_APPROVAL',
                 'PENDING_REJECTION',
-              ].includes(status) && (
+              ].includes(String(applicationStatus)) && (
                 <menu className="flex items-center gap-3 justify-between">
                   <Button
                     value={'Back'}
@@ -605,8 +600,8 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                       e.preventDefault();
                       dispatch(setBusinessCompletedTab('general_information'));
                       dispatch(setBusinessCompletedStep('business_activity_vat'));
-                      dispatch(setBusinessActiveStep('board_of_directors'));
-                      dispatch(setBusinessActiveTab('management'));
+                      dispatch(setBusinessActiveStep('share_details'));
+                      dispatch(setBusinessActiveTab('capital_information'));
                     }}
                   />
                 </menu>

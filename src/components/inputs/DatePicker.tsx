@@ -20,21 +20,28 @@ interface DatePickerProps {
     | ((e: ChangeEvent<HTMLInputElement>) => void)
     | undefined;
   selectionType?: 'date' | 'month' | 'year' | 'recurringDate';
+  fromDate?: Date;
+  placeholder?: string;
+  toDate?: Date;
 }
 
 const DatePicker: FC<DatePickerProps> = ({
   onChange,
   value = undefined,
   selectionType,
+  fromDate = undefined,
+  placeholder = 'Select date',
+  toDate = undefined,
 }) => {
   // SET MONTH AND YEAR
   const [year, setYear] = useState<string | undefined>(moment().format('YYYY'));
   const [defaultMonth, setDefaultMonth] = useState<Date | undefined>(
     moment().toDate()
   );
+  const [open, setOpen] = useState(false);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant={'outline'}
@@ -42,6 +49,7 @@ const DatePicker: FC<DatePickerProps> = ({
             'w-full justify-start text-left font-normal py-2 h-[38px]',
             !value && 'text-muted-foreground'
           )}
+          onClick={() => setOpen(!open)}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {value ? (
@@ -51,7 +59,7 @@ const DatePicker: FC<DatePickerProps> = ({
               format(value, 'PPP')
             )
           ) : (
-            <p className="text-[13px]">Select date</p>
+            <p className="text-[13px]">{placeholder}</p>
           )}
         </Button>
       </PopoverTrigger>
@@ -91,6 +99,8 @@ const DatePicker: FC<DatePickerProps> = ({
             />
           </ul>
           <Calendar
+            fromDate={fromDate}
+            toDate={toDate}
             mode="single"
             month={defaultMonth}
             onMonthChange={(e) => {
@@ -100,7 +110,10 @@ const DatePicker: FC<DatePickerProps> = ({
             }}
             selected={value}
             onSelect={(e) => {
-              e && onChange(moment(e).format());
+              if (e) {
+                onChange(moment(e).format());
+                setOpen(false);
+              }
             }}
             initialFocus
           />

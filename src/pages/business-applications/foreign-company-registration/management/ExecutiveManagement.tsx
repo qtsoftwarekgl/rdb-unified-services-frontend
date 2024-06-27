@@ -190,8 +190,8 @@ const ExecutiveManagement = ({
         reset({
           position: "",
           personIdentType: "",
-          document_no: "",
-          persDocNo: "",
+          documentNumber: "",
+          personDocNo: "",
           persDocIssueDate: "",
           persDocExpiryDate: "",
           dateOfBirth: "",
@@ -229,8 +229,8 @@ const ExecutiveManagement = ({
       reset({
         position: "",
         personIdentType: "",
-        document_no: "",
-        persDocNo: "",
+        documentNumber: "",
+        personDocNo: "",
         persDocIssueDate: "",
         persDocExpiryDate: "",
         dateOfBirth: "",
@@ -752,20 +752,15 @@ const ExecutiveManagement = ({
                             accept="application/pdf"
                             className="!w-fit max-sm:!w-full"
                             onChange={(e) => {
-                              if (e.target?.files?.[0]) {
-                                field.onChange(e?.target?.files?.[0]);
-                                setAttachmentFile(e?.target?.files?.[0]);
-                                dispatch(
-                                  addBusinessPersonAttachment({
-                                    attachmentType: "passport",
-                                    fileName: e.target.files?.[0]?.name,
-                                    size: e.target.files?.[0]?.size,
-                                    attachmentUrl: URL.createObjectURL(
-                                      e.target?.files?.[0]
-                                    ),
-                                  })
-                                );
-                              }
+                              field.onChange(e?.target?.files?.[0]);
+                              setAttachmentFile(e?.target?.files?.[0]);
+                              dispatch(
+                                addBusinessPersonAttachment({
+                                  attachmentType: e.target.files?.[0]?.type,
+                                  fileName: e.target.files?.[0]?.name,
+                                  fileSize: e.target.files?.[0]?.size,
+                                })
+                              );
                             }}
                           />
                           <ul className="flex flex-col items-center w-full gap-3">

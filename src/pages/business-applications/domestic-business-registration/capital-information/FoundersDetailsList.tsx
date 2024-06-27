@@ -43,12 +43,12 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
   // SHAREHOLDERS COLUMNS
   const shareholderColumns = [
     {
-      header: 'No',
-      accessorKey: 'no',
-    },
-    {
       header: 'Name',
       accessorKey: 'name',
+    },
+    {
+      header: 'Document Number',
+      accessorKey: 'personDocNo',
     },
     {
       header: 'Phone number',
@@ -79,7 +79,7 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
     shareholdersError,
   ]);
 
-  if (founderDetailsList?.length < 0) return null;
+  if (founderDetailsList?.length <= 0) return null;
 
   return (
     <section className="w-full flex flex-col gap-3">
@@ -95,10 +95,9 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
         </p>
       )}
       <Table
-        data={founderDetailsList?.map((founder: FounderDetail, index) => {
+        data={founderDetailsList?.map((founder: FounderDetail) => {
           return {
             ...founder,
-            no: index + 1,
             shareHolderType: capitalizeString(founder.shareHolderType),
             name: `${founder.firstName || founder?.companyName} ${
               founder.middleName || ''

@@ -31,7 +31,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [documentNo, setDocumentNo] = useState<string>('');
+  const [documentNumber, setdocumentNumber] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
   const [nationalIdError, setNationalIdError] = useState<boolean>(false);
   const { nationalIdDetails, registrationStep } = useSelector(
@@ -103,7 +103,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                 suffixIcon={isLoading ? faEllipsis : faSearch}
                 suffixIconHandler={(e) => {
                   e.preventDefault();
-                  if (documentNo.length !== 16) {
+                  if (documentNumber.length !== 16) {
                     setIsError(true);
                     return;
                   } else {
@@ -114,7 +114,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                     setTimeout(() => {
                       const randomNumber = Math.floor(Math.random() * 10);
                       const userDetails = userData[randomNumber];
-                      if (documentNo !== validNationalID) {
+                      if (documentNumber !== validNationalID) {
                         setNationalIdError(true);
                         dispatch(setNationalIdDetails(null));
                       } else {
@@ -132,7 +132,7 @@ const SelectNationality: FC<SelectNationalityProps> = ({ isOpen }) => {
                 placeholder="1 XXXX X XXXXXXX X XX"
                 onChange={(e) => {
                   e.preventDefault();
-                  setDocumentNo(e.target.value);
+                  setdocumentNumber(e.target.value);
                   if (e.target.value.length !== 16) {
                     setIsError(true);
                   } else {

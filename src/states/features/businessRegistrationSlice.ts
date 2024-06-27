@@ -50,36 +50,6 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
     },
     {
       no: 2,
-      label: 'Management',
-      name: 'management',
-      active: false,
-      completed: false,
-      steps: [
-        {
-          label: 'Executive Management',
-          name: 'executive_management',
-          tab_name: 'management',
-          active: false,
-          completed: false,
-        },
-        {
-          label: 'Board of Directors',
-          name: 'board_of_directors',
-          tab_name: 'management',
-          active: false,
-          completed: false,
-        },
-        {
-          label: 'Employment Info',
-          name: 'employment_info',
-          tab_name: 'management',
-          active: false,
-          completed: false,
-        },
-      ],
-    },
-    {
-      no: 3,
       label: 'Capital Information',
       name: 'capital_information',
       active: false,
@@ -103,6 +73,36 @@ export const business_registration_tabs_initial_state: Array<RegistrationTab> =
           label: 'Capital Details',
           name: 'capital_details',
           tab_name: 'capital_information',
+          active: false,
+          completed: false,
+        },
+      ],
+    },
+    {
+      no: 3,
+      label: 'Management',
+      name: 'management',
+      active: false,
+      completed: false,
+      steps: [
+        {
+          label: 'Executive Management',
+          name: 'executive_management',
+          tab_name: 'management',
+          active: false,
+          completed: false,
+        },
+        {
+          label: 'Board of Directors',
+          name: 'board_of_directors',
+          tab_name: 'management',
+          active: false,
+          completed: false,
+        },
+        {
+          label: 'Employment Info',
+          name: 'employment_info',
+          tab_name: 'management',
           active: false,
           completed: false,
         },
@@ -394,6 +394,12 @@ export const businessRegistrationSlice = createSlice({
     setDeleteApplicationModal: (state, action) => {
       state.deleteApplicationModal = action.payload;
     },
+
+    // REMOVE BUSINESS REGISTRATION TABS
+    removeBusinessRegistrationTabs: (state) => {
+      state.business_registration_tabs = business_registration_tabs_initial_state;
+      localStorage.removeItem('business_registration_tabs');
+    },
   },
 });
 
@@ -413,4 +419,5 @@ export const {
   setBeneficialOwnerDetailsModal,
   setBusinessPersonDetailsModal,
   setDeleteApplicationModal,
+  removeBusinessRegistrationTabs,
 } = businessRegistrationSlice.actions;

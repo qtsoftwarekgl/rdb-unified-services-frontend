@@ -5,6 +5,7 @@ import {
   BusinessAttachment,
   PersonAttachment,
 } from "@/types/models/personAttachment";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { useState } from "react";
 
 type BusinessPeopleAttachmentsProps = {
@@ -25,10 +26,6 @@ const BusinessPeopleAttachments = ({
       header: "Attachment Type",
       accessorKey: "attachmentType",
     },
-    // {
-    //   header: "Attachment URL",
-    //   accessorKey: "attachmentUrl",
-    // },
     {
       header: "Attachment Size",
       accessorKey: "size",
@@ -36,7 +33,9 @@ const BusinessPeopleAttachments = ({
     {
       header: "Actions",
       accessorKey: "actions",
-      cell: ({ row }) => {
+      cell: ({ row }: {
+        row: Row<PersonAttachment | BusinessAttachment>;
+      }) => {
         return (
           <menu className="flex items-center gap-4">
             <Button
@@ -66,15 +65,15 @@ const BusinessPeopleAttachments = ({
       <Table
         showFilter={false}
         showPagination={false}
-        columns={attachmentColumns}
+        columns={attachmentColumns as ColumnDef<PersonAttachment | BusinessAttachment>[]}
         data={attachments?.map(
           (attachment: PersonAttachment | BusinessAttachment) => {
             return {
               ...attachment,
-              fileName: attachment?.fileName || attachment?.name,
-              attachmentType: attachment?.attachmentType || attachment?.type,
-              attachmentUrl: attachment?.attachmentUrl || attachment?.name,
-              size: attachment?.fileSize
+              fileName: String(attachment?.fileName || attachment?.name),
+              attachmentType: String(attachment?.attachmentType || attachment?.type),
+              attachmentUrl: String(attachment?.attachmentUrl || attachment?.name),
+              size: String(attachment?.fileSize)
                 ? `${(+attachment.fileSize / (1024 * 1024)).toFixed(2)} MB`
                 : "N/A",
             };

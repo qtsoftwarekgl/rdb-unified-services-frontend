@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../states/store';
 import PreviewCard from '../../../../components/business-registration/PreviewCard';
 import {
+  removeBusinessRegistrationTabs,
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from '../../../../states/features/businessRegistrationSlice';
@@ -129,6 +130,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       toast.success('Business updated successfully');
       dispatch(setBusinessActiveStep('company_details'));
       dispatch(setBusinessActiveTab('general_information'));
+      dispatch(removeBusinessRegistrationTabs());
       navigate('/success', {
         state: { redirectUrl: '/services' },
       });
@@ -232,7 +234,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Details"
         tabName="general_information"
@@ -247,7 +249,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         ) : (
           businessDetailsIsSuccess && (
             <menu className="flex flex-col gap-2">
-              {Object?.entries(businessDetailsData?.data)?.map(
+              {businessDetailsData?.data ? Object?.entries(businessDetailsData?.data)?.map(
                 ([key, value], index: number) => {
                   if (key === 'id' || value === null) return null;
                   return (
@@ -259,6 +261,9 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     </li>
                   );
                 }
+              ): (
+                <p>No data</p>
+              
               )}
             </menu>
           )
@@ -267,7 +272,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* COMPANY ADDRESS */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Address"
         tabName="general_information"
@@ -282,7 +287,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         ) : (
           businessAddressIsSuccess && (
             <menu className="flex flex-col gap-2">
-              {Object?.entries(businessAddressData?.data)?.map(
+              {businessAddressData?.data ? Object?.entries(businessAddressData?.data)?.map(
                 ([key, value], index: number) => {
                   if (key === 'id' || value === null) return null;
                   if (key === 'location')
@@ -312,6 +317,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     </li>
                   );
                 }
+              ): (
+                <p>No data</p>
               )}
             </menu>
           )
@@ -320,7 +327,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* BUSINESS ACTIVITIES & VAT */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
         tabName="general_information"
@@ -362,7 +369,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/*  BOARD OF DIRECTORS */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Board of Directors"
         tabName="management"
@@ -375,7 +382,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/*  EXECUTIVE MANAGEMENT */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Executive Management"
         tabName="management"
@@ -388,7 +395,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* EMPLOYMENT INFO */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Employment Information"
         tabName="management"
@@ -445,7 +452,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       </PreviewCard>
 
       {/* <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Share Details"
         tabName="capital_information"
@@ -457,7 +464,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       </PreviewCard> */}
 
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Shareholders"
         tabName="capital_information"
@@ -485,54 +492,6 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           }
         />
       </PreviewCard>
-
-      {/* BENEFIACIAL OWNERS */}
-      {/* <PreviewCard
-        status={business_application.status}
-        entryId={business_application?.entryId}
-        header="Beneficial Owners"
-        tabName="beneficial_owners"
-        stepName="beneficial_owners"
-        setActiveStep={setBusinessActiveStep}
-        setActiveTab={setBusinessActiveTab}
-      >
-        <Table
-          data={
-            business_application?.beneficial_owners?.length > 0
-              ? business_application?.beneficial_owners?.map((owner) => {
-                  return {
-                    ...owner,
-                    name: owner?.company_name
-                      ? owner?.company_name
-                      : `${owner?.first_name || ''} ${owner?.last_name || ''}`,
-                    phone: owner?.phone || owner?.company_phone,
-                    control_type: capitalizeString(owner?.control_type),
-                    ownership_type: capitalizeString(owner?.ownership_type),
-                  };
-                })
-              : []
-          }
-          columns={beneficialOwnersColumns}
-          rowClickHandler={(row) => {
-            dispatch(setBusinessPersonDetailsModal(true));
-            setBusinessPersonDetails(row?.original);
-          }}
-          showFilter={false}
-          showPagination={false}
-        />
-      </PreviewCard> */}
-
-      {/* <PreviewCard
-        status={status}
-        businessId={businessId}
-        header="Attachments"
-        tabName="attachments"
-        stepName="attachments"
-        setActiveStep={setBusinessActiveStep}
-        setActiveTab={setBusinessActiveTab}
-      >
-        Attachments
-      </PreviewCard> */}
 
       {['IN_PROGRESS', 'ACTION_REQUIRED', 'IN_PREVIEW', 'IS_AMENDING'].includes(
         String(applicationStatus)
