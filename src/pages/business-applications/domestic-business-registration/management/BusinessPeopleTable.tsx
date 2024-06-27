@@ -9,12 +9,14 @@ type BusinessPeopleTableProps = {
   businessPeopleList: PersonDetail[];
   type: string;
   isLoading: boolean;
+  setDeleteAction: (row: PersonDetail) => void;
 };
 
 const BusinessPeopleTable = ({
   businessPeopleList,
   type,
   isLoading,
+  setDeleteAction,
 }: BusinessPeopleTableProps) => {
   // MANAGEMENT PEOPLE COLUMNS
   const managementPeopleColumns = [
@@ -45,15 +47,16 @@ const BusinessPeopleTable = ({
     {
       header: "Action",
       accessorKey: "action",
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-fit">
             <FontAwesomeIcon
-              className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
+              className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-red-600`}
               icon={faTrash}
               onClick={(e) => {
                 // TODO: Implement delete functionality
                 e.preventDefault();
+                setDeleteAction(row?.original);
               }}
             />
           </menu>

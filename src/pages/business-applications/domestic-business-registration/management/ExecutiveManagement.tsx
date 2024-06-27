@@ -286,8 +286,8 @@ const ExecutiveManagement = ({
               render={({ field }) => {
                 const options = [
                   {
-                    value: "md/gm",
-                    label: "MD / GM",
+                    value: "md/gm/ceo",
+                    label: "MD/GM/CEO",
                   },
                   {
                     value: "secretary",

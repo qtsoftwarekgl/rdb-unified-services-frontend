@@ -147,6 +147,16 @@ export const foreignCompanyRegistrationApiSlice = createApi({
         };
       },
     }),
+
+    // DELETE MANAGEMENT OR BOARD MEMBER
+    deleteManagementOrBoardMember: builder.mutation({
+      query: ({ id, route = "management" }) => {
+        return {
+          url: `/${route}/${id}`,
+          method: "DELETE",
+        };
+      },
+    }),
   }),
 });
 
@@ -154,6 +164,7 @@ export const {
   useGetForeignCompanyRegistrationQuery,
   useCreateForeignCompanyRegistrationMutation,
   useDeleteForeignCompanyMutation,
+  useDeleteManagementOrBoardMemberMutation,
   useCreateOrUpdateCompanyDetailsMutation,
   useCreateManagementOrBoardMemberMutation,
   useLazyFetchManagementOrBoardMembersQuery,

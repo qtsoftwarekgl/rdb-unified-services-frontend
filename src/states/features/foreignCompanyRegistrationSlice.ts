@@ -210,8 +210,6 @@ export const foreignCompanyRegistrationSlice = createSlice({
         ?.flatMap((tab: RegistrationTab) => tab?.steps)
         .find((step: RegistrationStep) => step?.name === action.payload);
 
-      console.log(">>>>>>>>>>>>>>>>>>>>>>", action.payload, step);
-
       // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === step?.tab_name
