@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../states/store';
 import PreviewCard from '../../../../components/business-registration/PreviewCard';
 import {
+  removeBusinessRegistrationTabs,
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from '../../../../states/features/businessRegistrationSlice';
@@ -19,7 +20,7 @@ import {
   useLazyFetchShareholdersQuery,
   useUpdateBusinessMutation,
 } from '@/states/api/businessRegApiSlice';
-import { capitalizeCamelCase, capitalizeString } from '@/helpers/strings';
+import { capitalizeString } from '@/helpers/strings';
 import BusinessPeople from '../management/BusinessPeople';
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table';
@@ -27,14 +28,17 @@ import { FounderDetail } from '@/types/models/personDetail';
 import Table from '@/components/table/Table';
 import { toast } from 'react-toastify';
 import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
+import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
+import { useLazyFetchBusinessAttachmentsQuery } from '@/states/api/coreApiSlice';
+import { setBusinessAttachments } from '@/states/features/businessSlice';
 
 interface PreviewSubmissionProps {
   businessId: businessId;
-  status: string;
+  applicationStatus?: string;
 }
 
 const PreviewSubmission: FC<PreviewSubmissionProps> = ({
-  status,
+  applicationStatus,
   businessId,
 }) => {
   // STATE VARIABLES
@@ -43,8 +47,11 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     (state: RootState) => state.founderDetail
   );
   const [attachmentPreview, setAttachmentPreview] = useState<string>('');
+  const { businessAttachments } = useSelector(
+    (state: RootState) => state.business
+  );
 
-  // NAVIGATION 
+  // NAVIGATION
   const navigate = useNavigate();
 
   // INITIALIZE FETCHING COMPANY DETAILS QUERY
@@ -129,11 +136,19 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       toast.success('Business updated successfully');
       dispatch(setBusinessActiveStep('company_details'));
       dispatch(setBusinessActiveTab('general_information'));
+      dispatch(removeBusinessRegistrationTabs());
       navigate('/success', {
         state: { redirectUrl: '/services' },
       });
     }
-  }, [dispatch, navigate, updateBusinessData, updateBusinessError, updateBusinessIsError, updateBusinessIsSuccess]);
+  }, [
+    dispatch,
+    navigate,
+    updateBusinessData,
+    updateBusinessError,
+    updateBusinessIsError,
+    updateBusinessIsSuccess,
+  ]);
 
   // INITIALIZE FETCHING BUSINESS EMPLOYMENT INFO
   const [
@@ -154,7 +169,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     }
   }, [businessId, fetchBusinessEmploymentInfo]);
 
-  // FETCH BUSINESS ADDRESS
+  // FETCH BUSINESS ACTIVITIES
   useEffect(() => {
     if (businessId) {
       fetchBusinessActivities({ businessId });
@@ -221,11 +236,48 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
     shareholdersIsSuccess,
   ]);
 
+  // INITIALIZE FETCH BUSINESS ATTACHMENTS
+  const [
+    fetchBusinessAttachments,
+    {
+      data: businessAttachmentsData,
+      isFetching: businessAttachmentsIsFetching,
+      error: businessAttachmentsError,
+      isSuccess: businessAttachmentsIsSuccess,
+      isError: businessAttachmentsIsError,
+    },
+  ] = useLazyFetchBusinessAttachmentsQuery();
+
+  // FETCH BUSINESS ATTACHMENTS
+  useEffect(() => {
+    if (businessId) {
+      fetchBusinessAttachments({ businessId });
+    }
+  }, [businessId, fetchBusinessAttachments]);
+
+  // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
+  useEffect(() => {
+    if (businessAttachmentsIsError) {
+      const errorMessage =
+        (businessAttachmentsError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching business attachments. Please try again later.';
+      toast.error(errorMessage);
+    } else if (businessAttachmentsIsSuccess) {
+      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
+    }
+  }, [
+    businessAttachmentsData,
+    businessAttachmentsError,
+    businessAttachmentsIsError,
+    businessAttachmentsIsSuccess,
+    dispatch,
+  ]);
+
   return (
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Details"
         tabName="general_information"
@@ -240,18 +292,22 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         ) : (
           businessDetailsIsSuccess && (
             <menu className="flex flex-col gap-2">
-              {Object?.entries(businessDetailsData?.data)?.map(
-                ([key, value], index: number) => {
-                  if (key === 'id' || value === null) return null;
-                  return (
-                    <li key={index}>
-                      <p className="flex text-[14px] items-center gap-2">
-                        {capitalizeCamelCase(key)}:{' '}
-                        {capitalizeString(String(value))}
-                      </p>
-                    </li>
-                  );
-                }
+              {businessDetailsData?.data ? (
+                Object?.entries(businessDetailsData?.data)?.map(
+                  ([key, value], index: number) => {
+                    if (key === 'id' || value === null) return null;
+                    return (
+                      <li key={index}>
+                        <p className="flex text-[14px] items-center gap-2">
+                          {capitalizeString(key)}:{' '}
+                          {capitalizeString(String(value))}
+                        </p>
+                      </li>
+                    );
+                  }
+                )
+              ) : (
+                <p>No data</p>
               )}
             </menu>
           )
@@ -260,7 +316,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* COMPANY ADDRESS */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Address"
         tabName="general_information"
@@ -275,36 +331,40 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         ) : (
           businessAddressIsSuccess && (
             <menu className="flex flex-col gap-2">
-              {Object?.entries(businessAddressData?.data)?.map(
-                ([key, value], index: number) => {
-                  if (key === 'id' || value === null) return null;
-                  if (key === 'location')
+              {businessAddressData?.data ? (
+                Object?.entries(businessAddressData?.data)?.map(
+                  ([key, value], index: number) => {
+                    if (key === 'id' || value === null) return null;
+                    if (key === 'location')
+                      return (
+                        <ul key={index} className="flex flex-col gap-2">
+                          {Object?.entries(value)?.map(
+                            ([key, value], index: number) => {
+                              if (key === 'id' || value === null) return null;
+                              return (
+                                <li key={index}>
+                                  <p className="flex text-[14px] items-center gap-2">
+                                    {capitalizeString(key)}:{' '}
+                                    {capitalizeString(String(value))}
+                                  </p>
+                                </li>
+                              );
+                            }
+                          )}
+                        </ul>
+                      );
                     return (
-                      <ul key={index} className="flex flex-col gap-2">
-                        {Object?.entries(value)?.map(
-                          ([key, value], index: number) => {
-                            if (key === 'id' || value === null) return null;
-                            return (
-                              <li key={index}>
-                                <p className="flex text-[14px] items-center gap-2">
-                                  {capitalizeCamelCase(key)}:{' '}
-                                  {capitalizeString(String(value))}
-                                </p>
-                              </li>
-                            );
-                          }
-                        )}
-                      </ul>
+                      <li key={index}>
+                        <p className="flex text-[14px] items-center gap-2">
+                          {capitalizeString(key)}:{' '}
+                          {capitalizeString(String(value))}
+                        </p>
+                      </li>
                     );
-                  return (
-                    <li key={index}>
-                      <p className="flex text-[14px] items-center gap-2">
-                        {capitalizeCamelCase(key)}:{' '}
-                        {capitalizeString(String(value))}
-                      </p>
-                    </li>
-                  );
-                }
+                  }
+                )
+              ) : (
+                <p>No data</p>
               )}
             </menu>
           )
@@ -313,7 +373,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* BUSINESS ACTIVITIES & VAT */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
         tabName="general_information"
@@ -355,7 +415,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/*  BOARD OF DIRECTORS */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Board of Directors"
         tabName="management"
@@ -368,7 +428,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/*  EXECUTIVE MANAGEMENT */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Executive Management"
         tabName="management"
@@ -381,7 +441,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
 
       {/* EMPLOYMENT INFO */}
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Employment Information"
         tabName="management"
@@ -436,21 +496,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           )
         )}
       </PreviewCard>
-
-      {/* <PreviewCard
-        status={status}
-        businessId={businessId}
-        header="Share Details"
-        tabName="capital_information"
-        stepName="share_details"
-        setActiveStep={setBusinessActiveStep}
-        setActiveTab={setBusinessActiveTab}
-      >
-        Share details
-      </PreviewCard> */}
-
       <PreviewCard
-        status={status}
+        applicationStatus={applicationStatus}
         businessId={businessId}
         header="Shareholders"
         tabName="capital_information"
@@ -479,56 +526,29 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         />
       </PreviewCard>
 
-      {/* BENEFIACIAL OWNERS */}
-      {/* <PreviewCard
-        status={business_application.status}
-        entryId={business_application?.entryId}
-        header="Beneficial Owners"
-        tabName="beneficial_owners"
-        stepName="beneficial_owners"
-        setActiveStep={setBusinessActiveStep}
-        setActiveTab={setBusinessActiveTab}
-      >
-        <Table
-          data={
-            business_application?.beneficial_owners?.length > 0
-              ? business_application?.beneficial_owners?.map((owner) => {
-                  return {
-                    ...owner,
-                    name: owner?.company_name
-                      ? owner?.company_name
-                      : `${owner?.first_name || ''} ${owner?.last_name || ''}`,
-                    phone: owner?.phone || owner?.company_phone,
-                    control_type: capitalizeString(owner?.control_type),
-                    ownership_type: capitalizeString(owner?.ownership_type),
-                  };
-                })
-              : []
-          }
-          columns={beneficialOwnersColumns}
-          rowClickHandler={(row) => {
-            dispatch(setBusinessPersonDetailsModal(true));
-            setBusinessPersonDetails(row?.original);
-          }}
-          showFilter={false}
-          showPagination={false}
-        />
-      </PreviewCard> */}
-
-      {/* <PreviewCard
-        status={status}
-        businessId={businessId}
-        header="Attachments"
+      {/* ATTACHMENTS */}
+      <PreviewCard
+        applicationStatus={applicationStatus}
         tabName="attachments"
         stepName="attachments"
+        header="Attachments"
         setActiveStep={setBusinessActiveStep}
         setActiveTab={setBusinessActiveTab}
       >
-        Attachments
-      </PreviewCard> */}
+        {businessAttachmentsIsFetching ? (
+          <figure className="flex items-center gap-3 w-full min-h-[20vh]">
+            <Loader className="text-primary" />
+            Fetching business attachments...
+          </figure>
+        ) : (
+          businessAttachments?.length > 0 && (
+            <BusinessPeopleAttachments attachments={businessAttachments} />
+          )
+        )}
+      </PreviewCard>
 
       {['IN_PROGRESS', 'ACTION_REQUIRED', 'IN_PREVIEW', 'IS_AMENDING'].includes(
-        status
+        String(applicationStatus)
       ) && (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}

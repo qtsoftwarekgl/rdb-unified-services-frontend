@@ -32,7 +32,7 @@ import {
 import { useCreateOrUpdateCompanyDetailsMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { convertDecimalToPercentage } from "@/helpers/strings";
 import { businessId } from "@/types/models/business";
-import SimilarBusinessNames from "../../domestic-business-registration/general-information/SimilarBusinessNames";
+import SimilarBusinessNames from "../../SimilarBusinessNames";
 
 type CompanyDetailsProps = {
   businessId: businessId;

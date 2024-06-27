@@ -12,7 +12,7 @@ interface BusinessPersonDetailsProps {
     first_name: string;
     last_name: string;
     company_name: string;
-    document_no: string;
+    documentNumber: string;
     passport_no: string;
     email: string;
     phone: string;
@@ -57,7 +57,7 @@ const BusinessPersonDetails: FC<BusinessPersonDetailsProps> = ({
             <span className="font-semibold">Document No:</span>
             <span>
               {capitalizeString(
-                personDetails?.document_no || personDetails?.passport_no
+                personDetails?.documentNumber || personDetails?.passport_no
               )}
             </span>
           </p>

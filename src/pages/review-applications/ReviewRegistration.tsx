@@ -123,17 +123,22 @@ const ReviewRegistration = () => {
         ) : (
           <Table
             columns={businessesColumns as ColumnDef<Business>[]}
-            data={
-              businessesList?.map((business, index) => {
-                return {
-                  ...business,
-                  no: index + 1,
-                  dateOfIncorporation: formatDate(business?.createdAt),
-                  companyType: capitalizeString(business?.companyType),
-                  assignee: 'RDB Verifier',
-                };
-              }) as unknown as Row<Business>[]
-            }
+            data={businessesList?.map((business, index) => {
+              return {
+                ...business,
+                no: index + 1,
+                dateOfIncorporation: formatDate(
+                  business?.createdAt
+                ) as unknown as Date,
+                companyType: capitalizeString(business?.companyType) || 'N/A',
+                assignee: 'RDB Verifier',
+                companyName: (
+                  business?.companyName ||
+                  business?.enterpriseName ||
+                  business?.enterpriseBusinessName
+                )?.toUpperCase(),
+              };
+            })}
           />
         )}
       </section>

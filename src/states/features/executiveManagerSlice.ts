@@ -3,10 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {
   executiveManagersList: PersonDetail[];
-  selectedExecutiveManager: PersonDetail;
+  selectedExecutiveManager?: PersonDetail;
 } = {
   executiveManagersList: [],
-  selectedExecutiveManager: {} as PersonDetail,
+  selectedExecutiveManager: undefined,
 };
 
 export const executiveManagersSlice = createSlice({

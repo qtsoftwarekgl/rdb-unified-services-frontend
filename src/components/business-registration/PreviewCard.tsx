@@ -30,7 +30,7 @@ interface PreviewCardProps {
   stepName: string;
   tabName: string;
   businessId?: businessId;
-  status: string;
+  applicationStatus?: string;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
@@ -41,7 +41,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   stepName,
   tabName,
   businessId,
-  status,
+  applicationStatus,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -185,7 +185,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
       )}
       {!RDBAdminEmailPattern.test(user?.email) &&
         existingComments?.filter((comment) => !comment.checked)?.length > 0 &&
-        status === 'ACTION_REQUIRED' && (
+        applicationStatus === 'ACTION_REQUIRED' && (
           <menu className="flex items-center w-full justify-center">
             <Button
               styled={false}

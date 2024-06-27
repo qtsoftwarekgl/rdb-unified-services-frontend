@@ -348,8 +348,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
               }
               dispatch(setBusinessCompletedStep('capital_details'));
               dispatch(setBusinessCompletedTab('capital_information'));
-              dispatch(setBusinessActiveStep('attachments'));
-              dispatch(setBusinessActiveTab('attachments'));
+              dispatch(setBusinessActiveStep('executive_management'));
+              dispatch(setBusinessActiveTab('management'));
             }}
           />
         </menu>

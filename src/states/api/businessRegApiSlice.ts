@@ -51,9 +51,9 @@ export const businessRegApiSlice = createApi({
 
       // GET BUSINESS ADDRESS
       getBusinessAddress: builder.query({
-        query: ({ id }) => {
+        query: ({ businessId }) => {
           return {
-            url: `/address?businessId=${id}`,
+            url: `/address?businessId=${businessId}`,
           };
         },
       }),
@@ -312,7 +312,6 @@ export const businessRegApiSlice = createApi({
           incorporationDate,
           isBasedInRwanda,
           firstName,
-          middleName,
           lastName,
           fatherName,
           motherName,
@@ -347,7 +346,6 @@ export const businessRegApiSlice = createApi({
               countryOfIncorporation,
               incorporationDate,
               firstName,
-              middleName,
               lastName,
               fatherName,
               motherName,

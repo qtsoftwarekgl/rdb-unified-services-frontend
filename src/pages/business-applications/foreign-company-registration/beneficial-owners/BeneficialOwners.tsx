@@ -557,7 +557,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             {watch("document_type") === "nid" && watch("type") === "person" && (
               <Controller
                 control={control}
-                name="document_no"
+                name="documentNumber"
                 rules={{
                   required: watch("document_type")
                     ? "Document number is required"
@@ -578,7 +578,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         suffixIconHandler={async (e) => {
                           e.preventDefault();
                           if (!field.value) {
-                            setError("document_no", {
+                            setError("documentNumber", {
                               type: "manual",
                               message: "Document number is required",
                             });
@@ -620,12 +620,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         placeholder="1 XXXX X XXXXXXX X XX"
                         onChange={async (e) => {
                           field.onChange(e);
-                          clearErrors("document_no");
-                          await trigger("document_no");
+                          clearErrors("documentNumber");
+                          await trigger("documentNumber");
                         }}
                       />
                       {searchMember?.loading &&
-                        !errors?.document_no &&
+                        !errors?.documentNumber &&
                         !searchMember?.error && (
                           <span className="flex items-center gap-[2px] text-[13px]">
                             <Loader size={4} /> Validating document
@@ -636,9 +636,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                           Invalid document number
                         </span>
                       )}
-                      {errors?.document_no && (
+                      {errors?.documentNumber && (
                         <p className="text-red-500 text-[13px]">
-                          {String(errors?.document_no?.message)}
+                          {String(errors?.documentNumber?.message)}
                         </p>
                       )}
                     </label>

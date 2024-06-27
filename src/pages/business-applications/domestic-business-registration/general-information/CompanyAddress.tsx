@@ -89,7 +89,7 @@ const CompanyAddress = ({
   // GET BUSINESS
   useEffect(() => {
     if (businessId) {
-      getBusinessAddress({ businessId: businessId });
+      getBusinessAddress({ businessId });
     }
   }, [getBusinessAddress, businessId]);
 

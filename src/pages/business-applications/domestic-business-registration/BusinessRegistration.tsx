@@ -31,6 +31,7 @@ import { toast } from 'react-toastify';
 import { setBusiness } from '@/states/features/businessSlice';
 import Loader from '@/components/Loader';
 import Button from '@/components/inputs/Button';
+import DeleteBusinessAttachment from '@/containers/DeleteBusinessAttachment';
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -134,63 +135,63 @@ const BusinessRegistration = () => {
                   {business_active_step?.name === 'business_activity_vat' && (
                     <BusinessActivities
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'executive_management' && (
                     <ExecutiveManagement
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'board_of_directors' && (
                     <BoardOfDirectors
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'employment_info' && (
                     <EmploymentInfo
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'share_details' && (
                     <ShareDetails
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'shareholders' && (
                     <ShareHolders
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'capital_details' && (
                     <CapitalDetails
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      status={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'attachments' && (
                     <CompanyAttachments
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      status={business?.applicationStatus}
                     />
                   )}
 
                   {business_active_step?.name === 'preview_submission' && (
                     <PreviewSubmission
                       businessId={queryParams?.businessId}
-                      status={'IN_PROGRESS'}
+                      applicationStatus={business?.applicationStatus}
                     />
                   )}
                 </Tab>
@@ -204,6 +205,7 @@ const BusinessRegistration = () => {
           </article>
         )}
       </main>
+      <DeleteBusinessAttachment />
     </UserLayout>
   );
 };

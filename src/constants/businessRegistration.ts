@@ -583,7 +583,7 @@ export const businessSubActivities = [
 
 export const personnelTypes = [
   {
-    label: "Person",
+    label: "Individual",
     value: "person",
   },
   {

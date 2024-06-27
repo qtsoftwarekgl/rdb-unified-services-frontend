@@ -39,10 +39,13 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 type BusinessActivityProps = {
   businessId: businessId;
-  status: string;
+  applicationStatus?: string;
 };
 
-const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
+const BusinessActivities = ({
+  businessId,
+  applicationStatus,
+}: BusinessActivityProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -243,8 +246,10 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success('Business activities have been successfully created');
-      dispatch(setBusinessActiveStep('executive_management'));
-      dispatch(setBusinessActiveTab('management'));
+      dispatch(setBusinessCompletedTab('general_information'));
+      dispatch(setBusinessCompletedStep('business_activity_vat'));
+      dispatch(setBusinessActiveStep('share_details'));
+      dispatch(setBusinessActiveTab('capital_information'));
     }
   }, [
     createBusinessActivitiesError,
@@ -309,77 +314,81 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                 businessActivitiesList?.length > 0) && (
                 <menu className="flex flex-col items-start w-full gap-6">
                   {businessLinesIsLoading && (
-                        <figure className="flex items-center justify-center w-full h-full">
-                          <Loader />
-                        </figure>
-                      )}
-                    {businessLinesIsSuccess && 
-                  <section className="flex flex-col w-full gap-4">
-                    <h1 className="text-md">Select business line</h1>
-                    <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                      {!businessLinesIsLoading &&
-                        businessLinesList.map(
-                          (businessLine: BusinessActivity) => {
-                            const isSelected = selectedBusinessLinesList?.find(
-                              (activity: BusinessActivity) =>
-                                activity.code == businessLine.code
-                            );
-                            return (
-                              <li
-                                key={businessLine.code}
-                                className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
-                              >
-                                <p className="text-start text-[13px] max-w-[85%]">
-                                  {businessLine?.description}
-                                </p>
-                                <Link
-                                  to={'#'}
-                                  className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    if (isSelected) return;
-                                    dispatch(
-                                      addSelectedBusinessLine(businessLine)
-                                    );
-                                  }}
+                    <figure className="flex items-center justify-center w-full h-full">
+                      <Loader />
+                    </figure>
+                  )}
+                  {businessLinesIsSuccess && (
+                    <section className="flex flex-col w-full gap-4">
+                      <h1 className="text-md">Select business line</h1>
+                      <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
+                        {!businessLinesIsLoading &&
+                          businessLinesList.map(
+                            (businessLine: BusinessActivity) => {
+                              const isSelected =
+                                selectedBusinessLinesList?.find(
+                                  (activity: BusinessActivity) =>
+                                    activity.code == businessLine.code
+                                );
+                              return (
+                                <li
+                                  key={businessLine.code}
+                                  className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                                 >
-                                  {isSelected ? (
-                                    <FontAwesomeIcon icon={faCircleCheck} />
-                                  ) : (
-                                    <menu className="w-fit flex items-center gap-2 text-[13px]">
-                                      <FontAwesomeIcon
-                                        className="text-[12px]"
-                                        icon={faPlus}
-                                      />
-                                      Add to list
-                                    </menu>
-                                  )}
-                                </Link>
-                              </li>
-                            );
-                          }
-                        )}
-                    </ul>
-                  </section>}
+                                  <p className="text-start text-[13px] max-w-[85%]">
+                                    {businessLine?.code} -{' '}
+                                    {businessLine?.description}
+                                  </p>
+                                  <Link
+                                    to={'#'}
+                                    className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      if (isSelected) return;
+                                      dispatch(
+                                        addSelectedBusinessLine(businessLine)
+                                      );
+                                    }}
+                                  >
+                                    {isSelected ? (
+                                      <FontAwesomeIcon icon={faCircleCheck} />
+                                    ) : (
+                                      <menu className="w-fit flex items-center gap-2 text-[13px]">
+                                        <FontAwesomeIcon
+                                          className="text-[12px]"
+                                          icon={faPlus}
+                                        />
+                                        Add to list
+                                      </menu>
+                                    )}
+                                  </Link>
+                                </li>
+                              );
+                            }
+                          )}
+                      </ul>
+                    </section>
+                  )}
                   {selectedBusinessLinesList?.length > 0 ? (
                     <section className="flex flex-col w-full gap-4">
                       <h1 className="text-md">Selected business activities</h1>
                       <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background max-h-[35vh] overflow-y-scroll">
                         {selectedBusinessLinesList?.map(
-                          (businesLine: BusinessActivity, index: number) => {
+                          (businessLine: BusinessActivity, index: number) => {
                             const isMainBusinessLine =
                               selectedMainBusinessLine?.code ==
-                              businesLine.code;
+                              businessLine.code;
                             return (
                               <li
                                 key={index}
                                 className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                               >
                                 <menu className="flex items-center gap-2">
-                                  <p className="text-start text-[13px]">
-                                    {businesLine?.description}{' '}
+                                  <p className="text-start text-[13px] flex-col gap-2">
+                                    {businessLine?.code} -{' '}
+                                    {businessLine?.description}{' '}
                                     {isMainBusinessLine && (
-                                      <span className="text-[11px] bg-primary text-white rounded-md p-1 ml-2">
+                                      <span className="text-[11px] block w-fit bg-primary text-white rounded-md p-1 my-1">
                                         Main activity
                                       </span>
                                     )}
@@ -391,11 +400,14 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                                   onClick={(e) => {
                                     e.preventDefault();
                                     dispatch(
-                                      removeSelectedBusinessLine(businesLine)
+                                      removeSelectedBusinessLine(businessLine)
                                     );
                                   }}
                                 >
-                                  <FontAwesomeIcon className='text-[12px]' icon={faMinus} />
+                                  <FontAwesomeIcon
+                                    className="text-[12px]"
+                                    icon={faMinus}
+                                  />
                                   Remove from list
                                 </Link>
                               </li>
@@ -413,51 +425,49 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                 </menu>
               )}
               {selectedBusinessLinesList?.length > 0 && (
-                  <menu className="w-full">
-                    <Controller
-                      control={control}
-                      name="mainBusinessActivity"
-                      render={({ field }) => {
-                        return (
-                          <Select
-                            label="Select main business activity"
-                            required
-                            placeholder="Select here..."
-                            defaultValue={String(
-                              selectedMainBusinessLine?.code
-                            )}
-                            options={selectedBusinessLinesList?.map(
-                              (activity) => {
-                                return {
-                                  label: activity.description,
-                                  value: String(activity.code),
-                                };
-                              }
-                            )}
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              dispatch(
-                                setSelectedMainBusinessLine(
-                                  selectedBusinessLinesList.find(
-                                    (activity) =>
-                                      String(activity.code) == String(e)
-                                  )
+                <menu className="w-full">
+                  <Controller
+                    control={control}
+                    name="mainBusinessActivity"
+                    render={({ field }) => {
+                      return (
+                        <Select
+                          label="Select main business activity"
+                          required
+                          placeholder="Select here..."
+                          defaultValue={String(selectedMainBusinessLine?.code)}
+                          options={selectedBusinessLinesList?.map(
+                            (activity) => {
+                              return {
+                                label: activity.description,
+                                value: String(activity.code),
+                              };
+                            }
+                          )}
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            dispatch(
+                              setSelectedMainBusinessLine(
+                                selectedBusinessLinesList.find(
+                                  (activity) =>
+                                    String(activity.code) == String(e)
                                 )
-                              );
-                              clearErrors('mainBusinessActivity');
-                            }}
-                          />
-                        );
-                      }}
-                    />
-                    {errors.mainBusinessActivity && (
-                      <p className="text-[13px] text-red-500">
-                        {String(errors.mainBusinessActivity.message)}
-                      </p>
-                    )}
-                  </menu>
-                )}
+                              )
+                            );
+                            clearErrors('mainBusinessActivity');
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  {errors.mainBusinessActivity && (
+                    <p className="text-[13px] text-red-500">
+                      {String(errors.mainBusinessActivity.message)}
+                    </p>
+                  )}
+                </menu>
+              )}
               {businessActivitiesIsSuccess && (
                 <section className="flex flex-col w-full gap-6">
                   <h1 className="text-lg font-semibold text-center uppercase">
@@ -467,7 +477,9 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                     <Controller
                       name="isVATRegistered"
                       rules={{ required: 'Select choice' }}
-                      defaultValue={businessActivitiesData?.data?.isVATRegistered}
+                      defaultValue={
+                        businessActivitiesData?.data?.isVATRegistered
+                      }
                       control={control}
                       render={({ field }) => {
                         return (
@@ -543,7 +555,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                 'IN_PREVIEW',
                 'ACTION_REQUIRED',
                 'IS_AMENDING',
-              ].includes(status) && (
+              ].includes(String(applicationStatus)) && (
                 <menu
                   className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
                 >
@@ -555,14 +567,9 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                       dispatch(setBusinessActiveStep('company_address'));
                     }}
                   />
-                  {status === 'IS_AMENDING' && (
-                    <Button
-                      submit
-                      value={'Complete Amendment'}
-                      disabled={Object.keys(errors).length > 0 || disableForm}
-                    />
-                  )}
-                  {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+                  {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+                    String(applicationStatus)
+                  ) && (
                     <Button
                       value={'Save & Complete Review'}
                       submit
@@ -589,7 +596,7 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                 'IS_APPROVED',
                 'PENDING_APPROVAL',
                 'PENDING_REJECTION',
-              ].includes(status) && (
+              ].includes(String(applicationStatus)) && (
                 <menu className="flex items-center gap-3 justify-between">
                   <Button
                     value={'Back'}
@@ -604,9 +611,11 @@ const BusinessActivities = ({ businessId, status }: BusinessActivityProps) => {
                     onClick={(e) => {
                       e.preventDefault();
                       dispatch(setBusinessCompletedTab('general_information'));
-                      dispatch(setBusinessCompletedStep('business_activity_vat'));
-                      dispatch(setBusinessActiveStep('board_of_directors'));
-                      dispatch(setBusinessActiveTab('management'));
+                      dispatch(
+                        setBusinessCompletedStep('business_activity_vat')
+                      );
+                      dispatch(setBusinessActiveStep('share_details'));
+                      dispatch(setBusinessActiveTab('capital_information'));
                     }}
                   />
                 </menu>

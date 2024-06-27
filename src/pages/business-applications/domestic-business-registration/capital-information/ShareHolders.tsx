@@ -1,13 +1,9 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../../../components/inputs/Select';
-import {
-  attachmentFileColumns,
-  personnelTypes,
-} from '../../../../constants/businessRegistration';
+import { personnelTypes } from '../../../../constants/businessRegistration';
 import Input from '../../../../components/inputs/Input';
-import { faSearch, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { previewUrl, userData } from '../../../../constants/authentication';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../../../components/Loader';
 import validateInputs from '../../../../helpers/validations';
 import { countriesList } from '../../../../constants/countries';
@@ -22,55 +18,66 @@ import {
 import { maskPhoneDigits } from '../../../../helpers/strings';
 import { setUserApplications } from '../../../../states/features/userApplicationSlice';
 import moment from 'moment';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
-import ViewDocument from '../../../user-company-details/ViewDocument';
 import { businessId } from '@/types/models/business';
-import Table from '@/components/table/Table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { useCreateShareholderMutation } from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import FoundersDetails from './FoundersDetails';
+import FoundersDetails from './FoundersDetailsList';
+import { genderOptions } from '@/constants/inputs.constants';
+import {
+  addBusinessPersonAttachment,
+  setBusinessPeopleAttachments,
+  setUserInformation,
+} from '@/states/features/businessPeopleSlice';
+import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
+import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
+import { addFounderDetail } from '@/states/features/founderDetailSlice';
 
-interface ShareHoldersProps {
+type ShareHoldersProps = {
   businessId: businessId;
-  status: string;
-}
+  applicationStatus?: string;
+};
 
-const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
+const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
     setError,
     watch,
-    setValue,
+    clearErrors,
     trigger,
     reset,
-    clearErrors,
     formState: { errors },
   } = useForm();
 
   // INITIALIZE CREATE SHAREHOLDER MUTATION
-  const [createShareholder, {
-    isLoading: createShareholderIsLoading,
-    error: createShareholderError,
-    isSuccess: createShareholderIsSuccess,
-    isError: createShareholderIsError,
-  }] = useCreateShareholderMutation();
+  const [
+    createShareholder,
+    {
+      isLoading: createShareholderIsLoading,
+      error: createShareholderError,
+      isSuccess: createShareholderIsSuccess,
+      isError: createShareholderIsError,
+      data: createShareholderData,
+    },
+  ] = useCreateShareholderMutation();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
-  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
+    null
+  );
+  const { userInformation, businessPeopleAttachments } = useSelector(
+    (state: RootState) => state.businessPeople
+  );
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     createShareholder({
       ...data,
+      personDocNo: data?.personDocNo || data?.documentNumber,
       businessId,
       nationality: data?.persDocIssuePlace,
       isBasedInRwanda: data?.isBasedInRwanda === 'yes',
@@ -79,6 +86,30 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
         : data?.countryOfIncorporation,
     });
   };
+
+  // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
+  const [
+    uploadPersonAttachment,
+    {
+      data: uploadAttachmentData,
+      error: uploadAttachmentError,
+      isLoading: uploadAttachmentIsLoading,
+      isSuccess: uploadAttachmentIsSuccess,
+      isError: uploadAttachmentIsError,
+    },
+  ] = useUploadPersonAttachmentMutation();
+
+  // INITIALIZE GET USER INFORMATION QUERY
+  const [
+    getUserInformation,
+    {
+      data: userInformationData,
+      error: userInformationError,
+      isFetching: userInformationIsFetching,
+      isSuccess: userInformationIsSuccess,
+      isError: userInformationIsError,
+    },
+  ] = useLazyGetUserInformationQuery();
 
   // HANDLE CREATE SHAREHOLDER RESPONSE
   useEffect(() => {
@@ -89,56 +120,122 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
         toast.error((createShareholderError as ErrorResponse)?.data?.message);
       }
     } else if (createShareholderIsSuccess) {
-      toast.success('Shareholder added successfully');
-      reset({
-        shareHolderType: '',
-      });
-      setAttachmentFile(null);
-      window.location.reload();
+      if (
+        watch('nationality') !== 'RW' &&
+        watch('shareHolderType') === 'person'
+      ) {
+        const formData = new FormData();
+        formData.append('file', attachmentFile as File);
+        formData.append('personId', createShareholderData?.data?.id);
+        formData.append('attachmentType', String(attachmentFile?.type));
+        formData.append('businessId', String(businessId));
+        formData.append('fileName', String(attachmentFile?.name));
+        uploadPersonAttachment({ formData });
+      } else {
+        reset({
+          position: '',
+          personIdentType: '',
+          documentNumber: '',
+          personDocNo: '',
+          persDocIssueDate: '',
+          persDocExpiryDate: '',
+          dateOfBirth: '',
+          firstName: '',
+          middleName: '',
+          lastName: '',
+        });
+        dispatch(setUserInformation(undefined));
+      }
     }
   }, [
+    attachmentFile,
     businessId,
+    createShareholderData?.data?.id,
     createShareholderError,
     createShareholderIsError,
     createShareholderIsSuccess,
     dispatch,
     reset,
+    uploadPersonAttachment,
+    watch,
   ]);
 
-  // ATTACHMENT COLUMNS
-  const attachmentColumns = [
-    ...attachmentFileColumns,
-    {
-      header: 'action',
-      accesorKey: 'action',
-      cell: () => {
-        return (
-          <menu className="flex items-center gap-4">
-            <FontAwesomeIcon
-              className="cursor-pointer text-primary font-bold text-[20px] ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-                setAttachmentPreview(previewUrl);
-              }}
-            />
-            <FontAwesomeIcon
-              className="cursor-pointer text-white bg-red-600 p-2 w-[13px] h-[13px] text-[16px] rounded-full font-bold ease-in-out duration-300 hover:scale-[1.02]"
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            />
-          </menu>
+  // HANDLE UPLOAD PERSON ATTACHMENT RESPONSE
+  useEffect(() => {
+    if (uploadAttachmentIsError) {
+      if ((uploadAttachmentError as ErrorResponse)?.status === 500) {
+        toast.error(
+          'An error occured while uploading attachment. Please try again'
         );
-      },
-    },
-  ];
+      } else {
+        toast.error((uploadAttachmentError as ErrorResponse)?.data?.message);
+      }
+    } else if (uploadAttachmentIsSuccess) {
+      toast.success('Person added successfully');
+      dispatch(addFounderDetail(createShareholderData?.data));
+      reset({
+        position: '',
+        personIdentType: '',
+        documentNumber: '',
+        personDocNo: '',
+        persDocIssueDate: '',
+        persDocExpiryDate: '',
+        dateOfBirth: '',
+        firstName: '',
+        middleName: '',
+        lastName: '',
+      });
+      setAttachmentFile(null);
+      dispatch(setBusinessPeopleAttachments([]));
+    }
+  }, [
+    dispatch,
+    createShareholderData?.data,
+    reset,
+    uploadAttachmentData,
+    uploadAttachmentError,
+    uploadAttachmentIsError,
+    uploadAttachmentIsSuccess,
+  ]);
+
+  // HANDLE GET USER INFORMATION RESPONSE
+  useEffect(() => {
+    if (userInformationIsError) {
+      if ((userInformationError as ErrorResponse).status === 500) {
+        toast.error('An error occured while fetching user information');
+      } else {
+        toast.error((userInformationError as ErrorResponse)?.data?.message);
+      }
+    } else if (userInformationIsSuccess) {
+      dispatch(setUserInformation(userInformationData?.data));
+      reset({
+        shareHolderType: watch('shareHolderType'),
+        personIdentType: 'nid',
+        documentNumber: watch('documentNumber'),
+        firstName: userInformation?.foreName,
+        lastName: userInformation?.surnames,
+        dateOfBirth: userInformation?.dateOfBirth,
+        gender: userInformation?.gender,
+        nationality: userInformation?.nationality,
+        persDocIssuePlace: userInformation?.nationality,
+        isFromNida: true,
+      });
+    }
+  }, [
+    dispatch,
+    reset,
+    userInformation,
+    userInformationData,
+    userInformationError,
+    userInformationIsError,
+    userInformationIsSuccess,
+    watch,
+  ]);
 
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset className="flex flex-col w-full gap-4" disabled={disableForm}>
+        <fieldset className="flex flex-col w-full gap-4">
           <Controller
             name="shareHolderType"
             control={control}
@@ -156,6 +253,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                     onChange={(e) => {
                       field.onChange(e);
                       setAttachmentFile(null);
+                      clearErrors(['personIdentType', 'personDocNo']);
                       reset({
                         shareHolderType: e,
                       });
@@ -211,7 +309,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
               watch('shareHolderType') === 'person' && (
                 <Controller
                   control={control}
-                  name="personDocNo"
+                  name="documentNumber"
                   rules={{
                     required: watch('personIdentType')
                       ? 'Document number is required'
@@ -232,25 +330,34 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                           suffixIconHandler={async (e) => {
                             e.preventDefault();
                             if (!field.value) {
-                              setError('personDocNo', {
+                              setError('documentNumber', {
                                 type: 'manual',
                                 message: 'Document number is required',
                               });
                               return;
                             }
+                            getUserInformation({ documentNumber: field.value });
                           }}
                           label="ID Document No"
                           suffixIconPrimary
                           placeholder="1 XXXX X XXXXXXX X XX"
+                          {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            clearErrors('personDocNo');
-                            await trigger('personDocNo');
+                            await trigger('documentNumber');
                           }}
                         />
-                        {errors?.personDocNo && (
+                        {userInformationIsFetching && (
+                          <ul className="flex items-center gap-2">
+                            <Loader className="text-primary" />
+                            <p className="text-[13px]">
+                              Fetching user information...
+                            </p>
+                          </ul>
+                        )}
+                        {errors?.documentNumber && (
                           <p className="text-red-500 text-[13px]">
-                            {String(errors?.personDocNo?.message)}
+                            {String(errors?.documentNumber?.message)}
                           </p>
                         )}
                       </label>
@@ -297,16 +404,15 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
               }}
             />
           </menu>
-          {(watch('shareHolderType') === 'person' &&
-            watch('personIdentType') === 'nid') ||
-            (watch('personIdentType') === 'passport' && (
+          {((watch('personIdentType') === 'nid' && userInformation) ||
+              watch('personIdentType') === 'passport') && (
               <section
-                className={`grid grid-cols-2 gap-4 items-start justify-between w-full`}
+                className={`flex flex-wrap gap-4 items-start justify-between w-full`}
               >
                 {watch('personIdentType') === 'passport' && (
                   <>
                     <Controller
-                      name="persDocNo"
+                      name="personDocNo"
                       control={control}
                       rules={{
                         required: 'Passport number is required',
@@ -314,7 +420,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                       render={({ field }) => {
                         return (
                           <label
-                            className={`w-full flex flex-col gap-1 items-start`}
+                            className={`w-[49%] flex flex-col gap-1 items-start`}
                           >
                             <Input
                               required
@@ -322,9 +428,9 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                               label="Passport number"
                               {...field}
                             />
-                            {errors?.persDocNo && (
+                            {errors?.personDocNo && (
                               <span className="text-sm text-red-500">
-                                {String(errors?.persDocNo?.message)}
+                                {String(errors?.personDocNo?.message)}
                               </span>
                             )}
                           </label>
@@ -348,7 +454,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                       control={control}
                       render={({ field }) => {
                         return (
-                          <label className="flex flex-col gap-1 w-full">
+                          <label className="flex flex-col gap-1 w-[49%]">
                             <Input
                               {...field}
                               label="Passport Issue Date"
@@ -387,7 +493,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                       control={control}
                       render={({ field }) => {
                         return (
-                          <label className="flex flex-col gap-1 w-full">
+                          <label className="flex flex-col gap-1 w-[49%]">
                             <Input
                               {...field}
                               label="Passport Expiry Date"
@@ -415,7 +521,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                       control={control}
                       render={({ field }) => {
                         return (
-                          <label className="flex flex-col gap-1 w-full">
+                          <label className="flex flex-col gap-1 w-[49%]">
                             <Input
                               {...field}
                               type="date"
@@ -444,7 +550,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                   rules={{ required: 'First name is required' }}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1 items-start">
+                      <label className="w-[49%] flex flex-col gap-1 items-start">
                         <Input
                           required
                           readOnly={watch('personIdentType') === 'nid'}
@@ -462,27 +568,11 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                   }}
                 />
                 <Controller
-                  name="middleName"
-                  control={control}
-                  render={({ field }) => {
-                    return (
-                      <label className="w-full flex flex-col gap-1 items-start">
-                        <Input
-                          readOnly={watch('personIdentType') === 'nid'}
-                          placeholder="Middle name"
-                          label="Middle name"
-                          {...field}
-                        />
-                      </label>
-                    );
-                  }}
-                />
-                <Controller
                   name="lastName"
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1 items-start">
+                      <label className="w-[49%] flex flex-col gap-1 items-start">
                         <Input
                           readOnly={watch('personIdentType') === 'nid'}
                           placeholder="Last name"
@@ -502,26 +592,16 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                         ? 'Select gender'
                         : false,
                   }}
+                  defaultValue={watch('gender')}
                   render={({ field }) => {
                     return (
-                      <label className="flex flex-col gap-2 items-start w-full">
-                        <p className="flex items-center gap-1 text-[15px]">
-                          Gender<span className="text-red-500">*</span>
-                        </p>
-                        <menu className="flex items-center gap-4 mt-2">
-                          <Input
-                            type="radio"
-                            label="Male"
-                            {...field}
-                            value={'Male'}
-                          />
-                          <Input
-                            type="radio"
-                            label="Female"
-                            {...field}
-                            value={'Female'}
-                          />
-                        </menu>
+                      <label className="flex flex-col gap-2 items-start w-[49%]">
+                        <Select
+                          options={genderOptions}
+                          label="Sex"
+                          required
+                          {...field}
+                        />
                         {errors?.gender && (
                           <span className="text-red-500 text-[13px]">
                             {String(errors?.gender?.message)}
@@ -539,7 +619,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                   }}
                   render={({ field }) => {
                     return (
-                      <label className="flex flex-col w-full gap-1">
+                      <label className="flex flex-col w-[49%] gap-1">
                         {watch('personIdentType') === 'passport' ? (
                           <Input
                             label="Phone number"
@@ -552,11 +632,10 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                             label="Phone number"
                             required
                             placeholder="Select phone number"
-                            options={userData?.slice(0, 3)?.map((user) => {
+                            options={userInformation?.phones?.map((phone) => {
                               return {
-                                ...user,
-                                label: `(+250) ${maskPhoneDigits(user?.phone)}`,
-                                value: user?.phone,
+                                label: maskPhoneDigits(phone?.msidn),
+                                value: phone?.msidn,
                               };
                             })}
                             {...field}
@@ -582,7 +661,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="flex flex-col gap-1 w-full">
+                      <label className="flex flex-col gap-1 w-[49%]">
                         <Input
                           {...field}
                           placeholder="Enter email address"
@@ -606,7 +685,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                       rules={{ required: 'Country is required' }}
                       render={({ field }) => {
                         return (
-                          <label className="w-full flex flex-col gap-1 items-start">
+                          <label className="w-[49%] flex flex-col gap-1 items-start">
                             <Select
                               label="Country"
                               placeholder="Select country"
@@ -616,7 +695,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                                   return {
                                     ...country,
                                     label: country.name,
-                                    value: country?.name,
+                                    value: country?.code,
                                   };
                                 })}
                               {...field}
@@ -640,7 +719,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                     name="poBox"
                     render={({ field }) => {
                       return (
-                        <label className="w-full flex flex-col gap-1">
+                        <label className="w-[49%] flex flex-col gap-1">
                           <Input
                             label="PO Box"
                             placeholder="PO Box"
@@ -651,63 +730,62 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
                     }}
                   />
                 )}
+                <menu
+                  className={`${
+                    watch('personIdentType') === 'passport' ? 'flex' : 'hidden'
+                  } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
+                >
+                  <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
+                    Passport <span className="text-red-600">*</span>
+                  </h3>
+                  <Controller
+                    name="attachment"
+                    rules={{
+                      required:
+                        watch('personIdentType') === 'passport'
+                          ? 'Passport is required'
+                          : false,
+                    }}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <label className="flex flex-col w-full items-start gap-2 max-sm:!w-full">
+                          <Input
+                            type="file"
+                            accept="application/pdf"
+                            className="!w-fit max-sm:!w-full self-start"
+                            onChange={(e) => {
+                              field.onChange(e?.target?.files?.[0]);
+                              setAttachmentFile(e.target.files?.[0]);
+                              dispatch(
+                                addBusinessPersonAttachment({
+                                  attachmentType: e.target.files?.[0]?.type,
+                                  fileName: e.target.files?.[0]?.name,
+                                  fileSize: e.target.files?.[0]?.size,
+                                })
+                              );
+                            }}
+                          />
+                          <ul className="flex flex-col items-center w-full gap-3">
+                            {uploadAttachmentIsLoading && (
+                              <ul className="flex items-center gap-2">
+                                <Loader className="text-primary" />
+                                Uploading attachment...
+                              </ul>
+                            )}
+                          </ul>
+                          {errors?.attachment && (
+                            <p className="text-sm text-red-500">
+                              {String(errors?.attachment?.message)}
+                            </p>
+                          )}
+                        </label>
+                      );
+                    }}
+                  />
+                </menu>
               </section>
-            ))}
-          <menu
-            className={`${
-              watch('shareHolderType') === 'person' &&
-              watch('personIdentType') === 'passport'
-                ? 'flex'
-                : 'hidden'
-            } w-full flex-col items-start gap-3 my-3 max-md:items-center`}
-          >
-            <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-              Passport <span className="text-red-600">*</span>
-            </h3>
-            <Controller
-              name="attachment"
-              rules={{
-                required:
-                  watch('personIdentType') === 'passport'
-                    ? 'Passport is required'
-                    : false,
-              }}
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full items-start gap-2 max-sm:!w-full">
-                    <Input
-                      type="file"
-                      accept="application/pdf,image/*"
-                      className="!w-fit max-sm:!w-full self-start"
-                      onChange={(e) => {
-                        field.onChange(e?.target?.files?.[0]);
-                        e?.target?.files?.[0] &&
-                          setAttachmentFile(e?.target?.files?.[0]);
-                        clearErrors('attachment');
-                        setValue('attachment', e?.target?.files?.[0]);
-                      }}
-                    />
-                    <ul className="flex flex-col items-center w-full gap-3">
-                      {attachmentFile && (
-                        <Table
-                          columns={attachmentColumns}
-                          data={[attachmentFile]}
-                          showPagination={false}
-                          showFilter={false}
-                        />
-                      )}
-                    </ul>
-                    {errors?.attachment && (
-                      <p className="text-sm text-red-500">
-                        {String(errors?.attachment?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-          </menu>
+            )}
           <section
             className={`${
               watch('shareHolderType') && watch('shareHolderType') !== 'person'
@@ -903,7 +981,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
             />
             <Controller
               control={control}
-              name="street_name"
+              name="streetNumber"
               render={({ field }) => {
                 return (
                   <label className="w-full flex flex-col gap-1">
@@ -918,7 +996,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
             />
             <Controller
               control={control}
-              name="po_box"
+              name="poBox"
               render={({ field }) => {
                 return (
                   <label className="w-full flex flex-col gap-1">
@@ -932,6 +1010,17 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
               }}
             />
           </section>
+          {uploadAttachmentIsLoading ? (
+            <figure className="w-full flex items-center justify-center min-h-[20vh]">
+              <Loader />
+            </figure>
+          ) : (
+            <section className="flex flex-col w-full gap-2">
+              <BusinessPeopleAttachments
+                attachments={businessPeopleAttachments}
+              />
+            </section>
+          )}
           <FoundersDetails businessId={businessId} />
           <article
             className={`${
@@ -951,47 +1040,24 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
             'IS_AMENDING',
             'IN_PREVIEW',
             'ACTION_REQUIRED',
-          ].includes(status) && (
+          ].includes(String(applicationStatus)) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
               <Button
                 value="Back"
-                disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setBusinessActiveStep('share_details'));
                   dispatch(setBusinessActiveTab('capital_information'));
                 }}
               />
-              {status === 'IS_AMENDING' && (
-                <Button
-                  value={'Complete Amendment'}
-                  onClick={(e) => {
-                    e.preventDefault();
-
-                    // SET ACTIVE TAB AND STEP
-                    const active_tab = 'preview_submission';
-                    const active_step = 'preview_submission';
-
-                    dispatch(setBusinessCompletedStep('shareholders'));
-                    dispatch(setBusinessActiveStep(active_step));
-                    dispatch(setBusinessActiveTab(active_tab));
-                    dispatch(
-                      setUserApplications({
-                        businessId,
-                        active_tab,
-                        active_step,
-                      })
-                    );
-                  }}
-                />
-              )}
-              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+                String(applicationStatus)
+              ) && (
                 <Button
                   value="Save & Complete Review"
                   primary
-                  disabled={disableForm}
                   onClick={(e) => {
                     e.preventDefault();
 
@@ -1015,7 +1081,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
               <Button
                 value="Save & Continue"
                 primary
-                disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setBusinessCompletedStep('shareholders'));
@@ -1030,7 +1095,7 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
             'IS_APPROVED',
             'PENDING_APPROVAL',
             'PENDING_REJECTION',
-          ].includes(status) && (
+          ].includes(String(applicationStatus)) && (
             <menu className="flex items-center gap-3 justify-between">
               <Button
                 value="Back"
@@ -1051,12 +1116,6 @@ const ShareHolders: FC<ShareHoldersProps> = ({ businessId, status }) => {
           )}
         </fieldset>
       </form>
-      {attachmentPreview && (
-        <ViewDocument
-          documentUrl={attachmentPreview}
-          setDocumentUrl={setAttachmentPreview}
-        />
-      )}
     </section>
   );
 };

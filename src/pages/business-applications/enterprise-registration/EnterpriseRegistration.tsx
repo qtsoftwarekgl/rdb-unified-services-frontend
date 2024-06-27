@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import UserLayout from '../../containers/UserLayout';
-import { AppDispatch, RootState } from '../../states/store';
+import UserLayout from '../../../containers/UserLayout';
+import { AppDispatch, RootState } from '../../../states/store';
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-} from '../../states/features/enterpriseRegistrationSlice';
-import ProgressNavigation from '../../components/business-registration/ProgressNavigation';
-import { TabType } from '../../types/navigationTypes';
-import Tab from '../../components/business-registration/Tab';
+} from '../../../states/features/enterpriseRegistrationSlice';
+import ProgressNavigation from '../../../components/business-registration/ProgressNavigation';
+import { TabType } from '../../../types/navigationTypes';
+import Tab from '../../../components/business-registration/Tab';
 import { ErrorResponse, useLocation } from 'react-router-dom';
 import EnterpriseDetails from './enterprise_details/EnterpriseDetails';
 import BusinessActivity from './enterprise_details/BusinessActivities';
 import OfficeAddress from './enterprise_details/OfficeAddress';
 import Attachments from './Attachements';
-import Preview from './Preview';
+import Preview from './EnterprisePreviewSubmission';
 import queryString, { ParsedQuery } from 'query-string';
 import { useLazyGetBusinessQuery } from '@/states/api/businessRegApiSlice';
 import { toast } from 'react-toastify';
@@ -92,7 +92,7 @@ const EnterpriseRegistration = () => {
             <Loader className="text-primary" />
           </figure>
         ) : (
-          <menu className="flex items-center w-full gap-5 p-8 rounded ">
+          <menu className="flex items-center w-full gap-5 py-8 rounded ">
             {enterprise_registration_tabs?.map(
               (tab: TabType, index: number) => {
                 const isActiveTab = tab.active;
@@ -128,7 +128,10 @@ const EnterpriseRegistration = () => {
                           />
                         )}
                         {activeStepName === 'attachments' && (
-                          <Attachments businessId={queryParams?.businessId} />
+                          <Attachments
+                            businessId={queryParams?.businessId}
+                            applicationStatus={business?.applicationStatus}
+                          />
                         )}
                         {activeStepName === 'enterprise_preview_submission' && (
                           <Preview

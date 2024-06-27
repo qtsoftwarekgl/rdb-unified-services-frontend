@@ -29,7 +29,7 @@ import UserApplications from "./pages/user-applications/UserApplications";
 import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
 import CompanyHistory from "./pages/user-company-details/CompanyHistory";
 import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
-import EnterpriseRegistration from "./pages/enterprise-registration/EnterpriseRegistration";
+import EnterpriseRegistration from "./pages/business-applications/enterprise-registration/EnterpriseRegistration";
 import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
 import CessationToDormant from "./pages/business-applications/cessation-dormancy/CessationToDormant";
 import InstitutionRegistration from "./pages/user-registration/InstitutionRegistration";

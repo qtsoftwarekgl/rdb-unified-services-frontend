@@ -16,7 +16,6 @@ import BusinessActivity from "./general-information/BusinessActivity";
 import BoardDirectors from "./management/BoardDirectors";
 import ExecutiveManagement from "./management/ExecutiveManagement";
 import EmploymentInfo from "./management/EmploymentInfo";
-import BeneficialOwners from "./beneficial-owners/BeneficialOwners";
 import CompanyAttachments from "./attachments/CompanyAttachments";
 import PreviewSubmission from "./preview-submission/BusinessPreviewSubmission";
 import { AppDispatch, RootState } from "../../../states/store";

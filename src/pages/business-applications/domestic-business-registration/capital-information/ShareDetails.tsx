@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../../components/inputs/Input';
 import Button from '../../../../components/inputs/Button';
@@ -19,10 +19,13 @@ import { toast } from 'react-toastify';
 
 interface ShareDetailsProps {
   businessId: businessId;
-  status: string;
+  applicationStatus: string;
 }
 
-const ShareDetails: FC<ShareDetailsProps> = ({ businessId, status }) => {
+const ShareDetails: FC<ShareDetailsProps> = ({
+  businessId,
+  applicationStatus,
+}) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -32,16 +35,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({ businessId, status }) => {
     setError,
     clearErrors,
     watch,
-    trigger,
   } = useForm();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    preview: false,
-    submit: false,
-    amend: false,
-  });
   const { user } = useSelector((state: RootState) => state.user);
   const disableForm = RDBAdminEmailPattern.test(user?.email);
 
@@ -272,7 +269,7 @@ const ShareDetails: FC<ShareDetailsProps> = ({ businessId, status }) => {
           'ACTION_REQUIRED',
           'IN_PREVIEW',
           'IS_AMENDING',
-        ].includes(status) && (
+        ].includes(String(applicationStatus)) && (
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -281,38 +278,14 @@ const ShareDetails: FC<ShareDetailsProps> = ({ businessId, status }) => {
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('employment_info'));
-                dispatch(setBusinessActiveTab('management'));
+                dispatch(setBusinessActiveStep('business_activity_vat'));
+                dispatch(setBusinessActiveTab('general_information'));
               }}
             />
-            {status === 'IS_AMENDING' && (
-              <Button
-                value={isLoading?.amend ? <Loader /> : 'Complete Amendment'}
-                disabled={disableForm || Object.keys(errors)?.length > 0}
-                onClick={async () => {
-                  await trigger();
-                  if (Object.keys(errors).length > 0) return;
-                  setIsLoading({
-                    preview: false,
-                    amend: true,
-                    submit: false,
-                  });
-                }}
-                submit
-              />
-            )}
-            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
-              <Button
-                value={
-                  isLoading?.preview ? <Loader /> : 'Save & Complete Review'
-                }
-                primary
-                submit
-                disabled={Object.keys(errors)?.length > 0 || disableForm}
-              />
-            )}
             <Button
-              value={createShareDetailsIsLoading ? <Loader /> : 'Save & Continue'}
+              value={
+                createShareDetailsIsLoading ? <Loader /> : 'Save & Continue'
+              }
               primary
               submit
               disabled={Object.keys(errors)?.length > 0 || disableForm}
@@ -324,14 +297,14 @@ const ShareDetails: FC<ShareDetailsProps> = ({ businessId, status }) => {
           'IS_APPROVED',
           'PENDING_APPROVAL',
           'PENDING_REJECTION',
-        ].includes(status) && (
+        ].includes(String(applicationStatus)) && (
           <menu className="flex items-center gap-3 justify-between">
             <Button
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('employment_info'));
-                dispatch(setBusinessActiveTab('management'));
+                dispatch(setBusinessActiveStep('business_activity_vat'));
+                dispatch(setBusinessActiveTab('general_information'));
               }}
             />
             <Button

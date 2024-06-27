@@ -105,7 +105,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
       >
         <menu className="flex items-start w-full gap-6 max-sm:flex-col max-sm:gap-3">
           <Controller
-            name="documentNo"
+            name="documentNumber"
             rules={{
               required: 'Document No is required',
             }}
@@ -119,12 +119,12 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
                     {...field}
                     onChange={async (e) => {
                       field.onChange(e?.target?.value.toUpperCase());
-                      await trigger('documentNo');
+                      await trigger('documentNumber');
                     }}
                   />
-                  {errors?.documentNo && (
+                  {errors?.documentNumber && (
                     <p className="text-[13px] text-red-500">
-                      {String(errors?.documentNo?.message)}
+                      {String(errors?.documentNumber?.message)}
                     </p>
                   )}
                 </label>

@@ -1,14 +1,14 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import store from "store";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import store from 'store';
 
 export const coreApiSlice = createApi({
-  reducerPath: "coreApi",
+  reducerPath: 'coreApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8051/api/v1",
+    baseUrl: 'http://localhost:8051/api/v1',
     prepareHeaders: (headers) => {
-      const user = store.get("user");
+      const user = store.get('user');
       if (user?.token) {
-        headers.set("authorization", `Bearer ${user.token}`);
+        headers.set('authorization', `Bearer ${user.token}`);
       }
       return headers;
     },
@@ -18,7 +18,7 @@ export const coreApiSlice = createApi({
     fetchServices: builder.query({
       query: ({ category }) => {
         return {
-          url: `/services?${category ? `category=${category}` : ""}`,
+          url: `/services?${category ? `category=${category}` : ''}`,
         };
       },
     }),
@@ -115,7 +115,7 @@ export const coreApiSlice = createApi({
       query: ({ formData }) => {
         return {
           url: `/attachment/person-upload`,
-          method: "POST",
+          method: 'POST',
           body: formData,
           formData: true,
         };
@@ -127,7 +127,7 @@ export const coreApiSlice = createApi({
       query: ({ formData }) => {
         return {
           url: `/attachment/business-upload`,
-          method: "POST",
+          method: 'POST',
           body: formData,
           formData: true,
         };
@@ -139,6 +139,16 @@ export const coreApiSlice = createApi({
       query: ({ businessId }) => {
         return {
           url: `/attachment/business?businessId=${businessId}`,
+        };
+      },
+    }),
+
+    // DELETE BUSINESS ATTACHMENT
+    deleteBusinessAttachment: builder.mutation({
+      query: ({ id }) => {
+        return {
+          url: `/attachment/business/${id}`,
+          method: 'DELETE',
         };
       },
     }),
@@ -159,6 +169,7 @@ export const {
   useUploadPersonAttachmentMutation,
   useUploadBusinessAttachmentMutation,
   useLazySearchVillageQuery,
+  useDeleteBusinessAttachmentMutation,
 } = coreApiSlice;
 
 export default coreApiSlice;
