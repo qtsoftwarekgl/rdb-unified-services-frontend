@@ -44,7 +44,7 @@ const JSX_MODAL: FC<ModalProps> = ({
       }}
     >
       <section
-        className={`flex min-w-[35%] max-w-[1000px] flex-col z-[100000] bg-white h-fit gap-4 p-8 py-6 relative shadow-md rounded-md ${className}`}
+        className={`flex min-w-[35%] max-w-[1000px] flex-col z-[100000] bg-white h-fit gap-8 p-8 py-6 relative shadow-md rounded-md ${className}`}
         onClick={(e) => {
           e.stopPropagation();
         }}

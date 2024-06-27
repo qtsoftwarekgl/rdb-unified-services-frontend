@@ -30,7 +30,7 @@ import { toast } from 'react-toastify';
 import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
 import { useLazyFetchBusinessAttachmentsQuery } from '@/states/api/coreApiSlice';
-import { setBusinessAttachments } from '@/states/features/businessPeopleSlice';
+import { setBusinessAttachments } from '@/states/features/businessSlice';
 
 interface PreviewSubmissionProps {
   businessId: businessId;
@@ -48,7 +48,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   );
   const [attachmentPreview, setAttachmentPreview] = useState<string>('');
   const { businessAttachments } = useSelector(
-    (state: RootState) => state.businessPeople
+    (state: RootState) => state.business
   );
 
   // NAVIGATION

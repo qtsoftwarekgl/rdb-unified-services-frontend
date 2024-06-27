@@ -1,5 +1,4 @@
 import {
-  BusinessAttachment,
   PersonAttachment,
 } from "@/types/models/attachment";
 import { PersonDetail } from "@/types/models/personDetail";
@@ -10,13 +9,11 @@ const initialState: {
   businessPeopleList: PersonDetail[];
   selectedBusinessPerson?: PersonDetail;
   businessPeopleAttachments: PersonAttachment[];
-  businessAttachments: BusinessAttachment[];
   userInformation?: UserInformation;
 } = {
   businessPeopleList: [],
   selectedBusinessPerson: undefined,
   businessPeopleAttachments: [],
-  businessAttachments: [],
   userInformation: undefined,
 };
 
@@ -47,15 +44,6 @@ export const businessPeopleSlice = createSlice({
         ...state.businessPeopleAttachments,
       ];
     },
-    setBusinessAttachments: (state, action) => {
-      state.businessAttachments = action.payload;
-    },
-    addBusinessAttachment: (state, action) => {
-      state.businessAttachments = [
-        action.payload,
-        ...state.businessAttachments,
-      ];
-    },
     removeBusinessPersonAttachment: (state, action) => {
       state.businessPeopleAttachments = state.businessPeopleAttachments.filter(
         (attachment: PersonAttachment) => attachment.id !== action.payload
@@ -74,8 +62,6 @@ export const {
   removeBusinessPerson,
   setBusinessPeopleAttachments,
   addBusinessPersonAttachment,
-  setBusinessAttachments,
-  addBusinessAttachment,
   removeBusinessPersonAttachment,
   setUserInformation,
 } = businessPeopleSlice.actions;

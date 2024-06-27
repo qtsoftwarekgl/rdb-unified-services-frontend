@@ -1,12 +1,17 @@
 import Button from "@/components/inputs/Button";
 import Table from "@/components/table/Table";
 import ViewDocument from "@/pages/user-company-details/ViewDocument";
+import { setDeleteBusinessAttachmentModal, setSelectedBusinessAttachment } from "@/states/features/businessSlice";
+import { AppDispatch } from "@/states/store";
 import {
   BusinessAttachment,
   PersonAttachment,
 } from "@/types/models/attachment";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 type BusinessPeopleAttachmentsProps = {
   attachments: PersonAttachment[] | BusinessAttachment[];
@@ -16,6 +21,10 @@ const BusinessPeopleAttachments = ({
   attachments,
 }: BusinessPeopleAttachmentsProps) => {
   const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState("");
+
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+
   // ATTACHMENT COLUMNS
   const attachmentColumns = [
     {
@@ -46,6 +55,15 @@ const BusinessPeopleAttachments = ({
               value="View"
               styled={false}
               className="cursor-pointer text-primary"
+            />
+            <FontAwesomeIcon
+              icon={faTrash}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setSelectedBusinessAttachment(row?.original))
+                dispatch(setDeleteBusinessAttachmentModal(true))
+              }}
+              className="text-white bg-red-600 p-2 px-[8.5px] text-[13px] rounded-full cursor-pointer transition-all duration-300 hover:scale-[1.01]"
             />
           </menu>
         );

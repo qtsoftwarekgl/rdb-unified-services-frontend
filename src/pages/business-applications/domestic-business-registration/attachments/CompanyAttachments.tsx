@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import {
   addBusinessAttachment,
   setBusinessAttachments,
-} from '@/states/features/businessPeopleSlice';
+} from '@/states/features/businessSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
@@ -60,7 +60,7 @@ const CompanyAttachments = ({
   const dispatch: AppDispatch = useDispatch();
   const { business } = useSelector((state: RootState) => state.business);
   const { businessAttachments } = useSelector(
-    (state: RootState) => state.businessPeople
+    (state: RootState) => state.business
   );
   const [selectedAttachment, setSelectedAttachment] = useState<string>('');
 
@@ -198,9 +198,12 @@ const CompanyAttachments = ({
             </section>
           )}
           {domesticBusinessRegistrationAttachments?.map(
-            ({ label, name, required }) => {
+            ({ label, name, required }, index: number) => {
               return (
-                <section className="w-full flex items-center gap-3 justify-between">
+                <section
+                  key={index}
+                  className="w-full flex items-center gap-3 justify-between"
+                >
                   <h1 className="w-full">
                     {`${label} ${!required ? '(optional)' : ''}`}{' '}
                     {required && <span className="text-red-600">*</span>}

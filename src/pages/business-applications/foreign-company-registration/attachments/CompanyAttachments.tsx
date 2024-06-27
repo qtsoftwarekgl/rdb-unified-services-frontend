@@ -20,7 +20,7 @@ import { toast } from 'react-toastify';
 import {
   addBusinessAttachment,
   setBusinessAttachments,
-} from '@/states/features/businessPeopleSlice';
+} from '@/states/features/businessSlice';
 import { useLazyGetBusinessDetailsQuery } from '@/states/api/businessRegApiSlice';
 import { setBusinessDetails } from '@/states/features/businessSlice';
 import BusinessPeopleAttachments from '../../domestic-business-registration/BusinessPeopleAttachments';
@@ -70,7 +70,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { businessAttachments } = useSelector(
-    (state: RootState) => state.businessPeople
+    (state: RootState) => state.business
   );
 
   // INITIALIZE UPLOAD BUSINESS ATTACHMENT

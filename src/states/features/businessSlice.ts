@@ -1,15 +1,17 @@
+import { BusinessAttachment } from '@/types/models/attachment';
 import {
   Address,
   Business,
   Details,
   EmploymentInfo,
-} from "@/types/models/business";
-import { createSlice } from "@reduxjs/toolkit";
+} from '@/types/models/business';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: {
   businessesList: Business[];
   business: Business;
   employmentInfo: EmploymentInfo;
+  businessAttachments: BusinessAttachment[];
   page: number;
   size: number;
   totalElements: number;
@@ -23,6 +25,8 @@ const initialState: {
   similarBusinessNamesModal: boolean;
   businessDetails?: Details;
   businessAddress?: Address;
+  deleteBusiessAttachmentModal: boolean;
+  selectedBusinessAttachment?: BusinessAttachment;
 } = {
   businessesList: [],
   business: {} as Business,
@@ -37,10 +41,13 @@ const initialState: {
   similarBusinessNamesModal: false,
   businessDetails: undefined,
   businessAddress: undefined,
+  deleteBusiessAttachmentModal: false,
+  businessAttachments: [],
+  selectedBusinessAttachment: undefined,
 };
 
 export const businessSlice = createSlice({
-  name: "business",
+  name: 'business',
   initialState,
   reducers: {
     setBusinessesList: (state, action) => {
@@ -82,6 +89,26 @@ export const businessSlice = createSlice({
     setSimilarBusinessNamesModal: (state, action) => {
       state.similarBusinessNamesModal = action.payload;
     },
+    setDeleteBusinessAttachmentModal: (state, action) => {
+      state.deleteBusiessAttachmentModal = action.payload;
+    },
+    setBusinessAttachments: (state, action) => {
+      state.businessAttachments = action.payload;
+    },
+    addBusinessAttachment: (state, action) => {
+      state.businessAttachments = [
+        action.payload,
+        ...state.businessAttachments,
+      ];
+    },
+    removeBusinessAttachment: (state, action) => {
+      state.businessAttachments = state.businessAttachments.filter(
+        (attachment: BusinessAttachment) => attachment.id !== action.payload.id
+      );
+    },
+    setSelectedBusinessAttachment: (state, action) => {
+      state.selectedBusinessAttachment = action.payload;
+    }
   },
 });
 
@@ -100,5 +127,10 @@ export const {
   setNameAvailabilitiesList,
   setSimilarBusinessNamesModal,
   setBusinessDetails,
-  setBusinessAddress
+  setBusinessAddress,
+  setDeleteBusinessAttachmentModal,
+  setBusinessAttachments,
+  addBusinessAttachment,
+  removeBusinessAttachment,
+  setSelectedBusinessAttachment,
 } = businessSlice.actions;

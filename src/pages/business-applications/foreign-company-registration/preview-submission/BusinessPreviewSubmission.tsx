@@ -8,7 +8,6 @@ import {
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import {
   capitalizeString,
-  capitalizeString,
   formatDate,
 } from "../../../../helpers/strings";
 import Table from "../../../../components/table/Table";
@@ -39,7 +38,7 @@ import {
   setVatRegistred,
 } from "@/states/features/businessActivitySlice";
 import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/coreApiSlice";
-import { setBusinessAttachments } from "@/states/features/businessPeopleSlice";
+import { setBusinessAttachments } from "@/states/features/businessSlice";
 import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 
 interface PreviewSubmissionProps {
@@ -67,7 +66,7 @@ const PreviewSubmission = ({
   const { employmentInfo } = useSelector((state: RootState) => state.business);
   const navigate = useNavigate();
   const { businessAttachments } = useSelector(
-    (state: RootState) => state.businessPeople
+    (state: RootState) => state.business
   );
 
   // GET BUSINESS DETAILS
