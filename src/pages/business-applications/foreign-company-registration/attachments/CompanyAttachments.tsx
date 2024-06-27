@@ -1,32 +1,32 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { Controller, useForm } from 'react-hook-form';
-import Input from '../../../../components/inputs/Input';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { Controller, useForm } from "react-hook-form";
+import Input from "../../../../components/inputs/Input";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-} from '../../../../states/features/foreignCompanyRegistrationSlice';
-import Button from '../../../../components/inputs/Button';
-import Loader from '../../../../components/Loader';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
-import { businessId } from '@/types/models/business';
+} from "../../../../states/features/foreignCompanyRegistrationSlice";
+import Button from "../../../../components/inputs/Button";
+import Loader from "../../../../components/Loader";
+import { RDBAdminEmailPattern } from "../../../../constants/Users";
+import { businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessAttachmentsQuery,
   useUploadBusinessAttachmentMutation,
-} from '@/states/api/coreApiSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@/states/api/coreApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   addBusinessAttachment,
   setBusinessAttachments,
-} from '@/states/features/businessSlice';
-import { useLazyGetBusinessDetailsQuery } from '@/states/api/businessRegApiSlice';
-import { setBusinessDetails } from '@/states/features/businessSlice';
-import BusinessPeopleAttachments from '../../domestic-business-registration/BusinessPeopleAttachments';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { BusinessAttachment } from '@/types/models/attachment';
+} from "@/states/features/businessSlice";
+import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
+import { setBusinessDetails } from "@/states/features/businessSlice";
+import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { BusinessAttachment } from "@/types/models/attachment";
 
 interface CompanyAttachmentsProps {
   businessId: businessId;
@@ -34,28 +34,28 @@ interface CompanyAttachmentsProps {
 
 const attachmentFields = [
   {
-    name: 'certificationOfIncorporation',
-    label: 'Certification of incorporation',
+    name: "certificationOfIncorporation",
+    label: "Certification of incorporation",
     required: true,
-    attachmentType: 'Certification of Incorporation',
+    attachmentType: "Certification of Incorporation",
   },
   {
-    name: 'resolution',
-    label: 'Resolution attachment',
+    name: "resolution",
+    label: "Resolution attachment",
     required: true,
-    attachmentType: 'Resolution Attachment',
+    attachmentType: "Resolution Attachment",
   },
   {
-    name: 'licensesOfBusinessActivities',
-    label: 'Licenses of business activities',
+    name: "licensesOfBusinessActivities",
+    label: "Licenses of business activities",
     required: true,
-    attachmentType: 'Licenses of Business Activities',
+    attachmentType: "Licenses of Business Activities",
   },
   {
-    name: 'other_attachments',
-    label: 'Other attachments',
+    name: "other_attachments",
+    label: "Other attachments",
     required: false,
-    attachmentType: 'Other Attachments',
+    attachmentType: "Other Attachments",
   },
 ];
 
@@ -90,10 +90,10 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     if (uploadBusinessAttachmentIsError) {
       const errorMessage =
         (uploadBusinessAttachmentError as ErrorResponse)?.data?.message ||
-        'An error occurred while uploading attachments. Please try again later.';
+        "An error occurred while uploading attachments. Please try again later.";
       toast.error(errorMessage);
     } else if (uploadBusinessAttachmentIsSuccess) {
-      toast.success('Attachments uploaded successfully');
+      toast.success("Attachments uploaded successfully");
       dispatch(addBusinessAttachment(uploadBusinessAttachmentData?.data));
     }
   }, [
@@ -133,7 +133,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     if (businessIsError) {
       const errorMessage =
         (businessError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching business details. Please try again later.';
+        "An error occurred while fetching business details. Please try again later.";
       toast.error(errorMessage);
     } else if (businessIsSuccess) {
       dispatch(setBusinessDetails(businessDetailsData?.data));
@@ -170,7 +170,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     if (businessAttachmentsIsError) {
       const errorMessage =
         (businessAttachmentsError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching business attachments. Please try again later.';
+        "An error occurred while fetching business attachments. Please try again later.";
       toast.error(errorMessage);
     } else if (businessAttachmentsIsSuccess) {
       dispatch(setBusinessAttachments(businessAttachmentsData?.data));
@@ -185,16 +185,16 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
 
   const uploadHelper = (file: File, attachmentType: string) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('businessId', String(businessId));
-    formData.append('attachmentType', attachmentType);
-    formData.append('fileName', file.name);
+    formData.append("file", file);
+    formData.append("businessId", String(businessId));
+    formData.append("attachmentType", attachmentType);
+    formData.append("fileName", file.name);
     uploadBusinessAttachment({ formData });
   };
 
   const onSubmit = () => {
-    dispatch(setForeignBusinessActiveStep('preview_submission'));
-    dispatch(setForeignBusinessActiveTab('preview_submission'));
+    dispatch(setForeignBusinessActiveStep("preview_submission"));
+    dispatch(setForeignBusinessActiveTab("preview_submission"));
   };
 
   return (
@@ -217,10 +217,10 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
                 rules={{
                   required: businessAttachments.some(
                     (attachment: BusinessAttachment) =>
-                      attachment.attachmentType === 'Articles of Association'
+                      attachment.attachmentType === "Articles of Association"
                   )
                     ? false
-                    : 'Upload company articles of association',
+                    : "Upload company articles of association",
                 }}
                 control={control}
                 render={({ field }) => {
@@ -228,12 +228,12 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
                     <label className="flex flex-col w-full gap-2">
                       <ul className="flex items-center justify-between w-full gap-3">
                         <p className="flex items-center gap-1">
-                          Articles of association{' '}
+                          Articles of association{" "}
                           <span className="text-red-600">*</span>
                           {businessAttachments.some(
                             (attachment: BusinessAttachment) =>
                               attachment.attachmentType ===
-                              'Articles of Association'
+                              "Articles of Association"
                           ) && (
                             <FontAwesomeIcon
                               icon={faCheckCircle}
@@ -251,7 +251,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
                             if (e.target.files?.[0])
                               uploadHelper(
                                 e.target.files?.[0] as File,
-                                'Articles of Association'
+                                "Articles of Association"
                               );
                           }}
                         />
@@ -289,7 +289,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
                   <label className="flex flex-col w-full gap-2">
                     <ul className="flex items-center justify-between w-full gap-3">
                       <p className="flex items-center gap-1">
-                        {label}{' '}
+                        {label}{" "}
                         {required && <span className="text-red-600">*</span>}
                         {businessAttachments.some(
                           (attachment: BusinessAttachment) =>
@@ -331,20 +331,27 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
               </ul>
             </ul>
           )}
-          {businessAttachments?.length > 0 && (
-            <BusinessPeopleAttachments attachments={businessAttachments} />
+          {businessAttachmentsIsFetching ? (
+            <figure className="flex items-center gap-3 w-full min-h-[20vh]">
+              <Loader className="text-primary" />
+              Fetching business attachments...
+            </figure>
+          ) : (
+            businessAttachments?.length > 0 && (
+              <BusinessPeopleAttachments attachments={businessAttachments} />
+            )
           )}
           <menu className="flex items-center justify-between w-full gap-3 mx-auto max-sm:flex-col-reverse">
             <Button
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setForeignBusinessActiveStep('employment_info'));
-                dispatch(setForeignBusinessActiveTab('management'));
+                dispatch(setForeignBusinessActiveStep("employment_info"));
+                dispatch(setForeignBusinessActiveTab("management"));
               }}
             />
             <Button
-              value={'Save & Continue'}
+              value={"Save & Continue"}
               primary
               submit
               disabled={isFormDisabled}

@@ -6,10 +6,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
-import {
-  capitalizeString,
-  formatDate,
-} from "../../../../helpers/strings";
+import { capitalizeString, formatDate } from "../../../../helpers/strings";
 import Table from "../../../../components/table/Table";
 import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
@@ -416,6 +413,7 @@ const PreviewSubmission = ({
         businessActivitiesIsLoading ||
         boardMemberIsLoading ||
         employmentInfoIsSuccess ||
+        businessAttachmentsIsLoading ||
         (managementMemberIsLoading && (
           <figure className="h-[40vh] flex items-center justify-center">
             <Loader />
@@ -428,12 +426,18 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
-        status={applicationStatus}
+        applicationStatus={applicationStatus}
       >
         {businessDetails &&
-          Object?.entries(businessDetails)
-            ?.filter(([key]) => key !== "step" && key !== "id")
-            ?.map(([key, value], index: number) => {
+          Object?.entries(businessDetails)?.map(
+            ([key, value], index: number) => {
+              if (
+                key === "step" ||
+                key === "id" ||
+                key === "isForeign" ||
+                value === null
+              )
+                return null;
               return (
                 <p key={index} className="flex items-center gap-2">
                   <span className="">{capitalizeString(key)}:</span>{" "}
@@ -442,7 +446,8 @@ const PreviewSubmission = ({
                   </span>
                 </p>
               );
-            })}
+            }
+          )}
       </PreviewCard>
       {/* COMPANY ADDRESS */}
       {businessAddress && (
@@ -453,7 +458,7 @@ const PreviewSubmission = ({
           setActiveStep={setForeignBusinessActiveStep}
           setActiveTab={setForeignBusinessActiveTab}
           businessId={businessId}
-          status={applicationStatus}
+          applicationStatus={applicationStatus}
         >
           {Object?.entries(businessAddress)
             ?.filter(
@@ -476,7 +481,7 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
-        status={applicationStatus}
+        applicationStatus={applicationStatus}
       >
         <p className="font-semibold">
           Register for VAT:{" "}
@@ -519,7 +524,7 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
-        status={applicationStatus}
+        applicationStatus={applicationStatus}
       >
         <Table
           rowClickHandler={undefined}
@@ -549,7 +554,7 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
-        status={applicationStatus}
+        applicationStatus={applicationStatus}
       >
         <Table
           rowClickHandler={undefined}
@@ -579,7 +584,7 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
-        status={applicationStatus}
+        applicationStatus={applicationStatus}
       >
         <p>
           Company has employees:{" "}
@@ -621,7 +626,7 @@ const PreviewSubmission = ({
         setActiveStep={setForeignBusinessActiveStep}
         setActiveTab={setForeignBusinessActiveTab}
         businessId={businessId}
-        status={applicationStatus}
+        applicationStatus={applicationStatus}
       >
         {businessAttachments?.length > 0 && (
           <BusinessPeopleAttachments attachments={businessAttachments} />

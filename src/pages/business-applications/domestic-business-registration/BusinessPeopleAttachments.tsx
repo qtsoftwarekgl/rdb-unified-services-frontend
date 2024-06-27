@@ -1,7 +1,11 @@
 import Button from "@/components/inputs/Button";
 import Table from "@/components/table/Table";
+import DeleteBusinessAttachment from "@/containers/DeleteBusinessAttachment";
 import ViewDocument from "@/pages/user-company-details/ViewDocument";
-import { setDeleteBusinessAttachmentModal, setSelectedBusinessAttachment } from "@/states/features/businessSlice";
+import {
+  setDeleteBusinessAttachmentModal,
+  setSelectedBusinessAttachment,
+} from "@/states/features/businessSlice";
 import { AppDispatch } from "@/states/store";
 import {
   BusinessAttachment,
@@ -42,9 +46,7 @@ const BusinessPeopleAttachments = ({
     {
       header: "Actions",
       accessorKey: "actions",
-      cell: ({ row }: {
-        row: Row<PersonAttachment | BusinessAttachment>;
-      }) => {
+      cell: ({ row }: { row: Row<PersonAttachment | BusinessAttachment> }) => {
         return (
           <menu className="flex items-center gap-4">
             <Button
@@ -60,8 +62,8 @@ const BusinessPeopleAttachments = ({
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setSelectedBusinessAttachment(row?.original))
-                dispatch(setDeleteBusinessAttachmentModal(true))
+                dispatch(setDeleteBusinessAttachmentModal(true));
+                dispatch(setSelectedBusinessAttachment(row?.original));
               }}
               className="text-white bg-red-600 p-2 px-[8.5px] text-[13px] rounded-full cursor-pointer transition-all duration-300 hover:scale-[1.01]"
             />
@@ -83,14 +85,22 @@ const BusinessPeopleAttachments = ({
       <Table
         showFilter={false}
         showPagination={false}
-        columns={attachmentColumns as ColumnDef<PersonAttachment | BusinessAttachment>[]}
+        columns={
+          attachmentColumns as ColumnDef<
+            PersonAttachment | BusinessAttachment
+          >[]
+        }
         data={attachments?.map(
           (attachment: PersonAttachment | BusinessAttachment) => {
             return {
               ...attachment,
               fileName: String(attachment?.fileName || attachment?.name),
-              attachmentType: String(attachment?.attachmentType || attachment?.type),
-              attachmentUrl: String(attachment?.attachmentUrl || attachment?.name),
+              attachmentType: String(
+                attachment?.attachmentType || attachment?.type
+              ),
+              attachmentUrl: String(
+                attachment?.attachmentUrl || attachment?.name
+              ),
               size: String(attachment?.fileSize)
                 ? `${(+attachment.fileSize / (1024 * 1024)).toFixed(2)} MB`
                 : "N/A",
@@ -104,6 +114,7 @@ const BusinessPeopleAttachments = ({
           setDocumentUrl={setPreviewAttachmentUrl}
         />
       )}
+      <DeleteBusinessAttachment />
     </section>
   );
 };
