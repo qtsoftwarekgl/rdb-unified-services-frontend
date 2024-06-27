@@ -105,7 +105,6 @@ const EmploymentInfo = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
     createEmploymentInfo({
       businessId,
       workingStartTime: data?.workingStartTime

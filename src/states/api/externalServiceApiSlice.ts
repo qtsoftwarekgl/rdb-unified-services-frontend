@@ -1,16 +1,16 @@
-import store from 'store';
-import { externalServiceApi } from '@/constants/environments';
-import { fetchBaseQuery } from '@reduxjs/toolkit/query';
-import { createApi } from '@reduxjs/toolkit/query/react';
+import store from "store";
+import { externalServiceApi } from "@/constants/environments";
+import { fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const externalServiceApiSlice = createApi({
-  reducerPath: 'businessRegUatApi',
+  reducerPath: "businessRegUatApi",
   baseQuery: fetchBaseQuery({
     baseUrl: externalServiceApi,
     prepareHeaders: (headers) => {
-      const user = store.get('user');
+      const user = store.get("user");
       if (user) {
-        headers.set('authorization', `Bearer ${user.token}`);
+        headers.set("authorization", `Bearer ${user.token}`);
       }
       return headers;
     },

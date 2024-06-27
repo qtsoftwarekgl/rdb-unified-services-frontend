@@ -5,7 +5,6 @@ import Select from "../../../../components/inputs/Select";
 import Loader from "../../../../components/Loader";
 import Input from "../../../../components/inputs/Input";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { userData } from "../../../../constants/authentication";
 import { countriesList } from "../../../../constants/countries";
 import validateInputs from "../../../../helpers/validations";
 import Button from "../../../../components/inputs/Button";
@@ -37,12 +36,10 @@ import { PersonDetail } from "@/types/models/personDetail";
 import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import {
-  addBusinessPersonAttachment,
   setBusinessPeopleAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import { genderOptions } from "@/constants/inputs.constants";
-import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 
 interface BoardDirectorsProps {
@@ -81,9 +78,6 @@ const BoardDirectors = ({
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
   const { userInformation } = useSelector(
-    (state: RootState) => state.businessPeople
-  );
-  const { businessPeopleAttachments } = useSelector(
     (state: RootState) => state.businessPeople
   );
 
@@ -133,7 +127,11 @@ const BoardDirectors = ({
 
   // HANDLE SET USER INFORMATION
   useEffect(() => {
-    if (userInformation && Object.keys(userInformation).length) {
+    if (
+      userInformation &&
+      Object.keys(userInformation).length &&
+      userInformationIsSuccess
+    ) {
       reset({
         position: watch("position"),
         personIdentType: "nid",
@@ -146,7 +144,7 @@ const BoardDirectors = ({
         isFromNida: true,
       });
     }
-  }, [reset, userInformation, watch]);
+  }, [reset, userInformation, watch, userInformationIsSuccess]);
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
   const [
     uploadPersonAttachment,
@@ -639,11 +637,10 @@ const BoardDirectors = ({
                         label="Phone number"
                         required
                         placeholder="Select phone number"
-                        options={userData?.slice(0, 3)?.map((user) => {
+                        options={userInformation?.phones?.map((phone) => {
                           return {
-                            ...user,
-                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
-                            value: user?.phone,
+                            label: maskPhoneDigits(phone?.msidn),
+                            value: phone?.msidn,
                           };
                         })}
                         {...field}
@@ -730,13 +727,6 @@ const BoardDirectors = ({
                             onChange={(e) => {
                               field.onChange(e?.target?.files?.[0]);
                               setAttachmentFile(e?.target?.files?.[0]);
-                              dispatch(
-                                addBusinessPersonAttachment({
-                                  attachmentType: "passport",
-                                  fileName: e.target.files?.[0]?.name,
-                                  fileSize: e.target.files?.[0]?.size,
-                                })
-                              );
                             }}
                           />
                           <ul className="flex flex-col items-center w-full gap-3">
@@ -756,14 +746,23 @@ const BoardDirectors = ({
                       );
                     }}
                   />
+                  {attachmentFile && (
+                    <menu>
+                      <Button
+                        value="Preview"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (attachmentFile)
+                            setPreviewAttachment(
+                              URL.createObjectURL(attachmentFile)
+                            );
+                        }}
+                      />
+                    </menu>
+                  )}
                 </menu>
               </menu>
             )}
-          </section>
-          <section className="flex flex-col w-full gap-2">
-            <BusinessPeopleAttachments
-              attachments={businessPeopleAttachments}
-            />
           </section>
           <section className="flex items-center justify-end w-full">
             <Button

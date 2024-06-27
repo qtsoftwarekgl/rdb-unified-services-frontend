@@ -35,13 +35,11 @@ import BusinessPeopleTable from "../../domestic-business-registration/management
 import { maskPhoneDigits } from "@/helpers/strings";
 import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import {
-  addBusinessPersonAttachment,
   setBusinessPeopleAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
-import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 import { PersonDetail } from "@/types/models/personDetail";
 
@@ -82,9 +80,6 @@ const ExecutiveManagement = ({
   );
   const { executiveManagersList } = useSelector(
     (state: RootState) => state.executiveManager
-  );
-  const { businessPeopleAttachments } = useSelector(
-    (state: RootState) => state.businessPeople
   );
 
   // INITIALIZE GET USER INFORMATION QUERY
@@ -752,15 +747,10 @@ const ExecutiveManagement = ({
                             accept="application/pdf"
                             className="!w-fit max-sm:!w-full"
                             onChange={(e) => {
-                              field.onChange(e?.target?.files?.[0]);
-                              setAttachmentFile(e?.target?.files?.[0]);
-                              dispatch(
-                                addBusinessPersonAttachment({
-                                  attachmentType: e.target.files?.[0]?.type,
-                                  fileName: e.target.files?.[0]?.name,
-                                  fileSize: e.target.files?.[0]?.size,
-                                })
-                              );
+                              if (e.target.files?.[0]) {
+                                field.onChange(e?.target?.files?.[0]);
+                                setAttachmentFile(e?.target?.files?.[0]);
+                              } else toast.info("No file selected");
                             }}
                           />
                           <ul className="flex flex-col items-center w-full gap-3">
@@ -780,14 +770,23 @@ const ExecutiveManagement = ({
                       );
                     }}
                   />
+                  {attachmentFile && (
+                    <menu>
+                      <Button
+                        value="Preview"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (attachmentFile)
+                            setPreviewAttachment(
+                              URL.createObjectURL(attachmentFile)
+                            );
+                        }}
+                      />
+                    </menu>
+                  )}
                 </menu>
               </menu>
             )}
-          </section>
-          <section className="flex flex-col w-full gap-2">
-            <BusinessPeopleAttachments
-              attachments={businessPeopleAttachments}
-            />
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
