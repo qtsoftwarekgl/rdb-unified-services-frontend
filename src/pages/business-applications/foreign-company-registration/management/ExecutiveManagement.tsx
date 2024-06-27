@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Select from "../../../../components/inputs/Select";
@@ -21,6 +22,7 @@ import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 import { businessId } from "@/types/models/business";
 import {
   useCreateManagementOrBoardMemberMutation,
+  useDeleteManagementOrBoardMemberMutation,
   useLazyFetchManagementOrBoardMembersQuery,
 } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { ErrorResponse } from "react-router-dom";
@@ -40,6 +42,8 @@ import {
 import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
+import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
+import { PersonDetail } from "@/types/models/personDetail";
 
 interface ExecutiveManagementProps {
   businessId: businessId;
@@ -72,6 +76,7 @@ const ExecutiveManagement = ({
   const isFormDisabled = RDBAdminEmailPattern.test(user.email);
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<PersonDetail>();
   const { userInformation } = useSelector(
     (state: RootState) => state.businessPeople
   );
@@ -177,7 +182,7 @@ const ExecutiveManagement = ({
         const formData = new FormData();
         formData.append("file", attachmentFile as File);
         formData.append("personId", createManagementMemberData?.data?.id);
-        formData.append("attachmentType", String(attachmentFile?.type));
+        formData.append("attachmentType", "passport");
         formData.append("businessId", String(businessId));
         formData.append("fileName", String(attachmentFile?.name));
         uploadPersonAttachment({ formData });
@@ -205,8 +210,6 @@ const ExecutiveManagement = ({
     createManagementMemberIsError,
     createManagementMemberIsSuccess,
     reset,
-    watch,
-    attachmentFile,
     businessId,
     uploadPersonAttachment,
   ]);
@@ -259,6 +262,48 @@ const ExecutiveManagement = ({
     },
   ] = useLazyFetchManagementOrBoardMembersQuery();
 
+  // INITIALIZE DELETE MANAGEMENT MEMBER
+  const [
+    deleteManagementMember,
+    {
+      error: deleteManagementMemberError,
+      isLoading: deleteManagementMemberIsLoading,
+      isError: deleteManagementMemberIsError,
+      isSuccess: deleteManagementMemberIsSuccess,
+    },
+  ] = useDeleteManagementOrBoardMemberMutation();
+
+  const handleDeleteManagementMember = () => {
+    if (memberToDelete) deleteManagementMember({ id: memberToDelete.id });
+  };
+  // HANDLE DELETE MANAGEMENT RESPONSE
+
+  useEffect(() => {
+    if (deleteManagementMemberIsError) {
+      if ((deleteManagementMemberError as ErrorResponse).status === 500) {
+        toast.error(
+          "An error occured while deleting member. Please try again later"
+        );
+      } else {
+        toast.error(
+          (deleteManagementMemberError as ErrorResponse).data?.message
+        );
+      }
+    } else if (deleteManagementMemberIsSuccess) {
+      toast.success("Member deleted successfully");
+      fetchManagementMember({
+        businessId,
+        route: "management",
+      });
+      setMemberToDelete(undefined);
+    }
+  }, [
+    businessId,
+    deleteManagementMemberError,
+    deleteManagementMemberIsError,
+    deleteManagementMemberIsSuccess,
+  ]);
+
   // FETCH MANAGEMENT PEOPLE
   useEffect(() => {
     if (!businessId) return;
@@ -266,7 +311,13 @@ const ExecutiveManagement = ({
       businessId,
       route: "management",
     });
-  }, [businessId, fetchManagementMember]);
+  }, [
+    businessId,
+    fetchManagementMember,
+    managementMemberData,
+    managementMemberError,
+    managementMemberIsSuccess,
+  ]);
 
   // HANDLE MANAGEMENT PEOPLE RESPONSE
   useEffect(() => {
@@ -306,6 +357,9 @@ const ExecutiveManagement = ({
       setValue("middleName", "");
       setValue("lastName", "");
       setValue("gender", "");
+      setValue("email", "");
+      setValue("attachment", "");
+      setValue("personDocNo", "");
     }
   }, [setValue, watch("personIdentType"), watch]);
 
@@ -325,8 +379,8 @@ const ExecutiveManagement = ({
               render={({ field }) => {
                 const options = [
                   {
-                    value: "md/gm",
-                    label: "MD / GM",
+                    value: "md/gm/ceo",
+                    label: "MD/GM/CEO",
                   },
                   {
                     value: "secretary",
@@ -394,6 +448,7 @@ const ExecutiveManagement = ({
                       ? "Document number is required"
                       : false,
                     validate: (value) => {
+                      if (watch("personIdentType") !== "nid") return;
                       return (
                         validateInputs(value, "nid") ||
                         "National ID must be 16 characters long"
@@ -697,15 +752,20 @@ const ExecutiveManagement = ({
                             accept="application/pdf"
                             className="!w-fit max-sm:!w-full"
                             onChange={(e) => {
-                              field.onChange(e?.target?.files?.[0]);
-                              setAttachmentFile(e?.target?.files?.[0]);
-                              dispatch(
-                                addBusinessPersonAttachment({
-                                  attachmentType: e.target.files?.[0]?.type,
-                                  fileName: e.target.files?.[0]?.name,
-                                  size: e.target.files?.[0]?.size,
-                                })
-                              );
+                              if (e.target?.files?.[0]) {
+                                field.onChange(e?.target?.files?.[0]);
+                                setAttachmentFile(e?.target?.files?.[0]);
+                                dispatch(
+                                  addBusinessPersonAttachment({
+                                    attachmentType: "passport",
+                                    fileName: e.target.files?.[0]?.name,
+                                    size: e.target.files?.[0]?.size,
+                                    attachmentUrl: URL.createObjectURL(
+                                      e.target?.files?.[0]
+                                    ),
+                                  })
+                                );
+                              }
                             }}
                           />
                           <ul className="flex flex-col items-center w-full gap-3">
@@ -749,6 +809,7 @@ const ExecutiveManagement = ({
               businessPeopleList={executiveManagersList}
               isLoading={managementMemberIsLoading}
               type="executiveManagement"
+              setDeleteAction={setMemberToDelete}
             />
             {errors?.submit && (
               <p className="text-red-500 text-[15px] text-center">
@@ -834,6 +895,16 @@ const ExecutiveManagement = ({
           setDocumentUrl={setPreviewAttachment}
         />
       )}
+      {
+        <ConfirmModal
+          isOpen={!!memberToDelete}
+          onConfirm={handleDeleteManagementMember}
+          onClose={() => setMemberToDelete(undefined)}
+          message="Are you sure you want to delete this member?"
+          description="This action cannot be undone."
+          isLoading={deleteManagementMemberIsLoading}
+        />
+      }
       <OTPVerificationCard
         phone={watch("phoneNumber")}
         isOpen={showVerifyphoneNumber}
