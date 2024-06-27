@@ -7,7 +7,7 @@ import {
   setForeignBusinessActiveTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import {
-  capitalizeCamelCase,
+  capitalizeString,
   capitalizeString,
   formatDate,
 } from "../../../../helpers/strings";
@@ -437,7 +437,7 @@ const PreviewSubmission = ({
             ?.map(([key, value], index: number) => {
               return (
                 <p key={index} className="flex items-center gap-2">
-                  <span className="">{capitalizeCamelCase(key)}:</span>{" "}
+                  <span className="">{capitalizeString(key)}:</span>{" "}
                   <span className="font-bold">
                     {String(value) && capitalizeString(String(value))}
                   </span>
@@ -463,7 +463,7 @@ const PreviewSubmission = ({
             ?.map(([key, value], index: number) => {
               return (
                 <p key={index} className="flex items-center gap-2">
-                  <span className="">{capitalizeCamelCase(key)}:</span>{" "}
+                  <span className="">{capitalizeString(key)}:</span>{" "}
                   <span className="font-bold">{String(value) ?? ""}</span>
                 </p>
               );

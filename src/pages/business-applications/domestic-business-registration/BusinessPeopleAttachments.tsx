@@ -4,7 +4,7 @@ import ViewDocument from "@/pages/user-company-details/ViewDocument";
 import {
   BusinessAttachment,
   PersonAttachment,
-} from "@/types/models/personAttachment";
+} from "@/types/models/attachment";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { useState } from "react";
 

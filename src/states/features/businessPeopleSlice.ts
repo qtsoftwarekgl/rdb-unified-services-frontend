@@ -1,7 +1,7 @@
 import {
   BusinessAttachment,
   PersonAttachment,
-} from "@/types/models/personAttachment";
+} from "@/types/models/attachment";
 import { PersonDetail } from "@/types/models/personDetail";
 import { UserInformation } from "@/types/models/userInformation";
 import { createSlice } from "@reduxjs/toolkit";

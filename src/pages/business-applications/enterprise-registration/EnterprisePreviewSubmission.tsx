@@ -7,7 +7,7 @@ import { ErrorResponse, useNavigate } from 'react-router-dom';
 import { Address, BusinessActivity, businessId } from '@/types/models/business';
 import PreviewCard from '@/components/business-registration/PreviewCard';
 import Loader from '@/components/Loader';
-import { capitalizeCamelCase, capitalizeString } from '@/helpers/strings';
+import { capitalizeString } from '@/helpers/strings';
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyFetchBusinessAddressQuery,
@@ -154,7 +154,7 @@ const EnterprisePreviewSubmission = ({
                   return (
                     <li key={index}>
                       <p className="flex text-[14px] items-center gap-2">
-                        {capitalizeCamelCase(key)}:{' '}
+                        {capitalizeString(key)}:{' '}
                         {capitalizeString(String(value))}
                       </p>
                     </li>
@@ -194,7 +194,7 @@ const EnterprisePreviewSubmission = ({
                             return (
                               <li key={index}>
                                 <p className="flex text-[14px] items-center gap-2">
-                                  {capitalizeCamelCase(key)}:{' '}
+                                  {capitalizeString(key)}:{' '}
                                   {capitalizeString(String(value))}
                                 </p>
                               </li>
@@ -206,7 +206,7 @@ const EnterprisePreviewSubmission = ({
                   return (
                     <li key={index}>
                       <p className="flex text-[14px] items-center gap-2">
-                        {capitalizeCamelCase(key)}:{' '}
+                        {capitalizeString(key)}:{' '}
                         {capitalizeString(String(value))}
                       </p>
                     </li>
