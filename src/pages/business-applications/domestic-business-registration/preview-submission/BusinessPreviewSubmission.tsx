@@ -11,12 +11,13 @@ import Button from '../../../../components/inputs/Button';
 import { ErrorResponse, useNavigate } from 'react-router-dom';
 import Loader from '../../../../components/Loader';
 import ViewDocument from '../../../user-company-details/ViewDocument';
-import { BusinessActivity, businessId } from '@/types/models/business';
+import { Address, BusinessActivity, businessId } from '@/types/models/business';
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyFetchBusinessAddressQuery,
   useLazyFetchBusinessDetailsQuery,
   useLazyFetchBusinessEmploymentInfoQuery,
+  useLazyFetchBusinessPeopleQuery,
   useLazyFetchShareholdersQuery,
   useUpdateBusinessMutation,
 } from '@/states/api/businessRegApiSlice';
@@ -77,6 +78,38 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
       isSuccess: businessAddressIsSuccess,
     },
   ] = useLazyFetchBusinessAddressQuery();
+
+  // INITIALIZE FETCH EXECUTIVE MANAGEMENT QUERY
+  const [fetchExecutiveManagement, {
+    data: executiveManagementData,
+    isLoading: executiveManagementIsLoading,
+    error: executiveManagementError,
+    isError: executiveManagementIsError,
+    isSuccess: executiveManagementIsSuccess,
+  }] = useLazyFetchBusinessPeopleQuery();
+
+  // FETCH EXECUTIVE MANAGEMENT
+  useEffect(() => {
+    if (businessId) {
+      fetchExecutiveManagement({ businessId, route: 'management' });
+    }
+  }, [businessId, fetchExecutiveManagement]);
+
+  // INITIALIZE FETCH BOARD MEMBERS QUERY
+  const [fetchBoardMembers, {
+    data: boardMembersData,
+    isLoading: boardMembersIsLoading,
+    error: boardMembersError,
+    isError: boardMembersIsError,
+    isSuccess: boardMembersIsSuccess,
+  }] = useLazyFetchBusinessPeopleQuery();
+
+  // FETCH BOARD MEMBERS
+  useEffect(() => {
+    if (businessId) {
+      fetchBoardMembers({ businessId, route: 'board-member' });
+    }
+  }, [businessId, fetchBoardMembers]);
 
   // INITIALIZE FETCH FOUNDER DETAILS QUERY
   const [
@@ -193,8 +226,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
   // TABLE COLUMNS
   const founderDetailsColumns = [
     {
-      header: 'No',
-      accessorKey: 'no',
+      header: 'Document Number',
+      accessorKey: 'personDocNo',
     },
     {
       header: 'Name',
@@ -295,7 +328,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
               {businessDetailsData?.data ? (
                 Object?.entries(businessDetailsData?.data)?.map(
                   ([key, value], index: number) => {
-                    if (key === 'id' || value === null) return null;
+                    if (key === 'id' || value === null || key === 'isForeign') return null;
                     return (
                       <li key={index}>
                         <p className="flex text-[14px] items-center gap-2">
@@ -338,7 +371,7 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
                     if (key === 'location')
                       return (
                         <ul key={index} className="flex flex-col gap-2">
-                          {Object?.entries(value)?.map(
+                          {Object?.entries(value as Address)?.map(
                             ([key, value], index: number) => {
                               if (key === 'id' || value === null) return null;
                               return (
@@ -423,7 +456,16 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         setActiveStep={setBusinessActiveStep}
         setActiveTab={setBusinessActiveTab}
       >
-        <BusinessPeople type="board-member" businessId={businessId} />
+        {boardMembersIsLoading ? (
+          <figure className="flex items-center justify-center w-full h-full">
+            <Loader />
+          </figure>
+        ) : (
+          <BusinessPeople
+            businessPeopleList={boardMembersData?.data}
+            businessId={businessId}
+          />
+        )}
       </PreviewCard>
 
       {/*  EXECUTIVE MANAGEMENT */}
@@ -436,7 +478,16 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
         setActiveStep={setBusinessActiveStep}
         setActiveTab={setBusinessActiveTab}
       >
-        <BusinessPeople type="executiveManagement" businessId={businessId} />
+        {executiveManagementIsLoading ? (
+          <figure className="flex items-center justify-center w-full h-full">
+            <Loader />
+          </figure>
+        ) : (
+          <BusinessPeople
+            businessPeopleList={executiveManagementData?.data}
+            businessId={businessId}
+          />
+        )}
       </PreviewCard>
 
       {/* EMPLOYMENT INFO */}
@@ -496,6 +547,8 @@ const PreviewSubmission: FC<PreviewSubmissionProps> = ({
           )
         )}
       </PreviewCard>
+
+      {/* SHAREHOLDERS */}
       <PreviewCard
         applicationStatus={applicationStatus}
         businessId={businessId}

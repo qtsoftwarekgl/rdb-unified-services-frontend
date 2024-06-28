@@ -23,7 +23,7 @@ import { businessId } from "@/types/models/business";
 import {
   useCreateManagementOrBoardMemberMutation,
   useDeleteManagementOrBoardMemberMutation,
-  useLazyFetchManagementOrBoardMembersQuery,
+  useLazyFetchBusinessPeopleQuery,
 } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -255,7 +255,7 @@ const ExecutiveManagement = ({
       isError: managementMemberIsError,
       isSuccess: managementMemberIsSuccess,
     },
-  ] = useLazyFetchManagementOrBoardMembersQuery();
+  ] = useLazyFetchBusinessPeopleQuery();
 
   // INITIALIZE DELETE MANAGEMENT MEMBER
   const [

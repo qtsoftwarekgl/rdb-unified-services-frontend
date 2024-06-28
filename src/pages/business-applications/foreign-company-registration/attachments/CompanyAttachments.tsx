@@ -6,6 +6,8 @@ import Input from "../../../../components/inputs/Input";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
+  setForeignBusinessCompletedStep,
+  setForeignBusinessCompletedTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
@@ -193,6 +195,8 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   };
 
   const onSubmit = () => {
+    dispatch(setForeignBusinessCompletedStep("attachments"));
+    dispatch(setForeignBusinessCompletedTab("attachments"));
     dispatch(setForeignBusinessActiveStep("preview_submission"));
     dispatch(setForeignBusinessActiveTab("preview_submission"));
   };

@@ -1,8 +1,11 @@
 import Table from "@/components/table/Table";
+import { countriesList } from "@/constants/countries";
+import { genderOptions } from "@/constants/inputs.constants";
 import { capitalizeString } from "@/helpers/strings";
 import { PersonDetail } from "@/types/models/personDetail";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { Loader } from "lucide-react";
 
 type BusinessPeopleTableProps = {
@@ -47,7 +50,9 @@ const BusinessPeopleTable = ({
     {
       header: "Action",
       accessorKey: "action",
-      cell: ({ row }) => {
+      cell: ({ row }: {
+        row: Row<PersonDetail>;
+      }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-fit">
             <FontAwesomeIcon
@@ -90,15 +95,16 @@ const BusinessPeopleTable = ({
               return {
                 ...person,
                 no: index + 1,
-                position: capitalizeString(person?.roleDescription),
-                gender: person?.gender && person?.gender[0],
+                roleDescription: capitalizeString(person?.roleDescription),
+                gender: genderOptions?.find((g) => g?.value === person?.gender)?.label,
+                nationality: countriesList?.find((country) => country?.code === person?.nationality)?.name,
                 name: `${person.firstName} ${person.middleName || ""} ${
                   person.lastName || ""
                 }`,
               };
             }
           )}
-          columns={managementPeopleColumns}
+          columns={managementPeopleColumns as ColumnDef<PersonDetail>[]}
           showFilter={false}
         />
       )}

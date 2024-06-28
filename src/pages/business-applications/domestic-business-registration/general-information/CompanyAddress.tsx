@@ -789,7 +789,7 @@ export const StaticLocation = ({
 }) => {
   return (
     <menu className="flex gap-4 items-center w-full">
-      <p className="text-[13px] p-[6px] px-2 rounded-md bg-secondary text-white w-full">
+      <p className="text-[13px] py-[6px] px-2 rounded-md bg-white border-[1.5px] border-secondary text-black w-full">
         {location}
       </p>
       <Link

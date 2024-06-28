@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import PreviewCard from "../../../../components/business-registration/PreviewCard";
 import {
+  removeForeignCompanyRegistrationTabs,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
@@ -26,7 +27,7 @@ import {
   setBusinessDetails,
   setEmploymentInfo,
 } from "@/states/features/businessSlice";
-import { useLazyFetchManagementOrBoardMembersQuery } from "@/states/api/foreignCompanyRegistrationApiSlice";
+import { useLazyFetchBusinessPeopleQuery } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { setBoardOfDirectorsList } from "@/states/features/boardOfDirectorSlice";
 import { setExecutiveManagersList } from "@/states/features/executiveManagerSlice";
 import {
@@ -208,7 +209,7 @@ const PreviewSubmission = ({
       isError: boardMemberIsError,
       isSuccess: boardMemberIsSuccess,
     },
-  ] = useLazyFetchManagementOrBoardMembersQuery();
+  ] = useLazyFetchBusinessPeopleQuery();
 
   // FETCH BOARD MEMBERS
   useEffect(() => {
@@ -245,7 +246,7 @@ const PreviewSubmission = ({
       isError: managementMemberIsError,
       isSuccess: managementMemberIsSuccess,
     },
-  ] = useLazyFetchManagementOrBoardMembersQuery();
+  ] = useLazyFetchBusinessPeopleQuery();
 
   // FETCH MANAGEMENT PEOPLE
   useEffect(() => {
@@ -332,6 +333,7 @@ const PreviewSubmission = ({
       toast.success("Business updated successfully");
       dispatch(setForeignBusinessActiveStep("company_details"));
       dispatch(setForeignBusinessActiveTab("general_information"));
+      dispatch(removeForeignCompanyRegistrationTabs());
       navigate("/success", {
         state: { redirectUrl: "/services" },
       });

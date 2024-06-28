@@ -169,7 +169,7 @@ const EnterprisePreviewSubmission = ({
       <PreviewCard
         status={String(applicationStatus)}
         businessId={businessId}
-        header="Company Address"
+        header="Enterprise Address"
         tabName="general_information"
         stepName="company_address"
         setActiveStep={setEnterpriseActiveStep}

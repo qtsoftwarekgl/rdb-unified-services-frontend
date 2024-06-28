@@ -140,7 +140,7 @@ export const foreignCompanyRegistrationApiSlice = createApi({
       }),
     }),
     // GET MANAGEMENT OR BOARD MEMBERS
-    fetchManagementOrBoardMembers: builder.query({
+    fetchBusinessPeople: builder.query({
       query: ({ businessId, route = "management" }) => {
         return {
           url: `/${route}?businessId=${businessId}`,
@@ -167,7 +167,7 @@ export const {
   useDeleteManagementOrBoardMemberMutation,
   useCreateOrUpdateCompanyDetailsMutation,
   useCreateManagementOrBoardMemberMutation,
-  useLazyFetchManagementOrBoardMembersQuery,
+  useLazyFetchBusinessPeopleQuery,
   useCreateOrUpdateCompanyAddressMutation,
 } = foreignCompanyRegistrationApiSlice;
 
