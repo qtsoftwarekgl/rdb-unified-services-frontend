@@ -9,20 +9,26 @@ import Button from "../../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { maskPhoneDigits } from "../../../../helpers/strings";
-import validateInputs from "../../../../helpers/validations";
-import BusinessPeople from "./BusinessPeople";
-import { businessId } from "@/types/models/business";
-import moment from "moment";
-import { useCreateManagementOrBoardPersonMutation } from "@/states/api/businessRegApiSlice";
-import { toast } from "react-toastify";
-import { ErrorResponse } from "react-router-dom";
-import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
-import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
-import { addBoardMember } from "@/states/features/boardOfDirectorSlice";
+} from '../../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { maskPhoneDigits } from '../../../../helpers/strings';
+import validateInputs from '../../../../helpers/validations';
+import BusinessPeople from './BusinessPeople';
+import { businessId } from '@/types/models/business';
+import moment from 'moment';
+import {
+  useCreateManagementOrBoardPersonMutation,
+  useLazyFetchBusinessPeopleQuery,
+} from '@/states/api/businessRegApiSlice';
+import { toast } from 'react-toastify';
+import { ErrorResponse } from 'react-router-dom';
+import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
+import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+import {
+  addBoardMember,
+  setBoardOfDirectorsList,
+} from '@/states/features/boardOfDirectorSlice';
 import {
   addBusinessPersonAttachment,
   setBusinessPeopleAttachments,
@@ -142,6 +148,7 @@ const BoardOfDirectors = ({
           middleName: "",
           lastName: "",
         });
+        dispatch(addBoardMember(boardPersonData?.data));
         dispatch(setUserInformation(undefined));
       }
     }
@@ -213,7 +220,6 @@ const BoardOfDirectors = ({
         firstName: userInformation?.foreName,
         lastName: userInformation?.surnames,
         gender: userInformation?.gender,
-        dateOfBirth: userInformation?.dateOfBirth,
         nationality: userInformation?.nationality,
         persDocIssuePlace: userInformation?.nationality,
         isFromNida: true,
@@ -228,6 +234,48 @@ const BoardOfDirectors = ({
     userInformationIsError,
     userInformationIsSuccess,
     watch,
+  ]);
+
+  // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
+  const [
+    fetchBoardMembers,
+    {
+      data: managementMemberData,
+      error: managementMemberError,
+      isFetching: managementMemberIsFetching,
+      isError: managementMemberIsError,
+      isSuccess: managementMemberIsSuccess,
+    },
+  ] = useLazyFetchBusinessPeopleQuery();
+
+  // FETCH MANAGEMENT PEOPLE
+  useEffect(() => {
+    if (!businessId) return;
+    fetchBoardMembers({
+      businessId,
+      route: 'board-member',
+    });
+  }, [businessId, fetchBoardMembers]);
+
+  // HANDLE MANAGEMENT PEOPLE RESPONSE
+  useEffect(() => {
+    if (managementMemberIsError) {
+      if ((managementMemberError as ErrorResponse).status === 500) {
+        toast.error(
+          'An error occured while fetching people. Please try again later'
+        );
+      } else {
+        toast.error((managementMemberError as ErrorResponse).data?.message);
+      }
+    } else if (managementMemberIsSuccess) {
+      dispatch(setBoardOfDirectorsList(managementMemberData?.data));
+    }
+  }, [
+    dispatch,
+    managementMemberData?.data,
+    managementMemberError,
+    managementMemberIsSuccess,
+    managementMemberIsError,
   ]);
 
   return (
@@ -775,7 +823,16 @@ const BoardOfDirectors = ({
               primary
             />
           </section>
-          <BusinessPeople type="boardOfDirectors" businessId={businessId} />
+          {managementMemberIsFetching ? (
+            <figure className="w-full flex items-center justify-center min-h-[20vh]">
+              <Loader />
+            </figure>
+          ) : (
+            <BusinessPeople
+              businessPeopleList={boardMemberList}
+              businessId={businessId}
+            />
+          )}
           {[
             "IN_PREVIEW",
             "IN_PROGRESS",

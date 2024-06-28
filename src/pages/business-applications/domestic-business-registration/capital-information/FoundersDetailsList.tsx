@@ -99,7 +99,7 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
           return {
             ...founder,
             shareHolderType: capitalizeString(founder.shareHolderType),
-            name: `${founder.firstName || founder?.companyName} ${
+            name: `${founder.firstName || founder?.organization?.companyName} ${
               founder.middleName || ''
             } ${founder.lastName || ''}`,
           };

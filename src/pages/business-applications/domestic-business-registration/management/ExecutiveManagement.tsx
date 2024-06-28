@@ -23,16 +23,19 @@ import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "@/components/Loader";
 import {
-  addBusinessPersonAttachment,
   setBusinessPeopleAttachments,
   setUserInformation,
-} from "@/states/features/businessPeopleSlice";
-import BusinessPeople from "./BusinessPeople";
-import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
-import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
-import { genderOptions } from "@/constants/inputs.constants";
-import { addExecutiveManager } from "@/states/features/executiveManagerSlice";
+} from '@/states/features/businessPeopleSlice';
+import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
+import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
+import { genderOptions } from '@/constants/inputs.constants';
+import {
+  addExecutiveManager,
+  setExecutiveManagersList,
+} from '@/states/features/executiveManagerSlice';
+import { useLazyFetchBusinessPeopleQuery } from '@/states/api/businessRegApiSlice';
+import BusinessPeople from './BusinessPeople';
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -135,6 +138,7 @@ const ExecutiveManagement = ({
         formData.append("fileName", String(attachmentFile?.name));
         uploadPersonAttachment({ formData });
       } else {
+        dispatch(addExecutiveManager(managementPersonData?.data));
         reset({
           position: "",
           personIdentType: "",
@@ -218,7 +222,6 @@ const ExecutiveManagement = ({
         firstName: userInformation?.foreName,
         lastName: userInformation?.surnames,
         gender: userInformation?.gender,
-        dateOfBirth: userInformation?.dateOfBirth,
         nationality: userInformation?.nationality,
         persDocIssuePlace: userInformation?.nationality,
         isFromNida: true,
@@ -235,6 +238,54 @@ const ExecutiveManagement = ({
     watch,
   ]);
 
+  // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
+  const [
+    fetchManagementMember,
+    {
+      data: managementMemberData,
+      error: managementMemberError,
+      isFetching: managementMemberIsFetching,
+      isError: managementMemberIsError,
+      isSuccess: managementMemberIsSuccess,
+    },
+  ] = useLazyFetchBusinessPeopleQuery();
+
+  // FETCH MANAGEMENT PEOPLE
+  useEffect(() => {
+    if (!businessId) return;
+    fetchManagementMember({
+      businessId,
+      route: 'management',
+    });
+  }, [
+    businessId,
+    fetchManagementMember,
+    managementMemberData,
+    managementMemberError,
+    managementMemberIsSuccess,
+  ]);
+
+  // HANDLE MANAGEMENT PEOPLE RESPONSE
+  useEffect(() => {
+    if (managementMemberIsError) {
+      if ((managementMemberError as ErrorResponse).status === 500) {
+        toast.error(
+          'An error occured while fetching people. Please try again later'
+        );
+      } else {
+        toast.error((managementMemberError as ErrorResponse).data?.message);
+      }
+    } else if (managementMemberIsSuccess) {
+      dispatch(setExecutiveManagersList(managementMemberData?.data));
+    }
+  }, [
+    dispatch,
+    managementMemberData?.data,
+    managementMemberError,
+    managementMemberIsSuccess,
+    managementMemberIsError,
+  ]);
+
   return (
     <section className="flex flex-col gap-6">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -248,8 +299,8 @@ const ExecutiveManagement = ({
               render={({ field }) => {
                 const options = [
                   {
-                    value: "md/gm/ceo",
-                    label: "MD/GM/CEO",
+                    value: 'md/gm/ceo',
+                    label: 'MD/GM/CEO',
                   },
                   {
                     value: "secretary",
@@ -733,15 +784,22 @@ const ExecutiveManagement = ({
                         accept="application/pdf"
                         className="!w-fit max-sm:!w-full self-start"
                         onChange={(e) => {
-                          field.onChange(e?.target?.files?.[0]);
-                          setAttachmentFile(e.target.files?.[0]);
-                          dispatch(
-                            addBusinessPersonAttachment({
-                              attachmentType: e.target.files?.[0]?.type,
-                              fileName: e.target.files?.[0]?.name,
-                              fileSize: e.target.files?.[0]?.size,
-                            })
-                          );
+                          if (e?.target?.files?.[0]) {
+                            field.onChange(e?.target?.files?.[0]);
+                            setAttachmentFile(e.target.files?.[0]);
+                            dispatch(
+                              setBusinessPeopleAttachments([
+                                {
+                                  attachmentType: 'Passport',
+                                  fileName: e.target.files?.[0]?.name,
+                                  fileSize: e.target.files?.[0]?.size,
+                                  attachmentUrl: URL.createObjectURL(
+                                    e.target.files?.[0]
+                                  ),
+                                },
+                              ])
+                            );
+                          } else toast.error('No file selected');
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
@@ -776,7 +834,15 @@ const ExecutiveManagement = ({
               disabled={disableForm}
             />
           </section>
-          <BusinessPeople type="executiveManagement" businessId={businessId} />
+          {managementMemberIsFetching ? (
+            <figure className="flex items-center justify-center w-full min-h-[20vh]">
+              <Loader />
+            </figure>
+          ) : (
+            <BusinessPeople
+              businessPeopleList={executiveManagersList}
+            />
+          )}
           {[
             "IN_PREVIEW",
             "IN_PROGRESS",

@@ -245,7 +245,7 @@ export const businessRegApiSlice = createApi({
       }),
 
       // FETCH MANAGEMENT OR BOARD PEOPLE
-      fetchManagementOrBoardPeople: builder.query({
+      fetchBusinessPeople: builder.query({
         query: ({ businessId, route = "management" }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
@@ -449,7 +449,7 @@ export const {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
   useCreateManagementOrBoardPersonMutation,
-  useLazyFetchManagementOrBoardPeopleQuery,
+  useLazyFetchBusinessPeopleQuery,
   useCreateEmploymentInfoMutation,
   useLazyGetEmploymentInfoQuery,
   useCreateShareDetailsMutation,

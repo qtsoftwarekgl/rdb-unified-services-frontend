@@ -1,31 +1,32 @@
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../components/inputs/Input";
-import { faCheck, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import Loader from "../../components/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { Controller, useForm } from 'react-hook-form';
+import Input from '../../components/inputs/Input';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useEffect } from 'react';
+import Loader from '../../components/Loader';
+import Button from '../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  setNameReservation,
   setNameReservationActiveStep,
   setNameReservationActiveTab,
-  setNameReservationOwnerDetails,
-} from "../../states/features/nameReservationSlice";
-import { setUserApplications } from "../../states/features/userApplicationSlice";
-import moment from "moment";
-import { generateUUID } from "@/helpers/strings";
+} from '../../states/features/nameReservationSlice';
+import { convertDecimalToPercentage } from '@/helpers/strings';
+import { useLazySearchBusinessNameAvailabilityQuery } from '@/states/api/businessRegApiSlice';
+import { ErrorResponse, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import {
+  setNameAvailabilitiesList,
+  setSimilarBusinessNamesModal,
+} from '@/states/features/businessSlice';
+import SimilarBusinessNames from '../business-applications/SimilarBusinessNames';
 
 type Props = {
   isOpen: boolean;
-  entryId: string
 };
 
-const NameReservationSearch = ({ isOpen, entryId }: Props) => {
+const NameReservationSearch = ({ isOpen }: Props) => {
   // REACT HOOK FORM
   const {
-    handleSubmit,
     control,
     formState: { errors },
     watch,
@@ -39,151 +40,138 @@ const NameReservationSearch = ({ isOpen, entryId }: Props) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    search: false,
-    submit: false,
-    success: false,
-  });
+  const { nameAvailabilitiesList } = useSelector(
+    (state: RootState) => state.business
+  );
 
-  // HANDLE SUBMIT
-  const onSubmit = (data: FieldValues) => {
-    const entryId = generateUUID();
-    setIsLoading({
-      search: false,
-      submit: true,
-      success: false,
-    });
-    setTimeout(() => {
-      setIsLoading({
-        search: false,
-        submit: false,
-        success: false,
-      });
-      dispatch(setNameReservationOwnerDetails(null));
-      dispatch(setNameReservation(null));
-      dispatch(
-        setUserApplications({
-          entryId: entryId,
-          type: 'name_reservation',
-          status: 'submitted',
-          registration_number: `REG-${Math.floor(Math.random() * 100000) + 1}`,
-          createdAt: moment().format(),
-          name: data.name,
-          path: `/name-reservation?entryId=${entryId}`,
-          active_tab: 'name_reservation',
-          active_step: 'name_reservation',
-        })
-      );
-      dispatch(setNameReservationActiveStep('success'));
-      dispatch(setNameReservationActiveTab('complete'));
-    }, 1000);
-    return data;
-  };
+  // INITIALIZE SEARCH BUSINESS NAME AVAILABILITY QUERY
+  const [
+    searchBusinessNameAvailability,
+    {
+      data: searchBusinessNameData,
+      isLoading: searchBusinessNameIsLoading,
+      error: searchBusinessNameError,
+      isError: searchBusinessNameIsError,
+      isSuccess: searchBusinessNameIsSuccess,
+      isFetching: searchBusinessNameIsFetching,
+    },
+  ] = useLazySearchBusinessNameAvailabilityQuery();
+
+  // HANDLE SEARCH BUSINESS NAME AVAILABILITY RESPONSE
+  useEffect(() => {
+    if (searchBusinessNameIsError) {
+      if ((searchBusinessNameError as ErrorResponse)?.status === 500) {
+        toast.error(
+          'An error occurred while searching for business name availability'
+        );
+      } else {
+        toast.error((searchBusinessNameError as ErrorResponse)?.data?.message);
+      }
+    } else if (searchBusinessNameIsSuccess) {
+      if (
+        searchBusinessNameData?.data?.find(
+          (availability: { similarity: number; companyName: string }) =>
+            availability?.similarity === 1.0
+        ) !== undefined
+      ) {
+        setError('companyName', {
+          type: 'manual',
+          message: 'Company name already exists',
+        });
+      }
+      dispatch(setNameAvailabilitiesList(searchBusinessNameData?.data));
+    }
+  }, [
+    dispatch,
+    searchBusinessNameData?.data,
+    searchBusinessNameError,
+    searchBusinessNameIsError,
+    searchBusinessNameIsSuccess,
+    setError,
+  ]);
 
   if (!isOpen) return null;
 
   return (
     <section className="flex flex-col w-full gap-5">
       <form
-        onSubmit={handleSubmit(onSubmit)}
         className="w-[40%] mx-auto flex flex-col gap-5"
       >
         <Controller
-          name="name"
+          name="companyName"
           control={control}
           defaultValue={watch('name') || name_reservation}
           rules={{ required: 'Company name is required' }}
           render={({ field }) => {
             return (
-              <label className="flex flex-col w-full gap-3">
+              <label className="flex flex-col w-full gap-1">
                 <Input
-                  label={`${
-                    name_reservation ? '' : 'Enter'
-                  } the company name to reserve`}
-                  suffixIcon={!name_reservation ? faSearch : undefined}
-                  defaultValue={watch('name') || name_reservation}
-                  readOnly={name_reservation ? true : false}
+                  label={`Enter the company name to reserve`}
+                  suffixIcon={faSearch}
                   suffixIconPrimary
-                  suffixIconHandler={(e) => {
-                    e.preventDefault();
-                    if (field.value?.length < 3) {
-                      setError('name', {
-                        type: 'manual',
-                        message: 'Company name must be at least 3 characters',
-                      });
-                      return;
-                    }
-                    if (!field?.value) {
-                      setError('name', {
-                        type: 'manual',
-                        message: 'Company name is required',
-                      });
-                      return;
-                    } else {
-                      clearErrors('name');
-                      setIsLoading({
-                        submit: false,
-                        search: true,
-                        success: false,
-                      });
-                      setTimeout(() => {
-                        if (field?.value.trim().toLowerCase() !== 'xyz') {
-                          setError('name', {
-                            type: 'manual',
-                            message: `${watch(
-                              'name'
-                            )} is not available. Try another name`,
-                          });
-                          setIsLoading({
-                            submit: false,
-                            search: false,
-                            success: false,
-                          });
-                        } else {
-                          clearErrors('name');
-
-                          setIsLoading({
-                            submit: false,
-                            search: false,
-                            success: true,
-                          });
-                        }
-                      }, 1000);
-                    }
-                  }}
                   required
                   onChange={(e) => {
                     field.onChange(e);
-                    clearErrors('name');
-                    setError('name', {
+                    setError('companyName', {
                       type: 'manual',
                       message:
-                        'Check if company name is available before submitting',
+                        'Check if company name is available before proceeding',
                     });
-                    setIsLoading({
-                      submit: false,
-                      search: false,
-                      success: false,
+                  }}
+                  suffixIconHandler={(e) => {
+                    e.preventDefault();
+                    if (!field?.value || field?.value?.length < 3) {
+                      return;
+                    }
+                    clearErrors('companyName');
+                    searchBusinessNameAvailability({
+                      companyName: field?.value,
                     });
                   }}
                 />
-                {isLoading?.search && (
-                  <p className="flex text-[13px] items-center gap-1">
-                    <Loader size={4} /> Looking for name availability
-                  </p>
-                )}
-                {isLoading?.success && (
-                  <p className="flex text-[13px] items-center gap-2 text-green-600">
-                    <FontAwesomeIcon
-                      icon={faCheck}
-                      className="text-green-700"
-                    />
-                    {watch('name')} is available
-                  </p>
-                )}
-                {errors?.name && (
-                  <p className="text-[12px] text-red-500">
-                    {String(errors?.name?.message)}
+                <menu className="flex w-full flex-col gap-2">
+                  {searchBusinessNameIsLoading ||
+                    (searchBusinessNameIsFetching && (
+                      <figure className="flex items-center gap-2">
+                        <Loader />
+                        <p className="text-[13px]">Searching...</p>
+                      </figure>
+                    ))}
+                  {searchBusinessNameIsSuccess &&
+                    nameAvailabilitiesList?.length > 0 &&
+                    !errors?.companyName && (
+                      <section className="flex flex-col gap-1">
+                        <p className="text-[11px] text-red-600">
+                          The given name has a similarity of up to{' '}
+                          {convertDecimalToPercentage(
+                            nameAvailabilitiesList[0]?.similarity
+                          )}
+                          % with other business names. Consider changing it to
+                          avoid conflicts.
+                        </p>
+                        <Link
+                          to={'#'}
+                          className="text-[11px] underline text-primary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            dispatch(setSimilarBusinessNamesModal(true));
+                          }}
+                        >
+                          Click to find conflicting business names
+                        </Link>
+                      </section>
+                    )}
+                  {searchBusinessNameIsSuccess &&
+                    nameAvailabilitiesList?.length === 0 &&
+                    !errors?.companyName && (
+                      <p className="text-[11px] text-green-600 px-2">
+                        {field.value} is available for use
+                      </p>
+                    )}
+                </menu>
+                {errors?.companyName && (
+                  <p className="text-red-600 text-[11px]">
+                    {String(errors?.companyName?.message)}
                   </p>
                 )}
               </label>
@@ -202,13 +190,18 @@ const NameReservationSearch = ({ isOpen, entryId }: Props) => {
             }}
           />
           <Button
-            value={isLoading?.submit ? <Loader /> : 'Submit'}
+            value={'Submit'}
             primary
-            submit
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setNameReservationActiveStep('success'));
+              dispatch(setNameReservationActiveTab('complete'));
+            }}
             disabled={Object.keys(errors)?.length > 0}
           />
         </menu>
       </form>
+      <SimilarBusinessNames businessName={watch('companyName')} />
     </section>
   );
 };

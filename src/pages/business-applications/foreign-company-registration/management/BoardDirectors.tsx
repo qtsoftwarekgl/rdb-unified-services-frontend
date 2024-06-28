@@ -23,7 +23,7 @@ import { businessId } from "@/types/models/business";
 import {
   useCreateManagementOrBoardMemberMutation,
   useDeleteManagementOrBoardMemberMutation,
-  useLazyFetchManagementOrBoardMembersQuery,
+  useLazyFetchBusinessPeopleQuery,
 } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -253,7 +253,7 @@ const BoardDirectors = ({
       isError: boardMemberIsError,
       isSuccess: boardMemberIsSuccess,
     },
-  ] = useLazyFetchManagementOrBoardMembersQuery();
+  ] = useLazyFetchBusinessPeopleQuery();
 
   // INITIALIZE DELETE MANAGEMENT MEMBER
   const [
@@ -855,7 +855,7 @@ const BoardDirectors = ({
                 if (
                   boardMemberList?.find(
                     (director: PersonDetail) =>
-                      director?.personIdentType === "nid"
+                      director?.nationality === "RW"
                   ) === undefined
                 ) {
                   setError("board_of_directors", {

@@ -584,7 +584,7 @@ export const businessSubActivities = [
 export const personnelTypes = [
   {
     label: "Individual",
-    value: "person",
+    value: "individual",
   },
   {
     label: "Legal Entity",

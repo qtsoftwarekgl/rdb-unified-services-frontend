@@ -322,6 +322,10 @@ export const foreignCompanyRegistrationSlice = createSlice({
         JSON.stringify(updatedRegistrationTabs)
       );
     },
+    removeForeignCompanyRegistrationTabs: (state) => {
+      state.foreign_business_registration_tabs = foreign_business_registration_tabs_initial_state;
+      localStorage.removeItem("foreign_business_registration_tabs");
+    }
   },
 });
 
@@ -334,4 +338,5 @@ export const {
   setForeignBusinessCompletedTab,
   removeForeignBusinessCompletedStep,
   setForeignBusinessRegistrationTabs,
+  removeForeignCompanyRegistrationTabs,
 } = foreignCompanyRegistrationSlice.actions;

@@ -121,16 +121,9 @@ const OwnerDetails = ({ isOpen }: Props) => {
                 <Input
                   type="radio"
                   label="Myself"
-                  defaultChecked={watch('name_owner') === 'owner'}
+                  checked
                   {...field}
                   value={'owner'}
-                />
-                <Input
-                  type="radio"
-                  label="Someone else"
-                  defaultChecked={watch('name_owner') === 'other'}
-                  {...field}
-                  value={'other'}
                 />
               </ul>
             );
