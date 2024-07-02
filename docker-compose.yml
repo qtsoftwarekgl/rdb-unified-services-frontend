@@ -1,6 +1,16 @@
 services:
-  web:
-    build: .
+  rdb-urs-frontend:
+    image: rdb-urs-frontend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      VITE_APP_BUSINESS_REG_LOCAL_API: ${VITE_APP_BUSINESS_REG_LOCAL_API}
+      VITE_APP_EXTERNAL_SERVICE_API: ${VITE_APP_EXTERNAL_SERVICE_API}
+      VITE_APP_USER_MANAGEMENT_LOCAL_API: ${VITE_APP_USER_MANAGEMENT_LOCAL_API}
+      VITE_APP_USER_MANAGEMENT_UAT_API: ${VITE_APP_USER_MANAGEMENT_UAT_API}
+      PORT: ${PORT}
     ports:
-      - "80:80"
-    restart: always
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
