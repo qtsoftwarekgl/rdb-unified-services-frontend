@@ -2,7 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { businessBaseQueryWithReauth } from "./rootApiSlice";
 
 export const businessRegApiSlice = createApi({
-  reducerPath: "businessRegistrationApi",
+  reducerPath: 'businessRegistrationApi',
   baseQuery: businessBaseQueryWithReauth,
   endpoints: (builder) => {
     return {
@@ -62,8 +62,8 @@ export const businessRegApiSlice = createApi({
       createBusiness: builder.mutation({
         query: ({ isForeign, serviceId }) => {
           return {
-            url: "/register",
-            method: "POST",
+            url: '/register',
+            method: 'POST',
             body: {
               isForeign,
               serviceId,
@@ -77,7 +77,7 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/${id}`,
-            method: "DELETE",
+            method: 'DELETE',
           };
         },
       }),
@@ -101,11 +101,11 @@ export const businessRegApiSlice = createApi({
           companyType,
           companyCategory,
           enterpriseName,
-          enterpriseBusinessName
+          enterpriseBusinessName,
         }) => {
           return {
             url: `/details?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               companyName,
               position,
@@ -113,7 +113,7 @@ export const businessRegApiSlice = createApi({
               companyType,
               companyCategory,
               enterpriseName,
-              enterpriseBusinessName
+              enterpriseBusinessName,
             },
           };
         },
@@ -140,7 +140,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/address?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               villageId,
               address,
@@ -162,7 +162,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/business-activities?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               isVATRegistered,
               mainBusinessActivity,
@@ -184,7 +184,7 @@ export const businessRegApiSlice = createApi({
       // CREATE MANAGEMENT OR BOARD PEOPLE
       createManagementOrBoardPerson: builder.mutation({
         query: ({
-          route = "management",
+          route = 'management',
           businessId,
           position,
           firstName,
@@ -213,7 +213,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               position,
               firstName,
@@ -246,7 +246,7 @@ export const businessRegApiSlice = createApi({
 
       // FETCH MANAGEMENT OR BOARD PEOPLE
       fetchBusinessPeople: builder.query({
-        query: ({ businessId, route = "management" }) => {
+        query: ({ businessId, route = 'management' }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
           };
@@ -267,7 +267,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/employment-info?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               workingStartTime,
               workingEndTime,
@@ -295,7 +295,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, shareDetails }) => {
           return {
             url: `/share-details?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: shareDetails,
           };
         },
@@ -337,7 +337,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/founder-details?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               shareHolderType,
               description,
@@ -396,7 +396,7 @@ export const businessRegApiSlice = createApi({
         query: ({ founderId, shareDetails }) => {
           return {
             url: `/assign-share?founderId=${founderId}`,
-            method: "POST",
+            method: 'POST',
             body: shareDetails,
           };
         },

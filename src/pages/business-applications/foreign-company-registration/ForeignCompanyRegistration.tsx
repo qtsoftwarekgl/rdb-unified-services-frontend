@@ -24,6 +24,8 @@ import { useLazyGetBusinessQuery } from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
 import { setBusiness } from "@/states/features/businessSlice";
 import { Loader } from "lucide-react";
+import BusinessPersonDetails from "@/containers/business-registration/BusinessPersonDetails";
+import DeleteBusinessPerson from "@/containers/business-registration/DeleteBusinessPerson";
 
 const ForeignBranchRegistration = () => {
   const {
@@ -200,6 +202,8 @@ const ForeignBranchRegistration = () => {
           </>
         )} */}
       </main>
+      <BusinessPersonDetails />
+      <DeleteBusinessPerson />
     </UserLayout>
   );
 };

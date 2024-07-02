@@ -31,7 +31,7 @@ import { toast } from "react-toastify";
 import { setBusiness } from "@/states/features/businessSlice";
 import Loader from "@/components/Loader";
 import Button from "@/components/inputs/Button";
-import DeleteBusinessAttachment from "@/containers/DeleteBusinessAttachment";
+import DeleteBusinessAttachment from "@/containers/business-registration/DeleteBusinessAttachment";
 
 const BusinessRegistration = () => {
   // STATE VARIABLES

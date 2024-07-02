@@ -152,6 +152,23 @@ export const coreApiSlice = createApi({
         };
       },
     }),
+
+    // GET PERSON DETAILS BY ID
+    getBusinessPersonDetails: builder.query({
+      query: ({ id }) => `/person/${id}`,
+    }),
+
+    // GET PERSON ATTACHMENTS
+    fetchPersonAttachments: builder.query({
+      query: ({ personId }) => `/attachment/person?personId=${personId}`,
+    }),
+
+    // DELETE BUSINESS PERSON
+    deleteBusinessPerson: builder.mutation({
+      query: ({ id }) => {
+        return { url: `/person/${id}`, method: 'DELETE' };
+      },
+    }),
   }),
 });
 
@@ -170,6 +187,9 @@ export const {
   useUploadBusinessAttachmentMutation,
   useLazySearchVillageQuery,
   useDeleteBusinessAttachmentMutation,
+  useLazyGetBusinessPersonDetailsQuery,
+  useLazyFetchPersonAttachmentsQuery,
+  useDeleteBusinessPersonMutation
 } = coreApiSlice;
 
 export default coreApiSlice;

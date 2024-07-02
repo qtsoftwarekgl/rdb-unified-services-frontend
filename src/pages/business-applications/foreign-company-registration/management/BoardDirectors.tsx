@@ -36,7 +36,7 @@ import { PersonDetail } from "@/types/models/personDetail";
 import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import {
-  setBusinessPeopleAttachments,
+  setBusinessPersonAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import { genderOptions } from "@/constants/inputs.constants";
@@ -232,7 +232,7 @@ const BoardDirectors = ({
         lastName: "",
       });
       setAttachmentFile(null);
-      dispatch(setBusinessPeopleAttachments([]));
+      dispatch(setBusinessPersonAttachments([]));
     }
   }, [
     dispatch,

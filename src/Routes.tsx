@@ -54,7 +54,7 @@ import NewCollateral from "./pages/business-applications/collateral/NewCollatera
 import CollateralListReview from "./pages/collateral-review/CollateralList";
 import CollateralReview from "./pages/collateral-review/CollateralReview";
 import ServicesList from "./pages/home/ServicesList";
-import NewServiceApplication from "./containers/NewServiceApplication";
+import NewServiceApplication from "./containers/business-registration/NewServiceApplication";
 
 const Routes = () => {
   return (

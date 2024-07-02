@@ -1,24 +1,28 @@
-import {
-  PersonAttachment,
-} from "@/types/models/attachment";
-import { PersonDetail } from "@/types/models/personDetail";
-import { UserInformation } from "@/types/models/userInformation";
-import { createSlice } from "@reduxjs/toolkit";
+import { PersonAttachment } from '@/types/models/attachment';
+import { PersonDetail } from '@/types/models/personDetail';
+import { UserInformation } from '@/types/models/userInformation';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: {
   businessPeopleList: PersonDetail[];
   selectedBusinessPerson?: PersonDetail;
-  businessPeopleAttachments: PersonAttachment[];
+  businessPersonAttachments: PersonAttachment[];
   userInformation?: UserInformation;
+  businessPersonDetailsModal: boolean;
+  businessPerson?: PersonDetail;
+  deleteBusinessPersonModal: boolean;
 } = {
   businessPeopleList: [],
   selectedBusinessPerson: undefined,
-  businessPeopleAttachments: [],
+  businessPersonAttachments: [],
   userInformation: undefined,
+  businessPersonDetailsModal: false,
+  businessPerson: undefined,
+  deleteBusinessPersonModal: false,
 };
 
 export const businessPeopleSlice = createSlice({
-  name: "businessPeople",
+  name: 'businessPeople',
   initialState,
   reducers: {
     setBusinessPeopleList: (state, action) => {
@@ -35,22 +39,31 @@ export const businessPeopleSlice = createSlice({
         (person: PersonDetail) => person.id !== action.payload
       );
     },
-    setBusinessPeopleAttachments: (state, action) => {
-      state.businessPeopleAttachments = action.payload;
+    setBusinessPersonAttachments: (state, action) => {
+      state.businessPersonAttachments = action.payload;
     },
     addBusinessPersonAttachment: (state, action) => {
-      state.businessPeopleAttachments = [
+      state.businessPersonAttachments = [
         action.payload,
-        ...state.businessPeopleAttachments,
+        ...state.businessPersonAttachments,
       ];
     },
     removeBusinessPersonAttachment: (state, action) => {
-      state.businessPeopleAttachments = state.businessPeopleAttachments.filter(
+      state.businessPersonAttachments = state.businessPersonAttachments.filter(
         (attachment: PersonAttachment) => attachment.id !== action.payload
       );
     },
     setUserInformation: (state, action) => {
       state.userInformation = action.payload;
+    },
+    setBusinessPersonDetailsModal: (state, action) => {
+      state.businessPersonDetailsModal = action.payload;
+    },
+    setBusinessPerson: (state, action) => {
+      state.businessPerson = action.payload;
+    },
+    setDeleteBusinessPersonModal: (state, action) => {
+      state.deleteBusinessPersonModal = action.payload;
     },
   },
 });
@@ -60,10 +73,13 @@ export const {
   setSelectedBusinessPerson,
   addBusinessPerson,
   removeBusinessPerson,
-  setBusinessPeopleAttachments,
+  setBusinessPersonAttachments,
   addBusinessPersonAttachment,
   removeBusinessPersonAttachment,
   setUserInformation,
+  setBusinessPersonDetailsModal,
+  setBusinessPerson,
+  setDeleteBusinessPersonModal,
 } = businessPeopleSlice.actions;
 
 export default businessPeopleSlice.reducer;
