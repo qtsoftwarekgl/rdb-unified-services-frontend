@@ -122,7 +122,7 @@ const PreviewSubmission = ({
   // GET BUSINESS
   useEffect(() => {
     if (businessId) {
-      getBusinessAddress({ id: businessId });
+      getBusinessAddress({ businessId });
     }
   }, [getBusinessAddress, businessId]);
 
