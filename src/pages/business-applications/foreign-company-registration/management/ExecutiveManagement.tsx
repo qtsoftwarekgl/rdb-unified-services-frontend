@@ -378,8 +378,8 @@ const ExecutiveManagement = ({
                     label: "MD/GM/CEO",
                   },
                   {
-                    value: "secretary",
-                    label: "Secretary",
+                    value: "company secretary",
+                    label: "company secretary",
                   },
                 ];
                 return (

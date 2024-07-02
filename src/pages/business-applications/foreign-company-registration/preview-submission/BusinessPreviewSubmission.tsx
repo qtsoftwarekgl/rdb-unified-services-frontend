@@ -79,12 +79,101 @@ const PreviewSubmission = ({
     },
   ] = useLazyGetBusinessDetailsQuery();
 
-  // GET BUSINESS DETAILS
+  // INITIALIZE GET BUSINESS QUERY
+  const [
+    getBusinessAddress,
+    {
+      data: businessAddressData,
+      error: businessAddressError,
+      isLoading: businessAddressIsLoading,
+      isError: businessAddressIsError,
+      isSuccess: businessAddressIsSuccess,
+    },
+  ] = useLazyGetBusinessAddressQuery();
+
+  // INITIALIZE FETCH BOARD MEMEBER QUERY
+  const [
+    fetchBoardMembers,
+    {
+      data: boardMemberData,
+      error: boardMemberError,
+      isLoading: boardMemberIsLoading,
+      isError: boardMemberIsError,
+      isSuccess: boardMemberIsSuccess,
+    },
+  ] = useLazyFetchBusinessPeopleQuery();
+
+  // INITIALIZE FETCH BUSINESS ACTIVITIES QUERY
+  const [
+    fetchBusinessActivities,
+    {
+      data: businessActivitiesData,
+      isLoading: businessActivitiesIsLoading,
+      isSuccess: businessActivitiesIsSuccess,
+      isError: businessActivitiesIsError,
+      error: businessActivitiesError,
+    },
+  ] = useLazyFetchBusinessActivitiesQuery();
+
+  // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
+  const [
+    fetchManagementMember,
+    {
+      data: managementMemberData,
+      error: managementMemberError,
+      isLoading: managementMemberIsLoading,
+      isError: managementMemberIsError,
+      isSuccess: managementMemberIsSuccess,
+    },
+  ] = useLazyFetchBusinessPeopleQuery();
+
+  // GET EMPLOYMENT INFO
+  const [
+    fetchEmploymentInfo,
+    {
+      data: employmentInfoData,
+      isLoading: employmentInfoIsLoading,
+      error: employmentInfoError,
+      isSuccess: employmentInfoIsSuccess,
+    },
+  ] = useLazyGetEmploymentInfoQuery();
+
+  // INITIALIZE FETC BUSINESS ATTACHMENTS
+  const [
+    fetchBusinessAttachments,
+    {
+      data: businessAttachmentsData,
+      isLoading: businessAttachmentsIsLoading,
+      error: businessAttachmentsError,
+      isSuccess: businessAttachmentsIsSuccess,
+      isError: businessAttachmentsIsError,
+    },
+  ] = useLazyFetchBusinessAttachmentsQuery();
+
+  // GET BUSINESS
   useEffect(() => {
     if (businessId) {
       getBusinessDetails({ id: businessId });
+      getBusinessAddress({ businessId });
+      fetchBusinessActivities({ businessId });
+      fetchBoardMembers({ businessId, route: "board-member" });
+      fetchManagementMember({
+        businessId,
+        route: "management",
+      });
+      fetchEmploymentInfo({ id: businessId });
+      fetchBusinessAttachments({ businessId });
     }
-  }, [businessId, getBusinessDetails]);
+  }, [
+    businessId,
+    fetchBoardMembers,
+    fetchBusinessActivities,
+    fetchBusinessAttachments,
+    fetchEmploymentInfo,
+    fetchManagementMember,
+    getBusinessAddress,
+    getBusinessDetails,
+  ]);
 
   // HANDLE BUSINESS DETAILS DATA RESPONSE
   useEffect(() => {
@@ -107,26 +196,7 @@ const PreviewSubmission = ({
     dispatch,
   ]);
 
-  // INITIALIZE GET BUSINESS QUERY
-  const [
-    getBusinessAddress,
-    {
-      data: businessAddressData,
-      error: businessAddressError,
-      isLoading: businessAddressIsLoading,
-      isError: businessAddressIsError,
-      isSuccess: businessAddressIsSuccess,
-    },
-  ] = useLazyGetBusinessAddressQuery();
-
-  // GET BUSINESS
-  useEffect(() => {
-    if (businessId) {
-      getBusinessAddress({ id: businessId });
-    }
-  }, [getBusinessAddress, businessId]);
-
-  // HANDLE GET BUSINESS RESPONSE
+  // HANDLE GET BUSINESS ADDRESS RESPONSE
   useEffect(() => {
     if (businessAddressIsError) {
       if ((businessAddressError as ErrorResponse)?.status === 500) {
@@ -144,18 +214,6 @@ const PreviewSubmission = ({
     businessAddressIsSuccess,
     dispatch,
   ]);
-
-  // INITIALIZE FETCH BUSINESS ACTIVITIES QUERY
-  const [
-    fetchBusinessActivities,
-    {
-      data: businessActivitiesData,
-      isLoading: businessActivitiesIsLoading,
-      isSuccess: businessActivitiesIsSuccess,
-      isError: businessActivitiesIsError,
-      error: businessActivitiesError,
-    },
-  ] = useLazyFetchBusinessActivitiesQuery();
 
   // FETCH BUSINESS ACTIVITIES
   useEffect(() => {
@@ -199,24 +257,6 @@ const PreviewSubmission = ({
     selectedMainBusinessLine,
   ]);
 
-  // INITIALIZE FETCH BOARD MEMEBER QUERY
-  const [
-    fetchBoardMembers,
-    {
-      data: boardMemberData,
-      error: boardMemberError,
-      isLoading: boardMemberIsLoading,
-      isError: boardMemberIsError,
-      isSuccess: boardMemberIsSuccess,
-    },
-  ] = useLazyFetchBusinessPeopleQuery();
-
-  // FETCH BOARD MEMBERS
-  useEffect(() => {
-    if (!businessId) return;
-    fetchBoardMembers({ businessId, route: "board-member" });
-  }, [fetchBoardMembers, businessId]);
-
   // HANDLE FETCH BOARD MEMBERS RESPONSE
   useEffect(() => {
     if (boardMemberIsError) {
@@ -235,27 +275,6 @@ const PreviewSubmission = ({
     boardMemberIsSuccess,
     dispatch,
   ]);
-
-  // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
-  const [
-    fetchManagementMember,
-    {
-      data: managementMemberData,
-      error: managementMemberError,
-      isLoading: managementMemberIsLoading,
-      isError: managementMemberIsError,
-      isSuccess: managementMemberIsSuccess,
-    },
-  ] = useLazyFetchBusinessPeopleQuery();
-
-  // FETCH MANAGEMENT PEOPLE
-  useEffect(() => {
-    if (!businessId) return;
-    fetchManagementMember({
-      businessId,
-      route: "management",
-    });
-  }, [businessId, fetchManagementMember]);
 
   // HANDLE MANAGEMENT PEOPLE RESPONSE
   useEffect(() => {
@@ -277,23 +296,6 @@ const PreviewSubmission = ({
     managementMemberIsSuccess,
     managementMemberIsError,
   ]);
-
-  // GET EMPLOYMENT INFO
-  const [
-    fetchEmploymentInfo,
-    {
-      data: employmentInfoData,
-      isLoading: employmentInfoIsLoading,
-      error: employmentInfoError,
-      isSuccess: employmentInfoIsSuccess,
-    },
-  ] = useLazyGetEmploymentInfoQuery();
-
-  // FETCH EMPLOYMENT INFO
-  useEffect(() => {
-    if (!businessId) return;
-    fetchEmploymentInfo({ id: businessId });
-  }, [businessId, fetchEmploymentInfo]);
 
   // HANDLE FETCH EMPLOYMENT INFO QUERY
   useEffect(() => {
@@ -346,25 +348,6 @@ const PreviewSubmission = ({
     updateBusinessIsError,
     updateBusinessIsSuccess,
   ]);
-
-  // INITIALIZE FETC BUSINESS ATTACHMENTS
-  const [
-    fetchBusinessAttachments,
-    {
-      data: businessAttachmentsData,
-      isLoading: businessAttachmentsIsLoading,
-      error: businessAttachmentsError,
-      isSuccess: businessAttachmentsIsSuccess,
-      isError: businessAttachmentsIsError,
-    },
-  ] = useLazyFetchBusinessAttachmentsQuery();
-
-  // FETCH BUSINESS ATTACHMENTS
-  useEffect(() => {
-    if (businessId) {
-      fetchBusinessAttachments({ businessId });
-    }
-  }, [businessId, fetchBusinessAttachments]);
 
   // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
   useEffect(() => {
