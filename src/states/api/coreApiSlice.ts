@@ -1,10 +1,11 @@
+import { externalServiceApi } from '@/constants/environments';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import store from 'store';
 
 export const coreApiSlice = createApi({
   reducerPath: 'coreApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8051/api/v1',
+    baseUrl: externalServiceApi,
     prepareHeaders: (headers) => {
       const user = store.get('user');
       if (user?.token) {

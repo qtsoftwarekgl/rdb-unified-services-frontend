@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { setToken, setUser } from "../features/userSlice";
 import store from "store";
+import { businessRegLocalApi } from "@/constants/environments";
 
 const prepareHeaders = (headers: Headers) => {
   const user = store.get("user");
@@ -16,7 +17,7 @@ const prepareHeaders = (headers: Headers) => {
 };
 
 export const businessBaseQuery = fetchBaseQuery({
-  baseUrl: `${import.meta.env.VITE_APP_BUSINESS_REG_LOCAL_API}/business`,
+  baseUrl: `${businessRegLocalApi}/business`,
   prepareHeaders,
 });
 
