@@ -23,7 +23,7 @@ import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "@/components/Loader";
 import {
-  setBusinessPeopleAttachments,
+  setBusinessPersonAttachments,
   setUserInformation,
 } from '@/states/features/businessPeopleSlice';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
@@ -60,7 +60,7 @@ const ExecutiveManagement = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { userInformation, businessPeopleAttachments } = useSelector(
+  const { userInformation, businessPersonAttachments } = useSelector(
     (state: RootState) => state.businessPeople
   );
   const { business } = useSelector((state: RootState) => state.business);
@@ -193,7 +193,7 @@ const ExecutiveManagement = ({
         lastName: "",
       });
       setAttachmentFile(null);
-      dispatch(setBusinessPeopleAttachments([]));
+      dispatch(setBusinessPersonAttachments([]));
     }
   }, [
     dispatch,
@@ -788,7 +788,7 @@ const ExecutiveManagement = ({
                             field.onChange(e?.target?.files?.[0]);
                             setAttachmentFile(e.target.files?.[0]);
                             dispatch(
-                              setBusinessPeopleAttachments([
+                              setBusinessPersonAttachments([
                                 {
                                   attachmentType: 'Passport',
                                   fileName: e.target.files?.[0]?.name,
@@ -823,7 +823,7 @@ const ExecutiveManagement = ({
           </section>
           <section className="flex flex-col w-full gap-2">
             <BusinessPeopleAttachments
-              attachments={businessPeopleAttachments}
+              attachments={businessPersonAttachments}
             />
           </section>
           <section className="flex items-center justify-end w-full">

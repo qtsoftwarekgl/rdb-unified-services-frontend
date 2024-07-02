@@ -43,7 +43,7 @@ import { faEye } from "@fortawesome/free-regular-svg-icons";
 import Modal from "../../../../components/Modal";
 import ViewDocument from "../../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
-import BusinessPersonDetails from "../BusinessPersonDetails";
+import BusinessPersonDetails from "../../../../containers/business-registration/BusinessPersonDetails";
 import TextArea from "@/components/inputs/TextArea";
 
 export interface business_beneficial_owners {

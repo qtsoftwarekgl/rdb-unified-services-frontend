@@ -31,7 +31,7 @@ import {
 } from '@/states/features/boardOfDirectorSlice';
 import {
   addBusinessPersonAttachment,
-  setBusinessPeopleAttachments,
+  setBusinessPersonAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
@@ -60,7 +60,7 @@ const BoardOfDirectors = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { userInformation, businessPeopleAttachments } = useSelector(
+  const { userInformation, businessPersonAttachments } = useSelector(
     (state: RootState) => state.businessPeople
   );
   const { business } = useSelector((state: RootState) => state.business);
@@ -191,7 +191,7 @@ const BoardOfDirectors = ({
         lastName: "",
       });
       setAttachmentFile(null);
-      dispatch(setBusinessPeopleAttachments([]));
+      dispatch(setBusinessPersonAttachments([]));
     }
   }, [
     dispatch,
@@ -812,7 +812,7 @@ const BoardOfDirectors = ({
           ) : (
             <section className="flex flex-col w-full gap-2">
               <BusinessPeopleAttachments
-                attachments={businessPeopleAttachments}
+                attachments={businessPersonAttachments}
               />
             </section>
           )}

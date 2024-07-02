@@ -26,7 +26,7 @@ import FoundersDetails from './FoundersDetailsList';
 import { genderOptions } from '@/constants/inputs.constants';
 import {
   addBusinessPersonAttachment,
-  setBusinessPeopleAttachments,
+  setBusinessPersonAttachments,
   setUserInformation,
 } from '@/states/features/businessPeopleSlice';
 import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
@@ -69,7 +69,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const { userInformation, businessPeopleAttachments } = useSelector(
+  const { userInformation, businessPersonAttachments } = useSelector(
     (state: RootState) => state.businessPeople
   );
 
@@ -188,7 +188,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
         lastName: '',
       });
       setAttachmentFile(null);
-      dispatch(setBusinessPeopleAttachments([]));
+      dispatch(setBusinessPersonAttachments([]));
     }
   }, [
     dispatch,
@@ -1014,7 +1014,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
           ) : (
             <section className="flex flex-col w-full gap-2">
               <BusinessPeopleAttachments
-                attachments={businessPeopleAttachments}
+                attachments={businessPersonAttachments}
               />
             </section>
           )}
