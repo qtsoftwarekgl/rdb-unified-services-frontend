@@ -1,18 +1,19 @@
-import { useLocation } from 'react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faUser } from '@fortawesome/free-regular-svg-icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell, faUser } from "@fortawesome/free-regular-svg-icons";
+import { Link, useNavigate } from "react-router-dom";
 import {
   faChevronDown,
   faChevronUp,
   faRightFromBracket,
-} from '@fortawesome/free-solid-svg-icons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../states/store';
-import { FC, useState } from 'react';
-import rdb_logo from '/rdb-logo.png';
-import { setLocale } from '../states/features/localeSlice';
-import { ReviewComment } from '../components/applications-review/AddReviewComments';
+} from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../states/store";
+import { FC, useState } from "react";
+import rdb_logo from "/rdb-logo.png";
+import { setLocale } from "../states/features/localeSlice";
+import { ReviewComment } from "../components/applications-review/AddReviewComments";
+import { setUser } from "@/states/features/userSlice";
 
 interface Props {
   className?: string;
@@ -35,55 +36,55 @@ const Navbar = ({ className }: Props) => {
     (comment: ReviewComment) => !comment.checked
   ).length;
 
-  if (['auth/login', 'auth/register'].includes(pathname)) {
+  if (["auth/login", "auth/register"].includes(pathname)) {
     return null;
   }
 
   // NAV DROPDOWN
   const navDropdown = [
     {
-      title: 'Profile',
-      link: '/user-profile',
+      title: "Profile",
+      link: "/user-profile",
       icon: faUser,
     },
     {
-      title: 'Notifications',
-      link: '/notifications',
+      title: "Notifications",
+      link: "/notifications",
       icon: faBell,
     },
     {
-      title: 'Logout',
-      link: '/auth/login',
+      title: "Logout",
+      link: "/auth/login",
       icon: faRightFromBracket,
     },
   ];
 
   const languageIcons = [
     {
-      value: 'en',
-      icon: '🇺🇸',
+      value: "en",
+      icon: "🇺🇸",
     },
     {
-      value: 'fr',
-      icon: '🇫🇷',
+      value: "fr",
+      icon: "🇫🇷",
     },
     {
-      value: 'rw',
-      icon: '🇷🇼',
+      value: "rw",
+      icon: "🇷🇼",
     },
   ];
 
   return (
     <header
       className={`w-[83%] left-[17%] mx-auto px-4 py-3 flex items-center h-[10vh] fixed top-0 ${
-        !['/services'].includes(pathname)
-          ? 'justify-end px-14'
-          : 'justify-between'
+        !["/services"].includes(pathname)
+          ? "justify-end px-14"
+          : "justify-between"
       }  z-[1000] bg-background ${className}`}
     >
       <figure
         className={`${
-          !['/services'].includes(pathname) && 'hidden'
+          !["/services"].includes(pathname) && "hidden"
         } relative rounded-full w-full max-w-[10%]`}
       >
         <img src={rdb_logo} className="w-fit" />
@@ -108,7 +109,7 @@ const Navbar = ({ className }: Props) => {
             </div>
           </Link>
         )}
-        <Link to={'#'} className="px-4 max-[600px]:px-2">
+        <Link to={"#"} className="px-4 max-[600px]:px-2">
           <menu
             className="flex items-center justify-between gap-2 p-1 px-4 rounded-lg shadow-xs"
             onClick={(e) => {
@@ -144,7 +145,7 @@ const Navbar = ({ className }: Props) => {
             onChange={(e) => {
               dispatch(setLocale(e?.target?.value));
             }}
-            defaultValue={locale || 'en'}
+            defaultValue={locale || "en"}
           >
             {languageIcons.map((language, index) => {
               return (
@@ -165,16 +166,16 @@ const Navbar = ({ className }: Props) => {
                 key={index}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (nav?.title === 'Logout') sessionStorage.clear();
+                  if (nav?.title === "Logout") dispatch(setUser({}));
                   navigate(`${nav?.link}`);
                   setIsOpen(false);
                 }}
                 className={`p-3 text-[14px] hover:bg-primary hover:text-white flex items-center gap-2 ${
-                  ['Theme', 'Notifications'].includes(nav?.title)
-                    ? 'min-[450px]:hidden'
-                    : 'flex'
-                } ${index === 0 && 'rounded-t-md'} ${
-                  index === arr.length - 1 && 'rounded-b-md'
+                  ["Theme", "Notifications"].includes(nav?.title)
+                    ? "min-[450px]:hidden"
+                    : "flex"
+                } ${index === 0 && "rounded-t-md"} ${
+                  index === arr.length - 1 && "rounded-b-md"
                 }`}
               >
                 <FontAwesomeIcon className="text-[14px]" icon={nav?.icon} />
@@ -197,7 +198,7 @@ export const NavDropdown: FC<NavDropdownProps> = ({ isOpen, children }) => {
   return (
     <menu
       className={`${
-        isOpen ? 'translate-y-0' : 'translate-y-[-400px]'
+        isOpen ? "translate-y-0" : "translate-y-[-400px]"
       } ease-in-out duration-500 z-[10000] absolute top-[12vh] right-[8%] w-[250px] bg-white shadow-md rounded-md max-[450]:w-[100vw]`}
     >
       {children}

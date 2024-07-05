@@ -21,6 +21,33 @@ export const businessBaseQuery = fetchBaseQuery({
   prepareHeaders,
 });
 
+export const coreBaseQuery = fetchBaseQuery({
+  baseUrl: `${businessRegLocalApi}`,
+  prepareHeaders,
+});
+
+const redirectToLogin = () => {
+  window.location.href = "/auth/login";
+};
+
+export const coreBaseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  const result = await coreBaseQuery(args, api, extraOptions);
+
+  if (result.error && result.error.status === 403) {
+    // Token has expired or is invalid, logout user
+    console.log("Token has expired or is invalid, logout user");
+    api.dispatch(setToken(""));
+    api.dispatch(setUser({}));
+    redirectToLogin();
+  }
+
+  return result;
+};
+
 export const businessBaseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -32,6 +59,7 @@ export const businessBaseQueryWithReauth: BaseQueryFn<
     // Token has expired or is invalid, logout user
     api.dispatch(setToken(""));
     api.dispatch(setUser({}));
+    redirectToLogin();
   }
 
   return result;
