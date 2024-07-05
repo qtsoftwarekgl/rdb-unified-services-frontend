@@ -1,25 +1,15 @@
-import { externalServiceApi } from '@/constants/environments';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import store from 'store';
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { coreBaseQueryWithReauth } from "./rootApiSlice";
 
 export const coreApiSlice = createApi({
-  reducerPath: 'coreApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: externalServiceApi,
-    prepareHeaders: (headers) => {
-      const user = store.get('user');
-      if (user?.token) {
-        headers.set('authorization', `Bearer ${user.token}`);
-      }
-      return headers;
-    },
-  }),
+  reducerPath: "coreApi",
+  baseQuery: coreBaseQueryWithReauth,
   endpoints: (builder) => ({
     // FETCH SERVICES
     fetchServices: builder.query({
       query: ({ category }) => {
         return {
-          url: `/services?${category ? `category=${category}` : ''}`,
+          url: `/services?${category ? `category=${category}` : ""}`,
         };
       },
     }),
@@ -116,7 +106,7 @@ export const coreApiSlice = createApi({
       query: ({ formData }) => {
         return {
           url: `/attachment/person-upload`,
-          method: 'POST',
+          method: "POST",
           body: formData,
           formData: true,
         };
@@ -128,7 +118,7 @@ export const coreApiSlice = createApi({
       query: ({ formData }) => {
         return {
           url: `/attachment/business-upload`,
-          method: 'POST',
+          method: "POST",
           body: formData,
           formData: true,
         };
@@ -149,7 +139,7 @@ export const coreApiSlice = createApi({
       query: ({ id }) => {
         return {
           url: `/attachment/business/${id}`,
-          method: 'DELETE',
+          method: "DELETE",
         };
       },
     }),
@@ -167,7 +157,7 @@ export const coreApiSlice = createApi({
     // DELETE BUSINESS PERSON
     deleteBusinessPerson: builder.mutation({
       query: ({ id }) => {
-        return { url: `/person/${id}`, method: 'DELETE' };
+        return { url: `/person/${id}`, method: "DELETE" };
       },
     }),
   }),
@@ -190,7 +180,7 @@ export const {
   useDeleteBusinessAttachmentMutation,
   useLazyGetBusinessPersonDetailsQuery,
   useLazyFetchPersonAttachmentsQuery,
-  useDeleteBusinessPersonMutation
+  useDeleteBusinessPersonMutation,
 } = coreApiSlice;
 
 export default coreApiSlice;

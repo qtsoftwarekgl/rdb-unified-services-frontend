@@ -1,12 +1,12 @@
 import store from "store";
-import { externalServiceApi } from "@/constants/environments";
+import { businessRegLocalApi } from "@/constants/environments";
 import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
 export const externalServiceApiSlice = createApi({
   reducerPath: "businessRegUatApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: externalServiceApi,
+    baseUrl: businessRegLocalApi,
     prepareHeaders: (headers) => {
       const user = store.get("user");
       if (user) {
