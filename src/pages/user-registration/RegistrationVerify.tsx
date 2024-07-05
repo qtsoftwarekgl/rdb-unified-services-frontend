@@ -3,13 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Button from '../../components/inputs/Button';
 import OTPInputs from '../../components/inputs/OTPInputs';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import Loader from '../../components/Loader';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import RegistrationNavbar from './RegistrationNavbar';
 import { setRegistrationStep } from '../../states/features/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../states/store';
+import { useVerifyAccountMutation } from '@/states/api/authApiSlice';
+import { toast } from 'react-toastify';
 
 const RegistrationVerify = () => {
   // REACT HOOK FORM
@@ -17,38 +19,55 @@ const RegistrationVerify = () => {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm();
-
-  // REACT NAVIGATION
-  const { pathname } = useLocation();
 
   // STATE VARIABLES
   const dispatch = useDispatch();
   const { registrationStep } = useSelector((state: RootState) => state.auth);
-  const [isLoading, setIsLoading] = useState(false);
 
   // NAVIGATE
   const navigate = useNavigate();
 
-  // HANDLE FORM SUBMIT
-  interface Payload {
-    otp: string;
-  }
+  // INITIALIZE VERIFY ACCOUNT MUTATION
+  const [
+    verifyAccount,
+    {
+      error: verifyAccountError,
+      isLoading: verifyAccountIsLoading,
+      isSuccess: verifyAccountIsSuccess,
+      isError: verifyAccountIsError,
+    },
+  ] = useVerifyAccountMutation();
 
-  const onSubmit = (data: Payload | FieldValues) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      if (registrationStep === 'rwandanRegistrationForm') {
-        navigate('/auth/register/set-password');
-      } else if (registrationStep === 'foreignRegistrationForm') {
-        navigate('/auth/register/success');
-      } else if (pathname === '/auth/register/institution/verify') {
-        navigate('/auth/register/institution/success');
-      }
-      setIsLoading(false);
-    }, 1000);
-    return data;
+  // HANDLE FORM SUBMIT
+  const onSubmit = (data: FieldValues) => {
+    verifyAccount({
+      verificationCode: data?.otp?.toUpperCase(),
+    });
   };
+
+  // HANDLE VERIFY ACCOUNT RESPONSE
+  useEffect(() => {
+    if (verifyAccountIsSuccess) {
+      toast.success('Account verified successfully');
+      reset({
+        otp: '',
+      });
+      navigate('/auth/register/success');
+    } else if (verifyAccountIsError) {
+      const errorResponse =
+        (verifyAccountError as ErrorResponse)?.data?.message ||
+        'An error occurred while verifying your account. Refresh and try again.';
+      toast.error(errorResponse);
+    }
+  }, [
+    navigate,
+    reset,
+    verifyAccountError,
+    verifyAccountIsError,
+    verifyAccountIsSuccess,
+  ]);
 
   return (
     <main className="flex flex-col gap-3 w-full">
@@ -74,7 +93,7 @@ const RegistrationVerify = () => {
               rules={{
                 required: 'Enter the 4-digit OTP sent to your phone number',
                 validate: (value) => {
-                  if (value.length !== 4) {
+                  if (value.length !== 6) {
                     return 'Enter a valid 4-digit OTP';
                   }
                   return true;
@@ -84,7 +103,11 @@ const RegistrationVerify = () => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-center gap-2 w-[90%] mx-auto">
-                    <OTPInputs length={6} className="justify-center" {...field} />
+                    <OTPInputs
+                      length={6}
+                      className="justify-center"
+                      {...field}
+                    />
                     {errors?.otp && (
                       <p className="text-red-600 text-[13px] text-center">
                         {String(errors?.otp?.message)}
@@ -96,7 +119,7 @@ const RegistrationVerify = () => {
             />
             <ul className="w-full flex flex-col gap-3 items-center justify-center">
               <Button
-                value={isLoading ? <Loader /> : 'Submit'}
+                value={verifyAccountIsLoading ? <Loader /> : 'Submit'}
                 className="w-[70%] mx-auto !text-[15px]"
                 submit
                 primary

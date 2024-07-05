@@ -59,10 +59,36 @@ export const authApiSlice = createApi({
           };
         },
       }),
+
+      // VERIFY ACCOUNT
+      verifyAccount: builder.mutation({
+        query: ({ verificationCode }) => {
+          return {
+            url: `/verify-account/`,
+            method: 'PATCH',
+            body: {
+              verificationCode
+            },
+          };
+        },
+      }),
+
+      // RESEND VERIFICATION CODE
+      initiateAccountVerification: builder.mutation({
+        query: ({ email }) => {
+          return {
+            url: `/initate-account-verification`,
+            method: 'POST',
+            body: {
+              email,
+            },
+          };
+        },
+      }),
     };
   },
 });
 
-export const { useLoginMutation, useSignupMutation } = authApiSlice;
+export const { useLoginMutation, useSignupMutation, useVerifyAccountMutation } = authApiSlice;
 
 export default authApiSlice;

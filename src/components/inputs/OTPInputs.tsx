@@ -4,9 +4,10 @@ interface OTPInputsProps {
   onChange: (otp: string) => void;
   length?: number;
   className?: string;
+  type?: string;
 }
 
-const OTPInputs: FC<OTPInputsProps> = ({ onChange, length = 4, className }) => {
+const OTPInputs: FC<OTPInputsProps> = ({ onChange, length = 4, className, type = 'text' }) => {
 const [otpValues, setOtpValues] = useState<Array<string | number>>(Array(length).fill(''));
   const inputRefs = useRef([]);
 
@@ -71,7 +72,7 @@ const handleKeyDown = (
             key={index}
             ref={(ref: never) => (inputRefs.current[Number(index)] = ref)}
             className={`border-[1px] border-secondary h-14 w-14 text-center form-control focus:border-[1.5px] focus:border-primary rounded outline-none max-lg:w-12 max-lg:h-12  max-md:w-8 max-md:h-8`}
-            type="text"
+            type={type}
             value={value}
             onChange={(e) => {
               handleInputChange(index, e.target.value);
