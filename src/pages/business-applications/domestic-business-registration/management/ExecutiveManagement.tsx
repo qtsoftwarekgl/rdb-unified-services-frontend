@@ -25,17 +25,17 @@ import Loader from "@/components/Loader";
 import {
   setBusinessPersonAttachments,
   setUserInformation,
-} from '@/states/features/businessPeopleSlice';
-import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
-import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
-import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
-import { genderOptions } from '@/constants/inputs.constants';
+} from "@/states/features/businessPeopleSlice";
+import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
+import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
+import { genderOptions } from "@/constants/inputs.constants";
 import {
   addExecutiveManager,
   setExecutiveManagersList,
-} from '@/states/features/executiveManagerSlice';
-import { useLazyFetchBusinessPeopleQuery } from '@/states/api/businessRegApiSlice';
-import BusinessPeople from './BusinessPeople';
+} from "@/states/features/executiveManagerSlice";
+import { useLazyFetchBusinessPeopleQuery } from "@/states/api/businessRegApiSlice";
+import BusinessPeople from "./BusinessPeople";
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -255,7 +255,7 @@ const ExecutiveManagement = ({
     if (!businessId) return;
     fetchManagementMember({
       businessId,
-      route: 'management',
+      route: "management",
     });
   }, [
     businessId,
@@ -270,7 +270,7 @@ const ExecutiveManagement = ({
     if (managementMemberIsError) {
       if ((managementMemberError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while fetching people. Please try again later'
+          "An error occured while fetching people. Please try again later"
         );
       } else {
         toast.error((managementMemberError as ErrorResponse).data?.message);
@@ -299,12 +299,12 @@ const ExecutiveManagement = ({
               render={({ field }) => {
                 const options = [
                   {
-                    value: 'md/gm/ceo',
-                    label: 'MD/GM/CEO',
+                    value: "md/gm/ceo",
+                    label: "MD/GM/CEO",
                   },
                   {
-                    value: "secretary",
-                    label: "Secretary",
+                    value: "company secretary",
+                    label: "company secretary",
                   },
                 ];
                 return (
@@ -790,7 +790,7 @@ const ExecutiveManagement = ({
                             dispatch(
                               setBusinessPersonAttachments([
                                 {
-                                  attachmentType: 'Passport',
+                                  attachmentType: "Passport",
                                   fileName: e.target.files?.[0]?.name,
                                   fileSize: e.target.files?.[0]?.size,
                                   attachmentUrl: URL.createObjectURL(
@@ -799,7 +799,7 @@ const ExecutiveManagement = ({
                                 },
                               ])
                             );
-                          } else toast.error('No file selected');
+                          } else toast.error("No file selected");
                         }}
                       />
                       <ul className="flex flex-col items-center w-full gap-3">
@@ -839,9 +839,7 @@ const ExecutiveManagement = ({
               <Loader />
             </figure>
           ) : (
-            <BusinessPeople
-              businessPeopleList={executiveManagersList}
-            />
+            <BusinessPeople businessPeopleList={executiveManagersList} />
           )}
           {[
             "IN_PREVIEW",
