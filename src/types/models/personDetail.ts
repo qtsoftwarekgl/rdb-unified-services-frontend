@@ -1,7 +1,7 @@
-import { UUID } from "crypto";
+import { UUID } from 'crypto';
+import { Organization } from './organization';
 
-export type PersonDetail = {
-  id: UUID;
+export interface PersonDetail extends Organization {
   position?: string;
   firstName?: string;
   middleName?: string;
@@ -27,7 +27,12 @@ export type PersonDetail = {
   fax?: string;
   poBox?: string;
   roleDescription?: string;
-};
+  personRole: {
+    id: UUID;
+    roleName?: string,
+    roleDescription?: string
+  }
+}
 
 export interface FounderDetail extends PersonDetail {
   shareHolderType?: string;

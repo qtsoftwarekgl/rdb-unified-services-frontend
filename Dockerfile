@@ -1,33 +1,27 @@
-# Stage 1: Build the React application using Node.js
-FROM node:16-alpine as build
+FROM node:lts
 
-# Set working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and lock file
 COPY package.json package-lock.json ./
 
-# Install dependencies
 RUN npm install
-RUN npm install vite
 
-# Copy the rest of the app
 COPY . .
 
-# Build the app
+ARG VITE_APP_BUSINESS_REG_LOCAL_API
+ARG VITE_APP_EXTERNAL_SERVICE_API
+ARG VITE_APP_USER_MANAGEMENT_LOCAL_API
+ARG VITE_APP_USER_MANAGEMENT_UAT_API
+
+ENV VITE_APP_BUSINESS_REG_LOCAL_API=$VITE_APP_BUSINESS_REG_LOCAL_API
+ENV VITE_APP_EXTERNAL_SERVICE_API=$VITE_APP_EXTERNAL_SERVICE_API
+ENV VITE_APP_USER_MANAGEMENT_LOCAL_API=$VITE_APP_USER_MANAGEMENT_LOCAL_API
+ENV VITE_APP_USER_MANAGEMENT_UAT_API=$VITE_APP_USER_MANAGEMENT_UAT_API
+
 RUN npm run build
 
-# Stage 2: Serve the app using Nginx
-FROM nginx:stable-alpine as production
+RUN npm install -g serve
 
-# Copy built assets from the build stage
-COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 8080
 
-# Copy the custom nginx configuration file
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "-l", "8080", "dist"]

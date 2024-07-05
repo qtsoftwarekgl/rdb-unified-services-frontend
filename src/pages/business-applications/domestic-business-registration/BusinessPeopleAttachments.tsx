@@ -1,6 +1,6 @@
 import Button from "@/components/inputs/Button";
 import Table from "@/components/table/Table";
-import DeleteBusinessAttachment from "@/containers/DeleteBusinessAttachment";
+import DeleteBusinessAttachment from "@/containers/business-registration/DeleteBusinessAttachment";
 import ViewDocument from "@/pages/user-company-details/ViewDocument";
 import {
   setDeleteBusinessAttachmentModal,

@@ -108,7 +108,7 @@ export const businessSlice = createSlice({
     },
     setSelectedBusinessAttachment: (state, action) => {
       state.selectedBusinessAttachment = action.payload;
-    }
+    },
   },
 });
 

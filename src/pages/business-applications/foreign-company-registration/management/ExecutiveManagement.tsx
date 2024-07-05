@@ -35,7 +35,7 @@ import BusinessPeopleTable from "../../domestic-business-registration/management
 import { maskPhoneDigits } from "@/helpers/strings";
 import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import {
-  setBusinessPeopleAttachments,
+  setBusinessPersonAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
@@ -234,7 +234,7 @@ const ExecutiveManagement = ({
         lastName: "",
       });
       setAttachmentFile(null);
-      dispatch(setBusinessPeopleAttachments([]));
+      dispatch(setBusinessPersonAttachments([]));
     }
   }, [
     dispatch,

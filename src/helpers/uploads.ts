@@ -11,3 +11,7 @@ export const getBase64 = (
     return error;
   };
 };
+
+export const convertFileSizeToMbs = (size: number) => {
+  return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+};

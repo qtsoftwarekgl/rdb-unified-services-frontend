@@ -129,7 +129,7 @@ export default function Table<TData, TValue>({
                       e.preventDefault();
                       rowClickHandler &&
                         row?.id !== 'no' &&
-                        rowClickHandler(row.original as Row<TData>['original']);
+                        rowClickHandler(row as Row<TData>['original']);
                     }}
                   >
                     {row.getVisibleCells().map((cell) => {
