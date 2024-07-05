@@ -7,6 +7,7 @@ export type UserInformation = {
     gender: string;
     dateOfBirth: string
     nationality: string;
+    documentNumber?: string;
     province: string;
     district: string;
     sector: string;

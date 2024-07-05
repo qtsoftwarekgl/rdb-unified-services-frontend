@@ -1,60 +1,59 @@
-import "react-toastify/dist/ReactToastify.css";
-import AdminProfile from "./pages/profiles/AdminProfile";
-import "react-toastify/dist/ReactToastify.css";
-import { Routes as Router, Route } from "react-router-dom";
-import AuthenticatedRoutes from "./outlets/AuthenticatedRoutes";
-import Login from "./pages/authentication/Login";
-import NotFound from "./pages/NotFound";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdminDashboard from "./pages/dashboard/AdminDashboard";
-import BusinessRegistration from "./pages/business-applications/domestic-business-registration/BusinessRegistration";
-import AdminRoutes from "./outlets/AdminRoutes";
-import ListUsers from "./pages/users-management/ListUsers";
-import ListRoles from "./pages/roles-management/ListRoles";
-import SuperAdminRoutes from "./outlets/SuperAdminRoutes";
-import SuperAdminDashboard from "./pages/dashboard/SuperAdminDashboard";
-import ListInstitutions from "./pages/institutions-management/ListInstitutions";
-import ResetPasswordRequest from "./pages/authentication/ResetPasswordRequest";
-import ResetPasswordVerify from "./pages/authentication/ResetPasswordVerify";
-import ResetPasswordNew from "./pages/authentication/ResetPasswordNew";
-import UserProfile from "./pages/profiles/UserProfile";
-import "react-toastify/dist/ReactToastify.css";
-import Signup from "./pages/user-registration/Signup";
-import SuperAdminProfile from "./pages/profiles/SuperAdminProfile";
-import RegistrationVerify from "./pages/user-registration/RegistrationVerify";
-import RegistrationSuccess from "./pages/user-registration/RegistrationSuccess";
-import UserCompanyDetails from "./pages/user-company-details/CompanyDetails";
-import UserApplications from "./pages/user-applications/UserApplications";
-import CompanyDocuments from "./pages/user-company-details/CompanyDocuments";
-import CompanyHistory from "./pages/user-company-details/CompanyHistory";
-import RegistrationSetPassword from "./pages/user-registration/RegistrationSetPassword";
-import EnterpriseRegistration from "./pages/business-applications/enterprise-registration/EnterpriseRegistration";
-import BusinessRegisterSuccess from "./pages/BusinessRegisterSuccess";
-import CessationToDormant from "./pages/business-applications/cessation-dormancy/CessationToDormant";
-import InstitutionRegistration from "./pages/user-registration/InstitutionRegistration";
-import InstitutionRegistrationSuccess from "./pages/user-registration/InstitutionRegistrationSuccess";
-import TransferRegistration from "./pages/transfer-registration/TransferRegistration";
-import Amalgamation from "./pages/business-applications/amalgamation/Amalgamate";
-import AmendCompanyDetails from "./pages/business-applications/amend-company-details/AmendCompanyDetails";
-import ForeignUsers from "./pages/users-management/ForeignUsers";
-import NameReservation from "./pages/name-reservation/NameReservation";
-import SearchCompanyAvailability from "./pages/business-applications/company-availability/SearchCompanyAvailability";
-import ForeignBranchRegistration from "./pages/business-applications/foreign-company-registration/ForeignCompanyRegistration";
-import BusinessNewBranch from "./pages/new-branch/BusinessNewBranch";
-import SearchCompanies from "./pages/business-applications/company-availability/SearchCompanies";
-import CompanyRestoration from "./pages/business-applications/company-restoration/CompanyRestoration";
-import CloseCompany from "./pages/business-applications/company-closure/CloseCompany";
-import CompanyDormancy from "./pages/business-applications/company-dormancy/CompanyDormancy";
-import ReviewRegistration from "./pages/review-applications/ReviewRegistration";
-import LandingPage from "./pages/home/LandingPage";
-import BackOfficeDashboard from "./pages/dashboard/BackOfficeDashboard";
-import CollateralList from "./pages/business-applications/collateral/CollateralList";
-import NewCollateral from "./pages/business-applications/collateral/NewCollateral";
-import CollateralListReview from "./pages/collateral-review/CollateralList";
-import CollateralReview from "./pages/collateral-review/CollateralReview";
-import ServicesList from "./pages/home/ServicesList";
-import NewServiceApplication from "./containers/business-registration/NewServiceApplication";
+import 'react-toastify/dist/ReactToastify.css';
+import AdminProfile from './pages/profiles/AdminProfile';
+import 'react-toastify/dist/ReactToastify.css';
+import { Routes as Router, Route } from 'react-router-dom';
+import AuthenticatedRoutes from './outlets/AuthenticatedRoutes';
+import Login from './pages/authentication/Login';
+import NotFound from './pages/NotFound';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import AdminDashboard from './pages/dashboard/AdminDashboard';
+import BusinessRegistration from './pages/business-applications/domestic-business-registration/BusinessRegistration';
+import AdminRoutes from './outlets/AdminRoutes';
+import ListUsers from './pages/users-management/ListUsers';
+import ListRoles from './pages/roles-management/ListRoles';
+import SuperAdminRoutes from './outlets/SuperAdminRoutes';
+import SuperAdminDashboard from './pages/dashboard/SuperAdminDashboard';
+import ListInstitutions from './pages/institutions-management/ListInstitutions';
+import ResetPasswordRequest from './pages/authentication/ResetPasswordRequest';
+import ResetPasswordVerify from './pages/authentication/ResetPasswordVerify';
+import ResetPasswordNew from './pages/authentication/ResetPasswordNew';
+import UserProfile from './pages/profiles/UserProfile';
+import 'react-toastify/dist/ReactToastify.css';
+import Signup from './pages/user-registration/Signup';
+import SuperAdminProfile from './pages/profiles/SuperAdminProfile';
+import RegistrationVerify from './pages/user-registration/RegistrationVerify';
+import RegistrationSuccess from './pages/user-registration/RegistrationSuccess';
+import UserCompanyDetails from './pages/user-company-details/CompanyDetails';
+import UserApplications from './pages/user-applications/UserApplications';
+import CompanyDocuments from './pages/user-company-details/CompanyDocuments';
+import CompanyHistory from './pages/user-company-details/CompanyHistory';
+import EnterpriseRegistration from './pages/business-applications/enterprise-registration/EnterpriseRegistration';
+import BusinessRegisterSuccess from './pages/BusinessRegisterSuccess';
+import CessationToDormant from './pages/business-applications/cessation-dormancy/CessationToDormant';
+import InstitutionRegistration from './pages/user-registration/InstitutionRegistration';
+import InstitutionRegistrationSuccess from './pages/user-registration/InstitutionRegistrationSuccess';
+import TransferRegistration from './pages/transfer-registration/TransferRegistration';
+import Amalgamation from './pages/business-applications/amalgamation/Amalgamate';
+import AmendCompanyDetails from './pages/business-applications/amend-company-details/AmendCompanyDetails';
+import ForeignUsers from './pages/users-management/ForeignUsers';
+import NameReservation from './pages/name-reservation/NameReservation';
+import SearchCompanyAvailability from './pages/business-applications/company-availability/SearchCompanyAvailability';
+import ForeignBranchRegistration from './pages/business-applications/foreign-company-registration/ForeignCompanyRegistration';
+import BusinessNewBranch from './pages/new-branch/BusinessNewBranch';
+import SearchCompanies from './pages/business-applications/company-availability/SearchCompanies';
+import CompanyRestoration from './pages/business-applications/company-restoration/CompanyRestoration';
+import CloseCompany from './pages/business-applications/company-closure/CloseCompany';
+import CompanyDormancy from './pages/business-applications/company-dormancy/CompanyDormancy';
+import ReviewRegistration from './pages/review-applications/ReviewRegistration';
+import LandingPage from './pages/home/LandingPage';
+import BackOfficeDashboard from './pages/dashboard/BackOfficeDashboard';
+import CollateralList from './pages/business-applications/collateral/CollateralList';
+import NewCollateral from './pages/business-applications/collateral/NewCollateral';
+import CollateralListReview from './pages/collateral-review/CollateralList';
+import CollateralReview from './pages/collateral-review/CollateralReview';
+import ServicesList from './pages/home/ServicesList';
+import NewServiceApplication from './containers/business-registration/NewServiceApplication';
 
 const Routes = () => {
   return (
@@ -138,10 +137,6 @@ const Routes = () => {
         {/* USER REGISTRATIONS */}
         <Route path="/auth/register" element={<Signup />} />
         <Route path="/auth/register/verify" element={<RegistrationVerify />} />
-        <Route
-          path="/auth/register/set-password"
-          element={<RegistrationSetPassword />}
-        />
         <Route
           path="/auth/register/success"
           element={<RegistrationSuccess />}

@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Loader from '../../components/Loader';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import RegistrationNavbar from './RegistrationNavbar';
-import { setNationalIdDetails, setRegistrationStep } from '../../states/features/authSlice';
+import { setRegistrationStep } from '../../states/features/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../states/store';
 
@@ -38,10 +38,9 @@ const RegistrationVerify = () => {
   const onSubmit = (data: Payload | FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
-      if (registrationStep === 'rwandan-registration-form') {
-        dispatch(setNationalIdDetails(null));
+      if (registrationStep === 'rwandanRegistrationForm') {
         navigate('/auth/register/set-password');
-      } else if (registrationStep === 'foreign-registration-form') {
+      } else if (registrationStep === 'foreignRegistrationForm') {
         navigate('/auth/register/success');
       } else if (pathname === '/auth/register/institution/verify') {
         navigate('/auth/register/institution/success');
@@ -64,7 +63,7 @@ const RegistrationVerify = () => {
               Verify Account
             </h1>
             <p className="text-center text-secondary text-[14px] max-w-[90%]">
-              {registrationStep === 'rwandan-registration-form'
+              {registrationStep === 'rwandanRegistrationForm'
                 ? 'Enter the 4-digit One-time Password sent to your phone number.'
                 : 'Enter the One-time Password sent to your email. Please check your spam folder if you do not find the email in your inbox.'}
             </p>
@@ -85,7 +84,7 @@ const RegistrationVerify = () => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-center gap-2 w-[90%] mx-auto">
-                    <OTPInputs className="justify-center" {...field} />
+                    <OTPInputs length={6} className="justify-center" {...field} />
                     {errors?.otp && (
                       <p className="text-red-600 text-[13px] text-center">
                         {String(errors?.otp?.message)}
@@ -114,7 +113,7 @@ const RegistrationVerify = () => {
                 className="!text-[14px]"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setRegistrationStep('rwandan-registration-form'));
+                  dispatch(setRegistrationStep('rwandanRegistrationForm'));
                   navigate('/auth/register');
                 }}
                 value={

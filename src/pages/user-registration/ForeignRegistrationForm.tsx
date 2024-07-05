@@ -417,7 +417,7 @@ const ForeignRegistrationForm: FC<ForeignRegistrationFormProps> = ({
             }
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setRegistrationStep('select-nationality'));
+              dispatch(setRegistrationStep('selectNationality'));
             }}
           />
         </menu>
