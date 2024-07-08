@@ -42,6 +42,10 @@ import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 import { PersonDetail } from "@/types/models/personDetail";
+import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
+import { setBusinessDetails } from "@/states/features/businessSlice";
+import { foreignExecutiveManagementPosition } from "@/constants/businessRegistration";
+import moment from "moment";
 
 interface ExecutiveManagementProps {
   businessId: businessId;
@@ -59,7 +63,6 @@ const ExecutiveManagement = ({
     setError,
     watch,
     setValue,
-    clearErrors,
     reset,
     trigger,
     formState: { errors, isSubmitSuccessful },
@@ -75,6 +78,7 @@ const ExecutiveManagement = ({
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<PersonDetail>();
+  const { businessDetails } = useSelector((state: RootState) => state.business);
   const { userInformation } = useSelector(
     (state: RootState) => state.businessPeople
   );
@@ -358,8 +362,70 @@ const ExecutiveManagement = ({
     }
   }, [setValue, watch("personIdentType"), watch]);
 
+  // GET BUSINESS DETAILS
+  const [
+    getBusinessDetails,
+    {
+      data: businessDetailsData,
+      isLoading: businessIsLoading,
+      error: businessError,
+      isError: businessIsError,
+      isSuccess: businessIsSuccess,
+    },
+  ] = useLazyGetBusinessDetailsQuery();
+
+  // GET BUSINESS DETAILS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessDetails({ id: businessId });
+    }
+  }, [businessId, getBusinessDetails]);
+
+  // HANDLE BUSINESS DETAILS DATA RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      if ((businessError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business details. Please try again later."
+        );
+      } else {
+        toast.error((businessError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessIsSuccess) {
+      dispatch(setBusinessDetails(businessDetailsData?.data));
+    }
+  }, [
+    businessDetailsData,
+    businessError,
+    businessIsError,
+    businessIsSuccess,
+    dispatch,
+  ]);
+
+  const validateExecutiveManager = () => {
+    if (
+      !executiveManagersList?.length &&
+      businessDetails?.companyCategory !== "PRIVATE"
+    ) {
+      toast.info("Please add at least one executive manager");
+      return false;
+    }
+    if (
+      executiveManagersList.find(
+        (manager) => manager.roleDescription === "authorizedRepresentative"
+      ) === undefined
+    ) {
+      toast.info("Please add an authorized representative");
+      return false;
+    }
+    return true;
+  };
+
+  console.log("executiveManagersList", executiveManagersList);
+
   return (
     <section className="flex flex-col gap-6">
+      {businessIsLoading && <Loader className="text-primary" />}
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
@@ -372,22 +438,12 @@ const ExecutiveManagement = ({
               rules={{ required: "Select member's position" }}
               control={control}
               render={({ field }) => {
-                const options = [
-                  {
-                    value: "md/gm/ceo",
-                    label: "MD/GM/CEO",
-                  },
-                  {
-                    value: "company secretary",
-                    label: "company secretary",
-                  },
-                ];
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
                       label="Select position"
                       required
-                      options={options}
+                      options={foreignExecutiveManagementPosition}
                       {...field}
                       placeholder="Select position"
                       onChange={(e) => {
@@ -413,10 +469,17 @@ const ExecutiveManagement = ({
                 rules={{ required: "Select document type" }}
                 control={control}
                 render={({ field }) => {
-                  const options = [
-                    { value: "nid", label: "National ID" },
-                    { label: "Passport", value: "passport" },
+                  let options = [
+                    { value: "nid", label: "National ID", disabled: true },
+                    {
+                      label: "Passport",
+                      value: "passport",
+                    },
                   ];
+                  if (watch("position") === "authorizedRepresentative")
+                    options = options.filter(
+                      (option) => option.value !== "passport"
+                    );
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
@@ -533,6 +596,127 @@ const ExecutiveManagement = ({
                 : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
+            {watch("personIdentType") === "passport" && (
+              <>
+                <Controller
+                  name="persDocIssueDate"
+                  rules={{
+                    required: "Issue date is required",
+                    validate: (value) => {
+                      if (
+                        moment(value).format() >
+                        moment(watch("persDocExpiryDate")).format()
+                      ) {
+                        return "Issue date must be before expiry date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          {...field}
+                          label="Passport Issue Date"
+                          type="date"
+                          required
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("persDocIssueDate");
+                            trigger("persDocExpiryDate");
+                          }}
+                        />
+                        {errors?.persDocIssueDate && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.persDocIssueDate.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="persDocExpiryDate"
+                  rules={{
+                    required: "Expiry date is required",
+                    validate: (value) => {
+                      if (
+                        moment(value).format() <
+                        moment(watch("persDocIssueDate")).format()
+                      ) {
+                        return "Expiry date must be after issue date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          {...field}
+                          label="Passport Expiry Date"
+                          required
+                          type="date"
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("persDocExpiryDate");
+                            trigger("persDocIssueDate");
+                          }}
+                        />
+                        {errors?.persDocExpiryDate && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.persDocExpiryDate.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="dateOfBirth"
+                  rules={{
+                    required: "Date of birth is required",
+                    validate: (value) => {
+                      if (moment(value).format() > moment().format()) {
+                        return "Date of birth cannot be a future date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          required
+                          {...field}
+                          type="date"
+                          label="Date of birth"
+                          placeholder="Select DOB"
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("dateOfBirth");
+                          }}
+                        />
+                        {errors?.dateOfBirth && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.dateOfBirth.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+              </>
+            )}
             <Controller
               name="firstName"
               control={control}
@@ -691,13 +875,15 @@ const ExecutiveManagement = ({
                         {...field}
                         placeholder="Select country"
                         label="Country"
-                        options={countriesList?.map((country) => {
-                          return {
-                            ...country,
-                            label: country.name,
-                            value: country?.code,
-                          };
-                        })}
+                        options={countriesList
+                          ?.filter((country) => country?.code !== "RW")
+                          .map((country) => {
+                            return {
+                              ...country,
+                              label: country.name,
+                              value: country?.code,
+                            };
+                          })}
                         onChange={async (e) => {
                           field.onChange(e);
                           await trigger("nationality");
@@ -827,6 +1013,7 @@ const ExecutiveManagement = ({
                 value={"Complete Amendment"}
                 onClick={(e) => {
                   e.preventDefault();
+                  if (!validateExecutiveManager()) return;
                   dispatch(
                     setForeignBusinessActiveTab("foreign_preview_submission")
                   );
@@ -839,16 +1026,7 @@ const ExecutiveManagement = ({
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!executiveManagersList?.length) {
-                    setError("board_of_directors", {
-                      type: "manual",
-                      message: "Add at least one board member",
-                    });
-                    setTimeout(() => {
-                      clearErrors("board_of_directors");
-                    }, 4000);
-                    return;
-                  }
+                  if (!validateExecutiveManager()) return;
                   dispatch(
                     setForeignBusinessCompletedStep("executive_management")
                   );
@@ -861,16 +1039,7 @@ const ExecutiveManagement = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                if (!executiveManagersList?.length) {
-                  setError("submit", {
-                    type: "manual",
-                    message: "Add at least one member",
-                  });
-                  setTimeout(() => {
-                    clearErrors("submit");
-                  }, 5000);
-                  return;
-                }
+                if (!validateExecutiveManager()) return;
                 dispatch(
                   setUserApplications({ businessId, status: "IN_PROGRESS" })
                 );

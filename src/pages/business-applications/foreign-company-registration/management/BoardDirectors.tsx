@@ -41,6 +41,9 @@ import {
 } from "@/states/features/businessPeopleSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
+import { setBusinessDetails } from "@/states/features/businessSlice";
+import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
+import moment from "moment";
 
 interface BoardDirectorsProps {
   businessId: businessId;
@@ -77,6 +80,7 @@ const BoardDirectors = ({
   );
   const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
+  const { businessDetails } = useSelector((state: RootState) => state.business);
   const { userInformation } = useSelector(
     (state: RootState) => state.businessPeople
   );
@@ -348,8 +352,49 @@ const BoardDirectors = ({
     }
   }, [setValue, watch("personIdentType"), watch]);
 
+  // GET BUSINESS DETAILS
+  const [
+    getBusinessDetails,
+    {
+      data: businessDetailsData,
+      isLoading: businessIsLoading,
+      error: businessError,
+      isError: businessIsError,
+      isSuccess: businessIsSuccess,
+    },
+  ] = useLazyGetBusinessDetailsQuery();
+
+  // GET BUSINESS DETAILS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessDetails({ id: businessId });
+    }
+  }, [businessId, getBusinessDetails]);
+
+  // HANDLE BUSINESS DETAILS DATA RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      if ((businessError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business details. Please try again later."
+        );
+      } else {
+        toast.error((businessError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessIsSuccess) {
+      dispatch(setBusinessDetails(businessDetailsData?.data));
+    }
+  }, [
+    businessDetailsData,
+    businessError,
+    businessIsError,
+    businessIsSuccess,
+    dispatch,
+  ]);
+
   return (
     <section className="flex flex-col gap-6">
+      {businessIsLoading && <Loader className="text-primary" />}
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
@@ -530,6 +575,127 @@ const BoardDirectors = ({
                 : "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
+            {watch("personIdentType") === "passport" && (
+              <>
+                <Controller
+                  name="persDocIssueDate"
+                  rules={{
+                    required: "Issue date is required",
+                    validate: (value) => {
+                      if (
+                        moment(value).format() >
+                        moment(watch("persDocExpiryDate")).format()
+                      ) {
+                        return "Issue date must be before expiry date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          {...field}
+                          label="Passport Issue Date"
+                          type="date"
+                          required
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("persDocIssueDate");
+                            trigger("persDocExpiryDate");
+                          }}
+                        />
+                        {errors?.persDocIssueDate && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.persDocIssueDate.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="persDocExpiryDate"
+                  rules={{
+                    required: "Expiry date is required",
+                    validate: (value) => {
+                      if (
+                        moment(value).format() <
+                        moment(watch("persDocIssueDate")).format()
+                      ) {
+                        return "Expiry date must be after issue date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          {...field}
+                          label="Passport Expiry Date"
+                          required
+                          type="date"
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("persDocExpiryDate");
+                            trigger("persDocIssueDate");
+                          }}
+                        />
+                        {errors?.persDocExpiryDate && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.persDocExpiryDate.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="dateOfBirth"
+                  rules={{
+                    required: "Date of birth is required",
+                    validate: (value) => {
+                      if (moment(value).format() > moment().format()) {
+                        return "Date of birth cannot be a future date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          required
+                          {...field}
+                          type="date"
+                          label="Date of birth"
+                          placeholder="Select DOB"
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("dateOfBirth");
+                          }}
+                        />
+                        {errors?.dateOfBirth && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.dateOfBirth.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+              </>
+            )}
             <Controller
               name="firstName"
               control={control}
@@ -649,6 +815,33 @@ const BoardDirectors = ({
                     {errors?.phoneNumber && (
                       <p className="text-sm text-red-500">
                         {String(errors?.phoneNumber?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            <Controller
+              name="email"
+              rules={{
+                required: "Email address is required",
+                validate: (value) => {
+                  return validateInputs(value, "email");
+                },
+              }}
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col gap-1 w-[49%]">
+                    <Input
+                      {...field}
+                      placeholder="Enter email address"
+                      label="Email"
+                      required
+                    />
+                    {errors?.email && (
+                      <p className="text-[13px] text-red-600">
+                        {String(errors.email.message)}
                       </p>
                     )}
                   </label>
@@ -817,7 +1010,10 @@ const BoardDirectors = ({
                 primary
                 onClick={(e) => {
                   e.preventDefault();
-                  if (boardMemberList?.length <= 0) {
+                  if (
+                    boardMemberList?.length <= 0 &&
+                    businessDetails?.companyCategory !== "PRIVATE"
+                  ) {
                     setError("board_of_directors", {
                       type: "manual",
                       message: "Add at least one board member",
@@ -842,7 +1038,10 @@ const BoardDirectors = ({
               disabled={isFormDisabled}
               onClick={(e) => {
                 e.preventDefault();
-                if (boardMemberList?.length <= 0) {
+                if (
+                  boardMemberList?.length <= 0 &&
+                  businessDetails?.companyCategory !== "PRIVATE"
+                ) {
                   setError("board_of_directors", {
                     type: "manual",
                     message: "Add at least one board member",
@@ -853,9 +1052,9 @@ const BoardDirectors = ({
                   return;
                 }
                 if (
+                  businessDetails?.companyCategory !== "PRIVATE" &&
                   boardMemberList?.find(
-                    (director: PersonDetail) =>
-                      director?.nationality === "RW"
+                    (director: PersonDetail) => director?.nationality === "RW"
                   ) === undefined
                 ) {
                   setError("board_of_directors", {

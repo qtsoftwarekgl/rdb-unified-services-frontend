@@ -9,26 +9,26 @@ import Button from "../../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
   setBusinessCompletedStep,
-} from '../../../../states/features/businessRegistrationSlice';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { maskPhoneDigits } from '../../../../helpers/strings';
-import validateInputs from '../../../../helpers/validations';
-import BusinessPeople from './BusinessPeople';
-import { businessId } from '@/types/models/business';
-import moment from 'moment';
+} from "../../../../states/features/businessRegistrationSlice";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { maskPhoneDigits } from "../../../../helpers/strings";
+import validateInputs from "../../../../helpers/validations";
+import BusinessPeople from "./BusinessPeople";
+import { businessId } from "@/types/models/business";
+import moment from "moment";
 import {
   useCreateManagementOrBoardPersonMutation,
   useLazyFetchBusinessPeopleQuery,
-} from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
-import { ErrorResponse } from 'react-router-dom';
-import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
-import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+} from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
+import { ErrorResponse } from "react-router-dom";
+import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import {
   addBoardMember,
   setBoardOfDirectorsList,
-} from '@/states/features/boardOfDirectorSlice';
+} from "@/states/features/boardOfDirectorSlice";
 import {
   addBusinessPersonAttachment,
   setBusinessPersonAttachments,
@@ -253,7 +253,7 @@ const BoardOfDirectors = ({
     if (!businessId) return;
     fetchBoardMembers({
       businessId,
-      route: 'board-member',
+      route: "board-member",
     });
   }, [businessId, fetchBoardMembers]);
 
@@ -262,7 +262,7 @@ const BoardOfDirectors = ({
     if (managementMemberIsError) {
       if ((managementMemberError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while fetching people. Please try again later'
+          "An error occured while fetching people. Please try again later"
         );
       } else {
         toast.error((managementMemberError as ErrorResponse).data?.message);
@@ -482,6 +482,7 @@ const BoardOfDirectors = ({
                         <Input
                           {...field}
                           label="Passport Issue Date"
+                          required
                           type="date"
                           onChange={(e) => {
                             field.onChange(
@@ -522,6 +523,7 @@ const BoardOfDirectors = ({
                           {...field}
                           label="Passport Expiry Date"
                           type="date"
+                          required
                           onChange={(e) => {
                             field.onChange(
                               moment(String(e)).format("YYYY-MM-DD")
@@ -551,6 +553,7 @@ const BoardOfDirectors = ({
                           type="date"
                           label="Date of birth"
                           placeholder="Select DOB"
+                          required
                           onChange={(e) => {
                             field.onChange(
                               moment(String(e)).format("YYYY-MM-DD")

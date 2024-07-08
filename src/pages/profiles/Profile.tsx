@@ -27,7 +27,11 @@ const Profile = () => {
               {user?.first_name || "Nishimwe"}
             </h1>
             <p className="text-lg font-light text-gray-500">
-              {user?.role || user?.email.includes("verifier") ?  "Verifier" : user?.email.includes("approver") ? "Approver" : "Admin"}
+              {user?.role || user?.email?.includes("verifier")
+                ? "Verifier"
+                : user?.email?.includes("approver")
+                ? "Approver"
+                : "Admin"}
             </p>
             <p className="text-base font-light text-gray-500">{user?.email}</p>
           </div>
