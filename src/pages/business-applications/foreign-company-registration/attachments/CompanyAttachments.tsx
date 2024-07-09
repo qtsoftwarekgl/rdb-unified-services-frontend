@@ -16,7 +16,7 @@ import { businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessAttachmentsQuery,
   useUploadBusinessAttachmentMutation,
-} from "@/states/api/coreApiSlice";
+} from "@/states/api/businessCoreApiSlice";
 import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
 import {

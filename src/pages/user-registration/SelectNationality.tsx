@@ -11,7 +11,7 @@ import {
 } from '../../states/features/authSlice';
 import RwandanRegistrationForm from './RwandanRegistrationForm';
 import { Controller, useForm } from 'react-hook-form';
-import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+import { useLazyGetUserInformationQuery } from '@/states/api/coreApiSlice';
 import { toast } from 'react-toastify';
 import { ErrorResponse } from 'react-router-dom';
 import { setUserInformation } from '@/states/features/businessPeopleSlice';

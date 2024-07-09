@@ -75,6 +75,9 @@ const RwandanRegistrationForm = ({
     setValue('dateOfBirth', formatDate(userInformation?.dateOfBirth));
     setValue('gender', userInformation?.gender);
     setValue('nationality', userInformation?.nationality);
+    setValue('perDocIdentType', 'nid');
+    setValue('persDocIssueDate', formatDate(userInformation?.dateOfBirth));
+    setValue('persDocIssuePlace', 'RW');
     setValue('province', userInformation?.province);
     setValue('district', userInformation?.district);
     setValue('sector', userInformation?.sector);
@@ -105,7 +108,7 @@ const RwandanRegistrationForm = ({
     signup({
       ...data,
       userType: 'LOCAL',
-      nationalId: userInformation?.documentNumber,
+      personDocNo: userInformation?.documentNumber,
     });
   };
 
@@ -217,7 +220,7 @@ const RwandanRegistrationForm = ({
                       <Input
                         type="radio"
                         label="Male"
-                        checked={watch('gender') === 'M'}
+                        checked={gender === 'M'}
                         {...field}
                         value={'M'}
                       />
@@ -228,7 +231,7 @@ const RwandanRegistrationForm = ({
                         label="Female"
                         {...field}
                         value={'F'}
-                        checked={watch('gender') === 'F'}
+                        checked={gender === 'F'}
                       />
                     )}
                   </menu>

@@ -20,7 +20,7 @@ import { BusinessActivity, businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessActivitiesSectorsQuery,
   useLazyFetchBusinessLinesQuery,
-} from "@/states/api/coreApiSlice";
+} from "@/states/api/businessCoreApiSlice";
 import {
   addSelectedBusinessLine,
   removeSelectedBusinessLine,

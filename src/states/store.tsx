@@ -20,25 +20,27 @@ import collateralRegistrationSlice from "./features/collateralRegistrationSlice"
 import collateralReviewSlice from "./features/collateralReviewSlice";
 import applicationReviewSlice from "./features/applicationReviewSlice";
 import serviceSlice from "./features/serviceSlice";
-import coreApiSlice from "./api/coreApiSlice";
+import businessCoreApiSlice from "./api/businessCoreApiSlice";
 import locationSlice from "./features/locationSlice";
 import businessActivitySlice from "./features/businessActivitySlice";
 import businessPeopleSlice from "./features/businessPeopleSlice";
 import authApiSlice from "./api/authApiSlice";
 import founderDetailSlice from "./features/founderDetailSlice";
 import shareDetailSlice from "./features/shareDetailSlice";
-import externalServiceApiSlice from "./api/externalServiceApiSlice";
+import coreApiSlice from "./api/coreApiSlice";
 import executiveManagerSlice from "./features/executiveManagerSlice";
 import boardOfDirectorSlice from "./features/boardOfDirectorSlice";
 import foreignRegApiSlice from "./api/foreignCompanyRegistrationApiSlice";
+import userManagementApiSlice from "./api/userManagementApiSlice";
 
 export const store = configureStore({
   reducer: {
     [businessRegApiSlice.reducerPath]: businessRegApiSlice.reducer,
     [foreignRegApiSlice.reducerPath]: foreignRegApiSlice.reducer,
-    [coreApiSlice.reducerPath]: coreApiSlice.reducer,
+    [businessCoreApiSlice.reducerPath]: businessCoreApiSlice.reducer,
     [authApiSlice.reducerPath]: authApiSlice.reducer,
-    [externalServiceApiSlice.reducerPath]: externalServiceApiSlice.reducer,
+    [coreApiSlice.reducerPath]: coreApiSlice.reducer,
+    [userManagementApiSlice.reducerPath]: userManagementApiSlice.reducer,
     user: userSlice,
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
@@ -72,8 +74,9 @@ export const store = configureStore({
       businessRegApiSlice.middleware,
       foreignRegApiSlice.middleware,
       authApiSlice.middleware,
+      businessCoreApiSlice.middleware,
       coreApiSlice.middleware,
-      externalServiceApiSlice.middleware
+      userManagementApiSlice.middleware
     );
   },
 });

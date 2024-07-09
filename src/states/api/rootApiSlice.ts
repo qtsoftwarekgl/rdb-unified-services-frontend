@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { setToken, setUser } from "../features/userSlice";
 import store from "store";
-import { businessRegLocalApi } from "@/constants/environments";
+import { businessRegLocalApi, businessRegUatApi } from "@/constants/environments";
 import { toast } from "react-toastify";
 
 const prepareHeaders = (headers: Headers) => {
@@ -17,13 +17,13 @@ const prepareHeaders = (headers: Headers) => {
   return headers;
 };
 
-export const businessBaseQuery = fetchBaseQuery({
+export const businessRegBaseQuery = fetchBaseQuery({
   baseUrl: `${businessRegLocalApi}/business`,
   prepareHeaders,
 });
 
 export const coreBaseQuery = fetchBaseQuery({
-  baseUrl: `${businessRegLocalApi}`,
+  baseUrl: `${businessRegUatApi}`,
   prepareHeaders,
 });
 
@@ -54,7 +54,7 @@ export const businessBaseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const result = await businessBaseQuery(args, api, extraOptions);
+  const result = await businessRegBaseQuery(args, api, extraOptions);
   if (result.error) {
     if ([403, 401].includes(Number(result?.error?.status))) {
       api.dispatch(setToken(''));
