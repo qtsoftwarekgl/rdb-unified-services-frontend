@@ -1,60 +1,113 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../components/Modal';
-import { AppDispatch, RootState } from '../../states/store';
-import { setRolePermissionsModal } from '../../states/features/roleSlice';
-import Table from '../../components/table/Table';
-import { formatDate } from '../../helpers/strings';
-import { permissions } from '../../constants/dashboard';
+import Loader from '@/components/Loader';
+import Modal from '@/components/Modal';
+import Table from '@/components/table/Table';
+import { permissionColumns } from '@/constants/permission.constants';
+import { capitalizeString } from '@/helpers/strings';
+import { useLazyFetchPermissionsQuery } from '@/states/api/userManagementApiSlice';
+import {
+  setPage,
+  setPermissionsList,
+  setSize,
+  setTotalElements,
+  setTotalPages,
+} from '@/states/features/permissionSlice';
+import {
+  setRolePermissionsModal,
+  setSelectedRole,
+} from '@/states/features/roleSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { Permission } from '@/types/models/permission';
+import { ColumnDef } from '@tanstack/react-table';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ListRolePermissions = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { rolePermissionsModal, role } = useSelector(
+  const { rolePermissionsModal, selectedRole } = useSelector(
     (state: RootState) => state.role
   );
+  const { permissionsList, totalElements, totalPages, page, size } =
+    useSelector((state: RootState) => state.permission);
 
-  const columns = [
+  // INITIALIZE FETCH PERMISSIONS QUERY
+  const [
+    fetchPermissions,
     {
-      header: 'No',
-      accessorKey: 'no',
+      data: permissionsData,
+      isFetching: permissionsIsFetching,
+      error: permissionsError,
+      isSuccess: permissionsIsSuccess,
+      isError: permissionsIsError,
     },
-    {
-      header: 'Permission',
-      accessorKey: 'name',
-    },
-    {
-      header: 'Description',
-      accessorKey: 'description',
-    },
-    {
-      header: 'Date Added',
-      accessorKey: 'createdAt',
-    },
-  ];
+  ] = useLazyFetchPermissionsQuery();
+
+  // FETCH PERMISSIONS
+  useEffect(() => {
+    if (selectedRole) {
+      fetchPermissions({ roleId: selectedRole?.id, page, size });
+    }
+  }, [fetchPermissions, page, selectedRole, size]);
+
+  // HANDLE FETCH PERMISSIONS RESPONSE
+  useEffect(() => {
+    if (permissionsIsSuccess) {
+      dispatch(setPermissionsList(permissionsData?.data?.data));
+      dispatch(setTotalElements(permissionsData?.data?.totalElements));
+      dispatch(setTotalPages(permissionsData?.data?.totalPages));
+    } else if (permissionsIsError) {
+      const errorResponse =
+        (permissionsError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching permissions. Refresh and try again';
+      toast.error(errorResponse);
+    }
+  }, [
+    dispatch,
+    permissionsData,
+    permissionsError,
+    permissionsIsError,
+    permissionsIsSuccess,
+  ]);
+
+  // COLUMNS
+  const permissionExtendedColumns = [...permissionColumns];
 
   return (
     <Modal
       isOpen={rolePermissionsModal}
       onClose={() => {
         dispatch(setRolePermissionsModal(false));
+        dispatch(setSelectedRole(undefined));
       }}
+      heading={`Permissions for ${capitalizeString(selectedRole?.roleName)}`}
     >
-      <h1 className="text-lg text-secondary uppercase text-center">
-        {role?.name} permissions
-      </h1>
-      <section className="p-6 flex flex-col gap-3">
+      {permissionsIsFetching ? (
+        <figure className="flex justify-center items-center w-full min-h-[30vh]">
+          <Loader className="text-primary" />
+        </figure>
+      ) : (
         <Table
-          data={permissions?.slice(0, 6)?.map((permission, index) => {
-            return {
-              ...permission,
-              no: index + 1,
-              createdAt: formatDate(permission?.createdAt),
-            };
-          })}
-          columns={columns}
+          setPage={setPage}
+          setSize={setSize}
+          page={page}
+          size={size}
+          totalElements={totalElements}
+          totalPages={totalPages}
+          data={permissionsList?.map(
+            (permission: Permission, index: number) => {
+              return {
+                ...permission,
+                no: index + page,
+              };
+            }
+          )}
+          columns={permissionExtendedColumns as ColumnDef<Permission>[]}
           showFilter={false}
         />
-      </section>
+      )}
     </Modal>
   );
 };

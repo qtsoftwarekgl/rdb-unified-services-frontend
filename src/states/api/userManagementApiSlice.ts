@@ -19,8 +19,8 @@ export const userManagementApiSlice = createApi({
   }),
   endpoints: (builder) => {
     return {
-          // UPLOAD USER ATTACHMENT
-    uploadUserAttachment: builder.mutation({
+      // UPLOAD USER ATTACHMENT
+      uploadUserAttachment: builder.mutation({
         query: ({ formData }) => {
           return {
             url: `/attachment/users`,
@@ -30,7 +30,7 @@ export const userManagementApiSlice = createApi({
           };
         },
       }),
-  
+
       // FETCH USER ATTACHMENTS
       fetchUserAttachments: builder.query({
         query: ({ userId }) => {
@@ -39,13 +39,55 @@ export const userManagementApiSlice = createApi({
           };
         },
       }),
-  
+
       // DELETE USER ATTACHMENT
       deleteUserAttachment: builder.mutation({
         query: ({ id }) => {
           return {
             url: `/attachment/users/${id}`,
             method: 'DELETE',
+          };
+        },
+      }),
+
+      // FETCH ROLES
+      fetchRoles: builder.query({
+        query: ({ page, size, state, searchKey }) => {
+          let url = `/roles?page=${page}&size=${size}`;
+          if (state) {
+            url += `&state=${state}`;
+          }
+          if (searchKey) {
+            url += `&searchKey=${searchKey}`;
+          }
+          return {
+            url,
+          };
+        },
+      }),
+
+      // FETCH PERMISSIONS
+      fetchPermissions: builder.query({
+        query: ({ page, size, searchKey, roleId }) => {
+          let url = `/permissions?page=${page}&size=${size}`;
+          if (searchKey) {
+            url += `&searchKey=${searchKey}`;
+          }
+          if (roleId) {
+            url += `&roleId=${roleId}`;
+          }
+          return {
+            url,
+          };
+        },
+      }),
+
+      // DISABLE ROLE
+      disableRole: builder.mutation({
+        query: ({ id }) => {
+          return {
+            url: `/roles/${id}/disable`,
+            method: 'PATCH',
           };
         },
       }),
@@ -57,6 +99,9 @@ export const {
   useUploadUserAttachmentMutation,
   useLazyFetchUserAttachmentsQuery,
   useDeleteUserAttachmentMutation,
+  useLazyFetchRolesQuery,
+  useLazyFetchPermissionsQuery,
+  useDisableRoleMutation,
 } = userManagementApiSlice;
 
 export default userManagementApiSlice;

@@ -129,7 +129,7 @@ export default function Table<TData, TValue>({
                       e.preventDefault();
                       rowClickHandler &&
                         row?.id !== 'no' &&
-                        rowClickHandler(row as Row<TData>['original']);
+                        rowClickHandler(row?.original as Row<TData>['original']);
                     }}
                   >
                     {row.getVisibleCells().map((cell) => {
@@ -138,7 +138,7 @@ export default function Table<TData, TValue>({
                         'action',
                         'checkbox',
                         'actions',
-                      ].includes(cell.column.id || cell.column.accessorKey);
+                      ].includes(cell.column.id || cell?.column?.accessorKey);
                       return (
                         <TableCell
                           className={`${

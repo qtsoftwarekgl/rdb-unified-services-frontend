@@ -1,7 +1,6 @@
-import { UUID } from 'crypto';
+import { AbstractDomain } from '.';
 
-export type Permission = {
-  id: UUID;
+export interface Permission extends AbstractDomain {
   name: string;
-  description: string;
-};
+  description?: string;
+}

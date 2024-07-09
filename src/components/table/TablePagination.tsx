@@ -50,7 +50,7 @@ export function DataTablePagination<TData>({
           </p>
         )}
         {totalElements > 0 && (
-          <p className="text-[12px]">Total records: {totalElements}</p>
+          <p className="text-[12px] mr-4">Total records: {totalElements}</p>
         )}
       </article>
       <menu className="flex items-center space-x-6 lg:space-x-8">
@@ -69,15 +69,17 @@ export function DataTablePagination<TData>({
               <SelectValue placeholder={size} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem
-                  key={pageSize}
-                  value={`${pageSize}`}
-                  className="cursor-pointer"
-                >
-                  {pageSize}
-                </SelectItem>
-              ))}
+              {[10, 20, 30, 40, 50].map((pageSize) => {
+                return (
+                  <SelectItem
+                    value={size === pageSize ? `${size}` : `${pageSize}`}
+                    key={pageSize}
+                    className="cursor-pointer"
+                  >
+                    {pageSize}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </section>

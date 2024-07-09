@@ -1,14 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
 import Modal from '../../components/Modal';
-import { setAddRoleModal, setEditRoleModal, setRole, setRolesList } from '../../states/features/roleSlice';
+import { setCreateRoleModal, setUpdateRoleModal, setRole, setRolesList } from '../../states/features/roleSlice';
 import { Controller, set, useForm } from 'react-hook-form';
 import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
 import { useEffect, useState } from 'react';
 import TextArea from '../../components/inputs/TextArea';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { setAddPermissionModal, setSelectedPermissions } from '../../states/features/permissionSlice';
+import { setListPermissionsModal, setListPermissionsModal } from '../../states/features/permissionSlice';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { roles } from '../../constants/dashboard';
 import Loader from '../../components/Loader';
@@ -51,9 +51,9 @@ const EditRole = () => {
         )
       );
       dispatch(setRole({ ...role, name: data?.name, description: data?.description }));
-      dispatch(setSelectedPermissions([]));
+      dispatch(setListPermissionsModal([]));
       setIsLoading(false);
-      dispatch(setEditRoleModal(false));
+      dispatch(setUpdateRoleModal(false));
     }, 1000);
   };
 
@@ -61,7 +61,7 @@ const EditRole = () => {
     <Modal
       isOpen={editRoleModal}
       onClose={() => {
-        dispatch(setEditRoleModal(false));
+        dispatch(setUpdateRoleModal(false));
       }}
     >
       <h1 className="text-lg text-secondary uppercase text-center">
@@ -126,8 +126,8 @@ const EditRole = () => {
             }
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setAddPermissionModal(true));
-              dispatch(setAddRoleModal(false));
+              dispatch(setListPermissionsModal(true));
+              dispatch(setCreateRoleModal(false));
             }}
           />
         ) : (
@@ -150,7 +150,7 @@ const EditRole = () => {
                           icon={faPlus}
                           onClick={(e) => {
                             e.preventDefault();
-                            dispatch(setAddPermissionModal(true));
+                            dispatch(setListPermissionsModal(true));
                           }}
                         />
                       </menu>
@@ -164,8 +164,8 @@ const EditRole = () => {
                 value="Add more"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setAddPermissionModal(true));
-                  dispatch(setAddRoleModal(false));
+                  dispatch(setListPermissionsModal(true));
+                  dispatch(setCreateRoleModal(false));
                 }}
               />
             </menu>
@@ -176,7 +176,7 @@ const EditRole = () => {
             value="Cancel"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setEditRoleModal(false));
+              dispatch(setUpdateRoleModal(false));
             }}
           />
           <Button primary submit value={isLoading ? <Loader /> : 'Save'} />
