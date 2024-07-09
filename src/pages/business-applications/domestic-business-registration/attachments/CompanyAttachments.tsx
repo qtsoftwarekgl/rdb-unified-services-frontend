@@ -12,7 +12,7 @@ import { businessId } from '@/types/models/business';
 import {
   useLazyFetchBusinessAttachmentsQuery,
   useUploadBusinessAttachmentMutation,
-} from '@/states/api/coreApiSlice';
+} from '@/states/api/businessCoreApiSlice';
 import { useSelector } from 'react-redux';
 import Input from '@/components/inputs/Input';
 import { toast } from 'react-toastify';

@@ -1,7 +1,7 @@
 import Loader from "@/components/Loader";
 import Modal from "@/components/Modal";
 import Button from "@/components/inputs/Button";
-import { useDeleteBusinessAttachmentMutation } from "@/states/api/coreApiSlice";
+import { useDeleteBusinessAttachmentMutation } from "@/states/api/businessCoreApiSlice";
 import {
   removeBusinessAttachment,
   setDeleteBusinessAttachmentModal,

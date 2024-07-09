@@ -126,7 +126,7 @@ const Navbar = ({ className }: Props) => {
 
             <article>
               <h1 className="text-[15px] font-semibold max-[600px]:text-[14px]">
-                Nishimwe
+                {user?.firstName} {user?.lastName || ''}
               </h1>
               <p className="text-[12px] text-gray-500">
                 {user?.username?.toLowerCase()}

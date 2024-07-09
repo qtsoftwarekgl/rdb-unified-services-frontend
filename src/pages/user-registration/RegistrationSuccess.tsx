@@ -23,7 +23,7 @@ const RegistrationSuccess = () => {
       <RegistrationNavbar />
       <section
         className={`${
-          registrationStep !== 'rwandan-registration-form' && 'hidden'
+          registrationStep !== 'rwandanRegistrationForm' && 'hidden'
         } w-full h-full min-h-[85vh] flex flex-col items-center justify-center`}
       >
         <article className="bg-white w-[35%] rounded-md shadwow-sm flex flex-col gap-6 py-8 px-6 max-w-[600px] max-[1450px]:w-[40%] max-[1300px]:w-[45%] max-[1200px]:w-[50%] max-[1100px]:w-[55%] max-lg:w-[60%] max-md:w-[65%] max-sm:w-[85%]">
@@ -52,7 +52,7 @@ const RegistrationSuccess = () => {
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setRegistrationStep('select-nationality'));
+              dispatch(setRegistrationStep('selectNationality'));
               navigate('/auth/login');
             }}
           />
@@ -60,7 +60,7 @@ const RegistrationSuccess = () => {
       </section>
      <section className='h-[80vh] w-full flex flex-col items-center justify-center'>
      <ForeignRegistrationSuccess
-        isOpen={registrationStep === 'foreign-registration-form'}
+        isOpen={registrationStep === 'foreignRegistrationForm'}
       />
      </section>
     </main>

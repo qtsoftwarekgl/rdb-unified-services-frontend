@@ -33,12 +33,12 @@ import {
 } from "@/states/features/executiveManagerSlice";
 import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
 import { maskPhoneDigits } from "@/helpers/strings";
-import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/coreApiSlice";
 import {
   setBusinessPersonAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessCoreApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 import { PersonDetail } from "@/types/models/personDetail";

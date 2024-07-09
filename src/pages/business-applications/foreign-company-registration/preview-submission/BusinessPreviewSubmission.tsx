@@ -35,7 +35,7 @@ import {
   setSelectedMainBusinessLine,
   setVatRegistred,
 } from "@/states/features/businessActivitySlice";
-import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/coreApiSlice";
+import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessCoreApiSlice";
 import { setBusinessAttachments } from "@/states/features/businessSlice";
 import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 

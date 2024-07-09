@@ -1,186 +1,20 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { coreBaseQueryWithReauth } from "./rootApiSlice";
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { coreBaseQueryWithReauth } from './rootApiSlice';
 
 export const coreApiSlice = createApi({
-  reducerPath: "coreApi",
+  reducerPath: 'coreApi',
   baseQuery: coreBaseQueryWithReauth,
-  endpoints: (builder) => ({
-    // FETCH SERVICES
-    fetchServices: builder.query({
-      query: ({ category }) => {
-        return {
-          url: `/services?${category ? `category=${category}` : ""}`,
-        };
-      },
-    }),
-
-    // GET SERVICE
-    getService: builder.query({
-      query: ({ id }) => {
-        return {
-          url: `/services/${id}`,
-        };
-      },
-    }),
-
-    // FETCH PROVINCES
-    fetchProvinces: builder.query({
-      query: () => {
-        return {
-          url: `/location/provinces`,
-        };
-      },
-    }),
-
-    // FETCH DISTRICTS
-    fetchDistricts: builder.query({
-      query: ({ provinceId }) => {
-        return {
-          url: `/location/districts?provinceId=${provinceId}`,
-        };
-      },
-    }),
-
-    // FETCH SECTORS
-    fetchSectors: builder.query({
-      query: ({ districtId }) => {
-        return {
-          url: `/location/sectors?districtId=${districtId}`,
-        };
-      },
-    }),
-
-    // FETCH CELLS
-    fetchCells: builder.query({
-      query: ({ sectorId }) => {
-        return {
-          url: `/location/cells?sectorId=${sectorId}`,
-        };
-      },
-    }),
-
-    // FETCH VILLAGES
-    fetchVillages: builder.query({
-      query: ({ cellId }) => {
-        return {
-          url: `/location/villages?cellId=${cellId}`,
-        };
-      },
-    }),
-
-    // SEARCH VILLAGE
-    searchVillage: builder.query({
-      query: ({
-        villageName,
-        cellName,
-        sectorName,
-        districtName,
-        provinceName,
-      }) => {
-        return {
-          url: `/location/villages/search?villageName=${villageName}&cellName=${cellName}&sectorName=${sectorName}&districtName=${districtName}&provinceName=${provinceName}`,
-        };
-      },
-    }),
-
-    // FETCH BUSINESS ACTIVITY SECTORS
-    fetchBusinessActivitiesSectors: builder.query({
-      query: () => {
-        return {
-          url: `/business-activity/sectors`,
-        };
-      },
-    }),
-
-    // FETCH BUSINESS LINES
-    fetchBusinessLines: builder.query({
-      query: ({ sectorCode }) => {
-        return {
-          url: `/business-activity/business-lines?sectorCode=${sectorCode}`,
-        };
-      },
-    }),
-
-    // UPLOAD PERSON ATTACHMENT
-    uploadPersonAttachment: builder.mutation({
-      query: ({ formData }) => {
-        return {
-          url: `/attachment/person-upload`,
-          method: "POST",
-          body: formData,
-          formData: true,
-        };
-      },
-    }),
-
-    // UPLOAD BUSINESS ATTACHMENT
-    uploadBusinessAttachment: builder.mutation({
-      query: ({ formData }) => {
-        return {
-          url: `/attachment/business-upload`,
-          method: "POST",
-          body: formData,
-          formData: true,
-        };
-      },
-    }),
-
-    // FETCH BUSINESS ATTACHMENTS
-    fetchBusinessAttachments: builder.query({
-      query: ({ businessId }) => {
-        return {
-          url: `/attachment/business?businessId=${businessId}`,
-        };
-      },
-    }),
-
-    // DELETE BUSINESS ATTACHMENT
-    deleteBusinessAttachment: builder.mutation({
-      query: ({ id }) => {
-        return {
-          url: `/attachment/business/${id}`,
-          method: "DELETE",
-        };
-      },
-    }),
-
-    // GET PERSON DETAILS BY ID
-    getBusinessPersonDetails: builder.query({
-      query: ({ id }) => `/person/${id}`,
-    }),
-
-    // GET PERSON ATTACHMENTS
-    fetchPersonAttachments: builder.query({
-      query: ({ personId }) => `/attachment/person?personId=${personId}`,
-    }),
-
-    // DELETE BUSINESS PERSON
-    deleteBusinessPerson: builder.mutation({
-      query: ({ id }) => {
-        return { url: `/person/${id}`, method: "DELETE" };
-      },
-    }),
-  }),
+  endpoints: (builder) => {
+    return {
+      // GET USER INFO
+      getUserInformation: builder.query({
+        query: ({ documentNumber }) =>
+          `/user-info?documentNumber=${documentNumber}`,
+      }),
+    };
+  },
 });
 
-export const {
-  useLazyFetchServicesQuery,
-  useLazyGetServiceQuery,
-  useLazyFetchProvincesQuery,
-  useLazyFetchDistrictsQuery,
-  useLazyFetchSectorsQuery,
-  useLazyFetchCellsQuery,
-  useLazyFetchVillagesQuery,
-  useLazyFetchBusinessActivitiesSectorsQuery,
-  useLazyFetchBusinessLinesQuery,
-  useLazyFetchBusinessAttachmentsQuery,
-  useUploadPersonAttachmentMutation,
-  useUploadBusinessAttachmentMutation,
-  useLazySearchVillageQuery,
-  useDeleteBusinessAttachmentMutation,
-  useLazyGetBusinessPersonDetailsQuery,
-  useLazyFetchPersonAttachmentsQuery,
-  useDeleteBusinessPersonMutation,
-} = coreApiSlice;
+export const { useLazyGetUserInformationQuery } = coreApiSlice;
 
 export default coreApiSlice;

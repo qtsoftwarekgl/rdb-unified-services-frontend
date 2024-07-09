@@ -13,9 +13,9 @@ const Signup = () => {
       <RegistrationNavbar />
       <section className="flex flex-col gap-6 bg-white rounded-md shadow-sm w-[90%] mx-auto p-8">
         <h1 className="flex items-center justify-center text-2xl font-semibold text-center uppercase">
-          {registrationStep === "rwandan-registration-form"
+          {registrationStep === "rwandanRegistrationForm"
             ? "Rwandese User"
-            : registrationStep === "foreign-registration-form"
+            : registrationStep === "foreignRegistrationForm"
             ? "Foreign User"
             : "User"}{" "}
           Registration
@@ -23,12 +23,12 @@ const Signup = () => {
         <menu className="flex flex-col justify-center h-full gap-2">
           <SelectNationality
             isOpen={[
-              "select-nationality",
-              "rwandan-registration-form",
+              "selectNationality",
+              "rwandanRegistrationForm",
             ].includes(registrationStep)}
           />
           <ForeignRegistrationForm
-            isOpen={registrationStep === "foreign-registration-form"}
+            isOpen={registrationStep === "foreignRegistrationForm"}
           />
         </menu>
       </section>

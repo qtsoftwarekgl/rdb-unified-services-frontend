@@ -33,8 +33,8 @@ import {
 } from "@/states/features/boardOfDirectorSlice";
 import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
 import { PersonDetail } from "@/types/models/personDetail";
-import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/coreApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessCoreApiSlice";
 import {
   setBusinessPersonAttachments,
   setUserInformation,

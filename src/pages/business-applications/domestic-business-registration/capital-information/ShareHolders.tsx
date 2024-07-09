@@ -29,8 +29,8 @@ import {
   setBusinessPersonAttachments,
   setUserInformation,
 } from '@/states/features/businessPeopleSlice';
-import { useUploadPersonAttachmentMutation } from '@/states/api/coreApiSlice';
-import { useLazyGetUserInformationQuery } from '@/states/api/externalServiceApiSlice';
+import { useUploadPersonAttachmentMutation } from '@/states/api/businessCoreApiSlice';
+import { useLazyGetUserInformationQuery } from '@/states/api/coreApiSlice';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
 import { addFounderDetail } from '@/states/features/founderDetailSlice';
 
