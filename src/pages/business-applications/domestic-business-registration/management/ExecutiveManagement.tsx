@@ -36,6 +36,7 @@ import {
 } from "@/states/features/executiveManagerSlice";
 import { useLazyFetchBusinessPeopleQuery } from "@/states/api/businessRegApiSlice";
 import BusinessPeople from "./BusinessPeople";
+import { executiveManagementPosition } from "@/constants/businessRegistration";
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -297,23 +298,13 @@ const ExecutiveManagement = ({
               rules={{ required: "Select member's position" }}
               control={control}
               render={({ field }) => {
-                const options = [
-                  {
-                    value: "md/gm/ceo",
-                    label: "MD/GM/CEO",
-                  },
-                  {
-                    value: "company secretary",
-                    label: "company secretary",
-                  },
-                ];
                 return (
                   <label className="flex flex-col gap-1 w-[49%]">
                     <Select
                       label="Select position"
                       required
                       placeholder="Select position"
-                      options={options}
+                      options={executiveManagementPosition}
                       {...field}
                       onChange={(e) => {
                         clearErrors(["personIdentType", "personDocNo"]);
@@ -492,6 +483,7 @@ const ExecutiveManagement = ({
                           {...field}
                           label="Passport Issue Date"
                           type="date"
+                          required
                           onChange={(e) => {
                             field.onChange(
                               moment(String(e)).format("YYYY-MM-DD")
@@ -531,6 +523,7 @@ const ExecutiveManagement = ({
                           {...field}
                           label="Passport Expiry Date"
                           type="date"
+                          required
                           onChange={(e) => {
                             field.onChange(
                               moment(String(e)).format("YYYY-MM-DD")
@@ -560,6 +553,7 @@ const ExecutiveManagement = ({
                           type="date"
                           label="Date of birth"
                           placeholder="Select DOB"
+                          required
                           onChange={(e) => {
                             field.onChange(
                               moment(String(e)).format("YYYY-MM-DD")

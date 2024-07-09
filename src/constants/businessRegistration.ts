@@ -202,8 +202,12 @@ export const privateCompanyTypes = [
 
 export const companyPositions = [
   {
-    label: "MD/GM/CEO",
-    value: "md/gm/ceo",
+    label: "MD",
+    value: "md",
+  },
+  {
+    label: "CEO",
+    value: "ceo",
   },
   {
     label: "Chair of Board",
@@ -212,6 +216,40 @@ export const companyPositions = [
   {
     label: "Power of Attorney",
     value: "powerOfAttorney",
+  },
+];
+
+export const executiveManagementPosition = [
+  {
+    label: "MD",
+    value: "md",
+  },
+  {
+    label: "CEO",
+    value: "ceo",
+  },
+  {
+    label: "Company Secretary",
+    value: "companySecretary",
+  },
+];
+
+export const foreignExecutiveManagementPosition = [
+  {
+    label: "MD",
+    value: "md",
+  },
+  {
+    label: "CEO",
+    value: "ceo",
+  },
+  {
+    label: "Company Secretary",
+    value: "companySecretary",
+  },
+  {
+    label: "Authorized Representative",
+    value: "authorizedRepresentative",
   },
 ];
 
@@ -593,7 +631,7 @@ export const personnelTypes = [
   {
     value: "ngo",
     label: "NGO",
-  }
+  },
 ];
 
 export const ownerRelationships = [
