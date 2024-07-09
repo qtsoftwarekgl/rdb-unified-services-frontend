@@ -1,7 +1,7 @@
-import { UUID } from 'crypto';
+import { AbstractDomain } from '.';
 
-export type Role = {
-  id: UUID;
+export interface Role extends AbstractDomain {
   roleName: string;
   description: string;
-};
+  state?: string;
+}
