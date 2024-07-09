@@ -1,6 +1,15 @@
-import { UUID } from 'crypto';
+import { UUID } from "crypto";
 
-export type Organization = {
+export interface Organization {
   id: UUID;
-  companyName?: string;
+  organizationName?: string;
+  certificateNo?: string;
+  issuanceDate?: number;
+  issuancePlace?: string;
+  phone?: string;
+  email?: string;
+  countryOfIncorporation?: string;
+  dateOfIncorporation?: number;
+  approved?: boolean;
+  foreign?: boolean;
 }

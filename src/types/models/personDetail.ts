@@ -1,8 +1,14 @@
-import { UUID } from 'crypto';
-import { Organization } from './organization';
+import { UUID } from "crypto";
+import { Organization } from "./organization";
+import { PersonRole } from "./personRole";
 
-export interface PersonDetail extends Organization {
-  position?: string;
+export interface PersonDetail {
+  id: UUID;
+  version?: number;
+  state?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  personId?: UUID;
   firstName?: string;
   middleName?: string;
   lastName?: string;
@@ -10,33 +16,40 @@ export interface PersonDetail extends Organization {
   motherName?: string;
   spouseName?: string;
   maritalStatus?: string;
-  dateOfBirth?: string;
+  dateOfBirth?: number;
   gender?: string;
   nationality?: string;
   personIdentType?: string;
   personDocNo?: string;
-  persDocIssueDate?: string;
-  persDocExpiryDate?: string;
+  persDocIssueDate?: number;
+  persDocExpiryDate?: number;
   persDocIssuePlace?: string;
-  validFrom?: string;
-  validTo?: string;
+  validFrom?: number;
+  validTo?: number;
   isFromNida?: boolean;
   streetNumber?: string;
   phoneNumber?: string;
   email?: string;
   fax?: string;
   poBox?: string;
+  personRole?: PersonRole;
   roleDescription?: string;
-  personRole: {
-    id: UUID;
-    roleName?: string,
-    roleDescription?: string
-  }
 }
 
-export interface FounderDetail extends PersonDetail {
-  shareHolderType?: string;
-  companyName?: string;
+export interface FounderDetail {
+  id: UUID;
+  version?: number;
+  state?: string;
+  createdAt?: number;
+  updatedAt?: number;
+  personDetail?: PersonDetail;
+  organization?: Organization;
+  applicationReferenceId?: UUID;
+  description?: string;
   shareQuantity?: number;
   totalQuantity?: number;
+  shareHolderType?: string;
+  verificationCode?: string;
+  verificationCodeExpiration?: number;
+  verified?: boolean;
 }

@@ -625,12 +625,50 @@ export const personnelTypes = [
     value: "individual",
   },
   {
-    label: "Legal Entity",
-    value: "legal_entity",
+    label: "Legal Person",
+    value: "legal_person",
   },
   {
-    value: "ngo",
-    label: "NGO",
+    label: "Legal Arrangement",
+    value: "legal_arrangement",
+  },
+];
+
+export const legalPersonTypes = [
+  {
+    label: "Company",
+    value: "company",
+  },
+  {
+    label: "Partnership",
+    value: "partnership",
+  },
+  {
+    label: "Cooperative",
+    value: "cooperative",
+  },
+  {
+    label: "Foundation",
+    value: "foundation",
+  },
+  {
+    label: "Not-for-profit",
+    value: "not_for_profit",
+  },
+];
+
+export const legalArrangementTypes = [
+  {
+    label: "Trust",
+    value: "trust",
+  },
+  {
+    label: "General partnership",
+    value: "general_partnership",
+  },
+  {
+    label: "Limited partnership",
+    value: "limited_partnership",
   },
 ];
 

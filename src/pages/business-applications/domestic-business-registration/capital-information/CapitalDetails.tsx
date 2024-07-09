@@ -1,37 +1,37 @@
-import { FC, useEffect } from 'react';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { faCircleInfo, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FC, useEffect } from "react";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { faCircleInfo, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setBusinessCompletedTab,
-} from '../../../../states/features/businessRegistrationSlice';
-import CapitalDetailsModal from './AssignShareDetails';
-import Button from '../../../../components/inputs/Button';
-import Loader from '../../../../components/Loader';
-import { useForm } from 'react-hook-form';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
-import { businessId } from '@/types/models/business';
+} from "../../../../states/features/businessRegistrationSlice";
+import CapitalDetailsModal from "./AssignShareDetails";
+import Button from "../../../../components/inputs/Button";
+import Loader from "../../../../components/Loader";
+import { useForm } from "react-hook-form";
+import { RDBAdminEmailPattern } from "../../../../constants/Users";
+import { businessId } from "@/types/models/business";
 import {
   useLazyFetchShareDetailsQuery,
   useLazyFetchShareholdersQuery,
-} from '@/states/api/businessRegApiSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@/states/api/businessRegApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   setAssignSharesModal,
   setFounderDetailsList,
   setSelectedFounderDetail,
-} from '@/states/features/founderDetailSlice';
-import { setShareDetailsList } from '@/states/features/shareDetailSlice';
-import Table from '@/components/table/Table';
-import { FounderDetail } from '@/types/models/personDetail';
-import { capitalizeString } from '@/helpers/strings';
-import { ColumnDef, Row } from '@tanstack/react-table';
+} from "@/states/features/founderDetailSlice";
+import { setShareDetailsList } from "@/states/features/shareDetailSlice";
+import Table from "@/components/table/Table";
+import { FounderDetail } from "@/types/models/personDetail";
+import { capitalizeString } from "@/helpers/strings";
+import { ColumnDef, Row } from "@tanstack/react-table";
 
 interface CapitalDetailsProps {
   businessId: businessId;
@@ -94,11 +94,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
   useEffect(() => {
     if (shareholdersIsError) {
       if ((shareholdersError as ErrorResponse).status === 500) {
-        toast.error('An error occurred while fetching shareholders');
+        toast.error("An error occurred while fetching shareholders");
       } else {
         toast.error(
           (shareholdersError as ErrorResponse).data?.message ??
-            'An error occurred while fetching shareholders'
+            "An error occurred while fetching shareholders"
         );
       }
     } else if (shareholdersIsSuccess) {
@@ -116,11 +116,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
   useEffect(() => {
     if (shareDetailsIsError) {
       if ((shareDetailsError as ErrorResponse).status === 500) {
-        toast.error('An error occurred while fetching share details');
+        toast.error("An error occurred while fetching share details");
       } else {
         toast.error(
           (shareDetailsError as ErrorResponse).data?.message ??
-            'An error occurred while fetching share details'
+            "An error occurred while fetching share details"
         );
       }
     } else if (shareDetailsIsSuccess) {
@@ -137,28 +137,28 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
   // TABLE COLUMNS
   const founderDetailsColumns = [
     {
-      header: 'No',
-      accessorKey: 'no',
+      header: "No",
+      accessorKey: "no",
     },
     {
-      header: 'Name',
-      accessorKey: 'name',
+      header: "Name",
+      accessorKey: "name",
     },
     {
-      header: 'Type',
-      accessorKey: 'shareHolderType',
+      header: "Type",
+      accessorKey: "shareHolderType",
     },
     {
-      header: 'Number of shares',
-      accessorKey: 'shareQuantity',
+      header: "Number of shares",
+      accessorKey: "shareQuantity",
     },
     {
-      header: 'Total value',
-      accessorKey: 'totalQuantity',
+      header: "Total value",
+      accessorKey: "totalQuantity",
     },
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({ row }: { row: Row<FounderDetail> }) => {
         return (
           <menu className="flex items-center gap-6">
@@ -174,14 +174,14 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
             <FontAwesomeIcon
               className={`${
                 disableForm
-                  ? 'text-secondary cursor-default'
-                  : 'text-red-600 cursor-pointer'
+                  ? "text-secondary cursor-default"
+                  : "text-red-600 cursor-pointer"
               } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
               icon={faTrash}
               onClick={(e) => {
                 e.preventDefault();
                 if (disableForm) return;
-                clearErrors('total_shares');
+                clearErrors("total_shares");
               }}
             />
           </menu>
@@ -210,9 +210,13 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
               return {
                 ...founder,
                 no: index + 1,
-                name: `${founder?.firstName || founder?.companyName || ''} ${
-                  founder?.middleName || ''
-                } ${founder?.lastName || ''}`,
+                name: `${
+                  founder?.personDetail?.firstName ||
+                  founder?.organization?.organizationName ||
+                  ""
+                } ${founder?.personDetail?.middleName || ""} ${
+                  founder?.personDetail?.lastName || ""
+                }`,
                 shareHolderType: capitalizeString(founder?.shareHolderType),
               };
             }
@@ -227,10 +231,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
           </figure>
         ) : (
           <>
-            {' '}
+            {" "}
             <menu className="flex flex-col w-full gap-1">
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-                <h2>Total number of assignable shares</h2>
+                <h2>Total number of shares</h2>
                 <p>
                   {shareDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.shareQuantity),
@@ -239,7 +243,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
                 </p>
               </ul>
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-                <h2>Total number of assigned shares</h2>
+                <h2>Total number of issued shares</h2>
                 <p>
                   {founderDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.shareQuantity),
@@ -248,20 +252,20 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
                 </p>
               </ul>
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-                <h2>Unassigned shares</h2>
+                <h2>Unissued shares</h2>
                 <p>
                   {shareDetailsList?.reduce(
-                      (acc, curr) => acc + Number(curr?.remainingShares),
-                      0
-                    )}
+                    (acc, curr) => acc + Number(curr?.remainingShares),
+                    0
+                  )}
                 </p>
               </ul>
             </menu>
             <menu className="flex flex-col w-full gap-2">
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-                <h2>Total value of assignable shares</h2>
+                <h2>Total value of shares</h2>
                 <p>
-                  RWF{' '}
+                  RWF{" "}
                   {shareDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.totalAmount),
                     0
@@ -269,9 +273,9 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
                 </p>
               </ul>
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
-                <h2>Value of assigned shares</h2>
+                <h2>Value of issued shares</h2>
                 <p>
-                  RWF{' '}
+                  RWF{" "}
                   {founderDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.totalQuantity),
                     0
@@ -280,10 +284,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
               </ul>
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
                 <h2 className="font-medium underline uppercase">
-                  Remaning value of assignable shares
+                  Remaning value of unissued shares
                 </h2>
                 <p className="underline">
-                  RWF{' '}
+                  RWF{" "}
                   {shareDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.totalAmount),
                     0
@@ -298,7 +302,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
           </>
         )}
       </section>
-      {['IN_PROGRESS', 'IS_AMENDING', 'IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+      {["IN_PROGRESS", "IS_AMENDING", "IN_PREVIEW", "ACTION_REQUIRED"].includes(
         status
       ) && (
         <menu
@@ -309,25 +313,25 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
             disabled={disableForm}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('shareholders'));
-              dispatch(setBusinessActiveTab('capital_information'));
+              dispatch(setBusinessActiveStep("shareholders"));
+              dispatch(setBusinessActiveTab("capital_information"));
             }}
           />
-          {status === 'IS_AMENDING' && (
+          {status === "IS_AMENDING" && (
             <Button
               disabled={disableForm || Object.keys(errors).length > 0}
-              value={'Complete Amendment'}
+              value={"Complete Amendment"}
             />
           )}
-          {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(status) && (
+          {["IN_PREVIEW", "ACTION_REQUIRED"].includes(status) && (
             <Button
-              value={'Save & Complete Review'}
+              value={"Save & Complete Review"}
               primary
               disabled={disableForm || Object.keys(errors).length > 0}
             />
           )}
           <Button
-            value={'Save & Continue'}
+            value={"Save & Continue"}
             primary
             disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
@@ -339,33 +343,33 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
 
               if (unassignedFounder) {
                 toast.error(
-                  'Please assign shares to all shareholders before proceeding',
+                  "Please assign shares to all shareholders before proceeding",
                   {
                     autoClose: 5000,
                   }
                 );
                 return;
               }
-              dispatch(setBusinessCompletedStep('capital_details'));
-              dispatch(setBusinessCompletedTab('capital_information'));
-              dispatch(setBusinessActiveStep('executive_management'));
-              dispatch(setBusinessActiveTab('management'));
+              dispatch(setBusinessCompletedStep("capital_details"));
+              dispatch(setBusinessCompletedTab("capital_information"));
+              dispatch(setBusinessActiveStep("executive_management"));
+              dispatch(setBusinessActiveTab("management"));
             }}
           />
         </menu>
       )}
       {[
-        'IN_REVIEW',
-        'IS_APPROVED',
-        'PENDING_APPROVAL',
-        'PENDING_REJECTION',
+        "IN_REVIEW",
+        "IS_APPROVED",
+        "PENDING_APPROVAL",
+        "PENDING_REJECTION",
       ].includes(status) && (
-        <menu className="flex items-center gap-3 justify-between">
+        <menu className="flex items-center justify-between gap-3">
           <Button
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('shareholders'));
+              dispatch(setBusinessActiveStep("shareholders"));
             }}
           />
           <Button
@@ -373,8 +377,8 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({ businessId, status }) => {
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('attachments'));
-              dispatch(setBusinessActiveTab('attachments'));
+              dispatch(setBusinessActiveStep("attachments"));
+              dispatch(setBusinessActiveTab("attachments"));
             }}
           />
         </menu>
