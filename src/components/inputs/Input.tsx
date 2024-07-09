@@ -1,6 +1,7 @@
 import {
   ChangeEvent,
   FC,
+  FormEventHandler,
   LegacyRef,
   MouseEventHandler,
   ReactNode,
@@ -12,7 +13,8 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Link } from 'react-router-dom';
 import DatePicker from './DatePicker';
-import { countriesList } from '../../constants/countries';
+import { SelectSingleEventHandler } from 'react-day-picker';
+import { Checkbox } from '../ui/checkbox';
 
 interface InputProps {
   label?: string;
@@ -20,7 +22,7 @@ interface InputProps {
   className?: string;
   required?: boolean;
   onChange?: ((e: ChangeEvent<HTMLInputElement>) => void) | undefined;
-  defaultValue?: string | number;
+  defaultValue?: string | number | Date;
   submit?: boolean;
   type?: string;
   value?: string | number;
@@ -39,7 +41,8 @@ interface InputProps {
   multiple?: boolean;
   labelClassName?: string;
   range?: boolean;
-  selectionType?: 'date' | 'month' | 'year' | 'recurringDate';
+  fromDate?: Date;
+  toDate?: Date;
   checked?: boolean;
 }
 
@@ -58,15 +61,16 @@ const Input: FC<InputProps> = ({
   prefixIcon = null,
   prefixIconHandler,
   prefixText = null,
+  defaultChecked = undefined,
   name,
-  accept = 'application/pdf',
+  accept = '*',
   min,
   readOnly = false,
   labelClassName = '',
   multiple = false,
-  defaultChecked = false,
-  selectionType,
-  checked
+  fromDate,
+  toDate,
+  checked,
 }) => {
   const hiddenFileInput = useRef<HTMLButtonElement>(null);
 
@@ -75,12 +79,26 @@ const Input: FC<InputProps> = ({
   useEffect(() => {
     if (!defaultValue && !value && ref?.current) {
       ref.current.value = '';
-    } else if ((defaultValue || value) && ref?.current) {
-      ref.current.value = String(defaultValue || value);
     }
   }, [defaultValue, value]);
 
   if (['checkbox', 'radio'].includes(type)) {
+    if (type === 'checkbox') {
+      return (
+        <label className="flex w-fit items-center gap-2 text-[13px]">
+          <Checkbox
+            onChange={
+              onChange as FormEventHandler<HTMLButtonElement> | undefined
+            }
+            name={name}
+            value={value}
+            checked={checked}
+            defaultChecked={defaultChecked}
+          />
+          <p className={`${label ? 'flex' : 'hidden'} text-[13px]`}>{label}</p>
+        </label>
+      );
+    }
     return (
       <label className="flex items-center gap-2 text-[13px]">
         <input
@@ -122,40 +140,6 @@ const Input: FC<InputProps> = ({
     );
   }
 
-  if (type === 'tel') {
-    return (
-      <label className="flex flex-col w-full gap-1">
-        <p className="flex items-center gap-1">
-          {label}{' '}
-          <span className={`${required ? 'flex' : 'hidden'} text-red-600`}>
-            *
-          </span>
-        </p>
-        <menu className="relative flex items-center gap-0">
-          <span className="absolute inset-y-0 start-0 flex items-center ps-3.5">
-            <select className="w-full !text-[12px]">
-              {countriesList?.map((country) => {
-                return (
-                  <option key={country?.dial_code} value={country?.dial_code}>
-                    {`${country?.code} ${country?.dial_code}`}
-                  </option>
-                );
-              })}
-            </select>
-          </span>
-          <input
-            name={name}
-            onChange={onChange}
-            className="ps-[96px] py-[7px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50"
-            type="text"
-            value={value}
-            ref={ref}
-          />
-        </menu>
-      </label>
-    );
-  }
-
   if (['date'].includes(type)) {
     return (
       <label className={`flex flex-col gap-[5px] w-full ${labelClassName}`}>
@@ -170,9 +154,16 @@ const Input: FC<InputProps> = ({
           </span>
         </p>
         <DatePicker
-          selectionType={selectionType}
-          onChange={onChange}
-          value={value as Date | undefined}
+          placeholder={placeholder}
+          fromDate={fromDate}
+          toDate={toDate}
+          onChange={
+            onChange as
+              | SelectSingleEventHandler
+              | ((e: Date | ChangeEvent<HTMLInputElement>) => void)
+              | undefined
+          }
+          value={(value || defaultValue) as Date | undefined}
         />
       </label>
     );
@@ -182,7 +173,7 @@ const Input: FC<InputProps> = ({
     <label className={`flex flex-col gap-[5px] w-full ${labelClassName}`}>
       <p
         className={`${
-          label ? 'flex items-center gap-[5px] text-[14px]' : 'hidden'
+          label ? 'pl-1 flex items-center gap-[5px] text-[14px]' : 'hidden'
         }`}
       >
         {label}{' '}
@@ -192,7 +183,7 @@ const Input: FC<InputProps> = ({
       </p>
       {!prefixIcon && !prefixText && !suffixIcon && (
         <input
-          defaultValue={defaultValue}
+          defaultValue={defaultValue as string}
           min={min}
           value={value}
           type={type || 'text'}
@@ -223,16 +214,15 @@ const Input: FC<InputProps> = ({
               </Link>
             </label>
             <input
-              defaultValue={defaultValue}
+              defaultValue={defaultValue as string}
               value={value}
               type={type || 'text'}
               readOnly={readOnly}
               name={name}
-              ref={ref}
               onChange={onChange}
               placeholder={readOnly ? '' : placeholder}
               className={`py-[7px] px-6 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className}
-              ${prefixIcon && 'ps-10'} ${prefixText ? 'ps-[3.6rem]' : ''} ${
+                ${prefixIcon && 'ps-10'} ${prefixText ? 'ps-[3.6rem]' : ''} ${
                 readOnly &&
                 '!border-[.1px] !border-background hover:cursor-default focus:!border-background'
               }`}
@@ -255,13 +245,12 @@ const Input: FC<InputProps> = ({
               <FontAwesomeIcon icon={suffixIcon || faSearch} />
             </Link>
             <input
-              defaultValue={defaultValue}
+              defaultValue={defaultValue as string}
               value={value}
               type={type || 'text'}
               onChange={onChange}
               readOnly={readOnly}
               name={name}
-              ref={ref}
               placeholder={readOnly ? '' : placeholder}
               className={`${
                 prefixText && '!ml-16 !w-[85%]'

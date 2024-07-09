@@ -33,9 +33,9 @@ import {
   setBusinessPersonAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
-import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessCoreApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/coreApiSlice";
 import { addFounderDetail } from "@/states/features/founderDetailSlice";
 
 type ShareHoldersProps = {

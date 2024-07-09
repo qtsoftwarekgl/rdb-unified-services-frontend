@@ -8,7 +8,7 @@ export const formatPhone = (phone: string) => {
 
 export const formatDate = (date: string | Date | undefined) => {
   if (!date) return "";
-  return moment(date).format("DD/MM/YYYY");
+  return moment(date).format("YYYY-MM-DD");
 };
 
 export const convertDecimalToPercentage = (number: number | string) => {

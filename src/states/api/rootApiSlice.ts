@@ -6,7 +6,8 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { setToken, setUser } from "../features/userSlice";
 import store from "store";
-import { businessRegLocalApi } from "@/constants/environments";
+import { businessRegLocalApi, businessRegUatApi } from "@/constants/environments";
+import { toast } from "react-toastify";
 
 const prepareHeaders = (headers: Headers) => {
   const user = store.get("user");
@@ -16,13 +17,13 @@ const prepareHeaders = (headers: Headers) => {
   return headers;
 };
 
-export const businessBaseQuery = fetchBaseQuery({
+export const businessRegBaseQuery = fetchBaseQuery({
   baseUrl: `${businessRegLocalApi}/business`,
   prepareHeaders,
 });
 
 export const coreBaseQuery = fetchBaseQuery({
-  baseUrl: `${businessRegLocalApi}`,
+  baseUrl: `${businessRegUatApi}`,
   prepareHeaders,
 });
 
@@ -53,13 +54,16 @@ export const businessBaseQueryWithReauth: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const result = await businessBaseQuery(args, api, extraOptions);
-
-  if (result.error && result.error.status === 403) {
-    // Token has expired or is invalid, logout user
-    api.dispatch(setToken(""));
-    api.dispatch(setUser({}));
-    redirectToLogin();
+  const result = await businessRegBaseQuery(args, api, extraOptions);
+  if (result.error) {
+    if ([403, 401].includes(Number(result?.error?.status))) {
+      api.dispatch(setToken(''));
+      api.dispatch(setUser({}));
+    } else if (Number(result?.error?.status) === 500) {
+      toast.error(
+        'An error occurred on our side. Please refresh and try again'
+      );
+    }
   }
 
   return result;

@@ -25,11 +25,11 @@ import Loader from "@/components/Loader";
 import {
   setBusinessPersonAttachments,
   setUserInformation,
-} from "@/states/features/businessPeopleSlice";
-import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
-import { useLazyGetUserInformationQuery } from "@/states/api/externalServiceApiSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/coreApiSlice";
-import { genderOptions } from "@/constants/inputs.constants";
+} from '@/states/features/businessPeopleSlice';
+import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
+import { useLazyGetUserInformationQuery } from '@/states/api/coreApiSlice';
+import { useUploadPersonAttachmentMutation } from '@/states/api/businessCoreApiSlice';
+import { genderOptions } from '@/constants/inputs.constants';
 import {
   addExecutiveManager,
   setExecutiveManagersList,

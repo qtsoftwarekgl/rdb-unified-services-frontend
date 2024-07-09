@@ -3,7 +3,7 @@ import Input from "../../components/inputs/Input";
 import Navbar from "../../containers/Navbar";
 import { useEffect, useRef, useState } from "react";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useLazyFetchServicesQuery } from "@/states/api/coreApiSlice";
+import { useLazyFetchServicesQuery } from "@/states/api/businessCoreApiSlice";
 import { AppDispatch, RootState } from "@/states/store";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -128,7 +128,7 @@ const ServicesList = () => {
             />
           </article>
         </section>
-        <section className="max-w-[1500px] p-8 mx-auto">
+        <section className="max-w-[90%] p-8 mx-auto">
           <nav className="flex items-center gap-4 max-md:flex-col">
             {categoryTabs.map((tab, index) => {
               const selected = tab.category === serviceCategory;
@@ -153,8 +153,8 @@ const ServicesList = () => {
           </nav>
           <menu className="flex flex-col items-center w-full gap-6 p-2 my-4">
             {servicesIsLoading ? (
-              <figure className="h-[40%] flex items-center justify-center">
-                <Loader />
+              <figure className="h-[40%] flex items-center justify-center min-h-[40vh]">
+                <Loader size={'medium'} className="text-primary" />
               </figure>
             ) : servicesList?.length > 0 ? (
               servicesList.map((service: Service, index: number) => {
@@ -178,7 +178,7 @@ const ServicesList = () => {
                         {capitalizeString(service?.section)}
                       </AccordionTrigger>
                       <AccordionContent className="w-full border-none">
-                        <menu className="grid w-full grid-cols-1 gap-6 p-4 px-2 mb-8 md:grid-cols-2 lg:grid-cols-3">
+                        <menu className="grid w-full grid-cols-1 gap-6 p-4 px-0 mb-8 md:grid-cols-2 lg:grid-cols-3">
                           {service?.items.map(
                             (item: Service, index: number) => {
                               return (

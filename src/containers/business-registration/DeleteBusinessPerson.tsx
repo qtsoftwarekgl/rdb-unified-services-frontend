@@ -1,7 +1,7 @@
 import Loader from '@/components/Loader';
 import Modal from '@/components/Modal';
 import Button from '@/components/inputs/Button';
-import { useDeleteBusinessPersonMutation } from '@/states/api/coreApiSlice';
+import { useDeleteBusinessPersonMutation } from '@/states/api/businessCoreApiSlice';
 import { removeBoardMember } from '@/states/features/boardOfDirectorSlice';
 import {
   setBusinessPerson,

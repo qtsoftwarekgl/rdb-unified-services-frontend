@@ -8,7 +8,7 @@ import {
   useCreateBusinessMutation,
   useLazyFetchBusinessesQuery,
 } from '@/states/api/businessRegApiSlice';
-import { useLazyGetServiceQuery } from '@/states/api/coreApiSlice';
+import { useLazyGetServiceQuery } from '@/states/api/businessCoreApiSlice';
 import {
   setBusinessesList,
   setBusinessPage,
