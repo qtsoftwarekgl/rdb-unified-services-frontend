@@ -14,6 +14,7 @@ const initialState: {
   rolePermissionsModal: boolean;
   assignRolesModal: boolean;
   selectedRole?: Role;
+  selectedRoles?: Role[];
 } = {
   rolesList: [],
   role: undefined,
@@ -27,6 +28,7 @@ const initialState: {
   size: 10,
   totalElements: 0,
   totalPages: 1,
+  selectedRoles: []
 };
 
 export const roleSlice = createSlice({
@@ -77,6 +79,17 @@ export const roleSlice = createSlice({
         role.id === action.payload.id ? action.payload : role
       );
     },
+    addSelectedRole: (state, action) => {
+      state.selectedRoles?.push(action.payload);
+    },
+    removeSelectedRole: (state, action) => {
+      state.selectedRoles = state.selectedRoles?.filter(
+        (role) => role.id !== action.payload.id
+      );
+    },
+    setSelectedRoles: (state, action) => {
+      state.selectedRoles = action.payload;
+    }
   },
 });
 
@@ -96,5 +109,7 @@ export const {
   setSize,
   setSelectedRole,
   updateRole,
-  addRole,
+  addSelectedRole,
+  removeSelectedRole,
+  setSelectedRoles
 } = roleSlice.actions;

@@ -1,16 +1,18 @@
+import store from 'store';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import Input from '../../components/inputs/Input';
 import { faEyeSlash, faEye, faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import { useNavigate } from 'react-router-dom';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 import { useTranslation } from 'react-i18next';
 import { validatePassword } from '@/helpers/validations';
+import { useResetPasswordMutation } from '@/states/api/authApiSlice';
 
 const ResetPasswordNew = () => {
 
@@ -38,30 +40,44 @@ const ResetPasswordNew = () => {
     }[]>([]);
 
   // STATE VARIABLES
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false,
   });
   const [passwordIsValid, setPasswordIsValid] = useState(false);
 
-  // HANDLE FORM SUBMIT
-  interface Payload {
-    password: string;
-    confirmPassword: string;
-  }
+  // INITIALIZE PASSWORD RESET MUTATION
+  const [resetPassword, {
+    error: resetPasswordError,
+    isLoading: resetPasswordIsLoading,
+    isSuccess: resetPasswordIsSuccess,
+    isError: resetPasswordIsError,
+  }] = useResetPasswordMutation();
 
-  const onSubmit = (data: Payload | FieldValues) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      toast.success('Password reset successful. Redirecting...');
-      setIsLoading(false);
-      setTimeout(() => {
-        navigate('/auth/login');
-      }, 1000);
-    }, 1000);
-    return data;
+  const onSubmit = (data: FieldValues) => {
+    resetPassword({
+      password: data?.password,
+      passwordResetCode: store.get('passwordResetCode'),
+    });
   };
+
+  // HANDLE PASSWORD RESET RESPONSE
+  useEffect(() => {
+    if (resetPasswordIsSuccess) {
+      toast.success('Password reset successful. Login to continue');
+      navigate('/auth/login');
+    } else if (resetPasswordIsError) {
+      const errorResponse =
+        (resetPasswordError as ErrorResponse)?.data?.message ||
+        'An error occurred while resetting password. Refresh and try again';
+      toast.error(errorResponse);
+    }
+  }, [
+    resetPasswordIsSuccess,
+    resetPasswordIsError,
+    navigate,
+    resetPasswordError,
+  ]);
 
   return (
     <main className="flex flex-col gap-4 w-full mx-auto">
@@ -77,7 +93,7 @@ const ResetPasswordNew = () => {
             </h1>
           </menu>
           <menu className="flex flex-col w-full gap-4">
-          <Controller
+            <Controller
               name="password"
               control={control}
               rules={{
@@ -90,8 +106,7 @@ const ResetPasswordNew = () => {
                       clearErrors('password');
                       setPasswordIsValid(true);
                       return true;
-                    }
-                    else {
+                    } else {
                       return false;
                     }
                   }
@@ -121,9 +136,10 @@ const ResetPasswordNew = () => {
                     {(errors.password || passwordIsValid) && (
                       <menu className="flex flex-col gap-1">
                         <p className="text-[13px] text-red-500 ml-1">
-                          {errors?.password?.message && String(errors?.password?.message)}
+                          {errors?.password?.message &&
+                            String(errors?.password?.message)}
                         </p>
-                        {(passwordErrors?.length > 0) && (
+                        {passwordErrors?.length > 0 && (
                           <ul className="text-[13px] flex flex-col gap-1">
                             {passwordErrors?.map((error, index) => {
                               return (
@@ -179,7 +195,6 @@ const ResetPasswordNew = () => {
                       onChange={(e) => {
                         field.onChange(e);
                         trigger('confirmPassword');
-                      
                       }}
                     />
                     {errors.confirmPassword && (
@@ -193,7 +208,7 @@ const ResetPasswordNew = () => {
             />
             <ul className="w-full flex flex-col gap-3 items-center justify-center">
               <Button
-                value={isLoading ? <Loader /> : `${t('submit')}`}
+                value={resetPasswordIsLoading ? <Loader /> : `${t('submit')}`}
                 className="w-[90%] mx-auto !text-[14px]"
                 submit
                 primary

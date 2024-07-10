@@ -3,39 +3,42 @@ import {
   FieldValues,
   SubmitHandler,
   useForm,
-} from "react-hook-form";
-import rdb_icon from "/rdb-logo.png";
-import Input from "../../components/inputs/Input";
-import Button from "../../components/inputs/Button";
-import validateInputs from "../../helpers/validations";
-import InfoPanel from "./InfoPanel";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../states/store";
-import Modal from "../../components/Modal";
-import { setInfoModal } from "../../states/features/authSlice";
-import { toast } from "react-toastify";
-import { ErrorResponse, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import Loader from "../../components/Loader";
-import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
-import { useTranslation } from "react-i18next";
-import { useLoginMutation } from "@/states/api/authApiSlice";
-import { setUser } from "@/states/features/userSlice";
+} from 'react-hook-form';
+import rdb_icon from '/rdb-logo.png';
+import Input from '../../components/inputs/Input';
+import Button from '../../components/inputs/Button';
+import validateInputs from '../../helpers/validations';
+import InfoPanel from './InfoPanel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../states/store';
+import Modal from '../../components/Modal';
+import { setInfoModal } from '../../states/features/authSlice';
+import { toast } from 'react-toastify';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Loader from '../../components/Loader';
+import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
+import { useTranslation } from 'react-i18next';
+import { useLoginMutation } from '@/states/api/authApiSlice';
+import { setUser } from '@/states/features/userSlice';
 
 const Login = () => {
   // LOCALES
   const { t } = useTranslation();
 
   // INITIALIZE LOGIN MUTATION
-  const [login, {
-    data: loginData,
-    error: loginError,
-    isLoading: loginIsLoading,
-    isError: loginIsError,
-    isSuccess: loginIsSuccess
-  }] = useLoginMutation();
+  const [
+    login,
+    {
+      data: loginData,
+      error: loginError,
+      isLoading: loginIsLoading,
+      isError: loginIsError,
+      isSuccess: loginIsSuccess,
+    },
+  ] = useLoginMutation();
 
   // REACT HOOK FORM
   const {
@@ -56,25 +59,25 @@ const Login = () => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     login({
       username: data.email,
-      password: data.password
-    })
+      password: data.password,
+    });
   };
 
   // HANDLE LOGIN RESPONSE
   useEffect(() => {
     if (loginIsError) {
       if ((loginError as ErrorResponse)?.status === 500) {
-        toast.error("Internal server error");
+        toast.error('Internal server error');
       } else {
         toast.error((loginError as ErrorResponse)?.data?.message);
       }
     } else if (loginIsSuccess) {
-      toast.success("Login successful. Redirecting...");
+      toast.success('Login successful. Redirecting...');
       dispatch(setUser(loginData?.data));
-      if (loginData?.data?.roles?.includes("PUBLIC_USER")) {
-        navigate("/services");
-      } else if (loginData?.data?.roles?.includes("SYSTEM_ADMIN")) {
-        navigate("/back-office/dashboard");
+      if (loginData?.data?.roles?.includes('SYSTEM_ADMIN')) {
+        navigate('/back-office/dashboard');
+      } else if (loginData?.data?.roles?.includes('PUBLIC_USER')) {
+        navigate('/services');
       }
     }
   }, [dispatch, loginData, loginError, loginIsError, loginIsSuccess, navigate]);
@@ -94,7 +97,7 @@ const Login = () => {
           />
         </figure>
         <h1 className="text-2xl font-semibold uppercase text-primary">
-          {t("login")}
+          {t('login')}
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -102,10 +105,10 @@ const Login = () => {
         >
           <Controller
             rules={{
-              required: "Email is required",
+              required: 'Email is required',
               validate: (value) => {
                 return (
-                  validateInputs(value, "email") || "Invalid email address"
+                  validateInputs(value, 'email') || 'Invalid email address'
                 );
               },
             }}
@@ -115,8 +118,8 @@ const Login = () => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
-                    placeholder={t("email-placeholder")}
-                    label={t("email-label")}
+                    placeholder={t('email-placeholder')}
+                    label={t('email-label')}
                     {...field}
                   />
                   {errors.email && (
@@ -129,16 +132,16 @@ const Login = () => {
             }}
           />
           <Controller
-            rules={{ required: "Password is required" }}
+            rules={{ required: 'Password is required' }}
             name="password"
             control={control}
             render={({ field }) => {
               return (
                 <label className="flex flex-col gap-1">
                   <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t("password-placeholder")}
-                    label={t("password-label")}
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder={t('password-placeholder')}
+                    label={t('password-label')}
                     suffixIcon={showPassword ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
                       e.preventDefault();
@@ -157,7 +160,7 @@ const Login = () => {
           />
           <menu className="flex items-center gap-3 justify-between w-full my-1 max-[1050px]:flex-col max-[800px]:flex-row max-[450px]:flex-col">
             <Input
-              label={t("remember-me")}
+              label={t('remember-me')}
               type="checkbox"
               onChange={(e) => {
                 return e.target.checked;
@@ -166,7 +169,7 @@ const Login = () => {
             <Button
               styled={false}
               className="!text-[13px]"
-              value={`${t("forgot-password")}?`}
+              value={`${t('forgot-password')}?`}
               route="/auth/reset-password/request"
             />
           </menu>
@@ -174,13 +177,13 @@ const Login = () => {
             <Button
               submit
               primary
-              value={loginIsLoading ? <Loader /> : t("login")}
+              value={loginIsLoading ? <Loader /> : t('login')}
               className="w-full"
             />
             <ul className="flex items-center gap-6">
               <Button
                 className="!text-[14px]"
-                value={t("register")}
+                value={t('register')}
                 styled={false}
                 route="/auth/register"
               />

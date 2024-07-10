@@ -1,7 +1,6 @@
 import {
   ChangeEvent,
   FC,
-  FormEventHandler,
   LegacyRef,
   MouseEventHandler,
   ReactNode,
@@ -15,6 +14,7 @@ import { Link } from 'react-router-dom';
 import DatePicker from './DatePicker';
 import { SelectSingleEventHandler } from 'react-day-picker';
 import { Checkbox } from '../ui/checkbox';
+import { CheckedState } from '@radix-ui/react-checkbox';
 
 interface InputProps {
   label?: string;
@@ -87,8 +87,8 @@ const Input: FC<InputProps> = ({
       return (
         <label className="flex w-fit items-center gap-2 text-[13px]">
           <Checkbox
-            onChange={
-              onChange as FormEventHandler<HTMLButtonElement> | undefined
+            onCheckedChange={
+              onChange as ((checked: CheckedState) => void) | undefined
             }
             name={name}
             value={value}

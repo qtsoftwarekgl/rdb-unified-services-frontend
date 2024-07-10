@@ -1,16 +1,27 @@
-import { UUID } from 'crypto';
 import { Role } from './role';
+import { AbstractDomain } from '.';
 
-export type User = {
-  id: UUID;
+export interface User extends AbstractDomain {
+  state: string,
   firstName: string;
   lastName: string;
   username: string;
   email: string;
-  nationalId: string;
-  phoneNumber?: string;
-  password?: string;
+  nationality: string;
+  personIdentType: string;
+  personDocNo: string;
+  persDocIssueDate: Date;
+  persDocExpiryDate: Date;
+  dateOfBirth: Date;
+  gender: string;
+  persDocIssuePlace: string;
+  validFrom: Date;
+  validTo: Date;
+  isFromNida: boolean;
+  phoneNumber: string;
+  notificationPreference: string;
+  userType: string;
   failedLoginAttempts: number;
   isLocked: boolean;
   roles: Role[];
-};
+}

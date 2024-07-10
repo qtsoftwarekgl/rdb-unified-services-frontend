@@ -120,6 +120,60 @@ export const userManagementApiSlice = createApi({
           };
         },
       }),
+
+      // FETCH USERS
+      fetchUsers: builder.query({
+        query: ({ page, size, searchKey, state, userType, isLocked }) => {
+          let url = `/users?page=${page}&size=${size}`;
+          if (searchKey) {
+            url += `&searchKey=${searchKey}`;
+          }
+          if (state) {
+            url += `&state=${state}`;
+          }
+          if (userType) {
+            url += `&userType=${userType}`;
+          }
+          if (isLocked) {
+            url += `&isLocked=${isLocked}`;
+          }
+          return {
+            url,
+          };
+        },
+      }),
+      // GET USER
+      getUser: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/users/${id}`,
+          };
+        },
+      }),
+
+      // ASSIGN ROLES
+      assignRoles: builder.mutation({
+        query: ({ userId, roleIds }) => {
+          return {
+            url: `/users/assign-role`,
+            method: 'PATCH',
+            body: {
+              userId,
+              roleIds,
+            },
+          };
+        },
+      }),
+
+      // UPDATE NOTIFICATION PREFERENCES
+      updateNotificationPreferences: builder.mutation({
+        query: ({ notificationPreference }) => {
+          return {
+            url: `/users/update-notification-preferences/${notificationPreference}`,
+            method: 'PATCH',
+          };
+        },
+      }),
     };
   },
 });
@@ -133,6 +187,10 @@ export const {
   useDisableRoleMutation,
   useCreateRoleMutation,
   useEditRoleMutation,
+  useLazyFetchUsersQuery,
+  useLazyGetUserQuery,
+  useAssignRolesMutation,
+  useUpdateNotificationPreferencesMutation,
 } = userManagementApiSlice;
 
 export default userManagementApiSlice;

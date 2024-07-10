@@ -1,3 +1,4 @@
+import store from 'store';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
 
 const ResetPasswordVerify = () => {
-
   // LOCALES
   const { t } = useTranslation();
 
@@ -27,14 +27,10 @@ const ResetPasswordVerify = () => {
   // NAVIGATE
   const navigate = useNavigate();
 
-  // HANDLE FORM SUBMIT
-  interface Payload {
-    otp: string;
-  }
-
-  const onSubmit = (data: Payload | FieldValues) => {
+  const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
+      store.set('passwordResetCode', data?.otp);
       navigate('/auth/reset-password/new');
       setIsLoading(false);
     }, 1000);
@@ -42,7 +38,7 @@ const ResetPasswordVerify = () => {
   };
 
   return (
-    <main className='flex flex-col gap-3 w-full'>
+    <main className="flex flex-col gap-3 w-full">
       <RegistrationNavbar />
       <section className="w-full h-full min-h-[85vh] flex flex-col items-center justify-center">
         <form
@@ -63,7 +59,7 @@ const ResetPasswordVerify = () => {
               rules={{
                 required: `${t('otp-required')}`,
                 validate: (value) => {
-                  if (value.length !== 4) {
+                  if (value.length !== 6) {
                     return `${t('otp-invalid')}`;
                   }
                   return true;
@@ -73,7 +69,11 @@ const ResetPasswordVerify = () => {
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-center gap-2 w-[90%] mx-auto">
-                    <OTPInputs className="justify-center" {...field} />
+                    <OTPInputs
+                      length={6}
+                      className="justify-center"
+                      {...field}
+                    />
                     {errors?.otp && (
                       <p className="text-red-600 text-[13px] text-center">
                         {String(errors?.otp?.message)}
@@ -91,7 +91,7 @@ const ResetPasswordVerify = () => {
                 primary
               />
               <p className="text-secondary text-[14px]">
-                {t('otp-not-received')}, {' '}
+                {t('otp-not-received')},{' '}
                 <span className="text-primary font-medium text-[14px]">
                   <Link to={'#'} className="text-[14px]">
                     {t('resend-otp')}
