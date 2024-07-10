@@ -1,21 +1,21 @@
-import Loader from '@/components/Loader';
-import Modal from '@/components/Modal';
-import Button from '@/components/inputs/Button';
-import { useDeleteBusinessPersonMutation } from '@/states/api/businessCoreApiSlice';
-import { removeBoardMember } from '@/states/features/boardOfDirectorSlice';
+import Loader from "@/components/Loader";
+import Modal from "@/components/Modal";
+import Button from "@/components/inputs/Button";
+import { useDeleteBusinessPersonMutation } from "@/states/api/businessCoreApiSlice";
+import { removeBoardMember } from "@/states/features/boardOfDirectorSlice";
 import {
   setBusinessPerson,
   setDeleteBusinessPersonModal,
   setSelectedBusinessPerson,
-} from '@/states/features/businessPeopleSlice';
-import { setBusinessPersonDetailsModal } from '@/states/features/businessRegistrationSlice';
-import { removeExecutiveManager } from '@/states/features/executiveManagerSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@/states/features/businessPeopleSlice";
+import { setBusinessPersonDetailsModal } from "@/states/features/businessRegistrationSlice";
+import { removeExecutiveManager } from "@/states/features/executiveManagerSlice";
+import { AppDispatch, RootState } from "@/states/store";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const DeleteBusinessPerson = () => {
   // STATE VARIABLES
@@ -41,14 +41,14 @@ const DeleteBusinessPerson = () => {
     if (businessPersonIsError) {
       const errorData =
         (businessPersonError as ErrorResponse)?.data?.message ||
-        'An error occurred while deleting person. Refresh and try again';
+        "An error occurred while deleting person. Refresh and try again";
       toast.error(errorData);
       businessPersonReset();
     } else if (businessPersonIsSuccess && selectedBusinessPerson) {
       toast.success(
         `${
           selectedBusinessPerson?.firstName ||
-          selectedBusinessPerson?.companyName
+          selectedBusinessPerson?.organizationName
         } removed successfully`
       );
       dispatch(removeExecutiveManager(selectedBusinessPerson?.id));
@@ -76,21 +76,22 @@ const DeleteBusinessPerson = () => {
         dispatch(setSelectedBusinessPerson(undefined));
       }}
       heading={`Delete ${
-        selectedBusinessPerson?.firstName || selectedBusinessPerson?.companyName
+        selectedBusinessPerson?.firstName ||
+        selectedBusinessPerson?.organizationName
       }
-          ${selectedBusinessPerson?.lastName || ''}`}
+          ${selectedBusinessPerson?.lastName || ""}`}
     >
-      <section className="w-full flex flex-col gap-4">
+      <section className="flex flex-col w-full gap-4">
         <p>
-          Are you sure you want to delete{' '}
+          Are you sure you want to delete{" "}
           {selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.companyName}{' '}
-          {selectedBusinessPerson?.lastName || ''}? This action cannot be
+            selectedBusinessPerson?.organizationName}{" "}
+          {selectedBusinessPerson?.lastName || ""}? This action cannot be
           undone!
         </p>
-        <menu className="w-full flex items-center gap-3 justify-between">
+        <menu className="flex items-center justify-between w-full gap-3">
           <Button
-            value={'Cancel'}
+            value={"Cancel"}
             onClick={(e) => {
               e.preventDefault();
               dispatch(setDeleteBusinessPersonModal(false));
@@ -98,7 +99,7 @@ const DeleteBusinessPerson = () => {
             }}
           />
           <Button
-            value={businessPersonIsLoading ? <Loader /> : 'Confirm'}
+            value={businessPersonIsLoading ? <Loader /> : "Confirm"}
             danger
             onClick={(e) => {
               e.preventDefault();

@@ -1,27 +1,27 @@
-import Loader from '@/components/Loader';
-import Modal from '@/components/Modal';
-import Button from '@/components/inputs/Button';
-import { countriesList } from '@/constants/countries';
-import { genderOptions } from '@/constants/inputs.constants';
-import { capitalizeString } from '@/helpers/strings';
-import { convertFileSizeToMbs } from '@/helpers/uploads';
+import Loader from "@/components/Loader";
+import Modal from "@/components/Modal";
+import Button from "@/components/inputs/Button";
+import { countriesList } from "@/constants/countries";
+import { genderOptions } from "@/constants/inputs.constants";
+import { capitalizeString } from "@/helpers/strings";
+import { convertFileSizeToMbs } from "@/helpers/uploads";
 import {
   useLazyFetchPersonAttachmentsQuery,
   useLazyGetBusinessPersonDetailsQuery,
-} from '@/states/api/businessCoreApiSlice';
+} from "@/states/api/businessCoreApiSlice";
 import {
   setBusinessPerson,
   setBusinessPersonAttachments,
   setBusinessPersonDetailsModal,
   setDeleteBusinessPersonModal,
   setSelectedBusinessPerson,
-} from '@/states/features/businessPeopleSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { PersonAttachment } from '@/types/models/attachment';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ErrorResponse, Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@/states/features/businessPeopleSlice";
+import { AppDispatch, RootState } from "@/states/store";
+import { PersonAttachment } from "@/types/models/attachment";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ErrorResponse, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BusinessPersonDetails = () => {
   // STATE VARIABLES
@@ -61,7 +61,7 @@ const BusinessPersonDetails = () => {
         toast.error(
           `An error occurred while getting ${
             selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.companyName
+            selectedBusinessPerson?.organizationName
           }'s details. Refresh and try again`
         );
       } else {
@@ -76,7 +76,7 @@ const BusinessPersonDetails = () => {
     businessPersonIsError,
     businessPersonIsSuccess,
     dispatch,
-    selectedBusinessPerson?.companyName,
+    selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
 
@@ -108,7 +108,7 @@ const BusinessPersonDetails = () => {
         toast.error(
           `An error occurred while getting ${
             selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.companyName
+            selectedBusinessPerson?.organizationName
           }'s attachments. Refresh and try again`
         );
       } else {
@@ -123,9 +123,11 @@ const BusinessPersonDetails = () => {
     personAttachmentsIsError,
     personAttachmentsIsSuccess,
     dispatch,
-    selectedBusinessPerson?.companyName,
+    selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
+
+  console.log(">>>>>>>>>>>>>>>>>>>>", selectedBusinessPerson);
 
   return (
     <Modal
@@ -135,8 +137,9 @@ const BusinessPersonDetails = () => {
         dispatch(setSelectedBusinessPerson(undefined));
       }}
       heading={`${
-        selectedBusinessPerson?.firstName || selectedBusinessPerson?.companyName
-      } ${selectedBusinessPerson?.lastName || ''}`}
+        selectedBusinessPerson?.firstName ||
+        selectedBusinessPerson?.organizationName
+      } ${selectedBusinessPerson?.lastName || ""}`}
     >
       {businessPersonIsFetching ? (
         <figure className="w-full flex items-center justify-center min-h-[30vh]">
@@ -147,10 +150,10 @@ const BusinessPersonDetails = () => {
           <p className="text-[14px]">First Name: {businessPerson?.firstName}</p>
           <p className="text-[14px]">Last Name: {businessPerson?.lastName}</p>
           <p className="text-[14px]">
-            Date of birth: {businessPerson?.dateOfBirth || 'N/A'}
+            Date of birth: {businessPerson?.dateOfBirth || "N/A"}
           </p>
           <p className="text-[14px]">
-            Sex:{' '}
+            Sex:{" "}
             {
               genderOptions?.find(
                 (gender) => gender?.value === businessPerson?.gender
@@ -158,7 +161,7 @@ const BusinessPersonDetails = () => {
             }
           </p>
           <p className="text-[14px]">
-            Nationality:{' '}
+            Nationality:{" "}
             {
               countriesList?.find(
                 (country) => country?.code === businessPerson?.nationality
@@ -166,13 +169,13 @@ const BusinessPersonDetails = () => {
             }
           </p>
           <p className="text-[14px]">
-            Document Type:{' '}
-            {businessPerson?.personIdentType === 'nid'
-              ? 'National Identification'
-              : 'Passport'}
+            Document Type:{" "}
+            {businessPerson?.personIdentType === "nid"
+              ? "National Identification"
+              : "Passport"}
           </p>
           <p className="text-[14px]">
-            Document Issue Place:{' '}
+            Document Issue Place:{" "}
             {
               countriesList?.find(
                 (country) => country?.code === businessPerson?.persDocIssuePlace
@@ -184,9 +187,9 @@ const BusinessPersonDetails = () => {
           </p>
           <p className="text-[14px]">Email: {businessPerson?.email}</p>
           <p className="text-[14px]">
-            Role:{' '}
-            {businessPerson?.personRole?.roleDescription ||
-              businessPerson?.roleDescription}
+            Role:{" "}
+            {capitalizeString(businessPerson?.personRole?.roleDescription) ||
+              capitalizeString(businessPerson?.roleDescription)}
           </p>
         </menu>
       )}
@@ -197,11 +200,11 @@ const BusinessPersonDetails = () => {
       ) : (
         personAttachmentsIsSuccess &&
         businessPersonAttachments?.length > 0 && (
-          <menu className="flex flex-col gap-2 my-4 w-full">
-            <h1 className="text-primary uppercase font-medium">
+          <menu className="flex flex-col w-full gap-2 my-4">
+            <h1 className="font-medium uppercase text-primary">
               {selectedBusinessPerson?.firstName}'s attachments
             </h1>
-            <ul className="w-full grid grid-cols-3 gap-5">
+            <ul className="grid w-full grid-cols-3 gap-5">
               {businessPersonAttachments?.map(
                 (personAttachment: PersonAttachment) => {
                   return (
@@ -211,7 +214,7 @@ const BusinessPersonDetails = () => {
                           {capitalizeString(personAttachment?.attachmentType)}
                         </p>
                         <p className="text-[12px]">
-                          {' '}
+                          {" "}
                           {convertFileSizeToMbs(
                             Number(personAttachment?.fileSize)
                           )}
@@ -232,9 +235,9 @@ const BusinessPersonDetails = () => {
           </menu>
         )
       )}
-      <menu className="w-full flex items-center gap-3 justify-between">
+      <menu className="flex items-center justify-between w-full gap-3">
         <Button
-          value={'Cancel'}
+          value={"Cancel"}
           onClick={(e) => {
             e.preventDefault();
             dispatch(setBusinessPersonDetailsModal(false));
@@ -243,7 +246,7 @@ const BusinessPersonDetails = () => {
         />
         <Button
           primary
-          value={'Remove'}
+          value={"Remove"}
           danger
           onClick={(e) => {
             e.preventDefault();

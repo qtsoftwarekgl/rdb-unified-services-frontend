@@ -1,15 +1,15 @@
-import { businessRegLocalApi } from '@/constants/environments';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import store from 'store';
+import { businessRegLocalApi } from "@/constants/environments";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import store from "store";
 
 export const businessCoreApiSlice = createApi({
-  reducerPath: 'businessCoreApi',
+  reducerPath: "businessCoreApi",
   baseQuery: fetchBaseQuery({
     baseUrl: businessRegLocalApi,
     prepareHeaders: (headers) => {
-      const user = store.get('user');
+      const user = store.get("user");
       if (user?.token) {
-        headers.set('authorization', `Bearer ${user.token}`);
+        headers.set("authorization", `Bearer ${user.token}`);
       }
       return headers;
     },
@@ -19,7 +19,7 @@ export const businessCoreApiSlice = createApi({
     fetchServices: builder.query({
       query: ({ category }) => {
         return {
-          url: `/services?${category ? `category=${category}` : ''}`,
+          url: `/services?${category ? `category=${category}` : ""}`,
         };
       },
     }),
@@ -116,7 +116,7 @@ export const businessCoreApiSlice = createApi({
       query: ({ formData }) => {
         return {
           url: `/attachment/person-upload`,
-          method: 'POST',
+          method: "POST",
           body: formData,
           formData: true,
         };
@@ -128,7 +128,7 @@ export const businessCoreApiSlice = createApi({
       query: ({ formData }) => {
         return {
           url: `/attachment/business-upload`,
-          method: 'POST',
+          method: "POST",
           body: formData,
           formData: true,
         };
@@ -149,7 +149,7 @@ export const businessCoreApiSlice = createApi({
       query: ({ id }) => {
         return {
           url: `/attachment/business/${id}`,
-          method: 'DELETE',
+          method: "DELETE",
         };
       },
     }),
@@ -167,7 +167,7 @@ export const businessCoreApiSlice = createApi({
     // DELETE BUSINESS PERSON
     deleteBusinessPerson: builder.mutation({
       query: ({ id }) => {
-        return { url: `/person/${id}`, method: 'DELETE' };
+        return { url: `/business/management/${id}`, method: "DELETE" };
       },
     }),
   }),
