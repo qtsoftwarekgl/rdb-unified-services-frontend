@@ -1,18 +1,18 @@
 import {
   userManagementLocalApi,
   userManagementUatApi,
-} from '@/constants/environments';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import store from 'store';
+} from "@/constants/environments";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import store from "store";
 
 export const userManagementApiSlice = createApi({
-  reducerPath: 'userManagementApi',
+  reducerPath: "userManagementApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${userManagementLocalApi || userManagementUatApi}`,
     prepareHeaders: (headers) => {
-      const user = store.get('user');
+      const user = store.get("user");
       if (user?.token) {
-        headers.set('authorization', `Bearer ${user.token}`);
+        headers.set("authorization", `Bearer ${user.token}`);
       }
       return headers;
     },
@@ -24,7 +24,7 @@ export const userManagementApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/attachment/users`,
-            method: 'POST',
+            method: "POST",
             body: formData,
             formData: true,
           };
@@ -45,7 +45,7 @@ export const userManagementApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/attachment/users/${id}`,
-            method: 'DELETE',
+            method: "DELETE",
           };
         },
       }),
@@ -87,7 +87,36 @@ export const userManagementApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/roles/${id}/disable`,
-            method: 'PATCH',
+            method: "PATCH",
+          };
+        },
+      }),
+
+      // CREATE ROLE
+      createRole: builder.mutation({
+        query: ({ roleName, description, permissions }) => {
+          return {
+            url: `/roles`,
+            method: "POST",
+            body: {
+              roleName,
+              description,
+              permissions,
+            },
+          };
+        },
+      }),
+      // EDIT ROLE
+      editRole: builder.mutation({
+        query: ({ id, roleName, description, permissions }) => {
+          return {
+            url: `/roles/${id}`,
+            method: "PATCH",
+            body: {
+              roleName,
+              description,
+              permissions,
+            },
           };
         },
       }),
@@ -102,6 +131,8 @@ export const {
   useLazyFetchRolesQuery,
   useLazyFetchPermissionsQuery,
   useDisableRoleMutation,
+  useCreateRoleMutation,
+  useEditRoleMutation,
 } = userManagementApiSlice;
 
 export default userManagementApiSlice;

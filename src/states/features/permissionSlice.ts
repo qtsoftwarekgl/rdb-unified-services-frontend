@@ -1,9 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { Permission } from '@/types/models/permission';
+import { createSlice } from "@reduxjs/toolkit";
+import { Permission } from "@/types/models/permission";
 
 const initialState: {
   permissionsList: Permission[];
   permission?: Permission;
+  selectedPermissions: Permission[];
   listPermissionsModal: boolean;
   page: number;
   size: number;
@@ -11,6 +12,7 @@ const initialState: {
   totalPages: number;
 } = {
   permissionsList: [],
+  selectedPermissions: [],
   permission: undefined,
   listPermissionsModal: false,
   page: 1,
@@ -20,7 +22,7 @@ const initialState: {
 };
 
 export const permissionSlice = createSlice({
-  name: 'permission',
+  name: "permission",
   initialState,
   reducers: {
     setPermissionsList: (state, action) => {
@@ -44,6 +46,17 @@ export const permissionSlice = createSlice({
     setSize: (state, action) => {
       state.size = action.payload;
     },
+    setSelectedPermissions: (state, action) => {
+      state.selectedPermissions = [
+        ...action.payload,
+        ...state.selectedPermissions,
+      ];
+    },
+    removeFromSelectedPermissions: (state, action) => {
+      state.selectedPermissions = state.selectedPermissions.filter(
+        (permission) => permission?.id !== action.payload?.id
+      );
+    },
   },
 });
 
@@ -57,4 +70,6 @@ export const {
   setTotalPages,
   setPage,
   setSize,
+  setSelectedPermissions,
+  removeFromSelectedPermissions,
 } = permissionSlice.actions;

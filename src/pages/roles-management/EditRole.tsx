@@ -1,17 +1,22 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
-import Modal from '../../components/Modal';
-import { setCreateRoleModal, setUpdateRoleModal, setRole, setRolesList } from '../../states/features/roleSlice';
-import { Controller, set, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import Button from '../../components/inputs/Button';
-import { useEffect, useState } from 'react';
-import TextArea from '../../components/inputs/TextArea';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { setListPermissionsModal, setListPermissionsModal } from '../../states/features/permissionSlice';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { roles } from '../../constants/dashboard';
-import Loader from '../../components/Loader';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import Modal from "../../components/Modal";
+import {
+  setCreateRoleModal,
+  setUpdateRoleModal,
+  setRole,
+  setRolesList,
+} from "../../states/features/roleSlice";
+import { Controller, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import Button from "../../components/inputs/Button";
+import { useEffect, useState } from "react";
+import TextArea from "../../components/inputs/TextArea";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { setListPermissionsModal } from "../../states/features/permissionSlice";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { roles } from "../../constants/dashboard";
+import Loader from "../../components/Loader";
 
 const EditRole = () => {
   // REACT HOOK FORM
@@ -33,8 +38,8 @@ const EditRole = () => {
 
   // UPDATE DEFAULT VALUES
   useEffect(() => {
-    setValue('name', role?.name);
-    setValue('description', role?.description);
+    setValue("name", role?.name);
+    setValue("description", role?.description);
   }, [setValue, role]);
 
   // HANDLE FORM SUBMIT
@@ -45,12 +50,14 @@ const EditRole = () => {
         setRolesList(
           roles?.map((r) =>
             r?.id === role?.id
-              ? { ...role, name: data?.name, description: data?.description}
+              ? { ...role, name: data?.name, description: data?.description }
               : r
           )
         )
       );
-      dispatch(setRole({ ...role, name: data?.name, description: data?.description }));
+      dispatch(
+        setRole({ ...role, name: data?.name, description: data?.description })
+      );
       dispatch(setListPermissionsModal([]));
       setIsLoading(false);
       dispatch(setUpdateRoleModal(false));
@@ -64,8 +71,8 @@ const EditRole = () => {
         dispatch(setUpdateRoleModal(false));
       }}
     >
-      <h1 className="text-lg text-secondary uppercase text-center">
-        Edit <span className="font-semibold text-primary">{role?.name}</span>{' '}
+      <h1 className="text-lg text-center uppercase text-secondary">
+        Edit <span className="font-semibold text-primary">{role?.name}</span>{" "}
         role
       </h1>
       <form
@@ -73,17 +80,17 @@ const EditRole = () => {
         className="flex flex-col gap-4 w-full max-w-[80%] mx-auto"
       >
         <Controller
-          defaultValue={watch('name')}
+          defaultValue={watch("name")}
           name="name"
           control={control}
-          rules={{ required: 'Name is required' }}
+          rules={{ required: "Name is required" }}
           render={({ field }) => {
             return (
-              <label className="flex flex-col gap-2 w-full">
+              <label className="flex flex-col w-full gap-2">
                 <Input
                   label="Name"
                   placeholder="Role name"
-                  defaultValue={watch('name')}
+                  defaultValue={watch("name")}
                   {...field}
                 />
                 {errors?.name && (
@@ -96,17 +103,17 @@ const EditRole = () => {
           }}
         />
         <Controller
-          defaultValue={watch('description')}
+          defaultValue={watch("description")}
           name="description"
           control={control}
           render={({ field }) => {
             return (
-              <label className="flex flex-col gap-2 w-full">
+              <label className="flex flex-col w-full gap-2">
                 <TextArea
                   label="Description"
                   resize
                   placeholder="Role description"
-                  defaultValue={watch('description')}
+                  defaultValue={watch("description")}
                   onChange={(e) => {
                     field.onChange(e);
                   }}
@@ -132,10 +139,10 @@ const EditRole = () => {
           />
         ) : (
           <article className="flex flex-col gap-2">
-            <h3 className="text-primary text-center">
+            <h3 className="text-center text-primary">
               {role?.name} permissions
             </h3>
-            <menu className="flex items-center gap-3 flex-wrap justify-center">
+            <menu className="flex flex-wrap items-center justify-center gap-3">
               {selectedPermissions?.map((permission) => {
                 return (
                   <Button
@@ -171,7 +178,7 @@ const EditRole = () => {
             </menu>
           </article>
         )}
-        <menu className="flex items-center gap-2 w-full justify-between">
+        <menu className="flex items-center justify-between w-full gap-2">
           <Button
             value="Cancel"
             onClick={(e) => {
@@ -179,7 +186,7 @@ const EditRole = () => {
               dispatch(setUpdateRoleModal(false));
             }}
           />
-          <Button primary submit value={isLoading ? <Loader /> : 'Save'} />
+          <Button primary submit value={isLoading ? <Loader /> : "Save"} />
         </menu>
       </form>
     </Modal>

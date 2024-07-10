@@ -1,28 +1,28 @@
-import Loader from '@/components/Loader';
-import Modal from '@/components/Modal';
-import Table from '@/components/table/Table';
-import { permissionColumns } from '@/constants/permission.constants';
-import { capitalizeString } from '@/helpers/strings';
-import { useLazyFetchPermissionsQuery } from '@/states/api/userManagementApiSlice';
+import Loader from "@/components/Loader";
+import Modal from "@/components/Modal";
+import Table from "@/components/table/Table";
+import { permissionColumns } from "@/constants/permission.constants";
+import { capitalizeString } from "@/helpers/strings";
+import { useLazyFetchPermissionsQuery } from "@/states/api/userManagementApiSlice";
 import {
   setPage,
   setPermissionsList,
   setSize,
   setTotalElements,
   setTotalPages,
-} from '@/states/features/permissionSlice';
+} from "@/states/features/permissionSlice";
 import {
   setRolePermissionsModal,
   setSelectedRole,
-} from '@/states/features/roleSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { Permission } from '@/types/models/permission';
-import { ColumnDef } from '@tanstack/react-table';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@/states/features/roleSlice";
+import { AppDispatch, RootState } from "@/states/store";
+import { Permission } from "@/types/models/permission";
+import { ColumnDef } from "@tanstack/react-table";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ListRolePermissions = () => {
   // STATE VARIABLES
@@ -61,7 +61,7 @@ const ListRolePermissions = () => {
     } else if (permissionsIsError) {
       const errorResponse =
         (permissionsError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching permissions. Refresh and try again';
+        "An error occurred while fetching permissions. Refresh and try again";
       toast.error(errorResponse);
     }
   }, [
@@ -81,6 +81,8 @@ const ListRolePermissions = () => {
       onClose={() => {
         dispatch(setRolePermissionsModal(false));
         dispatch(setSelectedRole(undefined));
+        // invalidate permissions list
+        dispatch(setPermissionsList([]));
       }}
       heading={`Permissions for ${capitalizeString(selectedRole?.roleName)}`}
     >

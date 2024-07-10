@@ -1,5 +1,5 @@
-import { Role } from '@/types/models/role';
-import { createSlice } from '@reduxjs/toolkit';
+import { Role } from "@/types/models/role";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {
   page: number;
@@ -30,7 +30,7 @@ const initialState: {
 };
 
 export const roleSlice = createSlice({
-  name: 'role',
+  name: "role",
   initialState,
   reducers: {
     setRolesList: (state, action) => {
@@ -38,6 +38,9 @@ export const roleSlice = createSlice({
     },
     setRole: (state, action) => {
       state.role = action.payload;
+    },
+    addRole: (state, action) => {
+      state.rolesList = [action.payload, ...state.rolesList];
     },
     setCreateRoleModal: (state, action) => {
       state.createRoleModal = action.payload;
@@ -67,13 +70,13 @@ export const roleSlice = createSlice({
       state.size = action.payload;
     },
     setSelectedRole: (state, action) => {
-      state.selectedRole = action.payload
+      state.selectedRole = action.payload;
     },
     updateRole: (state, action) => {
       state.rolesList = state.rolesList.map((role) =>
         role.id === action.payload.id ? action.payload : role
       );
-    }
+    },
   },
 });
 
@@ -92,5 +95,6 @@ export const {
   setPage,
   setSize,
   setSelectedRole,
-  updateRole
+  updateRole,
+  addRole,
 } = roleSlice.actions;
