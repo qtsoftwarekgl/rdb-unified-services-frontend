@@ -1,13 +1,51 @@
-import { useSelector } from "react-redux";
-import UserLayout from "../../containers/UserLayout";
-import { RootState } from "../../states/store";
-import RegisteredBusinessesTable from "./RegisteredBusinessesTable";
-import NotificationPreference from "./NotificationPreference";
-import UpdatePassword from "./UpdatePassowrd";
-import Divider from "../../components/Divider";
+import { useSelector } from 'react-redux';
+import UserLayout from '../../containers/UserLayout';
+import { AppDispatch, RootState } from '../../states/store';
+import RegisteredBusinessesTable from './RegisteredBusinessesTable';
+import NotificationPreference from './NotificationPreference';
+import Divider from '../../components/Divider';
+import { useLazyGetUserQuery } from '@/states/api/userManagementApiSlice';
+import { useEffect } from 'react';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setUserProfile } from '@/states/features/userSlice';
+import Loader from '@/components/Loader';
+import { formatDate } from '@/helpers/strings';
 
 const UserProfile = () => {
-  const { user } = useSelector((state: RootState) => state.user);
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { user, userProfile } = useSelector((state: RootState) => state.user);
+
+  // INITIALIZE GET USER QUERY
+  const [
+    getUser,
+    {
+      data: userData,
+      error: userError,
+      isFetching: userIsFetching,
+      isSuccess: userIsSuccess,
+      isError: userIsError,
+    },
+  ] = useLazyGetUserQuery();
+
+  // GET USER
+  useEffect(() => {
+    getUser({ id: user?.id });
+  }, [getUser, user?.id]);
+
+  // HANDLE GET USER RESPONSE
+  useEffect(() => {
+    if (userIsSuccess) {
+      dispatch(setUserProfile(userData?.data));
+    } else if (userIsError) {
+      const errorResponse =
+        (userError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching user data. Refresh and try again';
+      toast.error(errorResponse);
+    }
+  }, [userIsSuccess, userData, userIsError, dispatch, userError]);
 
   return (
     <UserLayout>
@@ -18,16 +56,9 @@ const UserProfile = () => {
         {/* User Info */}
         <div className="flex justify-between">
           <div className="flex">
-            <figure className="overflow-hidden inline w-[7rem] h-[7rem] relative rounded-full mr-4">
-              <img
-                src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                className="object-cover w-full h-full"
-              />
-            </figure>
-
             <div className="flex flex-col justify-center">
               <h1 className="text-xl font-semibold text-secondary">
-                Nishimwe Christella
+                {userProfile?.firstName} {userProfile?.lastName || ''}
               </h1>
               <p className="text-base font-light text-gray-500">
                 {user?.email}
@@ -38,77 +69,68 @@ const UserProfile = () => {
         <Divider />
         {/* Personal Details */}
         <h1 className=" text-tertiary w-fit">Personal Details</h1>
-        <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-3">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center">
-              <h1 className="w-1/2 text-base font-semibold text-secondary ">
-                Document Type
-              </h1>
-              <p className="w-1/2 text-gray-300">NID</p>
+        {userIsFetching ? (
+          <figure className="w-full flex items-center justify-center min-h-[40vh]">
+            <Loader className="text-primary" size={'medium'} />
+          </figure>
+        ) : (
+          userIsSuccess && (
+            <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center">
+                  <h1 className="w-1/2 text-base font-semibold text-secondary ">
+                    Document Type
+                  </h1>
+                  <p className="w-1/2 text-gray-300">
+                    {userProfile?.personIdentType || ''}
+                  </p>
+                </div>
+                <div className="flex ">
+                  <h1 className="w-1/2 text-base font-semibold text-secondary">
+                    Document Number
+                  </h1>
+                  <p className="w-1/2 text-gray-300">
+                    {userProfile?.personDocNo || ''}
+                  </p>
+                </div>
+                <div className="flex text-base font-semibold ">
+                  <h1 className="w-1/2 text-secondary ">First Name</h1>
+                  <p className="w-1/2 text-gray-300">
+                    {userProfile?.firstName}
+                  </p>
+                </div>
+                <div className="flex text-base font-semibold ">
+                  <h1 className="w-1/2 text-secondary">Last Name</h1>
+                  <p className="w-1/2 text-gray-300">{userProfile?.lastName}</p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex text-base font-semibold">
+                  <h1 className="w-1/2 text-secondary">Gender</h1>
+                  <p className="w-1/2 text-gray-300">
+                    {userProfile?.gender || ''}
+                  </p>
+                </div>
+                <div className="flex text-base font-semibold ">
+                  <h1 className="w-1/2 text-secondary">Date of birth</h1>
+                  <p className="w-1/2 text-gray-300">
+                    {formatDate(userProfile?.dateOfBirth)}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex text-base font-semibold ">
+                  <h1 className="w-1/2 text-secondary ">Nationality</h1>
+                  <p className="w-1/2 text-gray-300">
+                    {userProfile?.nationality || ''}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex ">
-              <h1 className="w-1/2 text-base font-semibold text-secondary">
-                Document Number
-              </h1>
-              <p className="w-1/2 text-gray-300">11918191819181818</p>
-            </div>
-            <div className="flex ">
-              <h1 className="w-1/2 text-base font-semibold text-secondary">
-                Address
-              </h1>
-              <p className="w-1/2 italic text-gray-300">Nyarutarama</p>
-            </div>
-            <div className="flex ">
-              <h1 className="w-1/2 text-base font-semibold text-secondary">
-                Location
-              </h1>
-              <p className="w-1/2 italic text-gray-300">Nyarutarama</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">First Name</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">Last Name</h1>
-              <p className="w-1/2 text-gray-300">Christella</p>
-            </div>
-            <div className="flex text-base font-semibold">
-              <h1 className="w-1/2 text-secondary">Gender</h1>
-              <p className="w-1/2 text-gray-300">Nyarutarama</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">Female</h1>
-              <p className="w-1/2 text-gray-300">20-06-1992</p>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">Country</h1>
-              <p className="w-1/2 text-gray-300">Rwanda</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary ">Province</h1>
-              <p className="w-1/2 text-gray-300">Kigali</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">District</h1>
-              <p className="w-1/2 text-gray-300">Gasabo</p>
-            </div>
-            <div className="flex text-base font-semibold">
-              <h1 className="w-1/2 text-secondary">Sector</h1>
-              <p className="w-1/2 italic text-gray-300">Nyarutarama</p>
-            </div>
-            <div className="flex text-base font-semibold ">
-              <h1 className="w-1/2 text-secondary">Cell</h1>
-              <p className="w-1/2 text-gray-300">Nyarutarama</p>
-            </div>
-          </div>
-        </div>
+          )
+        )}
         {/* User Registered businesses */}
         <RegisteredBusinessesTable />
-        <UpdatePassword />
         <NotificationPreference />
       </main>
     </UserLayout>

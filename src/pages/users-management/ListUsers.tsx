@@ -3,126 +3,110 @@ import Button from '../../components/inputs/Button';
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import AdminLayout from '../../containers/AdminLayout';
 import Table from '../../components/table/Table';
-import { users } from '../../constants/Users';
-import { capitalizeString, formatDate } from '../../helpers/strings';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddUser from './AddUser';
-import ViewUser from './ViewUser';
-import RowSelectionCheckbox from '@/components/table/RowSelectionCheckbox';
-import { Row } from '@tanstack/react-table';
-import { DataTableColumnHeader } from '@/components/table/ColumnHeader';
+import ViewUserDetails from './ViewUserDetails';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { useLazyFetchUsersQuery } from '@/states/api/userManagementApiSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import {
+  setPage,
+  setSelectedUser,
+  setSize,
+  setTotalElements,
+  setTotalPages,
+  setUsersList,
+  setViewUserDetailsModal,
+} from '@/states/features/userSlice';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
+import { userColumns } from '@/constants/user.constants';
+import { User } from '@/types/models/user';
+import { capitalizeString, formatDate, getStatusBgColor } from '@/helpers/strings';
 
 const ListUsers = () => {
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { usersList, page, size, totalElements, totalPages } = useSelector(
+    (state: RootState) => state.user
+  );
+
   // COLUMNS
   const [openUserModal, setOpenUserModal] = useState(false);
-  const [userToView, setUserToView] = useState(null);
 
-  const columns = [
+  // INIITIALIZE FETCH USERS QUERY
+  const [
+    fetchUsers,
     {
-      id: 'no',
-      accessorKey: 'no',
-      header: ({ table }) => {
-        return <RowSelectionCheckbox isHeader table={table} />;
-      },
-      cell: ({
-        row,
-      }: {
-        row: Row<{
-          name: string;
-          image: string;
-        }>;
-      }) => {
-        return <RowSelectionCheckbox row={row} />;
-      },
+      data: usersData,
+      error: usersError,
+      isFetching: usersIsFetching,
+      isSuccess: usersIsSuccess,
+      isError: usersIsError,
     },
+  ] = useLazyFetchUsersQuery();
+
+  // FETCH USERS
+  useEffect(() => {
+    fetchUsers({
+      page,
+      size,
+    });
+  }, [fetchUsers, page, size]);
+
+  // HANDLE USERS QUERY RESPONSE
+  useEffect(() => {
+    if (usersIsSuccess) {
+      dispatch(setUsersList(usersData?.data?.data));
+      dispatch(setTotalElements(usersData?.data?.totalElements));
+      dispatch(setTotalPages(usersData?.data?.totalPages));
+    } else if (usersIsError) {
+      const errorResponse =
+        (usersError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching users. Please try again.';
+      toast.error(errorResponse);
+    }
+  }, [usersIsSuccess, usersData, dispatch, usersIsError, usersError]);
+
+  const userExtendedColumns = [
+    ...userColumns,
     {
-      header: 'Name',
-      accessorKey: 'name',
-      cell: ({
-        row,
-      }: {
-        row: Row<{
-          name: string;
-          image: string;
-        }>;
-      }) => {
+      header: 'State',
+      accessorKey: 'state',
+      id: 'state',
+      cell: ({ row }: { row: Row<User> }) => {
         return (
-          <menu className="flex items-center justify-start gap-3">
-            <figure className="overflow-hidden inline w-[2.5rem] h-[2.5rem] relative rounded-full">
-              <img
-                src={row?.original?.image}
-                className="object-cover w-full h-full"
-              />
-            </figure>
-            <p className="text-[13px]">{row?.original?.name}</p>
-          </menu>
+          <p
+            className={`${getStatusBgColor(
+              row?.original?.state
+            )} text-center text-white text-[13px] rounded-md p-1`}
+          >
+            {capitalizeString(row?.original?.state)}
+          </p>
         );
-      },
-    },
-    {
-      id: 'email',
-      accessorKey: 'email',
-      header: ({ column }) => {
-        return <DataTableColumnHeader column={column} title={'Email'} />;
       },
       filterFn: (row: Row<unknown>, id: string, value: string) => {
         return value.includes(row.getValue(id));
       },
-      enableSorting: true,
     },
     {
-      header: 'Role',
-      accessorKey: 'role',
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: {
-            role: string;
-          };
-        };
-      }) => {
-        return (
-          <p className={`py-1 text-[13px]`}>
-            {capitalizeString(row?.original?.role)}
-          </p>
-        );
-      },
-    },
-    {
-      id: 'status',
-      header: 'Status',
-      accessorKey: 'status',
-      filterFn: (row: Row<unknown>, id: string, value: string) => {
-        return value.includes(row.getValue(id));
-      },
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: {
-            status: string;
-          };
-        };
-      }) => {
-        return (
-          <p className={`py-1 text-[13px]`}>
-            {capitalizeString(row?.original?.status)}
-          </p>
-        );
-      },
-    },
-    {
-      id: 'date',
-      header: 'Date Added',
+      header: 'Date added',
       accessorKey: 'createdAt',
-      filterFn: (row: Row<unknown>, id: string, value: string) => {
-        return value.includes(row.getValue(id));
-      },
+      cell: ({ row }: { row: Row<User> }) =>
+        formatDate(row?.original?.createdAt),
     },
     {
-      header: '',
+      header: 'Last updated',
+      accessorKey: 'updatedAt',
+      cell: ({ row }: { row: Row<User> }) =>
+        formatDate(row?.original?.updatedAt),
+    },
+    {
+      header: 'Actions',
       accessorKey: 'actions',
       cell: ({
         row,
@@ -134,8 +118,10 @@ const ListUsers = () => {
         return (
           <menu
             className="flex items-center gap-4"
-            onClick={() => {
-              setUserToView(row?.original);
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setSelectedUser(row?.original));
+              dispatch(setViewUserDetailsModal(true));
             }}
           >
             <FontAwesomeIcon
@@ -165,20 +151,33 @@ const ListUsers = () => {
           />
         </menu>
         <section className="p-2">
-          <Table
-            rowClickHandler={(row) => {
-              setUserToView(row);
-            }}
-            data={users?.map((user, index) => {
-              return {
-                ...user,
-                no: index + 1,
-                name: `${user?.first_name} ${user?.last_name}`,
-                createdAt: formatDate(user?.createdAt),
-              };
-            })}
-            columns={columns}
-          />
+          {usersIsFetching ? (
+            <figure className="flex items-center justify-center w-full min-h-[40vh]">
+              <Loader className="text-primary" />
+            </figure>
+          ) : (
+            <Table
+              totalElements={totalElements}
+              totalPages={totalPages}
+              page={page}
+              size={size}
+              setPage={setPage}
+              setSize={setSize}
+              rowClickHandler={(row) => {
+                dispatch(setSelectedUser(row));
+                dispatch(setViewUserDetailsModal(true));
+              }}
+              data={usersList
+                ?.filter((user) => user?.firstName !== null)
+                ?.map((user: User, index: number) => {
+                  return {
+                    ...user,
+                    no: index + 1,
+                  };
+                })}
+              columns={userExtendedColumns as ColumnDef<User>[]}
+            />
+          )}
         </section>
         {/* Register User MODAL */}
         {openUserModal && (
@@ -188,10 +187,7 @@ const ListUsers = () => {
           />
         )}
 
-        {/* View User Modal */}
-        {userToView && (
-          <ViewUser user={userToView} setUserToView={setUserToView} />
-        )}
+        <ViewUserDetails />
       </main>
     </AdminLayout>
   );

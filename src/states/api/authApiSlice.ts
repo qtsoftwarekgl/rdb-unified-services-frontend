@@ -85,10 +85,43 @@ export const authApiSlice = createApi({
           };
         },
       }),
+
+      // REQUEST PASSWORD RESET
+      requestPasswordReset: builder.mutation({
+        query: ({ email }) => {
+          return {
+            url: `/forgot-password`,
+            method: 'PATCH',
+            body: {
+              email,
+            },
+          };
+        },
+      }),
+
+      // RESET PASSWORD
+      resetPassword: builder.mutation({
+        query: ({ password, passwordResetCode }) => {
+          return {
+            url: `/reset-password`,
+            method: 'PATCH',
+            body: {
+              password,
+              passwordResetCode,
+            },
+          };
+        },
+      }),
     };
   },
 });
 
-export const { useLoginMutation, useSignupMutation, useVerifyAccountMutation } = authApiSlice;
+export const {
+  useLoginMutation,
+  useSignupMutation,
+  useVerifyAccountMutation,
+  useRequestPasswordResetMutation,
+  useResetPasswordMutation,
+} = authApiSlice;
 
 export default authApiSlice;

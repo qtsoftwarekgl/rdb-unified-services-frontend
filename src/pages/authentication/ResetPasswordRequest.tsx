@@ -4,11 +4,13 @@ import Button from '../../components/inputs/Button';
 import validateInputs from '../../helpers/validations';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import Loader from '../../components/Loader';
 import { useTranslation } from 'react-i18next';
 import RegistrationNavbar from '../user-registration/RegistrationNavbar';
+import { useRequestPasswordResetMutation } from '@/states/api/authApiSlice';
+import { toast } from 'react-toastify';
 
 const ResetPasswordRequest = () => {
 
@@ -22,25 +24,42 @@ const ResetPasswordRequest = () => {
     formState: { errors },
   } = useForm();
 
-  // STATE VARIABLES
-  const [isLoading, setIsLoading] = useState(false);
-
   // NAVIGATE
   const navigate = useNavigate();
 
-  // DEFINE INTERFACE
-  interface Payload {
-    email: string;
-  }
+  // INITIALIZE FORGOT PASSWORD MUTATION
+  const [
+    forgotPassword,
+    {
+      error: forgotPasswordError,
+      isLoading: forgotPasswordIsLoading,
+      isSuccess: forgotPasswordIsSuccess,
+      isError: forgotPasswordIsError,
+    },
+  ] = useRequestPasswordResetMutation();
+
+  // HANDLE FORGOT PASSWORD RESPONSE
+  useEffect(() => {
+    if (forgotPasswordIsSuccess) {
+      navigate('/auth/reset-password/verify');
+    } else if (forgotPasswordIsError) {
+      const errorResponse =
+        (forgotPasswordError as ErrorResponse)?.data?.message ||
+        'An error occurred while sending reset password link. Refresh and try again';
+      toast.error(errorResponse);
+    }
+  }, [
+    forgotPasswordIsSuccess,
+    forgotPasswordIsError,
+    navigate,
+    forgotPasswordError,
+  ]);
 
   // HANDLE FORM SUBMIT
-  const onSubmit = (data: Payload | FieldValues) => {
-    setIsLoading(true);
-    sessionStorage.setItem('email', data?.email);
-    setTimeout(() => {
-      navigate('/auth/reset-password/verify');
-      setIsLoading(false);
-    }, 1000);
+  const onSubmit = (data: FieldValues) => {
+    forgotPassword({
+      email: data?.email,
+    });
   };
 
   return (
@@ -90,7 +109,7 @@ const ResetPasswordRequest = () => {
             />
             <ul className="w-full flex flex-col gap-3 items-center justify-center">
               <Button
-                value={isLoading ? <Loader /> : `${t('submit')}`}
+                value={forgotPasswordIsLoading ? <Loader /> : `${t('submit')}`}
                 className="w-[90%] mx-auto !text-[14px]"
                 submit
                 primary

@@ -2,57 +2,45 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Divider from '../../components/Divider';
 import Modal from '../../components/Modal';
 import Button from '../../components/inputs/Button';
-import { Dispatch, SetStateAction } from 'react';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import AssignRoles from '../roles-management/AssignRoles';
 import { useDispatch } from 'react-redux';
 import { setAssignRolesModal } from '@/states/features/roleSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/states/store';
+import {
+  setSelectedUser,
+  setViewUserDetailsModal,
+} from '@/states/features/userSlice';
+import { capitalizeString } from '@/helpers/strings';
+import AssignRoles from '../roles-management/AssignRoles';
 
-interface ViewUserProps {
-  user: {
-    first_name: string;
-    id: string;
-    role: string;
-    email: string;
-  };
-  setUserToView: Dispatch<SetStateAction<null>>;
-}
-
-const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
+const ViewUser = () => {
   // STATE VARIABLES
   const dispatch = useDispatch();
+  const { selectedUser, viewUserDetailsModal } = useSelector(
+    (state: RootState) => state.user
+  );
 
   return (
     <>
       <Modal
-        isOpen={!!user}
+        isOpen={viewUserDetailsModal}
         onClose={() => {
-          setUserToView(null);
-          dispatch(setAssignRolesModal(false));
+          dispatch(setViewUserDetailsModal(false));
+          dispatch(setSelectedUser(undefined));
         }}
-        className="!min-w-[70%] !max-w-[1400px]"
+        heading={`${selectedUser?.firstName}'s Information`}
       >
-        <main className="flex flex-col w-full gap-6 px-12 py-16 bg-white rounded-md">
-          <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
-            User Information
-          </h1>
+        <main className="flex flex-col w-full gap-6 p-5 bg-white rounded-md">
           {/* User Info */}
           <div className="flex flex-col justify-between md:flex-row">
             <div className="flex">
-              <figure className="overflow-hidden inline w-[7rem] h-[7rem] relative rounded-full mr-4">
-                <img
-                  src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                  className="object-cover w-full h-full"
-                />
-              </figure>
-
               <div className="flex flex-col justify-center">
                 <h1 className="text-xl font-semibold text-secondary">
-                  {user?.first_name}
+                  {selectedUser?.firstName}
                 </h1>
-                <p className="text-lg font-light text-gray-500">{user?.role}</p>
                 <p className="text-base font-light text-gray-500">
-                  {user?.email}
+                  {selectedUser?.email}
                 </p>
               </div>
             </div>
@@ -83,7 +71,7 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
                 <h1 className="w-32 text-base font-semibold text-secondary">
                   First Name
                 </h1>
-                <p className="text-gray-300 ">{user.first_name}</p>
+                <p className="text-gray-300 ">{selectedUser?.firstName}</p>
               </div>
               <div className="flex gap-8">
                 <h1 className="w-32 text-base font-semibold text-secondary">
@@ -101,7 +89,7 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
                 <h1 className="w-32 text-base font-semibold text-secondary">
                   Email
                 </h1>
-                <p className="italic text-gray-300 ">{user.email}</p>
+                <p className="italic text-gray-300 ">{selectedUser?.email}</p>
               </div>
             </div>
             <div className="flex flex-col gap-4 ">
@@ -118,14 +106,22 @@ const ViewUser = ({ user, setUserToView }: ViewUserProps) => {
                   />
                 </menu>
               </div>
-              <p className="text-gray-300 ">Admin</p>
-              <p className="text-gray-300 ">Verifier</p>
-              <p className="text-gray-300 ">Approver</p>
+              <menu className="flex flex-col gap-2">
+                {selectedUser?.roles?.map((role) => {
+                  return (
+                    <div key={role.id} className="flex items-center gap-4">
+                      <p className="text-gray-300">
+                        {capitalizeString(role.roleName)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </menu>
             </div>
           </div>
         </main>
       </Modal>
-      <AssignRoles user_id={user?.id} />
+      <AssignRoles />
     </>
   );
 };
