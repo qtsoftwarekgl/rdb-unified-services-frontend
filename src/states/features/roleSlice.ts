@@ -111,5 +111,6 @@ export const {
   updateRole,
   addSelectedRole,
   removeSelectedRole,
-  setSelectedRoles
+  setSelectedRoles,
+  addRole
 } = roleSlice.actions;
