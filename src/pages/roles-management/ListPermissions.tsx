@@ -1,23 +1,24 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../components/Modal';
-import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../../components/Modal";
+import { AppDispatch, RootState } from "../../states/store";
 import {
   setListPermissionsModal,
   setPage,
   setPermissionsList,
+  setSelectedPermissions,
   setSize,
   setTotalElements,
   setTotalPages,
-} from '../../states/features/permissionSlice';
-import Table from '../../components/table/Table';
-import { permissionColumns } from '@/constants/permission.constants';
-import { useLazyFetchPermissionsQuery } from '@/states/api/userManagementApiSlice';
-import { useEffect } from 'react';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import Loader from '@/components/Loader';
-import { Permission } from '@/types/models/permission';
-import { ColumnDef } from '@tanstack/react-table';
+} from "../../states/features/permissionSlice";
+import Table from "../../components/table/Table";
+import { permissionColumns } from "@/constants/permission.constants";
+import { useLazyFetchPermissionsQuery } from "@/states/api/userManagementApiSlice";
+import { useEffect } from "react";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import Loader from "@/components/Loader";
+import { Permission } from "@/types/models/permission";
+import { ColumnDef } from "@tanstack/react-table";
 
 const ListPermissions = () => {
   // STATE VARIABLES
@@ -61,7 +62,7 @@ const ListPermissions = () => {
     if (permissionsIsError) {
       toast.error(
         (permissionsError as ErrorResponse)?.data?.message ||
-          'An error occurred while fetching permissions. Refresh and try again'
+          "An error occurred while fetching permissions. Refresh and try again"
       );
     }
   }, [
@@ -96,6 +97,9 @@ const ListPermissions = () => {
           page={page}
           size={size}
           totalElements={totalElements}
+          // rowClickHandler={(row) => {
+          //   dispatch(setSelectedPermissions(row?.original));
+          // }}
           totalPages={totalPages}
           data={permissionsList?.map(
             (permission: Permission, index: number) => {

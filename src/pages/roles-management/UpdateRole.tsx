@@ -1,21 +1,24 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
-import Modal from '../../components/Modal';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import Modal from "../../components/Modal";
 import {
   setCreateRoleModal,
+  setSelectedRole,
   setUpdateRoleModal,
-} from '../../states/features/roleSlice';
-import { Controller, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import Button from '../../components/inputs/Button';
-import { useState } from 'react';
-import TextArea from '../../components/inputs/TextArea';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  setListPermissionsModal,
-} from '../../states/features/permissionSlice';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import Loader from '../../components/Loader';
+  updateRole,
+} from "../../states/features/roleSlice";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import Button from "../../components/inputs/Button";
+import { useEffect } from "react";
+import TextArea from "../../components/inputs/TextArea";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { setListPermissionsModal } from "../../states/features/permissionSlice";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Loader from "../../components/Loader";
+import { useEditRoleMutation } from "@/states/api/userManagementApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UpdateRole = () => {
   // REACT HOOK FORM
@@ -35,11 +38,48 @@ const UpdateRole = () => {
   const { selectedPermissions } = useSelector(
     (state: RootState) => state.permission
   );
-  const [isLoading, setIsLoading] = useState(false);
+
+  // INITIALIZE UPDATE ROLE QUERY
+  const [
+    editRole,
+    {
+      data: editRoleData,
+      isLoading: editRoleIsLoading,
+      isSuccess: editRoleIsSuccess,
+      isError: editRoleIsError,
+      error: editRoleError,
+    },
+  ] = useEditRoleMutation();
+
+  // HANDLE UPDATE ROLE RESPONSE
+  useEffect(() => {
+    if (editRoleIsSuccess) {
+      dispatch(setUpdateRoleModal(false));
+      dispatch(updateRole(editRoleData?.data));
+      dispatch(setSelectedRole(undefined));
+    }
+    if (editRoleIsError) {
+      const errorResponse =
+        (editRoleError as ErrorResponse)?.data?.message ||
+        "An error occurred while updating role. Refresh and try again";
+      toast.error(errorResponse);
+    }
+  }, [editRoleError, editRoleIsError, editRoleIsSuccess, dispatch]);
+
+  // UPDATE DEFAULT VALUES
+  useEffect(() => {
+    setValue("name", role?.roleName);
+    setValue("description", role?.description);
+  }, [setValue, role]);
 
   // HANDLE FORM SUBMIT
-  const onSubmit = (data: object) => {
-    console.log(data)
+  const onSubmit = (data: FieldValues) => {
+    editRole({
+      id: role?.id,
+      roleName: data?.name,
+      description: data?.description,
+      permissions: selectedPermissions?.map((permission) => permission?.id),
+    });
   };
 
   return (
@@ -49,8 +89,9 @@ const UpdateRole = () => {
         dispatch(setUpdateRoleModal(false));
       }}
     >
-      <h1 className="text-lg text-secondary uppercase text-center">
-        Edit <span className="font-semibold text-primary">{role?.name}</span>{' '}
+      <h1 className="text-lg text-center uppercase text-secondary">
+        Edit{" "}
+        <span className="font-semibold text-primary">{role?.roleName}</span>{" "}
         role
       </h1>
       <form
@@ -58,17 +99,17 @@ const UpdateRole = () => {
         className="flex flex-col gap-4 w-full max-w-[80%] mx-auto"
       >
         <Controller
-          defaultValue={watch('name')}
+          defaultValue={watch("name")}
           name="name"
           control={control}
-          rules={{ required: 'Name is required' }}
+          rules={{ required: "Name is required" }}
           render={({ field }) => {
             return (
-              <label className="flex flex-col gap-2 w-full">
+              <label className="flex flex-col w-full gap-2">
                 <Input
                   label="Name"
                   placeholder="Role name"
-                  defaultValue={watch('name')}
+                  defaultValue={watch("name")}
                   {...field}
                 />
                 {errors?.name && (
@@ -81,20 +122,18 @@ const UpdateRole = () => {
           }}
         />
         <Controller
-          defaultValue={watch('description')}
+          defaultValue={watch("description")}
           name="description"
           control={control}
           render={({ field }) => {
             return (
-              <label className="flex flex-col gap-2 w-full">
+              <label className="flex flex-col w-full gap-2">
                 <TextArea
                   label="Description"
                   resize
                   placeholder="Role description"
-                  defaultValue={watch('description')}
-                  onChange={(e) => {
-                    field.onChange(e);
-                  }}
+                  defaultValue={watch("description")}
+                  {...field}
                 />
               </label>
             );
@@ -117,10 +156,10 @@ const UpdateRole = () => {
           />
         ) : (
           <article className="flex flex-col gap-2">
-            <h3 className="text-primary text-center">
-              {role?.name} permissions
+            <h3 className="text-center text-primary">
+              {role?.roleName} permissions
             </h3>
-            <menu className="flex items-center gap-3 flex-wrap justify-center">
+            <menu className="flex flex-wrap items-center justify-center gap-3">
               {selectedPermissions?.map((permission) => {
                 return (
                   <Button
@@ -156,7 +195,7 @@ const UpdateRole = () => {
             </menu>
           </article>
         )}
-        <menu className="flex items-center gap-2 w-full justify-between">
+        <menu className="flex items-center justify-between w-full gap-2">
           <Button
             value="Cancel"
             onClick={(e) => {
@@ -164,7 +203,11 @@ const UpdateRole = () => {
               dispatch(setUpdateRoleModal(false));
             }}
           />
-          <Button primary submit value={isLoading ? <Loader /> : 'Save'} />
+          <Button
+            primary
+            submit
+            value={editRoleIsLoading ? <Loader /> : "Save"}
+          />
         </menu>
       </form>
     </Modal>
