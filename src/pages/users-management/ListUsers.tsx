@@ -1,9 +1,13 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/inputs/Button';
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleInfo,
+  faCirclePlus,
+  faEllipsisVertical,
+  faRightLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import AdminLayout from '../../containers/AdminLayout';
 import Table from '../../components/table/Table';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { useEffect, useState } from 'react';
 import AddUser from './AddUser';
 import ViewUserDetails from './ViewUserDetails';
@@ -21,12 +25,19 @@ import {
   setUsersList,
   setViewUserDetailsModal,
 } from '@/states/features/userSlice';
-import { ErrorResponse } from 'react-router-dom';
+import { ErrorResponse, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loader from '@/components/Loader';
 import { userColumns } from '@/constants/user.constants';
 import { User } from '@/types/models/user';
-import { capitalizeString, formatDate, getStatusBgColor } from '@/helpers/strings';
+import {
+  capitalizeString,
+  formatDate,
+  getStatusBgColor,
+} from '@/helpers/strings';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { setAssignRolesModal } from '@/states/features/roleSlice';
 
 const ListUsers = () => {
   // STATE VARIABLES
@@ -73,7 +84,84 @@ const ListUsers = () => {
   }, [usersIsSuccess, usersData, dispatch, usersIsError, usersError]);
 
   const userExtendedColumns = [
+    {
+      header: 'Actions',
+      accessorKey: 'actions',
+      cell: ({ row }: { row: Row<User> }) => {
+        return (
+          <CustomPopover
+            trigger={
+              <menu className="flex items-center justify-center w-full gap-2 text-[12px] cursor-pointer">
+                <FontAwesomeIcon
+                  className="text-primary text-md p-0 transition-all duration-300 hover:scale-[.98]"
+                  icon={faEllipsisVertical}
+                />
+              </menu>
+            }
+          >
+            <menu className="bg-white flex flex-col gap-1 p-0 rounded-md">
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedUser(row?.original));
+                  dispatch(setViewUserDetailsModal(true));
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
+                View details
+              </Link>
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon
+                  className="text-primary"
+                  icon={faPenToSquare}
+                />{' '}
+                Edit
+              </Link>
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm  hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedUser(row?.original));
+                  dispatch(setAssignRolesModal(true));
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon className="text-primary" icon={faRightLeft} />
+                Manage roles
+              </Link>
+            </menu>
+          </CustomPopover>
+        );
+      },
+    },
     ...userColumns,
+    {
+      header: 'Roles',
+      accessorKey: 'roles',
+      cell: ({ row }: { row: Row<User> }) => {
+        return (
+          <Link
+            to={'#'}
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setSelectedUser(row?.original));
+              dispatch(setAssignRolesModal(true));
+            }}
+            className="flex items-center gap-2"
+          >
+            <p className="text-primary text-[13px]">View roles</p>
+          </Link>
+        );
+      },
+    },
     {
       header: 'State',
       accessorKey: 'state',
@@ -104,33 +192,6 @@ const ListUsers = () => {
       accessorKey: 'updatedAt',
       cell: ({ row }: { row: Row<User> }) =>
         formatDate(row?.original?.updatedAt),
-    },
-    {
-      header: 'Actions',
-      accessorKey: 'actions',
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: null;
-        };
-      }) => {
-        return (
-          <menu
-            className="flex items-center gap-4"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setSelectedUser(row?.original));
-              dispatch(setViewUserDetailsModal(true));
-            }}
-          >
-            <FontAwesomeIcon
-              className="text-primary text-[20px] cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"
-              icon={faEye}
-            />
-          </menu>
-        );
-      },
     },
   ];
 
@@ -163,10 +224,6 @@ const ListUsers = () => {
               size={size}
               setPage={setPage}
               setSize={setSize}
-              rowClickHandler={(row) => {
-                dispatch(setSelectedUser(row));
-                dispatch(setViewUserDetailsModal(true));
-              }}
               data={usersList
                 ?.filter((user) => user?.firstName !== null)
                 ?.map((user: User, index: number) => {

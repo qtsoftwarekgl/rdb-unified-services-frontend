@@ -180,7 +180,6 @@ const ListRoles = () => {
           <Select
             options={[
               { value: 'add', label: 'Add role' },
-              { value: 'assign', label: 'Assign roles' },
             ]}
             placeholder="Actions"
             className="w-[25%] self-end"

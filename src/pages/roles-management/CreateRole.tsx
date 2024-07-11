@@ -7,7 +7,10 @@ import Input from '../../components/inputs/Input';
 import Button from '../../components/inputs/Button';
 import TextArea from '../../components/inputs/TextArea';
 import ListPermissions from './ListPermissions';
-import { setListPermissionsModal } from '../../states/features/permissionSlice';
+import {
+  setListPermissionsModal,
+  setSelectedPermissions,
+} from '../../states/features/permissionSlice';
 import Loader from '../../components/Loader';
 import { useCreateRoleMutation } from '@/states/api/userManagementApiSlice';
 import { useEffect } from 'react';
@@ -23,6 +26,7 @@ const CreateRole = () => {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   // STATE VARIABLES
@@ -77,6 +81,11 @@ const CreateRole = () => {
       isOpen={createRoleModal}
       onClose={() => {
         dispatch(setCreateRoleModal(false));
+        dispatch(setSelectedPermissions([]));
+        reset({
+          name: '',
+          description: '',
+        });
       }}
       heading="Create role"
     >
@@ -156,6 +165,11 @@ const CreateRole = () => {
             onClick={(e) => {
               e.preventDefault();
               dispatch(setCreateRoleModal(false));
+              dispatch(setSelectedPermissions([]));
+              reset({
+                name: '',
+                description: '',
+              });
             }}
           />
           <Button
