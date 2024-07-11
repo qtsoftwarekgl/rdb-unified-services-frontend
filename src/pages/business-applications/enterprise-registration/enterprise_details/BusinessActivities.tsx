@@ -25,7 +25,7 @@ import {
 import {
   useLazyFetchBusinessActivitiesSectorsQuery,
   useLazyFetchBusinessLinesQuery,
-} from '@/states/api/businessCoreApiSlice';
+} from '@/states/api/businessRegApiSlice';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import {

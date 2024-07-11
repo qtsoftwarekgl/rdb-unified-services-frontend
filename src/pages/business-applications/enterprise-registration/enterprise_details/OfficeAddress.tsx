@@ -35,7 +35,7 @@ import {
   useLazyFetchProvincesQuery,
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
-} from '@/states/api/businessCoreApiSlice';
+} from '@/states/api/businessRegApiSlice';
 import { setBusinessAddress } from '@/states/features/businessSlice';
 import {
   useCreateCompanyAddressMutation,

@@ -1,14 +1,11 @@
-import {
-  userManagementLocalApi,
-  userManagementUatApi,
-} from '@/constants/environments';
+import { userManagementApi } from '@/constants/environments';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import store from 'store';
 
 export const authApiSlice = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${userManagementLocalApi || userManagementUatApi}/auth`,
+    baseUrl: `${userManagementApi}/auth`,
     prepareHeaders: (headers) => {
       const user = store.get('user');
       if (user?.token) {
@@ -67,7 +64,7 @@ export const authApiSlice = createApi({
             url: `/verify-account/`,
             method: 'PATCH',
             body: {
-              verificationCode
+              verificationCode,
             },
           };
         },

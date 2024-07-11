@@ -33,8 +33,8 @@ import {
 } from "@/states/features/boardOfDirectorSlice";
 import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
 import { PersonDetail } from "@/types/models/personDetail";
-import { useLazyGetUserInformationQuery } from "@/states/api/coreApiSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/businessCoreApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/businessExternalServiceApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
 import {
   setBusinessPersonAttachments,
   setUserInformation,
@@ -78,7 +78,7 @@ const BoardDirectors = ({
   const { boardMemberList } = useSelector(
     (state: RootState) => state.boardOfDirector
   );
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const isFormDisabled = RDBAdminEmailPattern.test(String(user?.email));
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
   const { businessDetails } = useSelector((state: RootState) => state.business);
   const { userInformation } = useSelector(

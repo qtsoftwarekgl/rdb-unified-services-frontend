@@ -33,12 +33,12 @@ import {
 } from "@/states/features/executiveManagerSlice";
 import BusinessPeopleTable from "../../domestic-business-registration/management/BusinessPeopleTable";
 import { maskPhoneDigits } from "@/helpers/strings";
-import { useLazyGetUserInformationQuery } from "@/states/api/coreApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/businessExternalServiceApiSlice";
 import {
   setBusinessPersonAttachments,
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
-import { useUploadPersonAttachmentMutation } from "@/states/api/businessCoreApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 import { PersonDetail } from "@/types/models/personDetail";
@@ -74,7 +74,7 @@ const ExecutiveManagement = ({
     null
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user.email);
+  const isFormDisabled = RDBAdminEmailPattern.test(String(user.email));
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<PersonDetail>();

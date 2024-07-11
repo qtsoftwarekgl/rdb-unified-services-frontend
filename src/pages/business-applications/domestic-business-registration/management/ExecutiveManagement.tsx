@@ -27,8 +27,8 @@ import {
   setUserInformation,
 } from '@/states/features/businessPeopleSlice';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
-import { useLazyGetUserInformationQuery } from '@/states/api/coreApiSlice';
-import { useUploadPersonAttachmentMutation } from '@/states/api/businessCoreApiSlice';
+import { useLazyGetUserInformationQuery } from '@/states/api/businessExternalServiceApiSlice';
+import { useUploadPersonAttachmentMutation } from '@/states/api/businessRegApiSlice';
 import { genderOptions } from '@/constants/inputs.constants';
 import {
   addExecutiveManager,
@@ -72,7 +72,7 @@ const ExecutiveManagement = ({
     null
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const disableForm = RDBAdminEmailPattern.test(String(user?.email));
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
 
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
