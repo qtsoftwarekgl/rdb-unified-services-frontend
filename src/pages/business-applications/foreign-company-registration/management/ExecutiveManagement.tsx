@@ -22,7 +22,6 @@ import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 import { businessId } from "@/types/models/business";
 import {
   useCreateManagementOrBoardMemberMutation,
-  useDeleteManagementOrBoardMemberMutation,
   useLazyFetchBusinessPeopleQuery,
 } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { ErrorResponse } from "react-router-dom";
@@ -40,8 +39,6 @@ import {
 } from "@/states/features/businessPeopleSlice";
 import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
-import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
-import { PersonDetail } from "@/types/models/personDetail";
 import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
 import { setBusinessDetails } from "@/states/features/businessSlice";
 import { foreignExecutiveManagementPosition } from "@/constants/businessRegistration";
@@ -77,7 +74,6 @@ const ExecutiveManagement = ({
   const isFormDisabled = RDBAdminEmailPattern.test(String(user.email));
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
-  const [memberToDelete, setMemberToDelete] = useState<PersonDetail>();
   const { businessDetails } = useSelector((state: RootState) => state.business);
   const { userInformation } = useSelector(
     (state: RootState) => state.businessPeople
@@ -261,48 +257,6 @@ const ExecutiveManagement = ({
     },
   ] = useLazyFetchBusinessPeopleQuery();
 
-  // INITIALIZE DELETE MANAGEMENT MEMBER
-  const [
-    deleteManagementMember,
-    {
-      error: deleteManagementMemberError,
-      isLoading: deleteManagementMemberIsLoading,
-      isError: deleteManagementMemberIsError,
-      isSuccess: deleteManagementMemberIsSuccess,
-    },
-  ] = useDeleteManagementOrBoardMemberMutation();
-
-  const handleDeleteManagementMember = () => {
-    if (memberToDelete) deleteManagementMember({ id: memberToDelete.id });
-  };
-  // HANDLE DELETE MANAGEMENT RESPONSE
-
-  useEffect(() => {
-    if (deleteManagementMemberIsError) {
-      if ((deleteManagementMemberError as ErrorResponse).status === 500) {
-        toast.error(
-          "An error occured while deleting member. Please try again later"
-        );
-      } else {
-        toast.error(
-          (deleteManagementMemberError as ErrorResponse).data?.message
-        );
-      }
-    } else if (deleteManagementMemberIsSuccess) {
-      toast.success("Member deleted successfully");
-      fetchManagementMember({
-        businessId,
-        route: "management",
-      });
-      setMemberToDelete(undefined);
-    }
-  }, [
-    businessId,
-    deleteManagementMemberError,
-    deleteManagementMemberIsError,
-    deleteManagementMemberIsSuccess,
-  ]);
-
   // FETCH MANAGEMENT PEOPLE
   useEffect(() => {
     if (!businessId) return;
@@ -420,8 +374,6 @@ const ExecutiveManagement = ({
     }
     return true;
   };
-
-  console.log("executiveManagersList", executiveManagersList);
 
   return (
     <section className="flex flex-col gap-6">
@@ -989,7 +941,6 @@ const ExecutiveManagement = ({
               businessPeopleList={executiveManagersList}
               isLoading={managementMemberIsLoading}
               type="executiveManagement"
-              setDeleteAction={setMemberToDelete}
             />
             {errors?.submit && (
               <p className="text-red-500 text-[15px] text-center">
@@ -1058,16 +1009,6 @@ const ExecutiveManagement = ({
           setDocumentUrl={setPreviewAttachment}
         />
       )}
-      {
-        <ConfirmModal
-          isOpen={!!memberToDelete}
-          onConfirm={handleDeleteManagementMember}
-          onClose={() => setMemberToDelete(undefined)}
-          message="Are you sure you want to delete this member?"
-          description="This action cannot be undone."
-          isLoading={deleteManagementMemberIsLoading}
-        />
-      }
       <OTPVerificationCard
         phone={watch("phoneNumber")}
         isOpen={showVerifyphoneNumber}

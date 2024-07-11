@@ -44,7 +44,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     handleSubmit,
     control,
     formState: { errors },
-    trigger,
     setError,
     clearErrors,
     reset,
@@ -331,7 +330,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger(field?.name);
                       }}
                     />
                     {errors?.companyCategory && (
@@ -367,7 +365,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger(field?.name);
                       }}
                     />
                     {errors?.companyType && (
@@ -401,7 +398,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       {...field}
                       onChange={async (e) => {
                         field.onChange(e);
-                        await trigger(field?.name);
                       }}
                     />
                     {errors?.position && (

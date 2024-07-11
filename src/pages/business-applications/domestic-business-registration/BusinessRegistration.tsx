@@ -32,6 +32,8 @@ import { setBusiness } from "@/states/features/businessSlice";
 import Loader from "@/components/Loader";
 import Button from "@/components/inputs/Button";
 import DeleteBusinessAttachment from "@/containers/business-registration/DeleteBusinessAttachment";
+import BusinessPersonDetails from "@/containers/business-registration/BusinessPersonDetails";
+import DeleteBusinessPerson from "@/containers/business-registration/DeleteBusinessPerson";
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -206,6 +208,8 @@ const BusinessRegistration = () => {
         )}
       </main>
       <DeleteBusinessAttachment />
+      <BusinessPersonDetails />
+      <DeleteBusinessPerson />
     </UserLayout>
   );
 };

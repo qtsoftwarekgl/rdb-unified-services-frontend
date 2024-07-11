@@ -22,7 +22,6 @@ import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 import { businessId } from "@/types/models/business";
 import {
   useCreateManagementOrBoardMemberMutation,
-  useDeleteManagementOrBoardMemberMutation,
   useLazyFetchBusinessPeopleQuery,
 } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { ErrorResponse } from "react-router-dom";
@@ -40,7 +39,6 @@ import {
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import { genderOptions } from "@/constants/inputs.constants";
-import ConfirmModal from "@/components/confirm-modal/ConfirmModal";
 import { setBusinessDetails } from "@/states/features/businessSlice";
 import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
 import moment from "moment";
@@ -73,7 +71,6 @@ const BoardDirectors = ({
     null
   );
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
-  const [memberToDelete, setMemberToDelete] = useState<PersonDetail>();
   const { user } = useSelector((state: RootState) => state.user);
   const { boardMemberList } = useSelector(
     (state: RootState) => state.boardOfDirector
@@ -258,47 +255,6 @@ const BoardDirectors = ({
       isSuccess: boardMemberIsSuccess,
     },
   ] = useLazyFetchBusinessPeopleQuery();
-
-  // INITIALIZE DELETE MANAGEMENT MEMBER
-  const [
-    deleteBoardMember,
-    {
-      error: deleteBoardMemberError,
-      isLoading: deleteBoardMemberIsLoading,
-      isError: deleteBoardMemberIsError,
-      isSuccess: deleteBoardMemberIsSuccess,
-    },
-  ] = useDeleteManagementOrBoardMemberMutation();
-
-  const handleDeleteManagementMember = () => {
-    if (memberToDelete)
-      deleteBoardMember({ id: memberToDelete.id, route: "board-member" });
-  };
-  // HANDLE DELETE BOARD MEMBER RESPONSE
-
-  useEffect(() => {
-    if (deleteBoardMemberIsError) {
-      if ((deleteBoardMemberError as ErrorResponse).status === 500) {
-        toast.error(
-          "An error occured while deleting member. Please try again later"
-        );
-      } else {
-        toast.error((deleteBoardMemberError as ErrorResponse).data?.message);
-      }
-    } else if (deleteBoardMemberIsSuccess) {
-      toast.success("Member deleted successfully");
-      fetchBoardMembers({
-        businessId,
-        route: "board-member",
-      });
-      setMemberToDelete(undefined);
-    }
-  }, [
-    businessId,
-    deleteBoardMemberError,
-    deleteBoardMemberIsError,
-    deleteBoardMemberIsSuccess,
-  ]);
 
   // FETCH BOARD MEMBERS
   useEffect(() => {
@@ -971,7 +927,6 @@ const BoardDirectors = ({
             <BusinessPeopleTable
               businessPeopleList={boardMemberList}
               isLoading={boardMemberIsLoading}
-              setDeleteAction={setMemberToDelete}
               type="Board of Directors"
             />
             {errors?.submit && (
@@ -1080,16 +1035,6 @@ const BoardDirectors = ({
           setDocumentUrl={setPreviewAttachment}
         />
       )}
-      {
-        <ConfirmModal
-          isOpen={!!memberToDelete}
-          onConfirm={handleDeleteManagementMember}
-          onClose={() => setMemberToDelete(undefined)}
-          message="Are you sure you want to delete this member?"
-          description="This action cannot be undone."
-          isLoading={deleteBoardMemberIsLoading}
-        />
-      }
       <OTPVerificationCard
         isOpen={showVerifyPhone}
         onClose={() => {

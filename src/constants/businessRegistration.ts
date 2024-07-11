@@ -176,28 +176,27 @@ export const documentTypes = [
 ];
 
 export const companyTypes = [
+  { label: "Company limited by shares", value: "companyLimitedByShares" },
   {
-    label: "Community Benefit Company (CBC)",
-    value: "communityBenefitCompany",
-  },
-  {
-    label: "Protected Cell Company (PCL)",
-    value: "protectedCellCompany",
-  },
-  {
-    label: "Public Limited Company (PLC)",
-    value: "publicLimitedCompany",
+    label: "Company limited by shares and guarantee ",
+    value: "companyLimitedBySharesAndGuarantee",
   },
 ];
 
 export const privateCompanyTypes = [
-  { label: "Limited by shares", value: "limitedByShares" },
-  { label: "Limited by guarantee", value: "limitedByGuarantee" },
+  { label: "Company limited by shares", value: "companyLimitedByShares" },
   {
-    label: "Limited by shares and guarantee",
-    value: "limitedBySharesAndGuarantee",
+    label: "Company limited by shares and guarantee ",
+    value: "companyLimitedBySharesAndGuarantee",
   },
-  { label: "Unlimited", value: "unlimited" },
+  {
+    label: "Company limited by guarantee",
+    value: "companyLimitedByGuarantee",
+  },
+  {
+    label: "Unlimited company",
+    value: "unlimitedCompany",
+  },
 ];
 
 export const companyPositions = [
@@ -669,6 +668,10 @@ export const legalArrangementTypes = [
   {
     label: "Limited partnership",
     value: "limited_partnership",
+  },
+  {
+    label: "Others",
+    value: "others",
   },
 ];
 

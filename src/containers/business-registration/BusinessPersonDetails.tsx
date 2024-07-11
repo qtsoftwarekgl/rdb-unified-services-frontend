@@ -8,7 +8,7 @@ import { convertFileSizeToMbs } from "@/helpers/uploads";
 import {
   useLazyFetchPersonAttachmentsQuery,
   useLazyGetBusinessPersonDetailsQuery,
-} from '@/states/api/businessRegApiSlice';
+} from "@/states/api/businessRegApiSlice";
 import {
   setBusinessPerson,
   setBusinessPersonAttachments,
@@ -126,8 +126,6 @@ const BusinessPersonDetails = () => {
     selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
-
-  console.log(">>>>>>>>>>>>>>>>>>>>", selectedBusinessPerson);
 
   return (
     <Modal

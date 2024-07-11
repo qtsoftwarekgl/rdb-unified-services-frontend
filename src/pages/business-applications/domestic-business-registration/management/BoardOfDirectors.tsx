@@ -20,11 +20,11 @@ import moment from "moment";
 import {
   useCreateManagementOrBoardPersonMutation,
   useLazyFetchBusinessPeopleQuery,
-} from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
-import { ErrorResponse } from 'react-router-dom';
-import { useUploadPersonAttachmentMutation } from '@/states/api/businessRegApiSlice';
-import { useLazyGetUserInformationQuery } from '@/states/api/businessExternalServiceApiSlice';
+} from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
+import { ErrorResponse } from "react-router-dom";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
+import { useLazyGetUserInformationQuery } from "@/states/api/businessExternalServiceApiSlice";
 import {
   addBoardMember,
   setBoardOfDirectorsList,
@@ -36,6 +36,7 @@ import {
 } from "@/states/features/businessPeopleSlice";
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
 import { genderOptions } from "@/constants/inputs.constants";
+import BusinessPeopleTable from "./BusinessPeopleTable";
 
 type BoardOfDirectorsProps = {
   businessId: businessId;
@@ -831,9 +832,10 @@ const BoardOfDirectors = ({
               <Loader />
             </figure>
           ) : (
-            <BusinessPeople
+            <BusinessPeopleTable
+              type="boardOfDirectors"
+              isLoading={managementMemberIsFetching}
               businessPeopleList={boardMemberList}
-              businessId={businessId}
             />
           )}
           {[

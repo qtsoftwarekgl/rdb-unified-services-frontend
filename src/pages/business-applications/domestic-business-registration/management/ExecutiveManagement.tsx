@@ -25,11 +25,11 @@ import Loader from "@/components/Loader";
 import {
   setBusinessPersonAttachments,
   setUserInformation,
-} from '@/states/features/businessPeopleSlice';
-import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
-import { useLazyGetUserInformationQuery } from '@/states/api/businessExternalServiceApiSlice';
-import { useUploadPersonAttachmentMutation } from '@/states/api/businessRegApiSlice';
-import { genderOptions } from '@/constants/inputs.constants';
+} from "@/states/features/businessPeopleSlice";
+import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
+import { useLazyGetUserInformationQuery } from "@/states/api/businessExternalServiceApiSlice";
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
+import { genderOptions } from "@/constants/inputs.constants";
 import {
   addExecutiveManager,
   setExecutiveManagersList,
@@ -37,6 +37,7 @@ import {
 import { useLazyFetchBusinessPeopleQuery } from "@/states/api/businessRegApiSlice";
 import BusinessPeople from "./BusinessPeople";
 import { executiveManagementPosition } from "@/constants/businessRegistration";
+import BusinessPeopleTable from "./BusinessPeopleTable";
 
 type ExecutiveManagementProps = {
   businessId: businessId;
@@ -833,7 +834,11 @@ const ExecutiveManagement = ({
               <Loader />
             </figure>
           ) : (
-            <BusinessPeople businessPeopleList={executiveManagersList} />
+            <BusinessPeopleTable
+              type="executiveManagement"
+              isLoading={managementMemberIsFetching}
+              businessPeopleList={executiveManagersList}
+            />
           )}
           {[
             "IN_PREVIEW",
