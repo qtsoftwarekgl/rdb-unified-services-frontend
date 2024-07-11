@@ -25,7 +25,7 @@ import {
   useLazyFetchProvincesQuery,
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
-} from '@/states/api/businessCoreApiSlice';
+} from '@/states/api/businessRegApiSlice';
 import {
   setCellsList,
   setDistrictsList,

@@ -8,7 +8,7 @@ import { convertFileSizeToMbs } from "@/helpers/uploads";
 import {
   useLazyFetchPersonAttachmentsQuery,
   useLazyGetBusinessPersonDetailsQuery,
-} from "@/states/api/businessCoreApiSlice";
+} from '@/states/api/businessRegApiSlice';
 import {
   setBusinessPerson,
   setBusinessPersonAttachments,

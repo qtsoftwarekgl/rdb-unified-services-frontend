@@ -1,6 +1,5 @@
 export const {
-    VITE_APP_BUSINESS_REG_LOCAL_API: businessRegLocalApi,
-    VITE_APP_BUSINESS_REG_UAT_API: businessRegUatApi,
-    VITE_APP_USER_MANAGEMENT_LOCAL_API: userManagementLocalApi,
-    VITE_APP_USER_MANAGEMENT_UAT_API: userManagementUatApi
+    VITE_APP_BUSINESS_REG_API: businessRegApi,
+    VITE_APP_USER_MANAGEMENT_API: userManagementApi,
+    VITE_APP_EXTERNAL_SERVICE_API: externalServiceApi,
 } = import.meta.env;

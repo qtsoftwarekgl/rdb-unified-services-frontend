@@ -65,6 +65,7 @@ const ResetPasswordNew = () => {
   useEffect(() => {
     if (resetPasswordIsSuccess) {
       toast.success('Password reset successful. Login to continue');
+      store.remove('passwordResetCode');
       navigate('/auth/login');
     } else if (resetPasswordIsError) {
       const errorResponse =

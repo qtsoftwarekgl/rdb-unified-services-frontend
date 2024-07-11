@@ -30,7 +30,7 @@ import Table from "@/components/table/Table";
 import { toast } from "react-toastify";
 import { setFounderDetailsList } from "@/states/features/founderDetailSlice";
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
-import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessCoreApiSlice";
+import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessRegApiSlice";
 import { setBusinessAttachments } from "@/states/features/businessSlice";
 
 interface PreviewSubmissionProps {

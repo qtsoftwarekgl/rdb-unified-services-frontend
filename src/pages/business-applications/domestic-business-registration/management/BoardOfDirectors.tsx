@@ -23,8 +23,8 @@ import {
 } from '@/states/api/businessRegApiSlice';
 import { toast } from 'react-toastify';
 import { ErrorResponse } from 'react-router-dom';
-import { useUploadPersonAttachmentMutation } from '@/states/api/businessCoreApiSlice';
-import { useLazyGetUserInformationQuery } from '@/states/api/coreApiSlice';
+import { useUploadPersonAttachmentMutation } from '@/states/api/businessRegApiSlice';
+import { useLazyGetUserInformationQuery } from '@/states/api/businessExternalServiceApiSlice';
 import {
   addBoardMember,
   setBoardOfDirectorsList,

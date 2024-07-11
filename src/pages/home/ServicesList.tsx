@@ -3,7 +3,7 @@ import Input from "../../components/inputs/Input";
 import Navbar from "../../containers/Navbar";
 import { useEffect, useRef, useState } from "react";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useLazyFetchServicesQuery } from "@/states/api/businessCoreApiSlice";
+import { useLazyFetchServicesQuery } from "@/states/api/businessRegApiSlice";
 import { AppDispatch, RootState } from "@/states/store";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";

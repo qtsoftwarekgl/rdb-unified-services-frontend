@@ -1,6 +1,5 @@
 import {
-  userManagementLocalApi,
-  userManagementUatApi,
+  userManagementApi,
 } from "@/constants/environments";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import store from "store";
@@ -8,7 +7,7 @@ import store from "store";
 export const userManagementApiSlice = createApi({
   reducerPath: "userManagementApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${userManagementLocalApi || userManagementUatApi}`,
+    baseUrl: `${userManagementApi}`,
     prepareHeaders: (headers) => {
       const user = store.get("user");
       if (user?.token) {
