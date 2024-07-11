@@ -167,7 +167,7 @@ export const businessCoreApiSlice = createApi({
     // DELETE BUSINESS PERSON
     deleteBusinessPerson: builder.mutation({
       query: ({ id }) => {
-        return { url: `/business/management/${id}`, method: "DELETE" };
+        return { url: `/business/person/${id}`, method: "DELETE" };
       },
     }),
   }),
