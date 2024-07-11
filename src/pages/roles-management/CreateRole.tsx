@@ -1,19 +1,21 @@
-import { useDispatch, useSelector } from "react-redux";
-import Modal from "../../components/Modal";
-import { AppDispatch, RootState } from "../../states/store";
-import { setCreateRoleModal, addRole } from "../../states/features/roleSlice";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../components/inputs/Input";
-import Button from "../../components/inputs/Button";
-import TextArea from "../../components/inputs/TextArea";
-import ListPermissions from "./ListPermissions";
-import { setListPermissionsModal } from "../../states/features/permissionSlice";
-import Loader from "../../components/Loader";
-import { useCreateRoleMutation } from "@/states/api/userManagementApiSlice";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import { ErrorResponse } from "react-router-dom";
-import { Role } from "@/types/models/role";
+import { useDispatch, useSelector } from 'react-redux';
+import Modal from '../../components/Modal';
+import { AppDispatch, RootState } from '../../states/store';
+import { setCreateRoleModal, addRole } from '../../states/features/roleSlice';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../components/inputs/Input';
+import Button from '../../components/inputs/Button';
+import TextArea from '../../components/inputs/TextArea';
+import ListPermissions from './ListPermissions';
+import { setListPermissionsModal } from '../../states/features/permissionSlice';
+import Loader from '../../components/Loader';
+import { useCreateRoleMutation } from '@/states/api/userManagementApiSlice';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { ErrorResponse } from 'react-router-dom';
+import { Role } from '@/types/models/role';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const CreateRole = () => {
   // REACT HOOK FORM
@@ -26,6 +28,9 @@ const CreateRole = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { createRoleModal } = useSelector((state: RootState) => state.role);
+  const { selectedPermissions } = useSelector(
+    (state: RootState) => state.permission
+  );
 
   const [
     createRole,
@@ -42,23 +47,28 @@ const CreateRole = () => {
     if (createRoleIsSuccess) {
       dispatch(setCreateRoleModal(false));
       dispatch(addRole(createRoleData?.data as Role));
-      toast.success("Role created successfully");
+      toast.success('Role created successfully');
     }
     if (createRoleIsError) {
       const errorResponse =
         (createRoleError as ErrorResponse)?.data?.message ||
-        "An error occurred while creating role. Refresh and try again";
+        'An error occurred while creating role. Refresh and try again';
       toast.error(errorResponse);
     }
-  }, [createRoleError, createRoleIsError, createRoleIsSuccess, dispatch]);
+  }, [
+    createRoleData?.data,
+    createRoleError,
+    createRoleIsError,
+    createRoleIsSuccess,
+    dispatch,
+  ]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     createRole({
       roleName: data.name,
       description: data.description,
-      // To DO: Add permissions
-      permissions: [],
+      permissions: selectedPermissions?.map((permission) => permission.id),
     });
   };
 
@@ -68,18 +78,16 @@ const CreateRole = () => {
       onClose={() => {
         dispatch(setCreateRoleModal(false));
       }}
+      heading="Create role"
     >
-      <h1 className="text-lg font-semibold text-center uppercase text-primary">
-        Add Role
-      </h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-full max-w-[60%] mx-auto"
+        className="flex flex-col gap-4 w-full"
       >
         <Controller
           name="name"
           control={control}
-          rules={{ required: "Name is required" }}
+          rules={{ required: 'Name is required' }}
           render={({ field }) => {
             return (
               <label className="flex flex-col items-start gap-1">
@@ -106,16 +114,38 @@ const CreateRole = () => {
         />
 
         <article className="flex flex-col gap-2">
-          <h3 className="text-center text-primary">Selected permissions</h3>
-          <menu className="flex flex-wrap items-center justify-center gap-3">
+          <h3 className="text-center text-primary uppercase mt-4 font-medium">
+            Selected permissions
+          </h3>
+          <menu className="flex flex-col items-center justify-center gap-3">
+            {selectedPermissions?.length > 0 && (
+              <ul className="w-full flex items-center justify-center gap-2">
+                {selectedPermissions?.map((permission) => {
+                  return (
+                    <p
+                      key={permission.id}
+                      className="bg-gray-700 text-white rounded-md p-1 px-2 text-[13px]"
+                    >
+                      {permission.name}
+                    </p>
+                  );
+                })}
+              </ul>
+            )}
             <Button
-              styled={false}
-              className="!text-[13px] bg-secondary text-white rounded-md px-3 py-1 hover:bg-[#ff0000] transition-all duration-300 ease-in-out hover:shadow-md"
-              value="Add more"
+              className="!py-1"
+              value={
+                <menu className="flex items-center gap-2 text-[13px]">
+                  <FontAwesomeIcon icon={faPlus} />
+
+                  {selectedPermissions?.length > 0
+                    ? 'Add more'
+                    : 'Add permissions'}
+                </menu>
+              }
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setListPermissionsModal(true));
-                dispatch(setCreateRoleModal(false));
               }}
             />
           </menu>
@@ -129,7 +159,7 @@ const CreateRole = () => {
             }}
           />
           <Button
-            value={createRoleIsLoading ? <Loader /> : "Submit"}
+            value={createRoleIsLoading ? <Loader /> : 'Submit'}
             submit
             primary
           />

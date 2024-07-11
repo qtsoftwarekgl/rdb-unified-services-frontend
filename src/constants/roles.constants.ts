@@ -7,11 +7,6 @@ import { Row } from '@tanstack/react-table';
 
 export const roleColumns = [
   {
-    header: 'No',
-    accessorKey: 'no',
-    id: 'no',
-  },
-  {
     header: 'Role Name',
     accessorKey: 'roleName',
     cell: ({ row }: { row: Row<Role> }) =>

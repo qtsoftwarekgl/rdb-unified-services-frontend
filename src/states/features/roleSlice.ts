@@ -15,6 +15,7 @@ const initialState: {
   assignRolesModal: boolean;
   selectedRole?: Role;
   selectedRoles?: Role[];
+  enableRoleModal: boolean;
 } = {
   rolesList: [],
   role: undefined,
@@ -28,7 +29,8 @@ const initialState: {
   size: 10,
   totalElements: 0,
   totalPages: 1,
-  selectedRoles: []
+  selectedRoles: [],
+  enableRoleModal: false,
 };
 
 export const roleSlice = createSlice({
@@ -89,6 +91,9 @@ export const roleSlice = createSlice({
     },
     setSelectedRoles: (state, action) => {
       state.selectedRoles = action.payload;
+    },
+    setEnableRoleModal: (state, action) => {
+      state.enableRoleModal = action.payload;
     }
   },
 });
@@ -112,5 +117,6 @@ export const {
   addSelectedRole,
   removeSelectedRole,
   setSelectedRoles,
-  addRole
+  addRole,
+  setEnableRoleModal,
 } = roleSlice.actions;

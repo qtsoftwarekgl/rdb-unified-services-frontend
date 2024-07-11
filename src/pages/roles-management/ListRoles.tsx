@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/inputs/Button';
 import AdminLayout from '../../containers/AdminLayout';
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { faBan } from '@fortawesome/free-solid-svg-icons';
 import Table from '../../components/table/Table';
 import CreateRole from './CreateRole';
@@ -11,7 +12,6 @@ import {
   setAssignRolesModal,
   setDisableRoleModal,
   setUpdateRoleModal,
-  setRole,
   setRolesList,
   setTotalElements,
   setTotalPages,
@@ -19,6 +19,7 @@ import {
   setSize,
   setSelectedRole,
   setRolePermissionsModal,
+  setEnableRoleModal,
 } from '../../states/features/roleSlice';
 import UpdateRole from './UpdateRole';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
@@ -36,6 +37,8 @@ import Loader from '@/components/Loader';
 import { capitalizeString, getStatusBgColor } from '@/helpers/strings';
 import ListPermissions from './ListPermissions';
 import ListRolePermissions from './ListRolePermissions';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
+import EnableRole from './EnableRole';
 
 const ListRoles = () => {
   // STATE VARIABLES
@@ -80,6 +83,52 @@ const ListRoles = () => {
 
   // COLUMNS
   const roleExtendedColumns = [
+    {
+      header: 'Actions',
+      accessorKey: 'actions',
+      cell: ({ row }: { row: Row<Role> }) => {
+        return (
+          <menu className="flex items-center gap-2">
+            <CustomTooltip label="Edit role">
+              <FontAwesomeIcon
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedRole(row?.original));
+                  dispatch(setUpdateRoleModal(true));
+                }}
+                icon={faPenToSquare}
+                className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-primary"
+              />
+            </CustomTooltip>
+            {row?.original?.state === 'ACTIVE' ? (
+              <CustomTooltip label="Disable role">
+                <FontAwesomeIcon
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(setSelectedRole(row?.original));
+                    dispatch(setDisableRoleModal(true));
+                  }}
+                  icon={faBan}
+                  className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-red-600"
+                />
+              </CustomTooltip>
+            ) : (
+              <CustomTooltip label="Enable role">
+                <FontAwesomeIcon
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(setSelectedRole(row?.original));
+                    dispatch(setEnableRoleModal(true));
+                  }}
+                  icon={faCircleCheck}
+                  className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-green-600"
+                />
+              </CustomTooltip>
+            )}
+          </menu>
+        );
+      },
+    },
     ...roleColumns,
     {
       header: 'State',
@@ -116,41 +165,6 @@ const ListRoles = () => {
               dispatch(setRolePermissionsModal(true));
             }}
           />
-        );
-      },
-    },
-
-    {
-      header: 'Actions',
-      accessorKey: 'actions',
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: object;
-        };
-      }) => {
-        return (
-          <menu className="flex items-center gap-2">
-            <FontAwesomeIcon
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setRole(row?.original));
-                dispatch(setUpdateRoleModal(true));
-              }}
-              icon={faPenToSquare}
-              className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-primary"
-            />
-            <FontAwesomeIcon
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setSelectedRole(row?.original));
-                dispatch(setDisableRoleModal(true));
-              }}
-              icon={faBan}
-              className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-red-600"
-            />
-          </menu>
         );
       },
     },
@@ -197,9 +211,8 @@ const ListRoles = () => {
                 dispatch(setSelectedRole(row));
                 dispatch(setRolePermissionsModal(true));
               }}
-              data={rolesList?.map((role: Role, index: number) => {
+              data={rolesList?.map((role: Role) => {
                 return {
-                  no: index + page,
                   ...role,
                 };
               })}
@@ -214,6 +227,7 @@ const ListRoles = () => {
       <AssignRoles />
       <ListPermissions />
       <ListRolePermissions />
+      <EnableRole />
     </AdminLayout>
   );
 };
