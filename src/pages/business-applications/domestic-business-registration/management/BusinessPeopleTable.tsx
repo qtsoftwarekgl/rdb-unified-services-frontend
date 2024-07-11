@@ -20,7 +20,6 @@ type BusinessPeopleTableProps = {
   businessPeopleList: PersonDetail[];
   type: string;
   isLoading: boolean;
-  setDeleteAction: (row: PersonDetail) => void;
 };
 
 const BusinessPeopleTable = ({
