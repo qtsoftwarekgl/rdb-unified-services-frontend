@@ -91,6 +91,16 @@ export const userManagementApiSlice = createApi({
         },
       }),
 
+      // ENABLE ROLE
+      enableRole: builder.mutation({
+        query: ({ id }) => {
+          return {
+            url: `/roles/${id}/enable`,
+            method: "PATCH",
+          };
+        },
+      }),
+
       // CREATE ROLE
       createRole: builder.mutation({
         query: ({ roleName, description, permissions }) => {
@@ -123,7 +133,7 @@ export const userManagementApiSlice = createApi({
       // FETCH USERS
       fetchUsers: builder.query({
         query: ({ page, size, searchKey, state, userType, isLocked }) => {
-          let url = `/users?page=${page}&size=${size}`;
+          let url = `/?page=${page}&size=${size}`;
           if (searchKey) {
             url += `&searchKey=${searchKey}`;
           }
@@ -145,7 +155,7 @@ export const userManagementApiSlice = createApi({
       getUser: builder.query({
         query: ({ id }) => {
           return {
-            url: `/users/${id}`,
+            url: `/${id}`,
           };
         },
       }),
@@ -154,7 +164,7 @@ export const userManagementApiSlice = createApi({
       assignRoles: builder.mutation({
         query: ({ userId, roleIds }) => {
           return {
-            url: `/users/assign-role`,
+            url: `/assign-role`,
             method: 'PATCH',
             body: {
               userId,
@@ -168,7 +178,7 @@ export const userManagementApiSlice = createApi({
       updateNotificationPreferences: builder.mutation({
         query: ({ notificationPreference }) => {
           return {
-            url: `/users/update-notification-preferences/${notificationPreference}`,
+            url: `/update-notification-preferences/${notificationPreference}`,
             method: 'PATCH',
           };
         },
@@ -190,6 +200,7 @@ export const {
   useLazyGetUserQuery,
   useAssignRolesMutation,
   useUpdateNotificationPreferencesMutation,
+  useEnableRoleMutation
 } = userManagementApiSlice;
 
 export default userManagementApiSlice;

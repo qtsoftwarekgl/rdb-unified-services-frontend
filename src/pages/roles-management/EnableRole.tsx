@@ -2,70 +2,69 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
 import Modal from '../../components/Modal';
 import {
-  setDisableRoleModal,
+  setEnableRoleModal,
   setSelectedRole,
 } from '../../states/features/roleSlice';
 import Button from '../../components/inputs/Button';
 import Loader from '../../components/Loader';
 import { capitalizeString } from '@/helpers/strings';
-import { useDisableRoleMutation } from '@/states/api/userManagementApiSlice';
+import { useEnableRoleMutation } from '@/states/api/userManagementApiSlice';
 import { useEffect } from 'react';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const DisableRole = () => {
+const EnableRole = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { disableRoleModal, selectedRole } = useSelector(
+  const { enableRoleModal, selectedRole } = useSelector(
     (state: RootState) => state.role
   );
 
   // INITIALIZE DISABLE ROLE MUTATION
   const [
-    disableRole,
+    enableRole,
     {
-      isLoading: disableRoleIsLoading,
-      error: disableRoleError,
-      isSuccess: disableRoleIsSuccess,
-      isError: disableRoleIsError,
+      isLoading: enableRoleIsLoading,
+      error: enableRoleError,
+      isSuccess: enableRoleIsSuccess,
+      isError: enableRoleIsError,
     },
-  ] = useDisableRoleMutation();
+  ] = useEnableRoleMutation();
 
   // HANDLE DISABLE ROLE RESPONSE
   useEffect(() => {
-    if (disableRoleIsSuccess) {
+    if (enableRoleIsSuccess) {
       window.location.reload();
-      dispatch(setDisableRoleModal(false));
+      dispatch(setEnableRoleModal(false));
       dispatch(setSelectedRole(undefined));
     }
-    if (disableRoleIsError) {
+    if (enableRoleIsError) {
       const errorResponse =
-        (disableRoleError as ErrorResponse)?.data?.message ||
+        (enableRoleError as ErrorResponse)?.data?.message ||
         'An error occurred while disabling role. Refresh and try again';
       toast.error(errorResponse);
     }
   }, [
-    disableRoleIsSuccess,
-    disableRoleIsError,
+    enableRoleIsSuccess,
+    enableRoleIsError,
     dispatch,
     selectedRole,
-    disableRoleError,
+    enableRoleError,
   ]);
 
   return (
     <Modal
-      isOpen={disableRoleModal}
+      isOpen={enableRoleModal}
       onClose={() => {
-        dispatch(setDisableRoleModal(false));
+        dispatch(setEnableRoleModal(false));
       }}
-      heading={`Disable ${capitalizeString(selectedRole?.roleName)}`}
-      headingClassName="text-red-600"
+      heading={`Enable ${capitalizeString(selectedRole?.roleName)}`}
+      headingClassName="!text-green-700"
     >
       <p className="w-full max-w-[50vw] text-[15px]">
-        Are you sure you want to disable{' '}
+        Are you sure you want to enable{' '}
         {capitalizeString(selectedRole?.roleName)}? All users who are currently
-        using this role will be affected! You can also always re-enable it from
-        this page.
+        using this role will be affected!
       </p>
 
       <menu className="flex items-center gap-3 justify-between">
@@ -73,18 +72,18 @@ const DisableRole = () => {
           value="Cancel"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setDisableRoleModal(false));
+            dispatch(setEnableRoleModal(false));
             dispatch(setSelectedRole(undefined));
           }}
         />
         <Button
-          value={disableRoleIsLoading ? <Loader /> : 'Disable'}
+          value={enableRoleIsLoading ? <Loader /> : 'Enable'}
           primary
-          danger
+          className='!bg-green-700 !border-none'
           onClick={(e) => {
             e.preventDefault();
             if (selectedRole) {
-              disableRole({ id: selectedRole.id });
+              enableRole({ id: selectedRole.id });
             }
           }}
         />
@@ -93,4 +92,4 @@ const DisableRole = () => {
   );
 };
 
-export default DisableRole;
+export default EnableRole;

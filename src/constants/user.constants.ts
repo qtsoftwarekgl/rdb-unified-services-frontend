@@ -4,11 +4,6 @@ import { Row } from '@tanstack/react-table';
 
 export const userColumns = [
   {
-    header: 'No',
-    accessorKey: 'no',
-    id: 'no',
-  },
-  {
     header: 'First Name',
     accessorKey: 'firstName',
     id: 'firstName',
@@ -39,16 +34,6 @@ export const userColumns = [
     id: 'notificationPreference',
     cell: ({ row }: { row: Row<User> }) =>
       capitalizeString(row?.original?.notificationPreference),
-  },
-  {
-    header: 'Roles',
-    accessorKey: 'roles',
-    id: 'roles',
-    cell: ({ row }: { row: Row<User> }) =>
-      row?.original?.roles?.length > 0 &&
-      row?.original?.roles
-        ?.map((role) => capitalizeString(role?.roleName))
-        .join(', '),
   },
   {
     header: 'Nationality',

@@ -4,12 +4,7 @@ import { Row } from '@tanstack/react-table';
 
 export const permissionColumns = [
   {
-    header: 'No',
-    accessorKey: 'no',
-    id: 'no',
-  },
-  {
-    header: 'Permission',
+    header: 'Name',
     accessorKey: 'name',
     cell: ({ row }: { row: Row<Permission> }) =>
       capitalizeString(row?.original?.name),

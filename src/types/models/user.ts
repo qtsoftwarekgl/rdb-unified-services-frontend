@@ -2,6 +2,7 @@ import { Role } from './role';
 import { AbstractDomain } from '.';
 
 export interface User extends AbstractDomain {
+  fullName?: string;
   state: string,
   firstName: string;
   lastName: string;
