@@ -2,10 +2,17 @@ import Loader from "@/components/Loader";
 import Table from "@/components/table/Table";
 import { capitalizeString } from "@/helpers/strings";
 import { useLazyFetchShareholdersQuery } from "@/states/api/businessRegApiSlice";
-import { setFounderDetailsList } from "@/states/features/founderDetailSlice";
+import {
+  setDeleteFounderDetailModal,
+  setFounderDetailsList,
+  setSelectedFounderDetail,
+} from "@/states/features/founderDetailSlice";
 import { AppDispatch, RootState } from "@/states/store";
 import { businessId } from "@/types/models/business";
 import { FounderDetail } from "@/types/models/personDetail";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -57,6 +64,25 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
     {
       header: "Shareholder Type",
       accessorKey: "shareHolderType",
+    },
+    {
+      header: "Actions",
+      accessorKey: "actions",
+      cell: ({ row }: { row: Row<FounderDetail> }) => {
+        return (
+          <menu className="flex items-center justify-center gap-6 w-ful">
+            <FontAwesomeIcon
+              className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-red-600`}
+              icon={faTrash}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setSelectedFounderDetail(row?.original));
+                dispatch(setDeleteFounderDetailModal(true));
+              }}
+            />
+          </menu>
+        );
+      },
     },
   ];
 
@@ -112,7 +138,7 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
             }`,
           };
         })}
-        columns={shareholderColumns}
+        columns={shareholderColumns as ColumnDef<Row<FounderDetail>, unknown>[]}
         showFilter={false}
         showPagination={false}
       />

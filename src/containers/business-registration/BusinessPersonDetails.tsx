@@ -1,8 +1,6 @@
 import Loader from "@/components/Loader";
 import Modal from "@/components/Modal";
 import Button from "@/components/inputs/Button";
-import { countriesList } from "@/constants/countries";
-import { genderOptions } from "@/constants/inputs.constants";
 import { capitalizeString } from "@/helpers/strings";
 import { convertFileSizeToMbs } from "@/helpers/uploads";
 import {
@@ -29,7 +27,6 @@ const BusinessPersonDetails = () => {
   const {
     businessPersonDetailsModal,
     selectedBusinessPerson,
-    businessPerson,
     businessPersonAttachments,
   } = useSelector((state: RootState) => state.businessPeople);
 
@@ -59,10 +56,7 @@ const BusinessPersonDetails = () => {
     if (businessPersonIsError) {
       if ((businessPersonError as ErrorResponse)?.status === 500) {
         toast.error(
-          `An error occurred while getting ${
-            selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.organizationName
-          }'s details. Refresh and try again`
+          `An error occurred while getting ${selectedBusinessPerson?.firstName}'s details. Refresh and try again`
         );
       } else {
         toast.error((businessPersonError as ErrorResponse)?.data?.message);
@@ -76,7 +70,6 @@ const BusinessPersonDetails = () => {
     businessPersonIsError,
     businessPersonIsSuccess,
     dispatch,
-    selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
 
@@ -106,10 +99,7 @@ const BusinessPersonDetails = () => {
     if (personAttachmentsIsError) {
       if ((personAttachmentsError as ErrorResponse)?.status === 500) {
         toast.error(
-          `An error occurred while getting ${
-            selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.organizationName
-          }'s attachments. Refresh and try again`
+          `An error occurred while getting ${selectedBusinessPerson?.firstName}'s attachments. Refresh and try again`
         );
       } else {
         toast.error((personAttachmentsError as ErrorResponse)?.data?.message);
@@ -123,7 +113,6 @@ const BusinessPersonDetails = () => {
     personAttachmentsIsError,
     personAttachmentsIsSuccess,
     dispatch,
-    selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
 
@@ -134,62 +123,34 @@ const BusinessPersonDetails = () => {
         dispatch(setBusinessPersonDetailsModal(false));
         dispatch(setSelectedBusinessPerson(undefined));
       }}
-      heading={`${
-        selectedBusinessPerson?.firstName ||
-        selectedBusinessPerson?.organizationName
-      } ${selectedBusinessPerson?.lastName || ""}`}
+      heading={`${selectedBusinessPerson?.firstName} ${
+        selectedBusinessPerson?.lastName || ""
+      }`}
     >
       {businessPersonIsFetching ? (
         <figure className="w-full flex items-center justify-center min-h-[30vh]">
           <Loader className="text-primary" />
         </figure>
       ) : (
-        <menu className="grid grid-cols-2 gap-5 w-full min-w-[45vw]">
-          <p className="text-[14px]">First Name: {businessPerson?.firstName}</p>
-          <p className="text-[14px]">Last Name: {businessPerson?.lastName}</p>
-          <p className="text-[14px]">
-            Date of birth: {businessPerson?.dateOfBirth || "N/A"}
-          </p>
-          <p className="text-[14px]">
-            Sex:{" "}
-            {
-              genderOptions?.find(
-                (gender) => gender?.value === businessPerson?.gender
-              )?.label
-            }
-          </p>
-          <p className="text-[14px]">
-            Nationality:{" "}
-            {
-              countriesList?.find(
-                (country) => country?.code === businessPerson?.nationality
-              )?.name
-            }
-          </p>
-          <p className="text-[14px]">
-            Document Type:{" "}
-            {businessPerson?.personIdentType === "nid"
-              ? "National Identification"
-              : "Passport"}
-          </p>
-          <p className="text-[14px]">
-            Document Issue Place:{" "}
-            {
-              countriesList?.find(
-                (country) => country?.code === businessPerson?.persDocIssuePlace
-              )?.name
-            }
-          </p>
-          <p className="text-[14px]">
-            Phone number: {businessPerson?.phoneNumber}
-          </p>
-          <p className="text-[14px]">Email: {businessPerson?.email}</p>
-          <p className="text-[14px]">
-            Role:{" "}
-            {capitalizeString(businessPerson?.personRole?.roleDescription) ||
-              capitalizeString(businessPerson?.roleDescription)}
-          </p>
-        </menu>
+        selectedBusinessPerson && (
+          <menu className="grid grid-cols-2 gap-5 w-full min-w-[45vw]">
+            {Object.entries(selectedBusinessPerson)?.map(([key, value]) => {
+              if (
+                key === "step" ||
+                key === "id" ||
+                key === "isForeign" ||
+                key === "name" ||
+                value === null
+              )
+                return null;
+              return (
+                <p className="text-[14px]">
+                  {capitalizeString(key)}: {value}
+                </p>
+              );
+            })}
+          </menu>
+        )
       )}
       {personAttachmentsIsFetching ? (
         <figure className="w-full flex items-center justify-center min-h-[10vh]">
