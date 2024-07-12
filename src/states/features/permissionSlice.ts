@@ -16,7 +16,7 @@ const initialState: {
   permission: undefined,
   listPermissionsModal: false,
   page: 1,
-  size: 10,
+  size: 100,
   totalElements: 0,
   totalPages: 1,
 };
@@ -47,16 +47,19 @@ export const permissionSlice = createSlice({
       state.size = action.payload;
     },
     setSelectedPermissions: (state, action) => {
-      state.selectedPermissions = [
-        ...action.payload,
-        ...state.selectedPermissions,
-      ];
+      state.selectedPermissions = action.payload;
     },
     removeFromSelectedPermissions: (state, action) => {
       state.selectedPermissions = state.selectedPermissions.filter(
         (permission) => permission?.id !== action.payload?.id
       );
     },
+    addToSelectedPermissions: (state, action) => {
+      state.selectedPermissions = [
+        ...state.selectedPermissions,
+        action.payload,
+      ];
+    }
   },
 });
 
@@ -72,4 +75,5 @@ export const {
   setSize,
   setSelectedPermissions,
   removeFromSelectedPermissions,
+  addToSelectedPermissions,
 } = permissionSlice.actions;

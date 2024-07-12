@@ -1,8 +1,9 @@
 import Loader from '@/components/Loader';
 import Modal from '@/components/Modal';
 import Button from '@/components/inputs/Button';
-import Input from '@/components/inputs/Input';
-import { capitalizeString } from '@/helpers/strings';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
+import Table from '@/components/table/Table';
+import { roleColumns } from '@/constants/roles.constants';
 import {
   useAssignRolesMutation,
   useLazyFetchRolesQuery,
@@ -12,11 +13,16 @@ import {
   removeSelectedRole,
   setAssignRolesModal,
   setRolesList,
+  setSelectedRoles,
   setTotalElements,
   setTotalPages,
 } from '@/states/features/roleSlice';
-import { updateUser } from '@/states/features/userSlice';
+import { setSelectedUser, updateUser } from '@/states/features/userSlice';
 import { AppDispatch, RootState } from '@/states/store';
+import { Role } from '@/types/models/role';
+import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Row } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ErrorResponse } from 'react-router-dom';
@@ -25,7 +31,7 @@ import { toast } from 'react-toastify';
 const AssignRoles = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { assignRolesModal, rolesList, selectedRoles } = useSelector(
+  const { assignRolesModal, selectedRoles, rolesList } = useSelector(
     (state: RootState) => state.role
   );
   const { selectedUser } = useSelector((state: RootState) => state.user);
@@ -77,7 +83,9 @@ const AssignRoles = () => {
   // HANDLE ASSIGN ROLES MUTATION RESPONSE
   useEffect(() => {
     if (assignRolesIsSuccess) {
-      toast.success('Roles assigned successfully');
+      toast.success(
+        `Roles assigned to ${selectedUser?.firstName} successfully`
+      );
       dispatch(updateUser({ ...selectedUser, roles: selectedRoles }));
       resetAssignRoles();
       dispatch(setAssignRolesModal(false));
@@ -98,14 +106,62 @@ const AssignRoles = () => {
     resetAssignRoles,
   ]);
 
+  useEffect(() => {
+    if (selectedUser) {
+      dispatch(setSelectedRoles(selectedUser?.roles));
+    }
+  }, [dispatch, selectedUser]);
+
+  const rolesExtendedColumns = [
+    ...roleColumns,
+    {
+      id: 'actions',
+      cell: ({ row }: { row: Row<Role> }) => {
+        const roleSelected = selectedRoles?.find(
+          (role) => role?.id === row?.original?.id
+        );
+        return (
+          <figure>
+            {roleSelected ? (
+              <CustomTooltip label={'Remove selection'}>
+                <FontAwesomeIcon
+                  icon={faMinus}
+                  className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 px-[8.2px] text-[14px] flex items-center justify-center rounded-full bg-red-600"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(removeSelectedRole(row?.original));
+                  }}
+                />
+              </CustomTooltip>
+            ) : (
+              <CustomTooltip label={'Select role'}>
+                <FontAwesomeIcon
+                  icon={faPlus}
+                  className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 px-[8.2px] text-[14px] flex items-center justify-center rounded-full bg-primary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(addSelectedRole(row?.original));
+                  }}
+                />
+              </CustomTooltip>
+            )}
+          </figure>
+        );
+      },
+    },
+  ];
+
   return (
     <Modal
       isOpen={assignRolesModal}
       onClose={() => {
         dispatch(setAssignRolesModal(false));
+        dispatch(setSelectedUser(null));
+        dispatch(setSelectedRoles([]));
         resetAssignRoles();
       }}
-      heading={`Assign roles to ${selectedUser?.firstName}`}
+      heading={`Manage ${selectedUser?.fullName}'s roles`}
+      className="!min-w-[50vw]"
     >
       <section className="w-full flex flex-col gap-4">
         {rolesIsFetching ? (
@@ -113,25 +169,9 @@ const AssignRoles = () => {
             <Loader className="text-primary" />
           </figure>
         ) : (
-          <menu className="flex flex-col gap-2">
-            {rolesList?.map((role) => {
-              return (
-                <label key={role?.id} className="flex items-center gap-2">
-                  <Input
-                    type="checkbox"
-                    onChange={(e) => {
-                      if (e) {
-                        dispatch(addSelectedRole(role));
-                      } else {
-                        dispatch(removeSelectedRole(role));
-                      }
-                    }}
-                  />
-                  <p>{capitalizeString(role?.roleName)}</p>
-                </label>
-              );
-            })}
-          </menu>
+          <section className="w-full flex flex-col gap-6">
+            <Table data={rolesList} columns={rolesExtendedColumns} />
+          </section>
         )}
         <menu className="w-full flex items-center gap-3 justify-between">
           <Button
