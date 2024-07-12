@@ -1,3 +1,4 @@
+import CustomTooltip from "@/components/inputs/CustomTooltip";
 import Table from "@/components/table/Table";
 import { countriesList } from "@/constants/countries";
 import { genderOptions } from "@/constants/inputs.constants";
@@ -58,24 +59,28 @@ const BusinessPeopleTable = ({
       cell: ({ row }: { row: Row<PersonDetail> }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-fit">
-            <FontAwesomeIcon
-              className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-primary`}
-              icon={faEye}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setSelectedBusinessPerson(row?.original));
-                dispatch(setBusinessPersonDetailsModal(true));
-              }}
-            />
-            <FontAwesomeIcon
-              className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-red-600`}
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setSelectedBusinessPerson(row?.original));
-                dispatch(setDeleteBusinessPersonModal(true));
-              }}
-            />
+            <CustomTooltip label=" view details">
+              <FontAwesomeIcon
+                className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-primary`}
+                icon={faEye}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedBusinessPerson(row?.original));
+                  dispatch(setBusinessPersonDetailsModal(true));
+                }}
+              />
+            </CustomTooltip>
+            <CustomTooltip label="Delete">
+              <FontAwesomeIcon
+                className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-red-600`}
+                icon={faTrash}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedBusinessPerson(row?.original));
+                  dispatch(setDeleteBusinessPersonModal(true));
+                }}
+              />
+            </CustomTooltip>
           </menu>
         );
       },

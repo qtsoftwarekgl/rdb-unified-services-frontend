@@ -1,4 +1,5 @@
 import Loader from "@/components/Loader";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
 import Table from "@/components/table/Table";
 import { capitalizeString } from "@/helpers/strings";
 import { useLazyFetchShareholdersQuery } from "@/states/api/businessRegApiSlice";
@@ -66,20 +67,22 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
       accessorKey: "shareHolderType",
     },
     {
-      header: "Actions",
-      accessorKey: "actions",
+      header: "Action",
+      accessorKey: "action",
       cell: ({ row }: { row: Row<FounderDetail> }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-ful">
-            <FontAwesomeIcon
-              className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-red-600`}
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setSelectedFounderDetail(row?.original));
-                dispatch(setDeleteFounderDetailModal(true));
-              }}
-            />
+            <CustomTooltip label="Delete">
+              <FontAwesomeIcon
+                className={`font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02] cursor-pointer text-red-600`}
+                icon={faTrash}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedFounderDetail(row?.original));
+                  dispatch(setDeleteFounderDetailModal(true));
+                }}
+              />
+            </CustomTooltip>
           </menu>
         );
       },
