@@ -6,9 +6,9 @@ import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
 } from '../../../states/features/enterpriseRegistrationSlice';
-import ProgressNavigation from '../../../components/business-registration/ProgressNavigation';
+import ProgressNavigation from '../ProgressNavigation';
 import { TabType } from '../../../types/navigationTypes';
-import Tab from '../../../components/business-registration/Tab';
+import Tab from '../NavigationTab';
 import { ErrorResponse, useLocation } from 'react-router-dom';
 import EnterpriseDetails from './enterprise_details/EnterpriseDetails';
 import BusinessActivity from './enterprise_details/BusinessActivities';

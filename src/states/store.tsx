@@ -31,6 +31,7 @@ import boardOfDirectorSlice from './features/boardOfDirectorSlice';
 import foreignRegApiSlice from './api/foreignCompanyRegistrationApiSlice';
 import userManagementApiSlice from './api/userManagementApiSlice';
 import businessExternalServiceApiSlice from './api/businessExternalServiceApiSlice';
+import navigationFlowSlice from './features/navigationFlowSlice';
 
 export const store = configureStore({
   reducer: {
@@ -67,6 +68,7 @@ export const store = configureStore({
     boardOfDirector: boardOfDirectorSlice,
     founderDetail: founderDetailSlice,
     shareDetail: shareDetailSlice,
+    navigationFlow: navigationFlowSlice
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(

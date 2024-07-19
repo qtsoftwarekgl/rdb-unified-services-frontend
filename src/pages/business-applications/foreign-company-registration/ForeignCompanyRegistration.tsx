@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import queryString, { ParsedQuery } from "query-string";
 import { useDispatch, useSelector } from "react-redux";
 import UserLayout from "../../../containers/UserLayout";
-import ProgressNavigation from "../../../components/business-registration/ProgressNavigation";
+import ProgressNavigation from "../ProgressNavigation";
 import { ErrorResponse, useLocation } from "react-router-dom";
-import Tab from "../../../components/business-registration/Tab";
+import NavigationTab from "../NavigationTab";
 import {
   RegistrationTab,
   setForeignBusinessActiveStep,
@@ -97,79 +97,79 @@ const ForeignBranchRegistration = () => {
               const isActiveTab = tab?.active;
               const activeStepName = foreign_business_active_step?.name;
 
-              return (
-                <Tab
-                  isOpen={isActiveTab}
-                  steps={tab?.steps}
-                  key={`${String(index)}-${queryParams.businessId}`}
-                  setActiveStep={setForeignBusinessActiveStep}
-                  active_tab={foreign_business_active_tab}
-                >
-                  {isActiveTab && (
-                    <>
-                      {businessIsLoading ? (
-                        <figure className="h-[40vh] flex items-center justify-center">
-                          <Loader />
-                        </figure>
-                      ) : (
-                        <>
-                          {activeStepName === "company_details" && (
-                            <CompanyDetails
-                              businessId={queryParams?.businessId}
-                            />
-                          )}
-                          {activeStepName === "company_address" && (
-                            <CompanyAddress
-                              businessId={queryParams?.businessId}
-                              applicationStatus={business?.applicationStatus}
-                            />
-                          )}
-                          {activeStepName === "business_activity_vat" && (
-                            <BusinessActivity
-                              businessId={queryParams?.businessId}
-                              applicationStatus={business?.applicationStatus}
-                            />
-                          )}
-                          {activeStepName === "board_of_directors" && (
-                            <BoardDirectors
-                              businessId={queryParams?.businessId}
-                              applicationStatus={business?.applicationStatus}
-                            />
-                          )}
-                          {activeStepName === "executive_management" && (
-                            <ExecutiveManagement
-                              businessId={queryParams?.businessId}
-                              applicationStatus={business.applicationStatus}
-                            />
-                          )}
-                          {activeStepName === "employment_info" && (
-                            <EmploymentInfo
-                              businessId={queryParams?.businessId}
-                              applicationStatus={business.applicationStatus}
-                            />
-                          )}
-                          {/* {activeStepName === "foreign_beneficial_owners" && (
-                            <BeneficialOwners
-                              businessId={queryParams?.businessId}
-                            />
-                          )} */}
-                          {activeStepName === "attachments" && (
-                            <CompanyAttachments
-                              businessId={queryParams?.businessId}
-                            />
-                          )}
-                          {activeStepName === "preview_submission" && (
-                            <PreviewSubmission
-                              businessId={queryParams?.businessId}
-                              applicationStatus={business.applicationStatus}
-                            />
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                </Tab>
-              );
+              // return (
+              //   <NavigationTab
+              //     isOpen={isActiveTab}
+              //     steps={tab?.steps}
+              //     key={`${String(index)}-${queryParams.businessId}`}
+              //     setActiveStep={setForeignBusinessActiveStep}
+              //     active_tab={foreign_business_active_tab}
+              //   >
+              //     {isActiveTab && (
+              //       <>
+              //         {businessIsLoading ? (
+              //           <figure className="h-[40vh] flex items-center justify-center">
+              //             <Loader />
+              //           </figure>
+              //         ) : (
+              //           <>
+              //             {activeStepName === "company_details" && (
+              //               <CompanyDetails
+              //                 businessId={queryParams?.businessId}
+              //               />
+              //             )}
+              //             {activeStepName === "company_address" && (
+              //               <CompanyAddress
+              //                 businessId={queryParams?.businessId}
+              //                 applicationStatus={business?.applicationStatus}
+              //               />
+              //             )}
+              //             {activeStepName === "business_activity_vat" && (
+              //               <BusinessActivity
+              //                 businessId={queryParams?.businessId}
+              //                 applicationStatus={business?.applicationStatus}
+              //               />
+              //             )}
+              //             {activeStepName === "board_of_directors" && (
+              //               <BoardDirectors
+              //                 businessId={queryParams?.businessId}
+              //                 applicationStatus={business?.applicationStatus}
+              //               />
+              //             )}
+              //             {activeStepName === "executive_management" && (
+              //               <ExecutiveManagement
+              //                 businessId={queryParams?.businessId}
+              //                 applicationStatus={business.applicationStatus}
+              //               />
+              //             )}
+              //             {activeStepName === "employment_info" && (
+              //               <EmploymentInfo
+              //                 businessId={queryParams?.businessId}
+              //                 applicationStatus={business.applicationStatus}
+              //               />
+              //             )}
+              //             {/* {activeStepName === "foreign_beneficial_owners" && (
+              //               <BeneficialOwners
+              //                 businessId={queryParams?.businessId}
+              //               />
+              //             )} */}
+              //             {activeStepName === "attachments" && (
+              //               <CompanyAttachments
+              //                 businessId={queryParams?.businessId}
+              //               />
+              //             )}
+              //             {activeStepName === "preview_submission" && (
+              //               <PreviewSubmission
+              //                 businessId={queryParams?.businessId}
+              //                 applicationStatus={business.applicationStatus}
+              //               />
+              //             )}
+              //           </>
+              //         )}
+              //       </>
+              //     )}
+              //   </NavigationTab>
+              // );
             }
           )}
         </menu>

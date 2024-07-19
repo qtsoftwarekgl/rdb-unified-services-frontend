@@ -18,7 +18,7 @@ export const businessRegApiSlice = createApi({
       // FETCH BUSINESSES
       fetchBusinesses: builder.query({
         query: ({ page, size, applicationStatus, serviceId }) => {
-          let url = `?page=${page}&size=${size}`;
+          let url = `/?page=${page}&size=${size}`;
           if (applicationStatus) {
             url += `&applicationStatus=${applicationStatus}`;
           }
@@ -595,6 +595,39 @@ export const businessRegApiSlice = createApi({
           return { url: `/founder/${id}`, method: "DELETE" };
         },
       }),
+
+      // FETCH NAVIGATION FLOW MASS
+      fetchNavigationFlowMass: builder.query({
+        query: ({ businessType }) => {
+          return {
+            url: `/navigation-flow/mass?businessType=${businessType}`,
+          };
+        }
+      }),
+
+      // FETCH BUSINESS NAVIGATION FLOWS
+      fetchBusinessNavigationFlows: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/navigation-flow?businessId=${businessId}`,
+          };
+        },
+      }),
+
+      // CREATE NAVIGATION FLOW
+      createNavigationFlow: builder.mutation({
+        query: ({ businessId, massId, isActive }) => {
+          return {
+            url: `/navigation-flow`,
+            method: 'POST',
+            body: {
+              businessId,
+              massId,
+              isActive,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -643,6 +676,9 @@ export const {
   useLazyFetchPersonAttachmentsQuery,
   useDeleteBusinessPersonMutation,
   useDeleteShareholderMutation,
+  useLazyFetchNavigationFlowMassQuery,
+  useLazyFetchBusinessNavigationFlowsQuery,
+  useCreateNavigationFlowMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;
