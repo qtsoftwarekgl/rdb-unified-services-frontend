@@ -1,84 +1,75 @@
-import { faMessage, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { faMessage as solidFaMessage } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect } from 'react';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { UnknownAction } from '@reduxjs/toolkit';
-import {
-  setAddReviewCommentsModal,
-  setApplicationReviewComment,
-  setUserApplications,
-  setUserReviewStepCommentModal,
-} from '../../states/features/userApplicationSlice';
 import Button from '../inputs/Button';
 import { RDBAdminEmailPattern } from '@/constants/Users';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-import {
-  setApplicationReviewStepName,
-  setApplicationReviewTabName,
-} from '@/states/features/applicationReviewSlice';
-import { ReviewComment } from '../applications-review/AddReviewComments';
+import { ErrorResponse, Link } from 'react-router-dom';
 import { businessId } from '@/types/models/business';
+import { UUID } from 'crypto';
+import { useCreateNavigationFlowMutation } from '@/states/api/businessRegApiSlice';
+import { toast } from 'react-toastify';
+import { setBusinessNavigationFlowsList } from '@/states/features/navigationFlowSlice';
+import Loader from '../Loader';
 
 interface PreviewCardProps {
   header: string;
-  setActiveTab: (tab: string) => UnknownAction;
-  setActiveStep: (step: string) => UnknownAction;
   children: ReactNode;
-  stepName: string;
-  tabName: string;
   businessId?: businessId;
   applicationStatus?: string;
+  massId?: UUID;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
   children,
   header,
-  setActiveTab,
-  setActiveStep,
-  stepName,
-  tabName,
+  massId,
   businessId,
   applicationStatus,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
-  const { applicationReviewComments } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-  const [existingComments, setExistingComments] = useState<Array<object>>([]);
-  const [showCommentActions, setShowCommentActions] = useState<boolean>(false);
 
-  // CHECK IF CURRENT CARD HAS COMMENTS
+  // INITIALIZE CREATE BUSINESS NAVIGATION FLOW
+  const [
+    createNavigationFlow,
+    {
+      data: createNavigationFlowData,
+      error: createNavigationFlowError,
+      isError: createNavigationFlowIsError,
+      isSuccess: createNavigationFlowIsSuccess,
+      isLoading: createNavigationFlowIsLoading,
+      reset: resetCreateNavigationFlow,
+    },
+  ] = useCreateNavigationFlowMutation();
+
+  // HANDLE CREATE BUSINESS NAVIGATION FLOW RESPONSE
   useEffect(() => {
-    setExistingComments(
-      applicationReviewComments.filter(
-        (comment: ReviewComment) =>
-          comment?.step.name === stepName &&
-          comment?.tab.name === tabName &&
-          comment?.businessId === businessId
-      )
-    );
-  }, [applicationReviewComments, businessId, stepName, tabName]);
-
-  // ADD/UPDATE COMMENT
-  const handleAddComment = () => {
-    dispatch(setAddReviewCommentsModal(true));
-    dispatch(setApplicationReviewStepName(stepName));
-    dispatch(setApplicationReviewTabName(tabName));
-    setShowCommentActions(false);
-  };
+    if (createNavigationFlowIsError) {
+      const errorResponse =
+        (createNavigationFlowError as ErrorResponse)?.data?.message ||
+        'An error occurred while creating business navigation flow. Refresh and try again';
+      toast.error(errorResponse);
+      resetCreateNavigationFlow();
+    } else if (createNavigationFlowIsSuccess) {
+      dispatch(setBusinessNavigationFlowsList(createNavigationFlowData?.data));
+      resetCreateNavigationFlow();
+    }
+  }, [
+    createNavigationFlowData?.data,
+    createNavigationFlowError,
+    createNavigationFlowIsError,
+    createNavigationFlowIsSuccess,
+    dispatch,
+    resetCreateNavigationFlow,
+  ]);
 
   return (
     <section
-      className={`flex flex-col w-full gap-3 p-4 rounded-md shadow-sm ${
-        existingComments?.filter((comment) => !comment.checked)?.length > 0
-          ? 'border-red-600 border-[1px]'
-          : 'border-primary border-[.3px]'
-      }`}
+      className={`flex flex-col w-full gap-3 p-4 rounded-md shadow-sm border-primary border-[.3px]`}
     >
       <menu className="flex items-center justify-between w-full gap-3">
         <Link
@@ -91,60 +82,32 @@ const PreviewCard: FC<PreviewCardProps> = ({
           {header}
         </Link>
         <menu className="flex items-center gap-4 relative">
-          {!RDBAdminEmailPattern.test(user?.email) && (
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setActiveStep(stepName));
-                dispatch(setActiveTab(tabName));
-                dispatch(
-                  setUserApplications({ businessId, status: 'IN_PREVIEW' })
-                );
-              }}
-              className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-            />
+          {createNavigationFlowIsLoading ? (
+            <Loader className="text-primary" />
+          ) : (
+            ['IN_PROGRESS'].includes(String(applicationStatus)) && (
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (businessId && massId) {
+                    createNavigationFlow({
+                      isActive: true,
+                      massId,
+                      businessId,
+                    });
+                  }
+                }}
+                className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+              />
+            )
           )}
-          {RDBAdminEmailPattern.test(user?.email) && (
-            <Button
-              styled={false}
-              value={
-                <menu className="flex items-center gap-2">
-                  <p className="text-[12px]">
-                    {!existingComments?.length && 'Add comment'}
-                    {existingComments?.length > 0 &&
-                      `${existingComments?.length} comment`}
-                  </p>
-                  <FontAwesomeIcon
-                    className="text-[12px]"
-                    icon={existingComments?.length ? solidFaMessage : faMessage}
-                  />
-                </menu>
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                existingComments?.length <= 0
-                  ? handleAddComment()
-                  : setShowCommentActions(!showCommentActions);
-              }}
-            />
-          )}
-          {showCommentActions && (
+          {false && (
             <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
               <Link
                 to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setUserReviewStepCommentModal(true));
-                  dispatch(
-                    setApplicationReviewComment(
-                      applicationReviewComments?.find(
-                        (comment: ReviewComment) =>
-                          comment?.step?.name === stepName
-                      )
-                    )
-                  );
-                  setShowCommentActions(false);
                 }}
                 className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
               >
@@ -154,7 +117,6 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
-                  handleAddComment();
                 }}
                 className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
               >
@@ -165,14 +127,12 @@ const PreviewCard: FC<PreviewCardProps> = ({
         </menu>
       </menu>
       <section className="flex flex-col w-full gap-3 my-2">{children}</section>
-      {RDBAdminEmailPattern.test(user?.email) && (
+      {RDBAdminEmailPattern.test(String(user?.email)) && (
         <menu className="flex items-center w-full justify-center">
           <Button
             styled={false}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setActiveStep(stepName));
-              dispatch(setActiveTab(tabName));
             }}
             value={
               <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-300">
@@ -183,29 +143,6 @@ const PreviewCard: FC<PreviewCardProps> = ({
           />
         </menu>
       )}
-      {!RDBAdminEmailPattern.test(user?.email) &&
-        existingComments?.filter((comment) => !comment.checked)?.length > 0 &&
-        applicationStatus === 'ACTION_REQUIRED' && (
-          <menu className="flex items-center w-full justify-center">
-            <Button
-              styled={false}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setActiveStep(stepName));
-                dispatch(setActiveTab(tabName));
-              }}
-              value={
-                <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-300 bg-red-600 p-1 px-2 rounded-md">
-                  <p className="text-[13px] text-white">View comments</p>
-                  <FontAwesomeIcon
-                    className="text-[13px] text-white"
-                    icon={faArrowRight}
-                  />
-                </menu>
-              }
-            />
-          </menu>
-        )}
     </section>
   );
 };

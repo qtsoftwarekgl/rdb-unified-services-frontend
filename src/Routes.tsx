@@ -8,7 +8,7 @@ import NotFound from './pages/NotFound';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
-import BusinessRegistration from './pages/business-applications/domestic-business-registration/BusinessRegistration';
+import DomesticBusinessRegistration from './pages/business-applications/domestic-business-registration/DomesticBusinessRegistration';
 import AdminRoutes from './outlets/AdminRoutes';
 import ListUsers from './pages/users-management/ListUsers';
 import ListRoles from './pages/roles-management/ListRoles';
@@ -86,7 +86,7 @@ const Routes = () => {
 
           <Route
             path="/business-registration"
-            element={<BusinessRegistration />}
+            element={<DomesticBusinessRegistration />}
           />
           <Route
             path="/foreign-company-registration"

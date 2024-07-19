@@ -1,7 +1,6 @@
 import { ErrorResponse, Link } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch } from 'react-redux';
-import { UnknownAction } from '@reduxjs/toolkit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { AbstractNavigationFlow } from '@/types/models/navigationFlow';
@@ -19,47 +18,53 @@ type ProgressNavigationProps = {
     active: boolean;
     navigationSteps: AbstractNavigationFlow[];
   }[];
-  setActiveTab: (tab: string) => UnknownAction;
-}
+};
 
 const ProgressNavigation = ({ navigationTabs }: ProgressNavigationProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessNavigationFlowsList } = useSelector((state: RootState) => state.navigationFlow);
+  const { businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
   const { business } = useSelector((state: RootState) => state.business);
 
-    // INITIALIZE CREATE BUSINESS NAVIGATION FLOW
-    const [
-      createNavigationFlow,
-      {
-        data: createNavigationFlowData,
-        error: createNavigationFlowError,
-        isError: createNavigationFlowIsError,
-        isSuccess: createNavigationFlowIsSuccess,
-        isLoading: createNavigationFlowIsLoading,
-        reset: resetCreateNavigationFlow,
-      },
-    ] = useCreateNavigationFlowMutation();
-  
-    // HANDLE CREATE BUSINESS NAVIGATION FLOW RESPONSE
-    useEffect(() => {
-      if (createNavigationFlowIsError) {
-        const errorResponse =
-          (createNavigationFlowError as ErrorResponse)?.data?.message ||
-          'An error occurred while creating business navigation flow. Refresh and try again';
-        toast.error(errorResponse);
-        resetCreateNavigationFlow();
-      } else if (createNavigationFlowIsSuccess) {
-        dispatch(
-          setBusinessNavigationFlowsList(createNavigationFlowData?.data)
-        );
-        resetCreateNavigationFlow();
-      }
-    }, [createNavigationFlowData?.data, createNavigationFlowError, createNavigationFlowIsError, createNavigationFlowIsSuccess, dispatch, resetCreateNavigationFlow]);
+  // INITIALIZE CREATE BUSINESS NAVIGATION FLOW
+  const [
+    createNavigationFlow,
+    {
+      data: createNavigationFlowData,
+      error: createNavigationFlowError,
+      isError: createNavigationFlowIsError,
+      isSuccess: createNavigationFlowIsSuccess,
+      isLoading: createNavigationFlowIsLoading,
+      reset: resetCreateNavigationFlow,
+    },
+  ] = useCreateNavigationFlowMutation();
+
+  // HANDLE CREATE BUSINESS NAVIGATION FLOW RESPONSE
+  useEffect(() => {
+    if (createNavigationFlowIsError) {
+      const errorResponse =
+        (createNavigationFlowError as ErrorResponse)?.data?.message ||
+        'An error occurred while creating business navigation flow. Refresh and try again';
+      toast.error(errorResponse);
+      resetCreateNavigationFlow();
+    } else if (createNavigationFlowIsSuccess) {
+      dispatch(setBusinessNavigationFlowsList(createNavigationFlowData?.data));
+      resetCreateNavigationFlow();
+    }
+  }, [
+    createNavigationFlowData?.data,
+    createNavigationFlowError,
+    createNavigationFlowIsError,
+    createNavigationFlowIsSuccess,
+    dispatch,
+    resetCreateNavigationFlow,
+  ]);
 
   return (
     <nav className="flex items-center gap-4 bg-white h-fit py-[5px] rounded-md shadow-sm w-full justify-evenly px-4">
-      {navigationTabs.map((navigationTab, index: number, arr) => {
+      {navigationTabs?.map((navigationTab, index: number, arr) => {
         return (
           <Link
             key={Number(index)}
@@ -82,11 +87,11 @@ const ProgressNavigation = ({ navigationTabs }: ProgressNavigationProps) => {
                 newNavigationFlow =
                   navigationsExist?.find((navFlow) => !navFlow?.completed) ||
                   navigationsExist.pop();
-                  createNavigationFlow({
-                    massId: newNavigationFlow?.navigationFlowMass?.id,
-                    businessId: business?.id,
-                    isActive: true,
-                  });
+                createNavigationFlow({
+                  massId: newNavigationFlow?.navigationFlowMass?.id,
+                  businessId: business?.id,
+                  isActive: true,
+                });
               } else {
                 newNavigationFlow = navigationTab?.navigationSteps[0];
                 createNavigationFlow({

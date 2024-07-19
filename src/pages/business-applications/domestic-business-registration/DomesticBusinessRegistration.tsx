@@ -4,7 +4,6 @@ import UserLayout from '../../../containers/UserLayout';
 import ProgressNavigation from '../ProgressNavigation';
 import { ErrorResponse, useLocation } from 'react-router-dom';
 import NavigationTab from '../NavigationTab';
-import { setBusinessActiveTab } from '../../../states/features/businessRegistrationSlice';
 import CompanyDetails from './general-information/CompanyDetails';
 import CompanyAddress from './general-information/CompanyAddress';
 import BoardOfDirectors from './management/BoardOfDirectors';
@@ -41,7 +40,7 @@ import {
 } from '@/types/models/navigationFlow';
 import DeleteFounder from "@/containers/business-registration/DeleteFounder";
 
-const BusinessRegistration = () => {
+const DomesticBusinessRegistration = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { business } = useSelector((state: RootState) => state.business);
@@ -141,7 +140,7 @@ const BusinessRegistration = () => {
       error: businessNavigationFlowsError,
       isError: businessNavigationFlowsIsError,
       isFetching: businessNavigationFlowsIsFetching,
-      isSuccess: businessNavigationFlowsIsSuccess
+      isSuccess: businessNavigationFlowsIsSuccess,
     },
   ] = useLazyFetchBusinessNavigationFlowsQuery();
 
@@ -246,7 +245,6 @@ const BusinessRegistration = () => {
               };
             }
           )}
-          setActiveTab={setBusinessActiveTab}
         />
         {businessIsFetching ||
         navigationFlowMassIsFetching ||
@@ -376,4 +374,4 @@ const BusinessRegistration = () => {
   );
 };
 
-export default BusinessRegistration;
+export default DomesticBusinessRegistration;
