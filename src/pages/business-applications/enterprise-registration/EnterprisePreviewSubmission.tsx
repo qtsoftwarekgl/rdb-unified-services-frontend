@@ -142,7 +142,7 @@ const EnterprisePreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Enterprise Details"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Enterprise Details'
         )}
@@ -176,7 +176,7 @@ const EnterprisePreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Enterprise Address"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Enterprise Address'
         )}
@@ -229,7 +229,7 @@ const EnterprisePreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Business Activity & VAT'
         )}

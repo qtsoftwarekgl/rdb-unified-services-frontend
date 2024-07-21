@@ -412,7 +412,7 @@ const ForeignCompanyPreviewSubmission = ({
         header="Company Details"
         businessId={businessId}
         applicationStatus={applicationStatus}
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Company Details'
         )}
@@ -443,7 +443,7 @@ const ForeignCompanyPreviewSubmission = ({
         header="Company Address"
         businessId={businessId}
         applicationStatus={applicationStatus}
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Company Address'
         )}
@@ -465,7 +465,7 @@ const ForeignCompanyPreviewSubmission = ({
         header="Business Activities & VAT"
         businessId={businessId}
         applicationStatus={applicationStatus}
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Business Activity & VAT'
         )}
@@ -508,7 +508,7 @@ const ForeignCompanyPreviewSubmission = ({
         header="Board of Directors"
         businessId={businessId}
         applicationStatus={applicationStatus}
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Board of Directors'
         )}
@@ -536,7 +536,7 @@ const ForeignCompanyPreviewSubmission = ({
       {/* SENIOR MANAGEMENT */}
       <PreviewCard
         header="Executive Management"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Executive Management'
         )}
@@ -566,7 +566,7 @@ const ForeignCompanyPreviewSubmission = ({
       {/* EMPLOYMENT INFO */}
       <PreviewCard
         header="Employment Information"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Employment Info'
         )}
@@ -607,7 +607,7 @@ const ForeignCompanyPreviewSubmission = ({
       {/* ATTACHMENTS */}
       <PreviewCard
         header="Attachments"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Attachments'
         )}

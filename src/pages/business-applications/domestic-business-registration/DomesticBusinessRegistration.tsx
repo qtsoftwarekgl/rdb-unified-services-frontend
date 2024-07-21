@@ -299,7 +299,7 @@ const DomesticBusinessRegistration = () => {
                         />
                       )}
 
-                      {navigationFlow?.stepName === 'Senior Management' && (
+                      {navigationFlow?.stepName === 'Executive Management' && (
                         <ExecutiveManagement
                           businessId={queryParams?.businessId}
                           applicationStatus={business?.applicationStatus}
@@ -337,7 +337,7 @@ const DomesticBusinessRegistration = () => {
                       {navigationFlow?.stepName === 'Capital Details' && (
                         <CapitalDetails
                           businessId={queryParams?.businessId}
-                          status={business?.applicationStatus}
+                          applicationStatus={business?.applicationStatus}
                         />
                       )}
 

@@ -602,7 +602,7 @@ export const businessRegApiSlice = createApi({
           return {
             url: `/navigation-flow/mass?businessType=${businessType}`,
           };
-        }
+        },
       }),
 
       // FETCH BUSINESS NAVIGATION FLOWS
@@ -624,6 +624,20 @@ export const businessRegApiSlice = createApi({
               businessId,
               massId,
               isActive,
+            },
+          };
+        },
+      }),
+
+      // COMPLETE NAVIGATION FLOW
+      completeNavigationFlow: builder.mutation({
+        query: ({ isCompleted = true, navigationFlowId }) => {
+          return {
+            url: `/navigation-flow/complete`,
+            method: 'POST',
+            body: {
+              isCompleted,
+              navigationFlowId,
             },
           };
         },
@@ -679,6 +693,7 @@ export const {
   useLazyFetchNavigationFlowMassQuery,
   useLazyFetchBusinessNavigationFlowsQuery,
   useCreateNavigationFlowMutation,
+  useCompleteNavigationFlowMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

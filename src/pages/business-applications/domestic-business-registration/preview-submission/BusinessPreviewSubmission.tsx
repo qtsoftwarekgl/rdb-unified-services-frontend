@@ -323,7 +323,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Details"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Company Details'
         )}
@@ -363,7 +363,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Address"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Company Address'
         )}
@@ -420,7 +420,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Business Activity & VAT'
         )}
@@ -462,7 +462,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Board of Directors"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Board of Directors'
         )}
@@ -484,7 +484,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Executive Management"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Senior Management'
         )}
@@ -506,7 +506,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Employment Information"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Employment Info'
         )}
@@ -564,7 +564,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Shareholders"
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Employment Info'
         )}
@@ -601,7 +601,7 @@ const PreviewSubmission = ({
         applicationStatus={applicationStatus}
         header="Attachments"
         businessId={businessId}
-        massId={findNavigationFlowMassIdByStepName(
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           'Attachments'
         )}

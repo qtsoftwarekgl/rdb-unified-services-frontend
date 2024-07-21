@@ -65,6 +65,13 @@ const ProgressNavigation = ({ navigationTabs }: ProgressNavigationProps) => {
   return (
     <nav className="flex items-center gap-4 bg-white h-fit py-[5px] rounded-md shadow-sm w-full justify-evenly px-4">
       {navigationTabs?.map((navigationTab, index: number, arr) => {
+        const existingTabs = businessNavigationFlowsList
+          ?.filter(
+            (businessNavigation) =>
+              businessNavigation?.navigationFlowMass?.tabName ===
+              navigationTab?.tabName
+          );
+          const tabIsCompleted = existingTabs?.length > 0 ? existingTabs?.every((navFlow) => navFlow?.completed) : false;
         return (
           <Link
             key={Number(index)}
@@ -104,16 +111,16 @@ const ProgressNavigation = ({ navigationTabs }: ProgressNavigationProps) => {
             className={`step rounded-none w-full h-full py-[6px] px-2 flex text-center items-center justify-center gap-4 cursor-pointer hover:bg-primary hover:!rounded-md hover:text-white ${
               index < arr.length - 1 && 'border-r border-gray-500'
             } ${navigationTab?.active && 'bg-primary text-white !rounded-md'} ${
-              navigationTab?.completed && '!rounded-md !border-none'
+              tabIsCompleted && '!rounded-md !border-none'
             }`}
           >
             {createNavigationFlowIsLoading ? (
               <Loader className="text-primary" />
             ) : (
               <h1 className="text-[14px] navigationTab-name flex items-center gap-2">
-                {navigationTab?.completed && (
+                {tabIsCompleted && (
                   <FontAwesomeIcon
-                    className="text-primary size-4"
+                    className="text-primary size-6"
                     icon={faCircleCheck}
                   />
                 )}{' '}

@@ -43,6 +43,7 @@ type InputProps = {
   fromDate?: Date;
   toDate?: Date;
   checked?: boolean;
+  selectionType?: 'date' | 'month' | 'year' | 'recurringDate';
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -72,6 +73,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       fromDate,
       toDate,
       checked,
+      selectionType,
     },
     ref
   ) => {
@@ -154,6 +156,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             placeholder={placeholder}
             fromDate={fromDate}
             toDate={toDate}
+            selectionType={selectionType}
             onChange={
               onChange as
                 | SelectSingleEventHandler

@@ -19,13 +19,13 @@ interface PreviewCardProps {
   children: ReactNode;
   businessId?: businessId;
   applicationStatus?: string;
-  massId?: UUID;
+  navigationFlowMassId?: UUID;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
   children,
   header,
-  massId,
+  navigationFlowMassId,
   businessId,
   applicationStatus,
 }) => {
@@ -90,10 +90,10 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 icon={faPenToSquare}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (businessId && massId) {
+                  if (businessId && navigationFlowMassId) {
                     createNavigationFlow({
                       isActive: true,
-                      massId,
+                      massId: navigationFlowMassId,
                       businessId,
                     });
                   }

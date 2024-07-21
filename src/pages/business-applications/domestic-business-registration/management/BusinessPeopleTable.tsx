@@ -90,13 +90,13 @@ const BusinessPeopleTable = ({
   return (
     <section className="flex flex-col items-center w-full gap-2">
       <h1 className="font-medium uppercase text-primary">
-        {type === "executiveManagement"
-          ? "Executive Management List"
-          : "Board of Directors List"}
+        {type === 'executiveManagement'
+          ? 'Executive Management List'
+          : 'Board of Directors List'}
       </h1>
       {!isLoading && businessPeopleList?.length <= 0 && (
         <p className="text-sm text-center text-gray-500">
-          No {type === "executiveManagement" ? "management" : "board"} people
+          No {type === 'executiveManagement' ? 'management' : 'board'} people
           found
         </p>
       )}
@@ -116,14 +116,12 @@ const BusinessPeopleTable = ({
               nationality: countriesList?.find(
                 (country) => country?.code === person?.nationality
               )?.name,
-              name: `${person.firstName} ${person.middleName || ""} ${
-                person.lastName || ""
+              name: `${person.firstName} ${person.middleName || ''} ${
+                person.lastName || ''
               }`,
             };
           })}
-          columns={
-            managementPeopleColumns as ColumnDef<Row<PersonDetail>, unknown>[]
-          }
+          columns={managementPeopleColumns as ColumnDef<Row<PersonDetail>>[]}
           showFilter={false}
         />
       )}

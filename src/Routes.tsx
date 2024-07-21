@@ -59,7 +59,7 @@ const Routes = () => {
   return (
     <>
       <ToastContainer
-        autoClose={1500}
+        autoClose={2000}
         position="top-center"
         hideProgressBar
         closeButton={false}

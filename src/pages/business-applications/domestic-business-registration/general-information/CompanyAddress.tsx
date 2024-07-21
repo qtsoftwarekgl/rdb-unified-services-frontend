@@ -8,9 +8,7 @@ import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
-  setBusinessCompletedStep,
 } from '../../../../states/features/businessRegistrationSlice';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
 import { setBusinessAddress } from '@/states/features/businessSlice';
 import { toast } from 'react-toastify';
@@ -38,6 +36,8 @@ import {
   setVillagesList,
 } from '@/states/features/locationSlice';
 import Loader from '@/components/Loader';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
 
 type CompanyAddressProps = {
   businessId: businessId;
@@ -70,9 +70,18 @@ const CompanyAddress = ({
     selectedDistrict,
     selectedSector,
   } = useSelector((state: RootState) => state.location);
-  const { user } = useSelector((state: RootState) => state.user);
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const [formDisabled, setFormDisabled] = useState(false);
   const [showStaticLocation, setShowStaticLocation] = useState(true);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
+
+  // DISABLE FORM
+  useEffect(() => {
+    if (['IN_REVIEW'].includes(String(applicationStatus))) {
+      setFormDisabled(true);
+    }
+  }, [applicationStatus]);
 
   // INITIALIZE GET BUSINESS QUERY
   const [
@@ -330,14 +339,34 @@ const CompanyAddress = ({
       }
     } else if (createCompanyAddressIsSuccess) {
       toast.success('Company address created or updated successfully');
-      dispatch(setBusinessCompletedStep('company_address'));
-      dispatch(setBusinessActiveStep('business_activity_vat'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Address'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Business Activity & VAT'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createCompanyAddressError,
     createCompanyAddressIsError,
     createCompanyAddressIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   return (
@@ -351,7 +380,7 @@ const CompanyAddress = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <fieldset
             className="flex flex-col w-full gap-6"
-            disabled={disableForm}
+            disabled={['IN_REVIEW'].includes(String(applicationStatus))}
           >
             {businessAddress?.location && !showStaticLocation && (
               <Link
@@ -716,10 +745,19 @@ const CompanyAddress = ({
               >
                 <Button
                   value="Back"
-                  disabled={disableForm}
+                  disabled={formDisabled}
                   onClick={(e) => {
                     e.preventDefault();
-                    dispatch(setBusinessActiveStep('company_details'));
+                    dispatch(
+                      createNavigationFlowThunk({
+                        businessId,
+                        massId: findNavigationFlowMassIdByStepName(
+                          navigationFlowMassList,
+                          'Company Details'
+                        ),
+                        isActive: true,
+                      })
+                    );
                   }}
                 />
                 {['IS_AMENDING'].includes(String(applicationStatus)) && (
@@ -732,7 +770,7 @@ const CompanyAddress = ({
                     value={'Save & Complete Preview'}
                     primary
                     submit
-                    disabled={disableForm}
+                    disabled={formDisabled}
                   />
                 )}
                 <Button
@@ -745,7 +783,7 @@ const CompanyAddress = ({
                   }
                   primary
                   submit
-                  disabled={disableForm}
+                  disabled={formDisabled}
                 />
               </menu>
             )}
