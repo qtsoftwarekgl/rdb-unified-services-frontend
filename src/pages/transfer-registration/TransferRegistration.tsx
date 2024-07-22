@@ -3,8 +3,8 @@ import UserLayout from "../../containers/UserLayout";
 import Select from "../../components/inputs/Select";
 import {
   cessationCompanies,
-  dissolutionReasons,
 } from "../../constants/businessRegistration";
+import { dissolutionReasons } from "@/constants/amendment.constants";
 import Input from "../../components/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";

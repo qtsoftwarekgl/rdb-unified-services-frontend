@@ -65,7 +65,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       prefixText = undefined,
       defaultChecked = undefined,
       name,
-      accept = '*',
+      accept = 'application/pdf',
       min,
       readOnly = false,
       labelClassName = '',

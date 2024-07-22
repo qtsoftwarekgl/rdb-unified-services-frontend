@@ -32,7 +32,7 @@ const BusinessPeopleAttachments = ({
 
   // ATTACHMENT COLUMNS
   const attachmentExtendedColumns = [
-    attachmentColumns,
+    ...attachmentColumns,
     {
       header: "Actions",
       accessorKey: "actions",

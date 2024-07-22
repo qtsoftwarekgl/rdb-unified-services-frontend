@@ -115,17 +115,6 @@ export const searchedCompanies = [
   },
 ];
 
-export const dormancyReasons = [
-  { label: "Financial difficulties", value: "financial_difficulties" },
-  {
-    label: "Decline in demand for products/services",
-    value: "decline_in_demand",
-  },
-  { label: "Increased competition", value: "increased_competition" },
-  { label: "Management issues", value: "management_issues" },
-  { label: "Legal problems", value: "legal_problems" },
-];
-
 export const tranferReasons = [
   { label: "Liquidation", value: "liquidation" },
   {
@@ -684,33 +673,6 @@ export const ownerRelationships = [
   },
   {
     label: "Contractual association",
-  },
-];
-
-export const dissolutionReasons = [
-  {
-    label: "Liquidation",
-    value: "liquidation",
-  },
-  {
-    label: "Voluntary close of business",
-    value: "voluntary_close",
-  },
-  {
-    label: "Amalgamation",
-    value: "amalgamation",
-  },
-  {
-    label: "Death",
-    value: "death",
-  },
-  {
-    label: "Court order",
-    value: "court_order",
-  },
-  {
-    label: "Other",
-    value: "other",
   },
 ];
 

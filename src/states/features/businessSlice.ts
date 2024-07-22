@@ -101,17 +101,26 @@ export const fetchBusinessesThunk = createAsyncThunk<
 // UPLOAD AMENDMEND ATTACHMENT
 export const uploadAmendmentAttachmentThunk = createAsyncThunk<
   BusinessAttachment,
-  { file: File; businessId: string, amendmentId: UUID, fileName: string },
+  {
+    file: File;
+    businessId: string;
+    amendmentId: UUID;
+    fileName: string;
+    attachmentType: string;
+  },
   { dispatch: AppDispatch }
 >(
   'business/uploadAmendmentAttachment',
-  async ({ file, businessId, amendmentId, fileName }, { dispatch }) => {
+  async (
+    { file, businessId, amendmentId, fileName, attachmentType },
+    { dispatch }
+  ) => {
     try {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('businessId', businessId);
       formData.append('amendmentId', amendmentId);
-      formData.append('attachmentType', 'Declaration of dormancy');
+      formData.append('attachmentType', attachmentType);
       formData.append('fileName', fileName);
       const response = await dispatch(
         businessRegApiSlice.endpoints.uploadAmendmentAttachment.initiate({
@@ -121,6 +130,7 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
       toast.success(`${fileName} uploaded successfully`);
       return response.data;
     } catch (error) {
+      console.log(error);
       toast.error('An error occurred while uploading attachment');
       throw error;
     }
@@ -198,6 +208,12 @@ export const businessSlice = createSlice({
         (business) => business.id !== action.payload
       );
     },
+    setUploadAmendmentAttachmentIsLoading: (state, action) => {
+      state.uploadAmendmentAttachmentIsLoading = action.payload;
+    },
+    setUploadAmendmentAttachmentIsSuccess: (state, action) => {
+      state.uploadAmendmentAttachmentIsSuccess = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBusinessesThunk.pending, (state) => {
@@ -257,4 +273,6 @@ export const {
   setSelectedBusinessAttachment,
   addToBusinessesList,
   removeFromBusinessesList,
+  setUploadAmendmentAttachmentIsLoading,
+  setUploadAmendmentAttachmentIsSuccess,
 } = businessSlice.actions;

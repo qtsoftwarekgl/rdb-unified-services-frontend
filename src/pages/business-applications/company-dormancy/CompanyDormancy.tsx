@@ -4,16 +4,21 @@ import { AppDispatch, RootState } from '../../../states/store';
 import { useSelector } from 'react-redux';
 import Select from '../../../components/inputs/Select';
 import Input from '../../../components/inputs/Input';
-import { dormancyReasons } from '../../../constants/businessRegistration';
+import { dormancyReasons } from '../../../constants/amendment.constants';
 import Button from '../../../components/inputs/Button';
 import Loader from '../../../components/Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { useEffect, useState } from 'react';
 import { ErrorResponse, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { fetchBusinessesThunk, uploadAmendmentAttachmentThunk } from '@/states/features/businessSlice';
+import {
+  fetchBusinessesThunk,
+  setUploadAmendmentAttachmentIsLoading,
+  setUploadAmendmentAttachmentIsSuccess,
+  uploadAmendmentAttachmentThunk,
+} from '@/states/features/businessSlice';
 import { attachmentColumns } from '@/constants/business.constants';
 import Table from '@/components/table/Table';
 import { ColumnDef } from '@tanstack/react-table';
@@ -21,6 +26,7 @@ import { BusinessAttachment } from '@/types/models/attachment';
 import ViewDocument from '@/pages/user-company-details/ViewDocument';
 import { useDeclareBusinessDormancyMutation } from '@/states/api/businessRegApiSlice';
 import { toast } from 'react-toastify';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
 
 const CompanyDormancy = () => {
   // REACT HOOK FORM
@@ -34,7 +40,13 @@ const CompanyDormancy = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [attachmentFiles, setAttachmentFiles] = useState<
-    FileList | Array<File>
+    {
+      file: File;
+      attachmentType: string;
+      size: number;
+      fileName: string;
+      attachmentUrl: string;
+    }[]
   >([]);
   const {
     businessesIsFetching,
@@ -61,6 +73,7 @@ const CompanyDormancy = () => {
       isError: businessDormancyIsError,
       error: businessDormancyError,
       data: businessDormancyData,
+      reset: resetDeclareBusinessDormancy,
     },
   ] = useDeclareBusinessDormancyMutation();
 
@@ -81,9 +94,10 @@ const CompanyDormancy = () => {
         dispatch(
           uploadAmendmentAttachmentThunk({
             businessId: watch('businessId'),
-            fileName: element?.name,
-            file: element,
+            fileName: element?.fileName,
+            file: element?.file,
             amendmentId: businessDormancyData?.data?.id,
+            attachmentType: 'Declaration of dormancy',
           })
         );
       });
@@ -106,15 +120,25 @@ const CompanyDormancy = () => {
 
   // HANDLE AMENDMENT ATTACHMENT UPLOAD RESPONSE
   useEffect(() => {
-    if (uploadAmendmentAttachmentIsSuccess) {
+    if (
+      uploadAmendmentAttachmentIsSuccess &&
+      businessDormancyIsSuccess &&
+      attachmentFiles?.length > 0
+    ) {
       toast.success('Company dormancy declared successfully');
+      resetDeclareBusinessDormancy();
+      dispatch(setUploadAmendmentAttachmentIsSuccess(false));
+      dispatch(setUploadAmendmentAttachmentIsLoading(false));
+      setAttachmentFiles([]);
       navigate('/services');
     }
   }, [
     dispatch,
     navigate,
+    businessDormancyIsSuccess,
     uploadAmendmentAttachmentIsSuccess,
-    uploadAmendmentAttachmentIsLoading,
+    attachmentFiles?.length,
+    resetDeclareBusinessDormancy,
   ]);
 
   // TABLE COLUMNS
@@ -156,7 +180,7 @@ const CompanyDormancy = () => {
                 setAttachmentFiles(
                   Array.from(attachmentFiles)?.filter(
                     (attachmentFile) =>
-                      attachmentFile?.name !== row?.original?.fileName
+                      attachmentFile?.fileName !== row?.original?.fileName
                   )
                 );
               }}
@@ -164,6 +188,19 @@ const CompanyDormancy = () => {
           </menu>
         );
       },
+    },
+  ];
+
+  const businessDormancyAttachments = [
+    {
+      label: 'Resolution declaring dormancy',
+      name: 'resolutionDeclaringDormancy',
+      required: true,
+    },
+    {
+      label: 'RRA Tax Clearance',
+      name: 'rraTaxClearance',
+      required: true,
     },
   ];
 
@@ -287,66 +324,116 @@ const CompanyDormancy = () => {
                     );
                   }}
                 />
-                <section className={`w-full flex flex-col gap-2`}>
-                  <h1 className="text-[14px] uppercase font-medium flex items-center gap-1">
-                    Attachment <span className="text-red-600">*</span>
-                  </h1>
-                  <Controller
-                    control={control}
-                    name="attachments"
-                    rules={{ required: 'Attach at least one document' }}
-                    render={({ field }) => {
-                      return (
-                        <label className="w-full flex flex-col gap-1">
-                          <Input
-                            type="file"
-                            required
-                            multiple
-                            accept="application/pdf"
-                            onChange={(e) => {
-                              field.onChange(e?.target?.files);
-                              if ((e?.target?.files?.length ?? 0) > 0) {
-                                setAttachmentFiles((prev) => [
-                                  ...prev,
-                                  ...Array.from(e?.target?.files ?? []),
-                                ]);
-                              }
-                            }}
-                          />
-                          {errors?.attachments && (
-                            <p className="text-red-500 text-[13px]">
-                              {String(errors?.attachments.message)}
-                            </p>
-                          )}
-                        </label>
-                      );
-                    }}
-                  />
-                </section>
               </>
             )}
           </fieldset>
+          <section className={`w-full flex flex-col gap-3`}>
+              <h1 className="text-md uppercase font-semibold flex items-center gap-1">
+                Attachments <span className="text-red-600">*</span>
+              </h1>
+              <menu className="grid grid-cols-2 gap-5 w-full">
+                {businessDormancyAttachments.map((attachment, index) => {
+                  return (
+                    <Controller
+                      key={index}
+                      name={attachment?.name}
+                      control={control}
+                      rules={{
+                        required: attachment?.required
+                          ? `${attachment?.label} is required`
+                          : false,
+                      }}
+                      render={({ field }) => {
+                        return (
+                          <label className="w-full flex flex-col gap-1">
+                            <p className="flex items-center gap-2">
+                              {attachment?.label}{' '}
+                              {!attachment?.required ? (
+                                '(optional)'
+                              ) : (
+                                <span className="text-red-600">*</span>
+                              )}
+                              {attachmentFiles?.find(
+                                (file) =>
+                                  file?.attachmentType === attachment?.label
+                              ) && (
+                                <CustomTooltip label="File has been added successfully">
+                                  <FontAwesomeIcon
+                                    icon={faCircleCheck}
+                                    className="text-primary cursor-pointer"
+                                  />
+                                </CustomTooltip>
+                              )}
+                            </p>
+                            <Input
+                              type="file"
+                              label={attachment.label}
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                if (
+                                  e?.target?.files != null &&
+                                  e?.target?.files?.length > 0
+                                ) {
+                                  const file = e?.target?.files[0];
+                                  if (file != null) {
+                                    setAttachmentFiles((prev) => [
+                                      ...prev,
+                                      {
+                                        file: file,
+                                        attachmentType: attachment?.label,
+                                        size: file?.size,
+                                        fileName: file?.name,
+                                        attachmentUrl:
+                                          URL.createObjectURL(file),
+                                      },
+                                    ]);
+                                  }
+                                }
+                              }}
+                            />
+                            {errors?.[attachment?.name] && (
+                              <p className="text-red-500 text-[13px]">
+                                {String(errors?.[attachment?.name]?.message)}
+                              </p>
+                            )}
+                          </label>
+                        );
+                      }}
+                    />
+                  );
+                })}
+              </menu>
+            </section>
           {attachmentFiles?.length > 0 && (
-            <menu className='flex flex-col gap-4 w-full'>
+            <menu className="flex flex-col gap-4 w-full">
               <Table
-              columns={
-                attachmentExtendedColumns as ColumnDef<BusinessAttachment>[]
-              }
-              data={(Array.from(attachmentFiles) ?? [])?.map(
-                (attachmentFile) => {
-                  return {
-                    file: (attachmentFile as File),
-                    attachmentType: 'Declaration of dormancy',
-                    size: attachmentFile?.size,
-                    fileName: attachmentFile?.name,
-                    attachmentUrl: (
-                      attachmentFile as unknown as BusinessAttachment
-                    )?.attachmentUrl,
-                  };
+                columns={
+                  attachmentExtendedColumns as ColumnDef<{
+                    file: File;
+                    attachmentType: string;
+                    size: number;
+                    fileName: string;
+                    attachmentUrl: string;
+                  }>[]
                 }
+                data={(Array.from(attachmentFiles) ?? [])?.map(
+                  (attachmentFile) => {
+                    return {
+                      file: attachmentFile?.file as File,
+                      attachmentType: 'Declaration of dormancy',
+                      size: attachmentFile?.size,
+                      fileName: attachmentFile?.fileName,
+                      attachmentUrl: (
+                        attachmentFile as unknown as BusinessAttachment
+                      )?.attachmentUrl,
+                    };
+                  }
+                )}
+              />
+              {uploadAmendmentAttachmentIsLoading && (
+                <Loader className="text-primary" />
               )}
-            />
-            {uploadAmendmentAttachmentIsLoading && <Loader className='text-primary' />}
             </menu>
           )}
           <menu

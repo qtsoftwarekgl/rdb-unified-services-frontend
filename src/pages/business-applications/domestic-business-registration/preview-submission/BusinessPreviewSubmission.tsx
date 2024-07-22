@@ -603,7 +603,7 @@ const PreviewSubmission = ({
             };
           })}
           columns={
-            founderDetailsColumns as unknown as ColumnDef<FounderDetail>[]
+            founderDetailsColumns as ColumnDef<FounderDetail>[]
           }
         />
       </PreviewCard>

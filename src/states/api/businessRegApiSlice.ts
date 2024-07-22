@@ -657,7 +657,7 @@ export const businessRegApiSlice = createApi({
       uploadAmendmentAttachment: builder.mutation({
         query: ({ formData }) => {
           return {
-            url: `/attachment/amendment/attachment`,
+            url: `/amendment/attachment`,
             method: 'POST',
             body: formData,
             formData: true,
@@ -680,6 +680,22 @@ export const businessRegApiSlice = createApi({
               dormantReason,
               dormantStartDate,
               dormantDeclarationDate,
+            },
+          };
+        },
+      }),
+
+      // CLOSE COMPANY
+      closeCompany: builder.mutation({
+        query: ({ businessId, dissolutionReason, dissolutionDate, resolutionDate, resolutionReason }) => {
+          return {
+            url: `/amendment/dissolution?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              dissolutionReason,
+              dissolutionDate,
+              resolutionDate,
+              resolutionReason,
             },
           };
         },
@@ -739,6 +755,7 @@ export const {
   useDeleteBusinessFounderMutation,
   useUploadAmendmentAttachmentMutation,
   useDeclareBusinessDormancyMutation,
+  useCloseCompanyMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;
