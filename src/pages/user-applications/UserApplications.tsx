@@ -1,196 +1,134 @@
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Table from "../../components/table/Table";
-import UserLayout from "../../containers/UserLayout";
-import Button from "../../components/inputs/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../states/store";
-import { capitalizeString, formatCompanyData } from "../../helpers/strings";
 import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../states/features/businessRegistrationSlice";
-import { useNavigate } from "react-router-dom";
-import { ReviewComment } from "../../components/applications-review/AddReviewComments";
-import { Row } from "@tanstack/react-table";
-import { faEye, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { business_application } from "../business-applications/domestic-business-registration/preview-submission/BusinessPreviewSubmission";
+  faCircleInfo,
+  faEllipsisVertical,
+  faPlus,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Table from '../../components/table/Table';
+import UserLayout from '../../containers/UserLayout';
+import Button from '../../components/inputs/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../states/store';
+import { capitalizeString, formatDate } from '../../helpers/strings';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
+import { useEffect } from 'react';
+import {
+  setBusinessesList,
+  setBusinessPage,
+  setBusinessSize,
+  setBusinessTotalElements,
+  setBusinessTotalPages,
+} from '@/states/features/businessSlice';
+import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
+import { Business } from '@/types/models/business';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { businessColumns } from '@/constants/business.constants';
 
 const UserApplications = () => {
-  const { user_applications } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-  const { applicationReviewComments } = useSelector(
-    (state: RootState) => state.userApplication
+  // STATE VARIABLES
+  const dispatch = useDispatch();
+  const { businessesList, page, size, totalElements, totalPages } = useSelector(
+    (state: RootState) => state.business
   );
 
-  const dispatch = useDispatch();
+  // NAVIGATION
   const navigate = useNavigate();
 
-  const registeredBusinesses = user_applications
-    ?.filter((app: business_application) =>
-      [
-        'submitted',
-        'approved',
-        'rejected',
-        'ACTION_REQUIRED',
-        're_submitted',
-      ].includes(app.status)
-    )
-    .map(formatCompanyData)
-    .reverse();
-
-  const colors = (status: string) => {
-    const colorMap: { [key: string]: string } = {
-      verified: "bg-[#82ffa3] text-[#0d7b3e]",
-      rejected: "bg-[#eac3c3] text-red-500",
-      approved: "bg-[#cfeaff] text-secondary",
-      action_required: "bg-red-500 text-white",
-      submitted: "bg-[#e8ffef] text-black",
-      IN_PROGRESS: "bg-[#f7f7f7] text-black",
-    };
-    return colorMap[status] || "";
-  };
-
-  const columns = [
-    { header: 'Registration Number', accessorKey: 'reference_no' },
-    { header: 'Company Name', accessorKey: 'company_name' },
+  // INITIALIZE FETCH BUSINESSES QUERY
+  const [
+    fetchBusinesses,
     {
-      header: 'Service Name',
-      accessorKey: 'service_name',
-      filterFn: (row: Row<unknown>, id: string, value: string) => {
-        return value.includes(row.getValue(id));
-      },
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: {
-            service_name: string;
-          };
-        };
-      }) => (
-        <span className="text-[13px]">
-          {capitalizeString(row.original?.service_name) || 'N/A'}
-        </span>
-      ),
+      data: businessesData,
+      isError: businessesIsError,
+      isFetching: businessesIsFetching,
+      isSuccess: businessesIsSuccess,
+      error: businessesError,
     },
-    {
-      id: 'status',
-      header: 'Status',
-      accessorKey: 'status',
-      cell: renderStatusCell,
-      filterFn: (row: Row<unknown>, id: string, value: string) => {
-        return value.includes(row.getValue(id));
-      },
-    },
-    { header: 'Date Added', accessorKey: 'createdAt' },
+  ] = useLazyFetchBusinessesQuery();
+
+  // FETCH BUSINESSES
+  useEffect(() => {
+    fetchBusinesses({
+      page,
+      size,
+      applicationStatus: 'APPROVED',
+    });
+  }, [fetchBusinesses, page, size]);
+
+  // HANDLE FETCH BUSINESSES RESPONSE
+  useEffect(() => {
+    if (businessesIsSuccess) {
+      dispatch(setBusinessesList(businessesData?.data?.data));
+      dispatch(setBusinessTotalElements(businessesData?.data?.totalElements));
+      dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
+    } else if (businessesIsError) {
+      toast.error(
+        (businessesError as ErrorResponse)?.data?.message ||
+          'An error occurred while fetching businesses'
+      );
+    }
+  }, [
+    businessesIsSuccess,
+    businessesIsError,
+    dispatch,
+    businessesData?.data?.data,
+    businessesData?.data?.totalElements,
+    businessesData?.data?.totalPages,
+    businessesError,
+  ]);
+
+  const userApplicationsColumns = [
+    ...businessColumns,
     {
       id: 'action',
       header: 'Action',
-      accessorKey: 'actions',
-      enableSorting: false,
-      cell: renderActionCell,
+      accessorKey: 'action',
+      cell: ({ row }: { row: Row<Business> }) => {
+        return (
+          <CustomPopover
+            trigger={
+              <menu className="flex items-center justify-center w-full gap-2 text-[12px] cursor-pointer">
+                <FontAwesomeIcon
+                  className="text-primary text-md p-0 transition-all duration-300 hover:scale-[.98]"
+                  icon={faEllipsisVertical}
+                />
+              </menu>
+            }
+          >
+            <menu className="bg-white flex flex-col gap-3 p-0 rounded-md">
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
+                View details
+              </Link>
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon
+                  className="text-primary"
+                  icon={faPenToSquare}
+                />{' '}
+                Start amendment
+              </Link>
+            </menu>
+          </CustomPopover>
+        );
+      },
     },
   ];
-
-  function renderStatusCell({ row }: {
-    row: {
-      original: {
-        status: string;
-      };
-    };
-  }) {
-    return (
-      <span
-        className={`px-3 py-1 rounded-full flex w-fit items-center ${colors(
-          row?.original?.status?.toLowerCase()
-        )}`}
-      >
-        <span className="w-[6px] h-[6px] rounded-full bg-current mr-2"></span>
-        <span className="text-[12px] font-light ">
-          {capitalizeString(row?.original.status)}
-        </span>
-      </span>
-    );
-  }
-
-  const hasComments = (businessId: string) => {
-    return applicationReviewComments.some(
-      (comment: ReviewComment) =>
-        comment?.entryId === businessId && !comment?.checked
-    );
-  };
-
-  const handleEditClick = (row: {
-    original: {
-      path: string;
-      entryId: string;
-    };
-  }) => {
-    dispatch(setBusinessActiveTab("preview_submission"));
-    dispatch(setBusinessActiveStep("preview_submission"));
-    navigate(row.original?.path);
-  };
-
-  function renderActionCell({
-    row,
-  }: {
-    row: {
-      original: {
-        entryId: string;
-        status: string;
-      };
-    };
-  }) {
-    return (
-      <menu className="flex items-start flex-col gap-2 w-full">
-        <Button
-          styled={false}
-          value={
-            <menu className="flex items-center gap-1 transition-all duration-300 bg-secondary p-1 px-2 rounded-md">
-              <FontAwesomeIcon
-                className="text-[12px] text-white"
-                icon={faEye}
-              />
-              <p className="text-[12px] text-white">View details</p>
-            </menu>
-          }
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(`/company-details/${row?.original?.entryId}`);
-          }}
-        />
-        {hasComments(row?.original?.entryId) &&
-          !['rejected'].includes(row?.original?.status) && (
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                handleEditClick(
-                  row as {
-                    original: {
-                      path: string;
-                      entryId: string;
-                      status: string;
-                    };
-                  }
-                );
-              }}
-              value={
-                <menu className="flex items-center gap-1 transition-all duration-300 bg-primary p-1 px-2 w-full rounded-md">
-                  <FontAwesomeIcon
-                    className="text-[12px] text-white"
-                    icon={faPenToSquare}
-                  />
-                  <p className="text-[12px] text-white">Make changes</p>
-                </menu>
-              }
-              styled={false}
-            />
-          )}
-      </menu>
-    );
-  }
 
   return (
     <UserLayout>
@@ -210,24 +148,36 @@ const UserApplications = () => {
             }
           />
         </menu>
-        {user_applications?.length > 0 ? (
-          <Table
-            columns={columns}
-            data={registeredBusinesses}
-            rowClickHandler={(row: {
-              original: {
-                entryId: string;
-              }
-            }) => {
-              navigate(`/company-details/${row?.original?.entryId}`);
-            }}
-          />
+        {businessesIsFetching ? (
+          <figure className="w-full flex justify-center min-h-[30vh]">
+            <Loader className="text-primary" />
+          </figure>
         ) : (
-          <span className="flex items-center justify-start w-full">
-            <h1 className="uppercase text-primary">
-              You have no applications yet
-            </h1>
-          </span>
+          <Table
+            totalElements={totalElements}
+            totalPages={totalPages}
+            page={page}
+            size={size}
+            setPage={setBusinessPage}
+            setSize={setBusinessSize}
+            columns={userApplicationsColumns as ColumnDef<Business>[]}
+            data={businessesList?.map((business, index) => {
+              return {
+                ...business,
+                no: index + 1,
+                dateOfIncorporation: formatDate(
+                  business?.createdAt
+                ) as unknown as Date,
+                companyType: capitalizeString(business?.companyType) || 'N/A',
+                assignee: 'RDB Verifier',
+                companyName: (
+                  business?.companyName ||
+                  business?.enterpriseName ||
+                  business?.enterpriseBusinessName
+                )?.toUpperCase(),
+              };
+            })}
+          />
         )}
       </section>
     </UserLayout>

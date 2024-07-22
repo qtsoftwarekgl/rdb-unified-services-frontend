@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../states/store';
 import PreviewCard from '../../../../components/business-registration/PreviewCard';
 import {
-  removeBusinessRegistrationTabs,
   setBusinessActiveStep,
   setBusinessActiveTab,
 } from '../../../../states/features/businessRegistrationSlice';
@@ -32,7 +31,8 @@ import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
 import { useLazyFetchBusinessAttachmentsQuery } from '@/states/api/businessRegApiSlice';
 import { setBusinessAttachments } from '@/states/features/businessSlice';
-import { findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import { completeNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
 
 type PreviewSubmissionProps = {
   businessId: businessId;
@@ -177,9 +177,6 @@ const PreviewSubmission = ({
       }
     } else if (updateBusinessIsSuccess) {
       toast.success('Business updated successfully');
-      dispatch(setBusinessActiveStep('company_details'));
-      dispatch(setBusinessActiveTab('general_information'));
-      dispatch(removeBusinessRegistrationTabs());
       navigate('/success', {
         state: { redirectUrl: '/services' },
       });
@@ -340,6 +337,21 @@ const PreviewSubmission = ({
                   ([key, value], index: number) => {
                     if (key === 'id' || value === null || key === 'isForeign')
                       return null;
+                    if (key === 'service')
+                      return (
+                        <p>
+                          {capitalizeString(key)}:{' '}
+                          {capitalizeString(
+                            String(
+                              (
+                                value as {
+                                  name: string;
+                                }
+                              )?.name
+                            )
+                          )}
+                        </p>
+                      );
                     return (
                       <li key={index}>
                         <p className="flex text-[14px] items-center gap-2">
@@ -635,21 +647,31 @@ const PreviewSubmission = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
+              dispatch(
+                completeNavigationFlowThunk({
+                  isCompleted: true,
+                  navigationFlowId: findNavigationFlowByStepName(
+                    businessNavigationFlowsList,
+                    'Preview & Submission'
+                  )?.id,
+                })
+              );
               if (
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()
                   ?.every((navigationStep) => {
-                    return businessNavigationFlowsList?.find(
-                      (businessStep) =>
-                        businessStep?.navigationFlowMass?.stepName ===
-                          navigationStep?.stepName && businessStep?.completed
-                    );
+                    return businessNavigationFlowsList
+                      ?.find(
+                        (businessStep) =>
+                          businessStep?.navigationFlowMass?.stepName ===
+                            navigationStep?.stepName && businessStep?.completed
+                      );
                   })
               ) {
                 toast.error('All steps must be completed before submission');
                 return;
               }
-              updateBusiness({ businessId, status: 'SUBMITTED' });
+              updateBusiness({ businessId, applicationStatus: 'SUBMITTED' });
             }}
             value={updateBusinessIsLoading ? <Loader /> : 'Submit'}
             primary

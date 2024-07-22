@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
 import { useEffect } from 'react';
 import {
+  setBusinessPage,
+  setBusinessSize,
   setBusinessTotalElements,
   setBusinessTotalPages,
   setBusinessesList,
@@ -21,7 +23,9 @@ import { capitalizeString, formatDate } from '@/helpers/strings';
 const ReviewRegistration = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessesList } = useSelector((state: RootState) => state.business);
+  const { businessesList, page, size, totalElements, totalPages } = useSelector(
+    (state: RootState) => state.business
+  );
 
   // INITIALIZE FETCH BUSINESSES QUERY
   const [
@@ -38,11 +42,11 @@ const ReviewRegistration = () => {
   // FETCH BUSINESSES
   useEffect(() => {
     fetchBusinesses({
-      page: 1,
-      size: 10,
+      page,
+      size,
       applicationStatus: 'SUBMITTED',
     });
-  }, [fetchBusinesses]);
+  }, [fetchBusinesses, page, size]);
 
   // HANDLE FETCH BUSINESS RESPONSE
   useEffect(() => {
@@ -122,6 +126,12 @@ const ReviewRegistration = () => {
           </figure>
         ) : (
           <Table
+            page={page}
+            size={size}
+            totalElements={totalElements}
+            totalPages={totalPages}
+            setPage={setBusinessPage}
+            setSize={setBusinessSize}
             columns={businessesColumns as ColumnDef<Business>[]}
             data={businessesList?.map((business, index) => {
               return {

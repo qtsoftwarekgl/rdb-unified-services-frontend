@@ -646,7 +646,7 @@ const ForeignCompanyPreviewSubmission = ({
               toast.error('All steps must be completed before submission');
               return;
             }
-            updateBusiness({ businessId, status: 'SUBMITTED' });
+            updateBusiness({ businessId, applicationStatus: 'SUBMITTED' });
           }}
           value={updateBusinessIsLoading ? <Loader /> : 'Submit'}
           primary

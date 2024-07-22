@@ -40,7 +40,7 @@ export const businessRegApiSlice = createApi({
         },
       }),
 
-      //GET BUSINESS DETAILS
+      // GET BUSINESS DETAILS
       getBusinessDetails: builder.query({
         query: ({ id }) => {
           return {
@@ -422,12 +422,12 @@ export const businessRegApiSlice = createApi({
 
       // UPDATE BUSINESS
       updateBusiness: builder.mutation({
-        query: ({ businessId, status }) => {
+        query: ({ businessId, applicationStatus }) => {
           return {
             url: `/?businessId=${businessId}`,
             method: "PATCH",
             body: {
-              status,
+              applicationStatus,
             },
           };
         },
