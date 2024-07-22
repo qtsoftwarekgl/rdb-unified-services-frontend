@@ -6,11 +6,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UUID } from "crypto";
 import { FC } from "react";
 
 interface SelectProps {
   label?: string | number | undefined;
-  options?: Array<{ label: string; value: string }>;
+  options?: Array<{ label: string | undefined; value: string | UUID }>;
   defaultValue?: string | undefined;
   placeholder?: string;
   className?: string;

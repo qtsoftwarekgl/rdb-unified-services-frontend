@@ -642,6 +642,48 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+      // DELETE BUSINESS FOUNDER
+      deleteBusinessFounder: builder.mutation({
+        query: ({ id }) => {
+          return {
+            url: `/founder/${id}`,
+            method: 'DELETE',
+          };
+        },
+      }),
+
+      // UPLOAD AMENDMENT ATTACHMENT
+      uploadAmendmentAttachment: builder.mutation({
+        query: ({ formData }) => {
+          return {
+            url: `/attachment/amendment/attachment`,
+            method: 'POST',
+            body: formData,
+            formData: true,
+          };
+        },
+      }),
+
+      // DECLARE BUSINESS DORMANCY
+      declareBusinessDormancy: builder.mutation({
+        query: ({
+          businessId,
+          dormantReason,
+          dormantStartDate,
+          dormantDeclarationDate,
+        }) => {
+          return {
+            url: `/amendment/dormant?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              dormantReason,
+              dormantStartDate,
+              dormantDeclarationDate,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -694,6 +736,9 @@ export const {
   useLazyFetchBusinessNavigationFlowsQuery,
   useCreateNavigationFlowMutation,
   useCompleteNavigationFlowMutation,
+  useDeleteBusinessFounderMutation,
+  useUploadAmendmentAttachmentMutation,
+  useDeclareBusinessDormancyMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

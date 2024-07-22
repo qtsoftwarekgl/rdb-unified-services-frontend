@@ -1,6 +1,8 @@
 import Loader from '@/components/Loader';
 import Button from '@/components/inputs/Button';
+import CustomPopover from '@/components/inputs/CustomPopover';
 import Table from '@/components/table/Table';
+import { businessColumns } from '@/constants/business.constants';
 import UserLayout from '@/containers/UserLayout';
 import { capitalizeString, formatDate } from '@/helpers/strings';
 import DeleteBusinessApplication from '@/pages/business-applications/containers/DeleteBusinessApplication';
@@ -10,7 +12,7 @@ import {
 } from '@/states/api/businessRegApiSlice';
 import { useLazyGetServiceQuery } from '@/states/api/businessRegApiSlice';
 import {
-  setBusinessesList,
+  addToBusinessesList,
   setBusinessPage,
   setBusinessSize,
   setBusinessTotalElements,
@@ -21,7 +23,11 @@ import {
 import { setService } from '@/states/features/serviceSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { Business } from '@/types/models/business';
-import { faArrowRight, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRight,
+  faEllipsisVertical,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { useEffect } from 'react';
@@ -34,7 +40,7 @@ const NewServiceApplication = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { service } = useSelector((state: RootState) => state.service);
-  const { businessesList, page, size } = useSelector(
+  const { businessesList, page, size, totalElements, totalPages } = useSelector(
     (state: RootState) => state.business
   );
 
@@ -110,6 +116,16 @@ const NewServiceApplication = () => {
     });
   }, [fetchBusinesses, id, page, size]);
 
+  // GET APPLICATIONS IS AMENDING
+  useEffect(() => {
+    fetchBusinesses({
+      serviceId: id,
+      applicationStatus: 'IS_AMENDING',
+      page,
+      size,
+    });
+  }, [fetchBusinesses, id, page, size]);
+
   // HANDLE APPLICATIONS IN PROGRESS RESPONSE
   useEffect(() => {
     if (businessesIsError) {
@@ -119,7 +135,7 @@ const NewServiceApplication = () => {
         toast.error((businessesError as ErrorResponse)?.data?.message);
       }
     } else if (businessesIsSuccess) {
-      dispatch(setBusinessesList(businessesData?.data?.data));
+      dispatch(addToBusinessesList(businessesData?.data?.data));
       dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
       dispatch(setBusinessTotalElements(businessesData?.data?.totalElements));
     }
@@ -152,78 +168,68 @@ const NewServiceApplication = () => {
   }, [dispatch, serviceData, serviceError, serviceIsError, serviceIsSuccess]);
 
   // APPLICATIONS IN PROGRESS COLUMNS
-  const applicationsInProgressColumns = [
-    { header: 'No', accessorKey: 'no' },
-    { header: 'Registration Number', accessorKey: 'applicationReferenceId' },
-    { header: 'Company Name', accessorKey: 'companyName' },
+  const applicationsColumns = [
+    ...businessColumns,
     {
-      header: 'Service Name',
-      accessorKey: 'serviceName',
-      cell: () => capitalizeString(service?.name),
+      header: 'Date Added',
+      accessorKey: 'createdAt',
+      cell: ({ row }: { row: Row<Business> }) =>
+        formatDate(row.original.createdAt),
     },
-    {
-      header: 'Progress',
-      accessorKey: 'active_tab',
-      cell: ({
-        row,
-      }: {
-        row: {
-          original: {
-            active_step: string;
-          };
-        };
-      }) => {
-        return (
-          <p className="text-[14px]">
-            {capitalizeString(row?.original?.active_step)}
-          </p>
-        );
-      },
-    },
-    { header: 'Date Added', accessorKey: 'createdAt' },
     {
       header: 'Action',
       accessorKey: 'actions',
       enableSorting: false,
       cell: ({ row }: { row: Row<Business> }) => {
         return (
-          <menu className="flex flex-col items-center gap-2 cursor-pointer">
-            <Button
-              value={
-                <menu className="flex bg-primary p-1 px-3 rounded-md items-center gap-1 transition-all duration-200 hover:gap-2">
-                  <p className="text-white text-[12px]">Resume</p>
-                  <FontAwesomeIcon
-                    className="text-[12px] text-white"
-                    icon={faArrowRight}
-                  />
-                </menu>
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(`${service?.path}?businessId=${row.original.id}`);
-              }}
-              styled={false}
-              className="!bg-transparent"
-            />
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setSelectedBusiness(row.original));
-                dispatch(setDeleteBusinessModal(true));
-              }}
-              value={
-                <menu className="flex p-1 px-3 bg-red-600 rounded-md items-center gap-1 transition-all duration-200 hover:gap-2">
-                  <p className="text-[12px] text-white">Discard</p>
-                  <FontAwesomeIcon
-                    className="text-[12px] text-white"
-                    icon={faTrash}
-                  />
-                </menu>
-              }
-              styled={false}
-              className="!bg-transparent hover:!bg-transparent !text-red-600 hover:!text-red-600 !shadow-none !p-0"
-            />
-          </menu>
+          <CustomPopover
+            trigger={
+              <menu className="flex items-center justify-center">
+                <FontAwesomeIcon
+                  icon={faEllipsisVertical}
+                  className="text-primary cursor-pointer"
+                />
+              </menu>
+            }
+          >
+            <menu className="flex flex-col items-center gap-2 cursor-pointer">
+              <Button
+                value={
+                  <menu className="flex bg-primary p-1 px-3 rounded-md items-center gap-1 transition-all duration-200 hover:gap-2">
+                    <p className="text-white text-[12px]">Resume</p>
+                    <FontAwesomeIcon
+                      className="text-[12px] text-white"
+                      icon={faArrowRight}
+                    />
+                  </menu>
+                }
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`${service?.path}?businessId=${row.original.id}`);
+                }}
+                styled={false}
+                className="!bg-transparent"
+              />
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedBusiness(row.original));
+                  dispatch(setDeleteBusinessModal(true));
+                }}
+                value={
+                  <menu className="flex p-1 px-3 bg-red-600 rounded-md items-center gap-1 transition-all duration-200 hover:gap-2">
+                    <p className="text-[12px] text-white">Discard</p>
+                    <FontAwesomeIcon
+                      className="text-[12px] text-white"
+                      icon={faTrash}
+                    />
+                  </menu>
+                }
+                styled={false}
+                className="!bg-transparent hover:!bg-transparent !text-red-600 hover:!text-red-600 !shadow-none !p-0"
+              />
+            </menu>
+          </CustomPopover>
         );
       },
     },
@@ -259,26 +265,19 @@ const NewServiceApplication = () => {
                     <Table
                       setPage={setBusinessPage}
                       setSize={setBusinessSize}
+                      page={page}
+                      size={size}
+                      totalElements={totalElements}
+                      totalPages={totalPages}
                       data={businessesList?.map(
                         (application: Business, index) => {
                           return {
                             ...application,
                             no: index + 1,
-                            service,
-                            createdAt: formatDate(
-                              application.createdAt
-                            ) as unknown as Date,
-                            companyName:
-                              application?.companyName ||
-                              application?.enterpriseBusinessName ||
-                              application?.enterpriseName ||
-                              'N/A',
                           };
                         }
                       )}
-                      columns={applicationsInProgressColumns as ColumnDef<Business>[]}
-                      showFilter={false}
-                      showPagination={false}
+                      columns={applicationsColumns as ColumnDef<Business>[]}
                     />
                   </menu>
                 )

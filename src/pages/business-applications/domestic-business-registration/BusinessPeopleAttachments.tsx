@@ -1,5 +1,6 @@
 import Button from "@/components/inputs/Button";
 import Table from "@/components/table/Table";
+import { attachmentColumns } from "@/constants/business.constants";
 import DeleteBusinessAttachment from "@/containers/business-registration/DeleteBusinessAttachment";
 import ViewDocument from "@/pages/user-company-details/ViewDocument";
 import {
@@ -30,19 +31,8 @@ const BusinessPeopleAttachments = ({
   const dispatch: AppDispatch = useDispatch();
 
   // ATTACHMENT COLUMNS
-  const attachmentColumns = [
-    {
-      header: "File Name",
-      accessorKey: "fileName",
-    },
-    {
-      header: "Attachment Type",
-      accessorKey: "attachmentType",
-    },
-    {
-      header: "Attachment Size",
-      accessorKey: "size",
-    },
+  const attachmentExtendedColumns = [
+    attachmentColumns,
     {
       header: "Actions",
       accessorKey: "actions",
@@ -86,7 +76,7 @@ const BusinessPeopleAttachments = ({
         showFilter={false}
         showPagination={false}
         columns={
-          attachmentColumns as ColumnDef<
+          attachmentExtendedColumns as ColumnDef<
             PersonAttachment | BusinessAttachment
           >[]
         }

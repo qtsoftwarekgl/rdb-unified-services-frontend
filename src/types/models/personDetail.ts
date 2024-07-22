@@ -34,16 +34,15 @@ export interface PersonDetail {
   poBox?: string;
   personRole?: PersonRole;
   roleDescription?: string;
+  organization: Organization;
 }
 
-export interface FounderDetail {
+export type FounderDetail = {
   id: UUID;
   version?: number;
   state?: string;
   createdAt?: number;
   updatedAt?: number;
-  personDetail?: PersonDetail;
-  organization?: Organization;
   applicationReferenceId?: UUID;
   description?: string;
   shareQuantity?: number;
@@ -52,4 +51,5 @@ export interface FounderDetail {
   verificationCode?: string;
   verificationCodeExpiration?: number;
   verified?: boolean;
+  personDetail?: PersonDetail;
 }

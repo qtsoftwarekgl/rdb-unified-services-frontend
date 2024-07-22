@@ -5,7 +5,11 @@ import {
   Details,
   EmploymentInfo,
 } from '@/types/models/business';
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import businessRegApiSlice from '../api/businessRegApiSlice';
+import { AppDispatch } from '../store';
+import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
 
 const initialState: {
   businessesList: Business[];
@@ -27,6 +31,9 @@ const initialState: {
   businessAddress?: Address;
   deleteBusiessAttachmentModal: boolean;
   selectedBusinessAttachment?: BusinessAttachment;
+  businessesIsFetching: boolean;
+  uploadAmendmentAttachmentIsLoading: boolean;
+  uploadAmendmentAttachmentIsSuccess: boolean;
 } = {
   businessesList: [],
   business: {} as Business,
@@ -44,7 +51,81 @@ const initialState: {
   deleteBusiessAttachmentModal: false,
   businessAttachments: [],
   selectedBusinessAttachment: undefined,
+  businessesIsFetching: false,
+  uploadAmendmentAttachmentIsLoading: false,
+  uploadAmendmentAttachmentIsSuccess: false,
 };
+
+// FETCH BUSINESSES
+export const fetchBusinessesThunk = createAsyncThunk<
+  Business[],
+  { page: number; size: number },
+  { dispatch: AppDispatch }
+>(
+  'business/fetchBusinesses',
+  async (
+    {
+      page,
+      size,
+      serviceId,
+      applicationStatus,
+    }: {
+      page: number;
+      size: number;
+      serviceId?: string;
+      applicationStatus?: string;
+    },
+    {
+      dispatch,
+    }: {
+      dispatch: AppDispatch;
+    }
+  ) => {
+    try {
+      const response = await dispatch(
+        businessRegApiSlice.endpoints.fetchBusinesses.initiate({
+          page,
+          size,
+          serviceId,
+          applicationStatus,
+        })
+      ).unwrap();
+      return response.data;
+    } catch (error) {
+      toast.error('An error occurred while fetching businesses');
+      throw error;
+    }
+  }
+);
+
+// UPLOAD AMENDMEND ATTACHMENT
+export const uploadAmendmentAttachmentThunk = createAsyncThunk<
+  BusinessAttachment,
+  { file: File; businessId: string, amendmentId: UUID, fileName: string },
+  { dispatch: AppDispatch }
+>(
+  'business/uploadAmendmentAttachment',
+  async ({ file, businessId, amendmentId, fileName }, { dispatch }) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('businessId', businessId);
+      formData.append('amendmentId', amendmentId);
+      formData.append('attachmentType', 'Declaration of dormancy');
+      formData.append('fileName', fileName);
+      const response = await dispatch(
+        businessRegApiSlice.endpoints.uploadAmendmentAttachment.initiate({
+          formData,
+        })
+      ).unwrap();
+      toast.success(`${fileName} uploaded successfully`);
+      return response.data;
+    } catch (error) {
+      toast.error('An error occurred while uploading attachment');
+      throw error;
+    }
+  }
+);
 
 export const businessSlice = createSlice({
   name: 'business',
@@ -109,6 +190,47 @@ export const businessSlice = createSlice({
     setSelectedBusinessAttachment: (state, action) => {
       state.selectedBusinessAttachment = action.payload;
     },
+    addToBusinessesList: (state, action) => {
+      state.businessesList = [...action.payload, ...state.businessesList];
+    },
+    removeFromBusinessesList: (state, action) => {
+      state.businessesList = state.businessesList.filter(
+        (business) => business.id !== action.payload
+      );
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchBusinessesThunk.pending, (state) => {
+      state.businessesIsFetching = true;
+    });
+    builder.addCase(fetchBusinessesThunk.fulfilled, (state, action) => {
+      state.businessesIsFetching = false;
+      state.businessesList = (
+        action.payload as unknown as {
+          data: Business[];
+        }
+      )?.data;
+      state.totalElements = (
+        action.payload as unknown as {
+          totalElements: number;
+        }
+      )?.totalElements;
+      state.totalPages = (
+        action.payload as unknown as {
+          totalPages: number;
+        }
+      )?.totalPages;
+    });
+    builder.addCase(fetchBusinessesThunk.rejected, (state) => {
+      state.businessesIsFetching = false;
+    });
+    builder.addCase(uploadAmendmentAttachmentThunk.pending, (state) => {
+      state.uploadAmendmentAttachmentIsLoading = true;
+    })
+    builder.addCase(uploadAmendmentAttachmentThunk.fulfilled, (state) => {
+      state.uploadAmendmentAttachmentIsLoading = false;
+      state.uploadAmendmentAttachmentIsSuccess = true;
+    })
   },
 });
 
@@ -133,4 +255,6 @@ export const {
   addBusinessAttachment,
   removeBusinessAttachment,
   setSelectedBusinessAttachment,
+  addToBusinessesList,
+  removeFromBusinessesList,
 } = businessSlice.actions;

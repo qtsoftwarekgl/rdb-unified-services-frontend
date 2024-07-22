@@ -1,7 +1,11 @@
 import { FC, useEffect } from 'react';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { faCircleInfo, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleInfo,
+  faEllipsisVertical,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -17,10 +21,11 @@ import {
   useLazyFetchShareDetailsQuery,
   useLazyFetchShareholdersQuery,
 } from '@/states/api/businessRegApiSlice';
-import { ErrorResponse } from 'react-router-dom';
+import { ErrorResponse, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   setAssignSharesModal,
+  setDeleteFounderModal,
   setFounderDetailsList,
   setSelectedFounderDetail,
 } from '@/states/features/founderDetailSlice';
@@ -37,6 +42,9 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from '@/helpers/business.helpers';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
+import DeleteBusinessFounder from './DeleteBusinessFounder';
 
 interface CapitalDetailsProps {
   businessId: businessId;
@@ -171,30 +179,60 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       accessorKey: 'action',
       cell: ({ row }: { row: Row<FounderDetail> }) => {
         return (
-          <menu className="flex items-center gap-6">
-            <FontAwesomeIcon
-              className={`cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
-              icon={disableForm ? faCircleInfo : faPenToSquare}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setAssignSharesModal(true));
-                dispatch(setSelectedFounderDetail(row?.original));
-              }}
-            />
-            <FontAwesomeIcon
-              className={`${
-                disableForm
-                  ? 'text-secondary cursor-default'
-                  : 'text-red-600 cursor-pointer'
-              } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
-              icon={faTrash}
-              onClick={(e) => {
-                e.preventDefault();
-                if (disableForm) return;
-                clearErrors('total_shares');
-              }}
-            />
-          </menu>
+          <CustomPopover
+            trigger={
+              <menu className="flex items-center gap-3">
+                <CustomTooltip label="Click to view options">
+                  <FontAwesomeIcon
+                    icon={faEllipsisVertical}
+                    className="text-primary cursor-pointer"
+                  />
+                </CustomTooltip>
+              </menu>
+            }
+          >
+            <menu className="flex flex-col items-start gap-2">
+              <Link
+                to={'#'}
+                className="flex items-center gap-2 text-[13px] hover:bg-slate-50 w-full rounded-md p-1 py-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setAssignSharesModal(true));
+                  dispatch(setSelectedFounderDetail(row?.original));
+                }}
+              >
+                <FontAwesomeIcon
+                  className={`cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
+                  icon={disableForm ? faCircleInfo : faPenToSquare}
+                />
+                Assign shares
+              </Link>
+              <Link
+                to={'#'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(setSelectedFounderDetail(row?.original));
+                  dispatch(setDeleteFounderModal(true));
+                }}
+                className="flex items-center gap-2 text-[13px] hover:bg-slate-50 w-full rounded-md p-1 py-2"
+              >
+                <FontAwesomeIcon
+                  className={`${
+                    disableForm
+                      ? 'text-secondary cursor-default'
+                      : 'text-red-600 cursor-pointer'
+                  } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
+                  icon={faTrash}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (disableForm) return;
+                    clearErrors('total_shares');
+                  }}
+                />
+                Delete
+              </Link>
+            </menu>
+          </CustomPopover>
         );
       },
     },
@@ -207,7 +245,10 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           <Loader />
         </figure>
       )}
-      <CapitalDetailsModal businessId={businessId} />
+      <CapitalDetailsModal
+        applicationStatus={applicationStatus}
+        businessId={businessId}
+      />
       <section className="flex flex-col gap-4">
         <h1 className="font-semibold text-lg uppercase text-[16px]">
           Overall capital details
@@ -222,7 +263,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 no: index + 1,
                 name: `${
                   founder?.personDetail?.firstName ||
-                  founder?.organization?.organizationName ||
+                  founder?.personDetail?.organization?.organizationName ||
                   ''
                 } ${founder?.personDetail?.middleName || ''} ${
                   founder?.personDetail?.lastName || ''
@@ -416,6 +457,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           />
         </menu>
       )}
+      <DeleteBusinessFounder />
     </section>
   );
 };

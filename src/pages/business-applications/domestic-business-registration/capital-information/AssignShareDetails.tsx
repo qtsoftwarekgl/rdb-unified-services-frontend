@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import Modal from '../../../../components/Modal';
 import { FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../../components/inputs/Input';
@@ -8,7 +8,6 @@ import { AppDispatch, RootState } from '../../../../states/store';
 import Button from '../../../../components/inputs/Button';
 import Loader from '../../../../components/Loader';
 import { capitalizeString } from '../../../../helpers/strings';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
 import { setAssignSharesModal } from '@/states/features/founderDetailSlice';
 import { ShareDetail } from '@/types/models/shareDetail';
@@ -17,11 +16,12 @@ import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { setShareDetailsList } from '@/states/features/shareDetailSlice';
 
-interface AssignShareDetailsProps {
+type AssignShareDetailsProps = {
   businessId: businessId;
-}
+  applicationStatus: string;
+};
 
-const AssignShareDetails: FC<AssignShareDetailsProps> = () => {
+const AssignShareDetails = ({ applicationStatus }: AssignShareDetailsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -41,8 +41,7 @@ const AssignShareDetails: FC<AssignShareDetailsProps> = () => {
   const { shareDetailsList } = useSelector(
     (state: RootState) => state.shareDetail
   );
-  const { user } = useSelector((state: RootState) => state.user);
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const disableForm = ['IN_REVIEW'].includes(applicationStatus);
 
   // INITIALIZE ASSIGN SHARES MUTATION
   const [
@@ -154,16 +153,11 @@ const AssignShareDetails: FC<AssignShareDetailsProps> = () => {
         });
         dispatch(setAssignSharesModal(false));
       }}
+      heading={`Assign shares to ${
+        selectedFounderDetail?.personDetail?.firstName ||
+        selectedFounderDetail?.organization?.organizationName
+      }`}
     >
-      <h1 className="text-center uppercase font-semibold">
-        Capital details for{' '}
-        <span className="text-primary">
-          {selectedFounderDetail?.firstName ||
-            selectedFounderDetail?.companyName ||
-            ''}{' '}
-          {selectedFounderDetail?.lastName || ''}
-        </span>
-      </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset disabled={disableForm} className="flex flex-col gap-4">
           <table className="w-full flex flex-col gap-3">

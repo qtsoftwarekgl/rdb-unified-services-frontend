@@ -483,11 +483,7 @@ const CompanyDetails = ({
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
-            <Button
-              disabled={formDisabled}
-              value="Back"
-              route="/services"
-            />
+            <Button disabled={formDisabled} value="Back" route="/services" />
             <Button
               primary
               value={
@@ -499,11 +495,7 @@ const CompanyDetails = ({
           </menu>
           {['IN_REVIEW'].includes(String(applicationStatus)) && (
             <menu className="flex items-center justify-between w-full gap-3">
-              <Button
-                value="Back"
-                route="/services"
-                disabled
-              />
+              <Button value="Back" route="/services" disabled />
               <Button
                 value={'Next'}
                 primary

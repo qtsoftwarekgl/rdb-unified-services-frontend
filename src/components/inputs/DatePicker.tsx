@@ -68,7 +68,7 @@ const DatePicker = ({
       <PopoverContent className="w-full p-0" align="start">
         <menu className="flex flex-col gap-2 p-2 w-full">
           <ul
-            className={`w-full grid gap-3 ${
+            className={`w-full grid gap-3 p-0 ${
               selectionType === 'recurringDate' ? 'grid-cols-1' : 'grid-cols-2'
             }`}
           >

@@ -85,7 +85,9 @@ const PreviewCard: FC<PreviewCardProps> = ({
           {createNavigationFlowIsLoading ? (
             <Loader className="text-primary" />
           ) : (
-            ['IN_PROGRESS'].includes(String(applicationStatus)) && (
+            ['IN_PROGRESS', 'IS_AMENDING'].includes(
+              String(applicationStatus)
+            ) && (
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 onClick={(e) => {

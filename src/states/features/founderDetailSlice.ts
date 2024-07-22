@@ -1,18 +1,16 @@
-import { FounderDetail, PersonDetail } from "@/types/models/personDetail";
-import { createSlice } from "@reduxjs/toolkit";
+import { FounderDetail } from '@/types/models/personDetail';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState: {
   founderDetailsList: FounderDetail[];
   selectedFounderDetail: FounderDetail;
   assignSharesModal: boolean;
-  deleteFounderDetailModal: boolean;
-  founderDetailModal: boolean;
+  deleteFounderModal: boolean;
 } = {
   founderDetailsList: [],
   selectedFounderDetail: {} as FounderDetail,
   assignSharesModal: false,
-  deleteFounderDetailModal: false,
-  founderDetailModal: false,
+  deleteFounderModal: false,
 };
 
 const founderDetailSlice = createSlice({
@@ -30,17 +28,14 @@ const founderDetailSlice = createSlice({
     },
     removeFounderDetail: (state, action) => {
       state.founderDetailsList = state.founderDetailsList.filter(
-        (person: PersonDetail) => person.id !== action.payload
+        (person: FounderDetail) => person.id !== action.payload
       );
     },
     setAssignSharesModal: (state, action) => {
       state.assignSharesModal = action.payload;
     },
-    setDeleteFounderDetailModal: (state, action) => {
-      state.deleteFounderDetailModal = action.payload;
-    },
-    setFounderDetailModal: (state, action) => {
-      state.founderDetailModal = action.payload;
+    setDeleteFounderModal: (state, action) => {
+      state.deleteFounderModal = action.payload;
     },
   },
 });
@@ -51,8 +46,7 @@ export const {
   addFounderDetail,
   removeFounderDetail,
   setAssignSharesModal,
-  setDeleteFounderDetailModal,
-  setFounderDetailModal,
+  setDeleteFounderModal,
 } = founderDetailSlice.actions;
 
 export default founderDetailSlice.reducer;

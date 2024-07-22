@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from 'react';
 import { ErrorResponse, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import {
   AbstractNavigationFlow,
   NavigationFlow,
@@ -66,7 +66,7 @@ const NavigationTab = ({
       <aside
         className={`${
           navigationSteps && navigationSteps?.length > 1 ? 'flex' : 'hidden'
-        } flex-col gap-2 w-[20%] p-3 px-4 rounded-md`}
+        } flex-col gap-2 w-[25%] p-3 px-4 rounded-md`}
       >
         {navigationSteps
           ?.filter(
@@ -121,8 +121,11 @@ const NavigationTab = ({
                     />
                   </figure>
                   <menu className="flex items-center justify-between gap-3">
-                    <h4 className="font-medium text-[15px] mt-[5px]">
-                      {navigationStep?.stepName}
+                    <h4 className={`font-medium text-[15px] mt-[5px] flex items-start gap-2`}>
+                      <p className='w-full'>{navigationStep?.stepName}</p>
+                      {navigationExists?.active && (
+                        <FontAwesomeIcon icon={faSpinner} className='text-primary mt-1' />
+                      )}
                     </h4>
                   </menu>
                 </Link>
