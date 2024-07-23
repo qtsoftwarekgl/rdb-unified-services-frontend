@@ -248,6 +248,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
                         <Input
                           label="Articles of association"
                           type="file"
+                          accept="application/pdf"
                           className="!w-fit"
                           name={field?.name}
                           onChange={(e) => {
@@ -308,6 +309,7 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
                       <Input
                         type="file"
                         required={required}
+                        accept="application/pdf"
                         className="!w-fit"
                         name={field.name}
                         onChange={(e) => {

@@ -36,6 +36,7 @@ import {
   useLazyFetchBusinessActivitiesQuery,
 } from "@/states/api/businessRegApiSlice";
 import { setBusinessActiveStep } from "@/states/features/businessRegistrationSlice";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 interface BusinessActivityProps {
   businessId: businessId;
@@ -314,111 +315,105 @@ const BusinessActivities = ({
               />
               {(selectedBusinessActivity ||
                 businessActivitiesList?.length > 0) && (
-                <menu className="flex flex-col items-start w-full gap-6">
-                  <section className="flex flex-col w-full gap-4">
-                    <h1 className="text-md">Select business line</h1>
-                    <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
-                      {businessLinesIsLoading && (
-                        <figure className="flex items-center justify-center w-full h-full">
-                          <Loader />
-                        </figure>
-                      )}
-                      {!businessLinesIsLoading &&
-                        businessLinesList.map(
-                          (businessLine: BusinessActivity) => {
-                            const isSelected = selectedBusinessLinesList?.find(
-                              (activity: BusinessActivity) =>
-                                activity.code == businessLine.code
-                            );
-                            return (
-                              <div className="flex items-center gap-2">
-                                <li
-                                  key={businessLine.code}
-                                  className="flex items-center justify-between flex-1 gap-3 p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-                                >
-                                  <p className="text-start text-[13px] max-w-[85%]">
-                                    {businessLine?.description}
-                                  </p>
-                                </li>
-                                <Link
-                                  to={"#"}
-                                  className="text-[13px] hover:underline w-fit"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    if (isSelected) return;
-                                    dispatch(
-                                      addSelectedBusinessLine(businessLine)
-                                    );
-                                  }}
-                                >
-                                  {isSelected ? (
+                <section className="flex flex-col w-full gap-4">
+                  <h1 className="text-md">Select business line</h1>
+                  <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
+                    {businessLinesIsLoading && (
+                      <figure className="flex items-center justify-center w-full h-full">
+                        <Loader />
+                      </figure>
+                    )}
+                    {!businessLinesIsLoading &&
+                      businessLinesList.map(
+                        (businessLine: BusinessActivity) => {
+                          const isSelected = selectedBusinessLinesList?.find(
+                            (activity: BusinessActivity) =>
+                              activity.code == businessLine.code
+                          );
+                          return (
+                            <li
+                              key={businessLine.code}
+                              className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
+                            >
+                              <p className="text-start text-[13px] max-w-[85%]">
+                                {businessLine?.description}
+                              </p>
+                              <Link
+                                to={"#"}
+                                className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  if (isSelected) return;
+                                  dispatch(
+                                    addSelectedBusinessLine(businessLine)
+                                  );
+                                }}
+                              >
+                                {isSelected ? (
+                                  <FontAwesomeIcon icon={faCircleCheck} />
+                                ) : (
+                                  <menu className="w-fit flex items-center gap-2 text-[13px]">
                                     <FontAwesomeIcon
-                                      icon={faCircleCheck}
-                                      className="text-primary"
+                                      className="text-[12px]"
+                                      icon={faPlus}
                                     />
-                                  ) : (
-                                    <p className="w-fit text-[13px] text-primary">
-                                      Add to list
-                                    </p>
-                                  )}
-                                </Link>
-                              </div>
-                            );
-                          }
-                        )}
-                    </ul>
-                  </section>
-                  {selectedBusinessLinesList?.length > 0 ? (
-                    <section className="flex flex-col w-full gap-4">
-                      <h1 className="text-md">Selected business activities</h1>
-                      <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background max-h-[35vh] overflow-y-scroll">
-                        {selectedBusinessLinesList?.map(
-                          (businesLine: BusinessActivity, index: number) => {
-                            const isMainBusinessLine =
-                              selectedMainBusinessLine?.code ==
-                              businesLine.code;
-                            return (
-                              <div className="flex items-center gap-2">
-                                <li
-                                  key={index}
-                                  className="flex items-center justify-between flex-1 gap-3 p-2 rounded-md cursor-pointer hover:shadow-xs hover:bg-primary hover:text-white"
-                                >
-                                  <menu className="flex items-center gap-2">
-                                    <p className="text-start text-[13px]">
-                                      {businesLine?.description}{" "}
-                                      {isMainBusinessLine && (
-                                        <span className="text-[11px] bg-primary text-white rounded-md p-1 ml-2">
-                                          Main activity
-                                        </span>
-                                      )}
-                                    </p>
+                                    Add to list
                                   </menu>
-                                </li>
-                                <Link
-                                  to={"#"}
-                                  className="text-[13px] hover:underline text-red-400"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    dispatch(
-                                      removeSelectedBusinessLine(businesLine)
-                                    );
-                                  }}
-                                >
-                                  Remove from list
-                                </Link>
-                              </div>
-                            );
-                          }
-                        )}
-                      </ul>
-                    </section>
-                  ) : (
-                    <p className="text-[13px] text-primary font-medium w-full text-center">
-                      Start adding business activities to the list to manage
-                      them here.
-                    </p>
-                  )}
-                </menu>
+                                )}
+                              </Link>
+                            </li>
+                          );
+                        }
+                      )}
+                  </ul>
+                </section>
+              )}
+              {selectedBusinessLinesList?.length > 0 ? (
+                <section className="flex flex-col w-full gap-4">
+                  <h1 className="text-md">Selected business activities</h1>
+                  <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background max-h-[35vh] overflow-y-scroll">
+                    {selectedBusinessLinesList?.map(
+                      (businesLine: BusinessActivity, index: number) => {
+                        const isMainBusinessLine =
+                          selectedMainBusinessLine?.code == businesLine.code;
+                        return (
+                          <li
+                            key={index}
+                            className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
+                          >
+                            <menu className="flex items-center gap-2">
+                              <p className="text-start text-[13px]">
+                                {businesLine?.description}{" "}
+                                {isMainBusinessLine && (
+                                  <span className="text-[11px] bg-primary text-white rounded-md p-1 ml-2">
+                                    Main activity
+                                  </span>
+                                )}
+                              </p>
+                            </menu>
+                            <Link
+                              to={"#"}
+                              className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                dispatch(
+                                  removeSelectedBusinessLine(businesLine)
+                                );
+                              }}
+                            >
+                              Remove from list
+                            </Link>
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                </section>
+              ) : (
+                <p className="text-[13px] text-primary font-medium w-full text-center">
+                  Start adding business activities to the list to manage them
+                  here.
+                </p>
               )}
               {selectedBusinessLinesList?.length > 0 && (
                 <menu className="w-full">

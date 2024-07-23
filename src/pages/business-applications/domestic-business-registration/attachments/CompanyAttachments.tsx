@@ -1,32 +1,32 @@
-import { useDispatch } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { Controller, useForm } from 'react-hook-form';
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { Controller, useForm } from "react-hook-form";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setBusinessCompletedTab,
-} from '../../../../states/features/businessRegistrationSlice';
-import Button from '../../../../components/inputs/Button';
-import { businessId } from '@/types/models/business';
+} from "../../../../states/features/businessRegistrationSlice";
+import Button from "../../../../components/inputs/Button";
+import { businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessAttachmentsQuery,
   useUploadBusinessAttachmentMutation,
-} from '@/states/api/businessRegApiSlice';
-import { useSelector } from 'react-redux';
-import Input from '@/components/inputs/Input';
-import { toast } from 'react-toastify';
+} from "@/states/api/businessRegApiSlice";
+import { useSelector } from "react-redux";
+import Input from "@/components/inputs/Input";
+import { toast } from "react-toastify";
 import {
   addBusinessAttachment,
   setBusinessAttachments,
-} from '@/states/features/businessSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
-import Loader from '@/components/Loader';
-import { BusinessAttachment } from '@/types/models/attachment';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "@/states/features/businessSlice";
+import { ErrorResponse } from "react-router-dom";
+import { useEffect, useState } from "react";
+import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
+import Loader from "@/components/Loader";
+import { BusinessAttachment } from "@/types/models/attachment";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type CompanyAttachmentsProps = {
   businessId: businessId;
@@ -36,15 +36,15 @@ type CompanyAttachmentsProps = {
 // DOMESTIC BUSINESS REGISTRATION - COMPANY ATTACHMENTS
 const domesticBusinessRegistrationAttachments = [
   {
-    label: 'Resolution',
-    name: 'resolution',
-    type: 'file',
+    label: "Resolution",
+    name: "resolution",
+    type: "file",
     required: true,
   },
   {
-    label: 'Shareholder attachments',
-    name: 'shareholderAttachments',
-    type: 'file',
+    label: "Shareholder attachments",
+    name: "shareholderAttachments",
+    type: "file",
     required: false,
   },
 ];
@@ -62,7 +62,7 @@ const CompanyAttachments = ({
   const { businessAttachments } = useSelector(
     (state: RootState) => state.business
   );
-  const [selectedAttachment, setSelectedAttachment] = useState<string>('');
+  const [selectedAttachment, setSelectedAttachment] = useState<string>("");
 
   // INITIALIZE UPLOAD BUSINESS ATTACHMENT
   const [
@@ -79,10 +79,10 @@ const CompanyAttachments = ({
   // UPLOAD HELDER
   const uploadHelper = (file: File, attachmentType: string) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('businessId', String(businessId));
-    formData.append('attachmentType', attachmentType);
-    formData.append('fileName', file?.name);
+    formData.append("file", file);
+    formData.append("businessId", String(businessId));
+    formData.append("attachmentType", attachmentType);
+    formData.append("fileName", file?.name);
     uploadBusinessAttachment({ formData });
   };
 
@@ -91,10 +91,10 @@ const CompanyAttachments = ({
     if (uploadBusinessAttachmentIsError) {
       const errorMessage =
         (uploadBusinessAttachmentError as ErrorResponse)?.data?.message ||
-        'An error occurred while uploading attachments. Please try again later.';
+        "An error occurred while uploading attachments. Please try again later.";
       toast.error(errorMessage);
     } else if (uploadBusinessAttachmentIsSuccess) {
-      toast.success('Attachments uploaded successfully');
+      toast.success("Attachments uploaded successfully");
       dispatch(addBusinessAttachment(uploadBusinessAttachmentData?.data));
     }
   }, [
@@ -130,7 +130,7 @@ const CompanyAttachments = ({
     if (businessAttachmentsIsError) {
       const errorMessage =
         (businessAttachmentsError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching business attachments. Please try again later.';
+        "An error occurred while fetching business attachments. Please try again later.";
       toast.error(errorMessage);
     } else if (businessAttachmentsIsSuccess) {
       dispatch(setBusinessAttachments(businessAttachmentsData?.data));
@@ -145,19 +145,19 @@ const CompanyAttachments = ({
 
   return (
     <main className="flex flex-col w-full gap-8">
-      <form className="w-full flex flex-col gap-6">
+      <form className="flex flex-col w-full gap-6">
         <fieldset className="flex flex-col w-full gap-6">
           {business?.hasArticlesOfAssociation && (
-            <section className="w-full flex items-center gap-3 justify-between">
+            <section className="flex items-center justify-between w-full gap-3">
               <h1 className="w-full">
-                Articles of association{' '}
+                Articles of association{" "}
                 {businessAttachments.some(
                   (attachment: BusinessAttachment) =>
-                    attachment.attachmentType === 'Articles of association'
+                    attachment.attachmentType === "Articles of association"
                 ) && (
                   <FontAwesomeIcon
                     icon={faCheckCircle}
-                    className="text-primary cursor-pointer"
+                    className="cursor-pointer text-primary"
                     onClick={(e) => {
                       e.preventDefault();
                       toast.info(
@@ -165,7 +165,7 @@ const CompanyAttachments = ({
                       );
                     }}
                   />
-                )}{' '}
+                )}{" "}
                 <span className="text-red-600">*</span>
               </h1>
               <Controller
@@ -176,17 +176,18 @@ const CompanyAttachments = ({
                 }}
                 render={({ field }) => {
                   return (
-                    <label className="w-full flex items-center gap-3 justify-end">
+                    <label className="flex items-center justify-end w-full gap-3">
                       <Input
                         type="file"
+                        accept="application/pdf"
                         required
                         {...field}
                         onChange={(e) => {
                           if (e?.target?.files?.[0]) {
-                            setSelectedAttachment('Articles of association');
+                            setSelectedAttachment("Articles of association");
                             uploadHelper(
                               e?.target?.files?.[0],
-                              'Articles of association'
+                              "Articles of association"
                             );
                           }
                         }}
@@ -202,10 +203,10 @@ const CompanyAttachments = ({
               return (
                 <section
                   key={index}
-                  className="w-full flex items-center gap-3 justify-between"
+                  className="flex items-center justify-between w-full gap-3"
                 >
                   <h1 className="w-full">
-                    {`${label} ${!required ? '(optional)' : ''}`}{' '}
+                    {`${label} ${!required ? "(optional)" : ""}`}{" "}
                     {required && <span className="text-red-600">*</span>}
                     {businessAttachments.some(
                       (attachment: BusinessAttachment) =>
@@ -213,7 +214,7 @@ const CompanyAttachments = ({
                     ) && (
                       <FontAwesomeIcon
                         icon={faCheckCircle}
-                        className="text-primary cursor-pointer"
+                        className="cursor-pointer text-primary"
                         onClick={(e) => {
                           e.preventDefault();
                           toast.info(`${label} uploaded successfully!`);
@@ -231,9 +232,10 @@ const CompanyAttachments = ({
                     }}
                     render={({ field }) => {
                       return (
-                        <label className="w-full flex items-center gap-3 justify-end">
+                        <label className="flex items-center justify-end w-full gap-3">
                           <Input
                             type="file"
+                            accept="application/pdf"
                             required={required}
                             {...field}
                             onChange={(e) => {
@@ -241,7 +243,7 @@ const CompanyAttachments = ({
                                 setSelectedAttachment(label);
                                 uploadHelper(e?.target?.files?.[0], label);
                               } else {
-                                toast.error('No file selected');
+                                toast.error("No file selected");
                               }
                             }}
                           />
@@ -273,10 +275,10 @@ const CompanyAttachments = ({
           )
         )}
         {[
-          'IN_PROGRESS',
-          'IS_AMENDING',
-          'IN_PREVIEW',
-          'ACTION_REQUIRED',
+          "IN_PROGRESS",
+          "IS_AMENDING",
+          "IN_PREVIEW",
+          "ACTION_REQUIRED",
         ].includes(status) && (
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -285,36 +287,36 @@ const CompanyAttachments = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('beneficial_owners'));
-                dispatch(setBusinessActiveTab('beneficial_owners'));
+                dispatch(setBusinessActiveStep("beneficial_owners"));
+                dispatch(setBusinessActiveTab("beneficial_owners"));
               }}
             />
             <Button
-              value={'Save & Continue'}
+              value={"Save & Continue"}
               primary
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessCompletedStep('attachments'));
-                dispatch(setBusinessCompletedTab('attachments'));
-                dispatch(setBusinessActiveStep('preview_submission'));
-                dispatch(setBusinessActiveTab('preview_submission'));
+                dispatch(setBusinessCompletedStep("attachments"));
+                dispatch(setBusinessCompletedTab("attachments"));
+                dispatch(setBusinessActiveStep("preview_submission"));
+                dispatch(setBusinessActiveTab("preview_submission"));
               }}
             />
           </menu>
         )}
         {[
-          'IN_REVIEW',
-          'IS_APPROVED',
-          'PENDING_APPROVAL',
-          'PENDING_REJECTION',
+          "IN_REVIEW",
+          "IS_APPROVED",
+          "PENDING_APPROVAL",
+          "PENDING_REJECTION",
         ].includes(status) && (
           <menu className="flex items-center justify-between gap-3">
             <Button
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('beneficial_owners'));
-                dispatch(setBusinessActiveTab('beneficial_owners'));
+                dispatch(setBusinessActiveStep("beneficial_owners"));
+                dispatch(setBusinessActiveTab("beneficial_owners"));
               }}
             />
             <Button
@@ -322,10 +324,10 @@ const CompanyAttachments = ({
               primary
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessCompletedStep('attachments'));
-                dispatch(setBusinessCompletedTab('attachments'));
-                dispatch(setBusinessActiveStep('preview_submission'));
-                dispatch(setBusinessActiveTab('preview_submission'));
+                dispatch(setBusinessCompletedStep("attachments"));
+                dispatch(setBusinessCompletedTab("attachments"));
+                dispatch(setBusinessActiveStep("preview_submission"));
+                dispatch(setBusinessActiveTab("preview_submission"));
               }}
             />
           </menu>
