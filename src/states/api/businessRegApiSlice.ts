@@ -757,6 +757,16 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+      // RESTORE BUSINESS
+      restoreBusiness: builder.mutation({
+        query: ({ businessId }) => {
+          return {
+            url: `/amendment/restore?businessId=${businessId}`,
+            method: 'POST',
+          };
+        },
+      }),
     };
   },
 });
@@ -815,7 +825,8 @@ export const {
   useCloseCompanyMutation,
   useCreateBusinessBranchMutation,
   useCessationToDormancyMutation,
-  useTransferBusinessRegistrationMutation
+  useTransferBusinessRegistrationMutation,
+  useRestoreBusinessMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

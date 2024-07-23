@@ -729,6 +729,7 @@ const BusinessNewBranch = () => {
           {attachmentFiles?.length > 0 && (
             <menu className="flex flex-col gap-4 w-full">
               <Table
+showFilter={false}
                 columns={
                   attachmentExtendedColumns as ColumnDef<{
                     file: File;
