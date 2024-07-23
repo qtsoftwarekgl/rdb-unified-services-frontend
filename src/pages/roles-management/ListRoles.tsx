@@ -1,12 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from '../../components/inputs/Button';
-import AdminLayout from '../../containers/AdminLayout';
-import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import { faBan } from '@fortawesome/free-solid-svg-icons';
-import Table from '../../components/table/Table';
-import CreateRole from './CreateRole';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "../../components/inputs/Button";
+import AdminLayout from "../../containers/AdminLayout";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import { faBan } from "@fortawesome/free-solid-svg-icons";
+import Table from "../../components/table/Table";
+import CreateRole from "./CreateRole";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setCreateRoleModal,
   setAssignRolesModal,
@@ -20,25 +20,25 @@ import {
   setSelectedRole,
   setRolePermissionsModal,
   setEnableRoleModal,
-} from '../../states/features/roleSlice';
-import UpdateRole from './UpdateRole';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { useEffect } from 'react';
-import DisableRole from './DisableRole';
-import { ColumnDef, Row } from '@tanstack/react-table';
-import Select from '@/components/inputs/Select';
-import AssignRoles from './AssignRoles';
-import { roleColumns } from '@/constants/roles.constants';
-import { Role } from '@/types/models/role';
-import { useLazyFetchRolesQuery } from '@/states/api/userManagementApiSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import Loader from '@/components/Loader';
-import { capitalizeString, getStatusBgColor } from '@/helpers/strings';
-import ListPermissions from './ListPermissions';
-import ListRolePermissions from './ListRolePermissions';
-import CustomTooltip from '@/components/inputs/CustomTooltip';
-import EnableRole from './EnableRole';
+} from "../../states/features/roleSlice";
+import UpdateRole from "./UpdateRole";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { useEffect } from "react";
+import DisableRole from "./DisableRole";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import Select from "@/components/inputs/Select";
+import AssignRoles from "./AssignRoles";
+import { roleColumns } from "@/constants/roles.constants";
+import { Role } from "@/types/models/role";
+import { useLazyFetchRolesQuery } from "@/states/api/userManagementApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import Loader from "@/components/Loader";
+import { capitalizeString, getStatusBgColor } from "@/helpers/strings";
+import ListPermissions from "./ListPermissions";
+import ListRolePermissions from "./ListRolePermissions";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
+import EnableRole from "./EnableRole";
 
 const ListRoles = () => {
   // STATE VARIABLES
@@ -76,7 +76,7 @@ const ListRoles = () => {
     } else if (rolesIsError) {
       const errorResponse =
         (rolesError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching roles. Refresh and try again';
+        "An error occurred while fetching roles. Refresh and try again";
       toast.error(errorResponse);
     }
   }, [rolesIsSuccess, rolesData, dispatch, rolesIsError, rolesError]);
@@ -84,8 +84,8 @@ const ListRoles = () => {
   // COLUMNS
   const roleExtendedColumns = [
     {
-      header: 'Actions',
-      accessorKey: 'actions',
+      header: "Actions",
+      accessorKey: "actions",
       cell: ({ row }: { row: Row<Role> }) => {
         return (
           <menu className="flex items-center gap-2">
@@ -100,7 +100,7 @@ const ListRoles = () => {
                 className="text-white cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full bg-primary"
               />
             </CustomTooltip>
-            {row?.original?.state === 'ACTIVE' ? (
+            {row?.original?.state === "ACTIVE" ? (
               <CustomTooltip label="Disable role">
                 <FontAwesomeIcon
                   onClick={(e) => {
@@ -131,9 +131,9 @@ const ListRoles = () => {
     },
     ...roleColumns,
     {
-      header: 'State',
-      accessorKey: 'state',
-      id: 'state',
+      header: "State",
+      accessorKey: "state",
+      id: "state",
       cell: ({ row }: { row: Row<Role> }) => {
         return (
           <p
@@ -150,9 +150,9 @@ const ListRoles = () => {
       },
     },
     {
-      header: 'Permissions',
-      accessorKey: 'permissions',
-      id: 'actions',
+      header: "Permissions",
+      accessorKey: "permissions",
+      id: "actions",
       cell: ({ row }: { row: Row<Role> }) => {
         return (
           <Button
@@ -172,21 +172,19 @@ const ListRoles = () => {
 
   return (
     <AdminLayout>
-      <main className="p-6 flex flex-col gap-4 w-full bg-white rounded-md">
-        <menu className="flex items-center gap-2 justify-between">
+      <main className="flex flex-col w-full gap-4 p-6 bg-white rounded-md">
+        <menu className="flex items-center justify-between gap-2">
           <h1 className="uppercase font-semibold text-primary text-xl w-[80%]">
             Roles Management
           </h1>
           <Select
-            options={[
-              { value: 'add', label: 'Add role' },
-            ]}
+            options={[{ value: "add", label: "Add role" }]}
             placeholder="Actions"
             className="w-[25%] self-end"
             onChange={(e) => {
-              if (e === 'add') {
+              if (e === "add") {
                 dispatch(setCreateRoleModal(true));
-              } else if (e === 'assign') {
+              } else if (e === "assign") {
                 dispatch(setAssignRolesModal(true));
               }
             }}
@@ -206,10 +204,6 @@ const ListRoles = () => {
               size={size}
               page={page}
               showExport={false}
-              rowClickHandler={(row) => {
-                dispatch(setSelectedRole(row));
-                dispatch(setRolePermissionsModal(true));
-              }}
               data={rolesList?.map((role: Role) => {
                 return {
                   ...role,

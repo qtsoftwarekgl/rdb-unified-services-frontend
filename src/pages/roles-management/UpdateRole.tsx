@@ -1,30 +1,30 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
-import Modal from '../../components/Modal';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import Modal from "../../components/Modal";
 import {
   setCreateRoleModal,
   setSelectedRole,
   setTotalElements,
   setTotalPages,
   setUpdateRoleModal,
-} from '../../states/features/roleSlice';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import Button from '../../components/inputs/Button';
-import { useEffect } from 'react';
-import TextArea from '../../components/inputs/TextArea';
+} from "../../states/features/roleSlice";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import Button from "../../components/inputs/Button";
+import { useEffect } from "react";
+import TextArea from "../../components/inputs/TextArea";
 import {
   setListPermissionsModal,
   setSelectedPermissions,
-} from '../../states/features/permissionSlice';
-import Loader from '../../components/Loader';
+} from "../../states/features/permissionSlice";
+import Loader from "../../components/Loader";
 import {
   useEditRoleMutation,
-  useLazyFetchPermissionsQuery,
-} from '@/states/api/userManagementApiSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { capitalizeString } from '@/helpers/strings';
+  useFetchPermissionsMutation,
+} from "@/states/api/userManagementApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import { capitalizeString } from "@/helpers/strings";
 
 const UpdateRole = () => {
   // REACT HOOK FORM
@@ -67,7 +67,7 @@ const UpdateRole = () => {
     if (editRoleIsError) {
       const errorResponse =
         (editRoleError as ErrorResponse)?.data?.message ||
-        'An error occurred while updating role. Refresh and try again';
+        "An error occurred while updating role. Refresh and try again";
       toast.error(errorResponse);
     }
   }, [
@@ -83,12 +83,12 @@ const UpdateRole = () => {
     fetchPermissions,
     {
       data: permissionsData,
-      isFetching: permissionsIsFetching,
+      isLoading: permissionsIsFetching,
       error: permissionsError,
       isSuccess: permissionsIsSuccess,
       isError: permissionsIsError,
     },
-  ] = useLazyFetchPermissionsQuery();
+  ] = useFetchPermissionsMutation();
 
   // FETCH PERMISSIONS
   useEffect(() => {
@@ -106,7 +106,7 @@ const UpdateRole = () => {
     } else if (permissionsIsError) {
       const errorResponse =
         (permissionsError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching permissions. Refresh and try again';
+        "An error occurred while fetching permissions. Refresh and try again";
       toast.error(errorResponse);
     }
   }, [
@@ -120,8 +120,8 @@ const UpdateRole = () => {
   // UPDATE DEFAULT VALUES
   useEffect(() => {
     if (permissionsIsSuccess) {
-      setValue('name', selectedRole?.roleName);
-      setValue('description', selectedRole?.description);
+      setValue("name", selectedRole?.roleName);
+      setValue("description", selectedRole?.description);
       dispatch(setSelectedPermissions(permissionsData?.data?.data));
     }
   }, [setValue, selectedRole, dispatch, permissionsIsSuccess, permissionsData]);
@@ -151,20 +151,20 @@ const UpdateRole = () => {
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 w-full"
+          className="flex flex-col w-full gap-4"
         >
           <Controller
-            defaultValue={watch('name')}
+            defaultValue={watch("name")}
             name="name"
             control={control}
-            rules={{ required: 'Name is required' }}
+            rules={{ required: "Name is required" }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col w-full gap-2">
                   <Input
                     label="Name"
                     placeholder="Role name"
-                    defaultValue={watch('name')}
+                    defaultValue={watch("name")}
                     {...field}
                   />
                   {errors?.name && (
@@ -177,7 +177,7 @@ const UpdateRole = () => {
             }}
           />
           <Controller
-            defaultValue={watch('description')}
+            defaultValue={watch("description")}
             name="description"
             control={control}
             render={({ field }) => {
@@ -187,7 +187,7 @@ const UpdateRole = () => {
                     label="Description"
                     resize
                     placeholder="Role description"
-                    defaultValue={watch('description')}
+                    defaultValue={watch("description")}
                     {...field}
                   />
                 </label>
@@ -195,12 +195,12 @@ const UpdateRole = () => {
             }}
           />
           <article className="flex flex-col gap-2">
-            <h3 className="text-center text-primary uppercase mt-4 font-medium">
+            <h3 className="mt-4 font-medium text-center uppercase text-primary">
               {capitalizeString(selectedRole?.roleName)} permissions
             </h3>
             <menu className="flex flex-col items-center justify-center gap-3">
               {selectedPermissions?.length > 0 && (
-                <ul className="w-full flex items-center justify-center gap-2">
+                <ul className="flex items-center justify-center w-full gap-2">
                   {selectedPermissions?.map((permission) => {
                     return (
                       <p
@@ -239,7 +239,7 @@ const UpdateRole = () => {
             <Button
               primary
               submit
-              value={editRoleIsLoading ? <Loader /> : 'Save'}
+              value={editRoleIsLoading ? <Loader /> : "Save"}
             />
           </menu>
         </form>

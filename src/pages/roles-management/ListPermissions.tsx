@@ -1,6 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../components/Modal';
-import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch, useSelector } from "react-redux";
+import Modal from "../../components/Modal";
+import { AppDispatch, RootState } from "../../states/store";
 import {
   addToSelectedPermissions,
   removeFromSelectedPermissions,
@@ -11,20 +11,20 @@ import {
   setSize,
   setTotalElements,
   setTotalPages,
-} from '../../states/features/permissionSlice';
-import Table from '../../components/table/Table';
-import { permissionColumns } from '@/constants/permission.constants';
-import { useLazyFetchPermissionsQuery } from '@/states/api/userManagementApiSlice';
-import { useEffect } from 'react';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import Loader from '@/components/Loader';
-import { Permission } from '@/types/models/permission';
-import { ColumnDef, Row } from '@tanstack/react-table';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import CustomTooltip from '@/components/inputs/CustomTooltip';
-import Button from '@/components/inputs/Button';
+} from "../../states/features/permissionSlice";
+import Table from "../../components/table/Table";
+import { permissionColumns } from "@/constants/permission.constants";
+import { useFetchPermissionsMutation } from "@/states/api/userManagementApiSlice";
+import { useEffect } from "react";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import Loader from "@/components/Loader";
+import { Permission } from "@/types/models/permission";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
+import Button from "@/components/inputs/Button";
 
 const ListPermissions = () => {
   // STATE VARIABLES
@@ -44,12 +44,12 @@ const ListPermissions = () => {
     fetchPermissions,
     {
       data: permissionsData,
-      isFetching: permissionsIsFetching,
+      isLoading: permissionsIsFetching,
       error: permissionsError,
       isSuccess: permissionsIsSuccess,
       isError: permissionsIsError,
     },
-  ] = useLazyFetchPermissionsQuery();
+  ] = useFetchPermissionsMutation();
 
   // FETCH PERMISSIONS
   useEffect(() => {
@@ -71,7 +71,7 @@ const ListPermissions = () => {
     if (permissionsIsError) {
       toast.error(
         (permissionsError as ErrorResponse)?.data?.message ||
-          'An error occurred while fetching permissions. Refresh and try again'
+          "An error occurred while fetching permissions. Refresh and try again"
       );
     }
   }, [
@@ -87,8 +87,8 @@ const ListPermissions = () => {
   // COLUMNS
   const permissionExtendedColumns = [
     {
-      header: '',
-      accessorKey: 'actions',
+      header: "",
+      accessorKey: "actions",
       cell: ({ row }: { row: Row<Permission> }) => {
         const permissionSelected = selectedPermissions?.find(
           (permission) => permission.id === row?.original?.id
@@ -155,7 +155,7 @@ const ListPermissions = () => {
           columns={permissionExtendedColumns as ColumnDef<Permission>[]}
         />
       )}
-      <menu className="flex items-center gap-3 justify-between">
+      <menu className="flex items-center justify-between gap-3">
         <Button
           value="Remove all"
           disabled={selectedPermissions?.length <= 0}
