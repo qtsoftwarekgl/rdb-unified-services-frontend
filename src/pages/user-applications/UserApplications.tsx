@@ -55,7 +55,6 @@ const UserApplications = () => {
     fetchBusinesses({
       page,
       size,
-      applicationStatus: 'APPROVED',
     });
   }, [fetchBusinesses, page, size]);
 

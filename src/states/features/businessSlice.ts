@@ -2,6 +2,7 @@ import { BusinessAttachment } from '@/types/models/attachment';
 import {
   Address,
   Business,
+  businessId,
   Details,
   EmploymentInfo,
 } from '@/types/models/business';
@@ -127,11 +128,34 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
           formData,
         })
       ).unwrap();
-      toast.success(`${fileName} uploaded successfully`);
       return response.data;
     } catch (error) {
       console.log(error);
       toast.error('An error occurred while uploading attachment');
+      throw error;
+    }
+  }
+);
+
+// UPDATE BUSINESS THUNK
+export const updateBusinessThunk = createAsyncThunk<
+  Business,
+  { businessId: businessId, applicationStatus: string },
+  { dispatch: AppDispatch }
+>(
+  'business/updateBusiness',
+  async ({ applicationStatus, businessId }, { dispatch }) => {
+    try {
+      const response = await dispatch(
+        businessRegApiSlice.endpoints.updateBusiness.initiate({
+          businessId,
+          applicationStatus,
+        })
+      ).unwrap();
+      toast.success('Business updated successfully');
+      return response.data;
+    } catch (error) {
+      toast.error('An error occurred while updating business');
       throw error;
     }
   }
@@ -247,6 +271,18 @@ export const businessSlice = createSlice({
       state.uploadAmendmentAttachmentIsLoading = false;
       state.uploadAmendmentAttachmentIsSuccess = true;
     })
+    builder.addCase(uploadAmendmentAttachmentThunk.rejected, (state) => {
+      state.uploadAmendmentAttachmentIsLoading = false;
+    })
+    builder.addCase(updateBusinessThunk.fulfilled, (state, action) => {
+      state.businessesList = state.businessesList.map((business) => {
+        if (business.id === action.payload.id) {
+          return action.payload;
+        }
+        return business;
+      }
+      );
+    });
   },
 });
 

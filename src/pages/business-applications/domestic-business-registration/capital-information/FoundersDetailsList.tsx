@@ -4,7 +4,7 @@ import Table from "@/components/table/Table";
 import { capitalizeString } from "@/helpers/strings";
 import { useLazyFetchShareholdersQuery } from "@/states/api/businessRegApiSlice";
 import {
-  setDeleteFounderDetailModal,
+  setDeleteFounderModal,
   setFounderDetailsList,
   setSelectedFounderDetail,
 } from "@/states/features/founderDetailSlice";
@@ -79,7 +79,7 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setSelectedFounderDetail(row?.original));
-                  dispatch(setDeleteFounderDetailModal(true));
+                  dispatch(setDeleteFounderModal(true));
                 }}
               />
             </CustomTooltip>

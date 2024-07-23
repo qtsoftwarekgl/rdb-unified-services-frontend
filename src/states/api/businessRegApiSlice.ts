@@ -767,6 +767,22 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+      // FETCH BACK OFFICE BUSINESSES
+      fetchBackOfficeBusinesses: builder.query({
+        query: ({ page, size, applicationStatus, serviceId }) => {
+          let url = `/back-office/?page=${page}&size=${size}`;
+          if (applicationStatus) {
+            url += `&applicationStatus=${applicationStatus}`;
+          }
+          if (serviceId) {
+            url += `&serviceId=${serviceId}`;
+          }
+          return {
+            url
+          };
+        },
+      }),
     };
   },
 });
@@ -827,6 +843,7 @@ export const {
   useCessationToDormancyMutation,
   useTransferBusinessRegistrationMutation,
   useRestoreBusinessMutation,
+  useLazyFetchBackOfficeBusinessesQuery,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

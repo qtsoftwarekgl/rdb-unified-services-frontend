@@ -128,7 +128,7 @@ const BusinessPersonDetails = () => {
       }}
       heading={`${
         selectedBusinessPerson?.firstName ||
-        selectedBusinessPerson?.organizationName
+        selectedBusinessPerson?.organization?.organizationName
       } ${selectedBusinessPerson?.lastName || ''}`}
     >
       {businessPersonIsFetching ? (

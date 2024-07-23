@@ -132,7 +132,9 @@ const NewServiceApplication = () => {
       if ((businessesError as ErrorResponse)?.status === 500) {
         toast.error('An error occurred, please try again later');
       } else {
-        toast.error((businessesError as ErrorResponse)?.data?.message);
+        toast.error(
+          capitalizeString((businessesError as ErrorResponse)?.data?.message)
+        );
       }
     } else if (businessesIsSuccess) {
       dispatch(addToBusinessesList(businessesData?.data?.data));

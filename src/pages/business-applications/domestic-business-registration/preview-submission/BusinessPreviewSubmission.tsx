@@ -31,7 +31,10 @@ import { setFounderDetailsList } from '@/states/features/founderDetailSlice';
 import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
 import { useLazyFetchBusinessAttachmentsQuery } from '@/states/api/businessRegApiSlice';
 import { setBusinessAttachments } from '@/states/features/businessSlice';
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
 import { completeNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
 
 type PreviewSubmissionProps = {
@@ -335,7 +338,12 @@ const PreviewSubmission = ({
               {businessDetailsData?.data ? (
                 Object?.entries(businessDetailsData?.data)?.map(
                   ([key, value], index: number) => {
-                    if (key === 'id' || value === null || key === 'isForeign')
+                    if (
+                      value === null ||
+                      ['createdAt', 'updatedAt', 'isForeign', 'id'].includes(
+                        key
+                      )
+                    )
                       return null;
                     if (key === 'service')
                       return (
@@ -602,9 +610,7 @@ const PreviewSubmission = ({
                 '-',
             };
           })}
-          columns={
-            founderDetailsColumns as ColumnDef<FounderDetail>[]
-          }
+          columns={founderDetailsColumns as ColumnDef<FounderDetail>[]}
         />
       </PreviewCard>
 

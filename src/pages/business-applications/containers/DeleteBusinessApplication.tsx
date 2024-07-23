@@ -1,7 +1,7 @@
 import Loader from '@/components/Loader';
 import Modal from '@/components/Modal';
 import Button from '@/components/inputs/Button';
-import { formatDate } from '@/helpers/strings';
+import { capitalizeString, formatDate } from '@/helpers/strings';
 import { useDeleteBusinessMutation } from '@/states/api/businessRegApiSlice';
 import {
   setBusinessesList,
@@ -39,7 +39,7 @@ const DeleteBusinessApplication = () => {
       if ((deleteBusinessError as ErrorResponse)?.status === 500) {
         toast.error('An error occurred while deleting business application');
       } else {
-        toast.error((deleteBusinessError as ErrorResponse)?.data?.message);
+        toast.error(capitalizeString((deleteBusinessError as ErrorResponse)?.data?.message));
       }
     } else if (deleteBusinessIsSuccess) {
       toast.success('Business application deleted successfully');
