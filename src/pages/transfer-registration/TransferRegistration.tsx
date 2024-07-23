@@ -1,23 +1,32 @@
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import UserLayout from "../../containers/UserLayout";
-import Select from "../../components/inputs/Select";
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import UserLayout from '../../containers/UserLayout';
+import Select from '../../components/inputs/Select';
+import Input from '../../components/inputs/Input';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import Button from '../../components/inputs/Button';
+import Table from '../../components/table/Table';
+import { useEffect, useState } from 'react';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
+import { attachmentColumns } from '@/constants/business.constants';
+import { BusinessAttachment } from '@/types/models/attachment';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { AppDispatch, RootState } from '@/states/store';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
-  cessationCompanies,
-} from "../../constants/businessRegistration";
-import { dissolutionReasons } from "@/constants/amendment.constants";
-import Input from "../../components/inputs/Input";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import Button from "../../components/inputs/Button";
-import Table from "../../components/table/Table";
-import { useState } from "react";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
-
-type Attachment = {
-  file_name: string;
-  file_size: string;
-};
+  fetchBusinessesThunk,
+  setUploadAmendmentAttachmentIsLoading,
+  setUploadAmendmentAttachmentIsSuccess,
+  uploadAmendmentAttachmentThunk,
+} from '@/states/features/businessSlice';
+import TextArea from '@/components/inputs/TextArea';
+import Loader from '@/components/Loader';
+import { ColumnDef } from '@tanstack/react-table';
+import ViewDocument from '../user-company-details/ViewDocument';
+import { formatDate } from '@/helpers/strings';
+import { useTransferBusinessRegistrationMutation } from '@/states/api/businessRegApiSlice';
+import { toast } from 'react-toastify';
 
 const TransferRegistration = () => {
   const {
@@ -27,50 +36,150 @@ const TransferRegistration = () => {
     watch,
   } = useForm();
 
-  const [attachedFIles, setAttachedFiles] = useState<Attachment[]>([]);
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const [attachmentFiles, setAttachmentFiles] = useState<
+    {
+      file: File;
+      attachmentType: string;
+      size: number;
+      fileName: string;
+      attachmentUrl: string;
+    }[]
+  >([]);
+  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>('');
+  const {
+    businessesList,
+    businessesIsFetching,
+    uploadAmendmentAttachmentIsLoading,
+    uploadAmendmentAttachmentIsSuccess,
+  } = useSelector((state: RootState) => state.business);
 
+  // NAVIGATION
   const navigate = useNavigate();
 
-  const handleAttachFile = (files: File[]) => {
-    if (files) {
-      setAttachedFiles((prev) => [
-        ...prev,
-        ...Array.from(files).map((file) => {
-          return {
-            file_name: file.name,
-            file_size: `${file.size} bytes`,
-          };
-        }),
-      ]);
-    }
+  // FETCH BUSINESSES
+  useEffect(() => {
+    dispatch(
+      fetchBusinessesThunk({
+        page: 1,
+        size: 100,
+        applicationStatus: 'APPROVED',
+      })
+    );
+  }, [dispatch]);
+
+  // INITIALIZE TRANSFER BUSINESS REGISTRATION
+  const [
+    transferBusinessRegistration,
+    {
+      isLoading: transferBusinessRegistrationIsLoading,
+      isSuccess: transferBusinessRegistrationIsSuccess,
+      isError: transferBusinessRegistrationIsError,
+      error: transferBusinessRegistrationError,
+      reset: resetTransferBusinessRegistration,
+      data: transferBusinessRegistrationData,
+    },
+  ] = useTransferBusinessRegistrationMutation();
+
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    transferBusinessRegistration({
+      businessId: data?.businessId,
+      transferDate: formatDate(data?.transferDate),
+      transferReason: data?.transferReason,
+    });
   };
 
-  const columns = [
+  // HANDLE TRANSFER BUSINESS REGISTRATION RESPONSE
+  useEffect(() => {
+    if (transferBusinessRegistrationIsSuccess) {
+      attachmentFiles?.forEach((attachmentFile) => {
+        dispatch(
+          uploadAmendmentAttachmentThunk({
+            file: attachmentFile?.file,
+            attachmentType: 'Transfer of registration',
+            businessId: watch('businessId'),
+            fileName: attachmentFile?.fileName,
+            amendmentId: transferBusinessRegistrationData?.data?.id,
+          })
+        );
+      });
+    } else if (transferBusinessRegistrationIsError) {
+      const errorResponse =
+        (transferBusinessRegistrationError as ErrorResponse)?.data?.message ||
+        'An error occurred while processing your request. Refresh and try again';
+      toast.error(errorResponse);
+    }
+  }, [
+    attachmentFiles,
+    dispatch,
+    resetTransferBusinessRegistration,
+    transferBusinessRegistrationData,
+    transferBusinessRegistrationError,
+    transferBusinessRegistrationIsError,
+    transferBusinessRegistrationIsSuccess,
+    watch,
+  ]);
+
+  // HANDLE UPLOAD ATTACHMENT RESPONSE
+  useEffect(() => {
+    if (
+      uploadAmendmentAttachmentIsSuccess &&
+      transferBusinessRegistrationIsSuccess &&
+      attachmentFiles?.length > 0
+    ) {
+      toast.success('Transfer of registration submitted successfully');
+      resetTransferBusinessRegistration();
+      setAttachmentFiles([]);
+      dispatch(setUploadAmendmentAttachmentIsLoading(false));
+      dispatch(setUploadAmendmentAttachmentIsSuccess(false));
+      navigate('/services');
+    }
+  }, [
+    attachmentFiles?.length,
+    dispatch,
+    navigate,
+    resetTransferBusinessRegistration,
+    transferBusinessRegistrationIsSuccess,
+    uploadAmendmentAttachmentIsSuccess,
+  ]);
+
+  // TABLE COLUMNS
+  const attachmentExtendedColumns = [
+    ...attachmentColumns,
     {
-      header: "File Name",
-      accessorKey: "file_name",
-    },
-    {
-      header: "File Size",
-      accessorKey: "file_size",
-    },
-    {
-      header: "Action",
-      accessorKey: "action",
-      cell: ({ row }: { row: unknown }) => {
+      header: 'Action',
+      accessorKey: 'action',
+      cell: ({
+        row,
+      }: {
+        row: {
+          original: BusinessAttachment;
+        };
+      }) => {
         return (
-          <menu className="flex items-center gap-2">
+          <menu className="flex items-center gap-6">
             <FontAwesomeIcon
+              className="cursor-pointer text-primary font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]"
+              icon={faEye}
               onClick={(e) => {
                 e.preventDefault();
-                setAttachedFiles((prev) => {
-                  return prev.filter(
-                    (file) => file.file_name !== row?.original?.file_name
-                  );
-                });
+                setPreviewAttachmentUrl(row?.original?.attachmentUrl);
               }}
+            />
+            <FontAwesomeIcon
+              className="text-red-600 font-bold text-[16px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
               icon={faTrash}
-              className="text-red-500 cursor-pointer ease-in-out duration-300 hover:scale-[1.01] p-2 text-[14px] flex items-center justify-center rounded-full"
+              onClick={(e) => {
+                e.preventDefault();
+                setAttachmentFiles(
+                  Array.from(attachmentFiles)?.filter(
+                    (attachmentFile) =>
+                      attachmentFile?.fileName !== row?.original?.fileName
+                  )
+                );
+              }}
             />
           </menu>
         );
@@ -78,160 +187,217 @@ const TransferRegistration = () => {
     },
   ];
 
-  const onSubmit = (data: FieldValues) => {
-    navigate("/success");
-  };
   return (
     <UserLayout>
-      <section className="flex flex-col gap-4">
-        <menu className="px-8 py-3 text-white rounded-md max-sm:w-full w-72 bg-primary">
+      <main className="flex flex-col gap-4 w-full bg-white rounded-md p-6">
+        <h1 className="uppercase text-primary font-semibold text-lg text-center">
           Transfer of Registarion
-        </menu>
-        <section className="flex flex-col h-full gap-8 p-8 bg-white rounded-md shadow-sm">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="border max-sm:w-full w-[80%] mx-auto max-sm:p-4 p-20 flex flex-col gap-12 rounded-md border-[#e1e1e6]"
-          >
-            <menu className="w-1/2 max-sm:w-full">
-              <Controller
-                name="company"
-                control={control}
-                rules={{ required: "Select a Company" }}
-                render={({ field }) => (
-                  <label className="flex flex-col">
+        </h1>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-[90%] mx-auto flex flex-col gap-4"
+        >
+          <fieldset className="grid grid-cols-2 gap-5 w-full">
+            <Controller
+              control={control}
+              name="businessId"
+              rules={{ required: 'Select business to open new branch' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-1">
                     <Select
-                      label="Company"
-                      placeholder="Select Company"
-                      options={cessationCompanies.map((company) => {
+                      label="Select business"
+                      required
+                      options={businessesList?.map((business) => {
                         return {
-                          value: company.name,
-                          label: company.tin + "          " + company.name,
+                          label: businessesIsFetching
+                            ? '....'
+                            : (
+                                business?.companyName ||
+                                business?.enterpriseName ||
+                                business?.enterpriseBusinessName ||
+                                business?.branchName
+                              )?.toUpperCase(),
+                          value: business?.id,
                         };
                       })}
-                      required
                       {...field}
-                    />
-                    {errors.company && (
-                      <p className="text-red-600 text-[13px]">
-                        {String(errors.company.message)}
-                      </p>
-                    )}
-                  </label>
-                )}
-              />
-            </menu>
-            <menu className="flex items-start w-full gap-8 max-sm:flex-col ">
-              <Controller
-                control={control}
-                name="transfer_date"
-                rules={{
-                  required: "Transfer Date is required",
-                  validate: (value) => {
-                    if (moment(value).format() < moment(new Date()).format()) {
-                      return "Select a valid Date";
-                    }
-                    return true;
-                  },
-                }}
-                render={({ field }) => (
-                  <label className="flex flex-col w-1/2 gap-1 max-sm:w-full">
-                    <Input
-                      type="date"
-                      label="Date of Transfer"
-                      placeholder="Cessation Date"
-                      onChange={field.onChange}
-                      className="border-[0.5px] border-secondary rounded-md p-2"
-                    />
-                    {errors?.transfer_date && (
-                      <p className="text-[13px] text-red-500">
-                        {String(errors?.transfer_date?.message)}
-                      </p>
-                    )}
-                  </label>
-                )}
-              />
-              <Controller
-                control={control}
-                name="transfer_reason"
-                rules={{ required: "Transfer reason is required" }}
-                render={({ field }) => (
-                  <label className="flex flex-col w-1/2 gap-1 max-sm:w-full">
-                    <Select
-                      options={dissolutionReasons}
-                      label="Transfer reason"
-                      placeholder="Select transfer reason"
-                      {...field}
-                      required
+                      placeholder="Select business"
                       onChange={(e) => {
                         field.onChange(e);
                       }}
                     />
-                    {errors.transfer_reason && (
+                    {errors?.businessId && (
                       <p className="text-red-500 text-[13px]">
-                        {String(errors.transfer_reason.message)}
+                        {String(errors?.businessId?.message)}
                       </p>
                     )}
                   </label>
+                );
+              }}
+            />
+            {watch('businessId') && (
+              <>
+                <Controller
+                  name="transferDate"
+                  control={control}
+                  rules={{ required: 'Tranfer date is required' }}
+                  render={({ field }) => {
+                    return (
+                      <label className="w-full flex flex-col gap-1">
+                        <Input
+                          type="date"
+                          label="Transfer date"
+                          required
+                          {...field}
+                        />
+                        {errors?.transferDate && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.transferDate?.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="transferReason"
+                  rules={{ required: 'Transfer reason is required' }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="w-full flex flex-col gap-1">
+                        <TextArea
+                          label="Transfer reason"
+                          required
+                          {...field}
+                          placeholder="Select transfer reason"
+                        />
+                      </label>
+                    );
+                  }}
+                />
+                <section className={`w-full flex flex-col gap-2 mt-2`}>
+                  <h1 className="text-md uppercase font-medium flex items-center gap-2">
+                    Attachments <span className="text-red-600">*</span>
+                  </h1>
+                  <menu className="grid grid-cols-2 gap-5 w-full">
+                    <Controller
+                      name={'attachment'}
+                      control={control}
+                      render={({ field }) => {
+                        return (
+                          <label className="w-full flex flex-col gap-1">
+                            <p className="flex items-center gap-2">
+                              Attachments (optional)
+                            </p>
+                            <Input
+                              type="file"
+                              multiple
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                if ((e.target.files ?? [])?.length > 0) {
+                                  setAttachmentFiles(
+                                    Array.from(e?.target?.files ?? [])?.map(
+                                      (file) => {
+                                        return {
+                                          file,
+                                          attachmentType:
+                                            'Transfer of registration',
+                                          size: file?.size,
+                                          fileName: file?.name,
+                                          attachmentUrl:
+                                            URL.createObjectURL(file),
+                                        };
+                                      }
+                                    )
+                                  );
+                                }
+                              }}
+                            />
+                            {errors?.attachment && (
+                              <p className="text-red-500 text-[13px]">
+                                {String(errors?.attachment?.message)}
+                              </p>
+                            )}
+                          </label>
+                        );
+                      }}
+                    />
+                  </menu>
+                </section>
+              </>
+            )}
+          </fieldset>
+          {attachmentFiles?.length > 0 && (
+            <menu className="flex flex-col gap-4 w-full">
+              <Table
+                showFilter={false}
+                columns={
+                  attachmentExtendedColumns as ColumnDef<{
+                    file: File;
+                    attachmentType: string;
+                    size: number;
+                    fileName: string;
+                    attachmentUrl: string;
+                  }>[]
+                }
+                data={(Array.from(attachmentFiles) ?? [])?.map(
+                  (attachmentFile) => {
+                    return {
+                      file: attachmentFile?.file as File,
+                      attachmentType: attachmentFile?.attachmentType,
+                      size: attachmentFile?.size,
+                      fileName: attachmentFile?.fileName,
+                      attachmentUrl: (
+                        attachmentFile as unknown as BusinessAttachment
+                      )?.attachmentUrl,
+                    };
+                  }
                 )}
               />
+              {uploadAmendmentAttachmentIsLoading && (
+                <figure className="flex items-center gap-2 w-full justify-center">
+                  <Loader className="text-primary" />
+                  <p className="text-[14px]">Uploading attachment(s)...</p>
+                </figure>
+              )}
             </menu>
-            <menu
-              className={`${
-                watch("transfer_reason") === "other" ? "flex" : "hidden"
-              } flex-col items-start w-full gap-3 my-3 max-md:items-center`}
-            >
-              <h3 className="uppercase text-[14px] font-normal flex items-center gap-1">
-                Attachments <span className="text-red-600">*</span>
-              </h3>
-              <Controller
-                name="attachment"
-                rules={{
-                  required:
-                    watch("transfer_reason") === "other"
-                      ? "Attach at least one document"
-                      : false,
-                }}
-                control={control}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col w-fit items-start gap-2 max-sm:!w-full">
-                      <ul className="flex items-center gap-3 max-sm:w-full max-md:flex-col">
-                        <Input
-                          type="file"
-                          accept="application/pdf,image/*"
-                          multiple
-                          className="!w-fit max-sm:!w-full"
-                          onChange={(e) => {
-                            field.onChange(e?.target?.files);
-                            handleAttachFile(e?.target?.files);
-                          }}
-                        />
-                      </ul>
-                      {errors?.attachment && (
-                        <p className="text-sm text-red-500">
-                          {String(errors?.attachment?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
-            </menu>
-            {attachedFIles?.length > 0 && (
-              <Table
-                columns={columns}
-                data={attachedFIles}
-                showFilter={false}
-                showPagination={false}
-                headerClassName="bg-primary text-white"
-              />
-            )}
-            <menu className="flex items-center justify-center w-full p-8">
-              <Button value={"Submit"} primary submit />
-            </menu>
-          </form>
-        </section>
-      </section>
+          )}
+          <menu className="w-full flex items-center gap-3 justify-between my-4">
+            <Button
+              value={'Cancel'}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/services');
+              }}
+            />
+            <Button
+              disabled={
+                transferBusinessRegistrationIsLoading ||
+                uploadAmendmentAttachmentIsLoading
+              }
+              submit
+              value={
+                transferBusinessRegistrationIsLoading ||
+                uploadAmendmentAttachmentIsLoading ? (
+                  <Loader />
+                ) : (
+                  'Submit'
+                )
+              }
+              primary
+            />
+          </menu>
+        </form>
+      </main>
+      {previewAttachmentUrl && (
+        <ViewDocument
+          documentUrl={previewAttachmentUrl}
+          setDocumentUrl={setPreviewAttachmentUrl}
+        />
+      )}
     </UserLayout>
   );
 };

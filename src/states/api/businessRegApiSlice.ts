@@ -728,6 +728,35 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+      // REQUEST CESSATION TO DORMANCY
+      cessationToDormancy: builder.mutation({
+        query: ({ businessId, resolutionReason, resolutionStartDate, resolutionEndDate }) => {
+          return {
+            url: `/amendment/cessation?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              resolutionReason,
+              resolutionStartDate,
+              resolutionEndDate,
+            }
+          };
+        },
+      }),
+
+      // TRANSFER BUSINESS REGISTRATION
+      transferBusinessRegistration: builder.mutation({
+        query: ({ businessId, transferDate, transferReason }) => {
+          return {
+            url: `/amendment/transfer-registration?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              transferDate,
+              transferReason,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -785,6 +814,8 @@ export const {
   useDeclareBusinessDormancyMutation,
   useCloseCompanyMutation,
   useCreateBusinessBranchMutation,
+  useCessationToDormancyMutation,
+  useTransferBusinessRegistrationMutation
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

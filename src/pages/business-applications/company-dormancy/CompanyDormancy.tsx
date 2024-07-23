@@ -61,7 +61,13 @@ const CompanyDormancy = () => {
 
   // FETCH BUSINESSES
   useEffect(() => {
-    dispatch(fetchBusinessesThunk({ page: 1, size: 100, applicationStatus: 'APPROVED' }));
+    dispatch(
+      fetchBusinessesThunk({
+        page: 1,
+        size: 100,
+        applicationStatus: 'APPROVED',
+      })
+    );
   }, [dispatch]);
 
   // INITIATE DECLARE BUSINESS DORMANCY MUTATION
@@ -328,83 +334,82 @@ const CompanyDormancy = () => {
             )}
           </fieldset>
           <section className={`w-full flex flex-col gap-3`}>
-              <h1 className="text-md uppercase font-semibold flex items-center gap-1">
-                Attachments <span className="text-red-600">*</span>
-              </h1>
-              <menu className="grid grid-cols-2 gap-5 w-full">
-                {businessDormancyAttachments.map((attachment, index) => {
-                  return (
-                    <Controller
-                      key={index}
-                      name={attachment?.name}
-                      control={control}
-                      rules={{
-                        required: attachment?.required
-                          ? `${attachment?.label} is required`
-                          : false,
-                      }}
-                      render={({ field }) => {
-                        return (
-                          <label className="w-full flex flex-col gap-1">
-                            <p className="flex items-center gap-2">
-                              {attachment?.label}{' '}
-                              {!attachment?.required ? (
-                                '(optional)'
-                              ) : (
-                                <span className="text-red-600">*</span>
-                              )}
-                              {attachmentFiles?.find(
-                                (file) =>
-                                  file?.attachmentType === attachment?.label
-                              ) && (
-                                <CustomTooltip label="File has been added successfully">
-                                  <FontAwesomeIcon
-                                    icon={faCircleCheck}
-                                    className="text-primary cursor-pointer"
-                                  />
-                                </CustomTooltip>
-                              )}
-                            </p>
-                            <Input
-                              type="file"
-                              label={attachment.label}
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                if (
-                                  e?.target?.files != null &&
-                                  e?.target?.files?.length > 0
-                                ) {
-                                  const file = e?.target?.files[0];
-                                  if (file != null) {
-                                    setAttachmentFiles((prev) => [
-                                      ...prev,
-                                      {
-                                        file: file,
-                                        attachmentType: attachment?.label,
-                                        size: file?.size,
-                                        fileName: file?.name,
-                                        attachmentUrl:
-                                          URL.createObjectURL(file),
-                                      },
-                                    ]);
-                                  }
-                                }
-                              }}
-                            />
-                            {errors?.[attachment?.name] && (
-                              <p className="text-red-500 text-[13px]">
-                                {String(errors?.[attachment?.name]?.message)}
-                              </p>
+            <h1 className="text-md uppercase font-semibold flex items-center gap-1">
+              Attachments <span className="text-red-600">*</span>
+            </h1>
+            <menu className="grid grid-cols-2 gap-5 w-full">
+              {businessDormancyAttachments.map((attachment, index) => {
+                return (
+                  <Controller
+                    key={index}
+                    name={attachment?.name}
+                    control={control}
+                    rules={{
+                      required: attachment?.required
+                        ? `${attachment?.label} is required`
+                        : false,
+                    }}
+                    render={({ field }) => {
+                      return (
+                        <label className="w-full flex flex-col gap-1">
+                          <p className="flex items-center gap-2">
+                            {attachment?.label}{' '}
+                            {!attachment?.required ? (
+                              '(optional)'
+                            ) : (
+                              <span className="text-red-600">*</span>
                             )}
-                          </label>
-                        );
-                      }}
-                    />
-                  );
-                })}
-              </menu>
-            </section>
+                            {attachmentFiles?.find(
+                              (file) =>
+                                file?.attachmentType === attachment?.label
+                            ) && (
+                              <CustomTooltip label="File has been added successfully">
+                                <FontAwesomeIcon
+                                  icon={faCircleCheck}
+                                  className="text-primary cursor-pointer"
+                                />
+                              </CustomTooltip>
+                            )}
+                          </p>
+                          <Input
+                            type="file"
+                            label={attachment.label}
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              if (
+                                e?.target?.files != null &&
+                                e?.target?.files?.length > 0
+                              ) {
+                                const file = e?.target?.files[0];
+                                if (file != null) {
+                                  setAttachmentFiles((prev) => [
+                                    ...prev,
+                                    {
+                                      file: file,
+                                      attachmentType: attachment?.label,
+                                      size: file?.size,
+                                      fileName: file?.name,
+                                      attachmentUrl: URL.createObjectURL(file),
+                                    },
+                                  ]);
+                                }
+                              }
+                            }}
+                          />
+                          {errors?.[attachment?.name] && (
+                            <p className="text-red-500 text-[13px]">
+                              {String(errors?.[attachment?.name]?.message)}
+                            </p>
+                          )}
+                        </label>
+                      );
+                    }}
+                  />
+                );
+              })}
+            </menu>
+          </section>
           {attachmentFiles?.length > 0 && (
             <menu className="flex flex-col gap-4 w-full">
               <Table
