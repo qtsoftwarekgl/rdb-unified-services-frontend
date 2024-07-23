@@ -1,6 +1,4 @@
-import {
-  userManagementApi,
-} from "@/constants/environments";
+import { userManagementApi } from "@/constants/environments";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import store from "store";
 
@@ -61,12 +59,13 @@ export const userManagementApiSlice = createApi({
           }
           return {
             url,
+            method: "GET",
           };
         },
       }),
 
       // FETCH PERMISSIONS
-      fetchPermissions: builder.query({
+      fetchPermissions: builder.mutation({
         query: ({ page, size, searchKey, roleId }) => {
           let url = `/permissions?page=${page}&size=${size}`;
           if (searchKey) {
@@ -165,7 +164,7 @@ export const userManagementApiSlice = createApi({
         query: ({ userId, roleIds }) => {
           return {
             url: `/assign-role`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
               userId,
               roleIds,
@@ -179,7 +178,7 @@ export const userManagementApiSlice = createApi({
         query: ({ notificationPreference }) => {
           return {
             url: `/update-notification-preferences/${notificationPreference}`,
-            method: 'PATCH',
+            method: "PATCH",
           };
         },
       }),
@@ -192,7 +191,7 @@ export const {
   useLazyFetchUserAttachmentsQuery,
   useDeleteUserAttachmentMutation,
   useLazyFetchRolesQuery,
-  useLazyFetchPermissionsQuery,
+  useFetchPermissionsMutation,
   useDisableRoleMutation,
   useCreateRoleMutation,
   useEditRoleMutation,
@@ -200,7 +199,7 @@ export const {
   useLazyGetUserQuery,
   useAssignRolesMutation,
   useUpdateNotificationPreferencesMutation,
-  useEnableRoleMutation
+  useEnableRoleMutation,
 } = userManagementApiSlice;
 
 export default userManagementApiSlice;

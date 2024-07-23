@@ -3,7 +3,7 @@ import Modal from "@/components/Modal";
 import Table from "@/components/table/Table";
 import { permissionColumns } from "@/constants/permission.constants";
 import { capitalizeString } from "@/helpers/strings";
-import { useLazyFetchPermissionsQuery } from "@/states/api/userManagementApiSlice";
+import { useFetchPermissionsMutation } from "@/states/api/userManagementApiSlice";
 import {
   setPage,
   setPermissionsList,
@@ -38,12 +38,13 @@ const ListRolePermissions = () => {
     fetchPermissions,
     {
       data: permissionsData,
-      isFetching: permissionsIsFetching,
+      isLoading: permissionsIsFetching,
       error: permissionsError,
       isSuccess: permissionsIsSuccess,
       isError: permissionsIsError,
+      reset: resetPermissions,
     },
-  ] = useLazyFetchPermissionsQuery();
+  ] = useFetchPermissionsMutation();
 
   // FETCH PERMISSIONS
   useEffect(() => {
@@ -83,6 +84,7 @@ const ListRolePermissions = () => {
         dispatch(setSelectedRole(undefined));
         // invalidate permissions list
         dispatch(setPermissionsList([]));
+        resetPermissions();
       }}
       heading={`Permissions for ${capitalizeString(selectedRole?.roleName)}`}
     >

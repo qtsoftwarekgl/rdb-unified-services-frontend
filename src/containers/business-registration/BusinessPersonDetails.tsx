@@ -3,7 +3,7 @@ import Modal from "@/components/Modal";
 import Button from "@/components/inputs/Button";
 import { countriesList } from "@/constants/countries";
 import { genderOptions } from "@/constants/inputs.constants";
-import { capitalizeString } from "@/helpers/strings";
+import { capitalizeString, formatDate } from "@/helpers/strings";
 import { convertFileSizeToMbs } from "@/helpers/uploads";
 import {
   useLazyFetchPersonAttachmentsQuery,
@@ -148,7 +148,10 @@ const BusinessPersonDetails = () => {
           <p className="text-[14px]">First Name: {businessPerson?.firstName}</p>
           <p className="text-[14px]">Last Name: {businessPerson?.lastName}</p>
           <p className="text-[14px]">
-            Date of birth: {businessPerson?.dateOfBirth || "N/A"}
+            Date of birth:{" "}
+            {(businessPerson?.dateOfBirth &&
+              formatDate(new Date(businessPerson?.dateOfBirth))) ||
+              "N/A"}
           </p>
           <p className="text-[14px]">
             Sex:{" "}
