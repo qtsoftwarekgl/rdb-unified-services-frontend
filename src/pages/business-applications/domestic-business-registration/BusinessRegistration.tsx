@@ -34,6 +34,7 @@ import Button from "@/components/inputs/Button";
 import DeleteBusinessAttachment from "@/containers/business-registration/DeleteBusinessAttachment";
 import BusinessPersonDetails from "@/containers/business-registration/BusinessPersonDetails";
 import DeleteBusinessPerson from "@/containers/business-registration/DeleteBusinessPerson";
+import DeleteFounder from "@/containers/business-registration/DeleteFounder";
 
 const BusinessRegistration = () => {
   // STATE VARIABLES
@@ -210,6 +211,7 @@ const BusinessRegistration = () => {
       <DeleteBusinessAttachment />
       <BusinessPersonDetails />
       <DeleteBusinessPerson />
+      <DeleteFounder />
     </UserLayout>
   );
 };

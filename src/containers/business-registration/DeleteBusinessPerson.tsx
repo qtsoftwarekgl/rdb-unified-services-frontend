@@ -1,8 +1,8 @@
-import Loader from '@/components/Loader';
-import Modal from '@/components/Modal';
-import Button from '@/components/inputs/Button';
-import { useDeleteBusinessPersonMutation } from '@/states/api/businessRegApiSlice';
-import { removeBoardMember } from '@/states/features/boardOfDirectorSlice';
+import Loader from "@/components/Loader";
+import Modal from "@/components/Modal";
+import Button from "@/components/inputs/Button";
+import { useDeleteBusinessPersonMutation } from "@/states/api/businessRegApiSlice";
+import { removeBoardMember } from "@/states/features/boardOfDirectorSlice";
 import {
   setBusinessPerson,
   setDeleteBusinessPersonModal,
@@ -46,10 +46,7 @@ const DeleteBusinessPerson = () => {
       businessPersonReset();
     } else if (businessPersonIsSuccess && selectedBusinessPerson) {
       toast.success(
-        `${
-          selectedBusinessPerson?.firstName ||
-          selectedBusinessPerson?.organizationName
-        } removed successfully`
+        `${selectedBusinessPerson?.firstName || ""} removed successfully`
       );
       dispatch(removeExecutiveManager(selectedBusinessPerson?.id));
       dispatch(removeBoardMember(selectedBusinessPerson?.id));
@@ -75,17 +72,13 @@ const DeleteBusinessPerson = () => {
         dispatch(setDeleteBusinessPersonModal(false));
         dispatch(setSelectedBusinessPerson(undefined));
       }}
-      heading={`Delete ${
-        selectedBusinessPerson?.firstName ||
-        selectedBusinessPerson?.organizationName
-      }
+      heading={`Delete ${selectedBusinessPerson?.firstName || ""}
           ${selectedBusinessPerson?.lastName || ""}`}
     >
       <section className="flex flex-col w-full gap-4">
         <p>
           Are you sure you want to delete{" "}
-          {selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.organizationName}{" "}
+          {selectedBusinessPerson?.firstName || ""}{" "}
           {selectedBusinessPerson?.lastName || ""}? This action cannot be
           undone!
         </p>

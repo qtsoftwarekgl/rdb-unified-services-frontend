@@ -59,10 +59,7 @@ const BusinessPersonDetails = () => {
     if (businessPersonIsError) {
       if ((businessPersonError as ErrorResponse)?.status === 500) {
         toast.error(
-          `An error occurred while getting ${
-            selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.organizationName
-          }'s details. Refresh and try again`
+          `An error occurred while getting ${selectedBusinessPerson?.firstName}'s details. Refresh and try again`
         );
       } else {
         toast.error((businessPersonError as ErrorResponse)?.data?.message);
@@ -76,7 +73,6 @@ const BusinessPersonDetails = () => {
     businessPersonIsError,
     businessPersonIsSuccess,
     dispatch,
-    selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
 
@@ -106,10 +102,7 @@ const BusinessPersonDetails = () => {
     if (personAttachmentsIsError) {
       if ((personAttachmentsError as ErrorResponse)?.status === 500) {
         toast.error(
-          `An error occurred while getting ${
-            selectedBusinessPerson?.firstName ||
-            selectedBusinessPerson?.organizationName
-          }'s attachments. Refresh and try again`
+          `An error occurred while getting ${selectedBusinessPerson?.firstName}'s attachments. Refresh and try again`
         );
       } else {
         toast.error((personAttachmentsError as ErrorResponse)?.data?.message);
@@ -123,7 +116,6 @@ const BusinessPersonDetails = () => {
     personAttachmentsIsError,
     personAttachmentsIsSuccess,
     dispatch,
-    selectedBusinessPerson?.organizationName,
     selectedBusinessPerson?.firstName,
   ]);
 
@@ -134,10 +126,9 @@ const BusinessPersonDetails = () => {
         dispatch(setBusinessPersonDetailsModal(false));
         dispatch(setSelectedBusinessPerson(undefined));
       }}
-      heading={`${
-        selectedBusinessPerson?.firstName ||
-        selectedBusinessPerson?.organizationName
-      } ${selectedBusinessPerson?.lastName || ""}`}
+      heading={`${selectedBusinessPerson?.firstName} ${
+        selectedBusinessPerson?.lastName || ""
+      }`}
     >
       {businessPersonIsFetching ? (
         <figure className="w-full flex items-center justify-center min-h-[30vh]">
@@ -188,7 +179,7 @@ const BusinessPersonDetails = () => {
           </p>
           <p className="text-[14px]">Email: {businessPerson?.email}</p>
           <p className="text-[14px]">
-            Role:{" "}
+            Position:{" "}
             {capitalizeString(businessPerson?.personRole?.roleDescription) ||
               capitalizeString(businessPerson?.roleDescription)}
           </p>
