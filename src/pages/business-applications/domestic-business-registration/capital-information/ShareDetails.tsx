@@ -1,31 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Input from '../../../../components/inputs/Input';
 import Button from '../../../../components/inputs/Button';
 import Loader from '../../../../components/Loader';
 import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setBusinessCompletedStep,
 } from '../../../../states/features/businessRegistrationSlice';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { businessId } from '@/types/models/business';
 import { useCreateShareDetailsMutation } from '@/states/api/businessRegApiSlice';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from '@/states/features/navigationFlowSlice';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
 
-interface ShareDetailsProps {
+type ShareDetailsProps = {
   businessId: businessId;
   applicationStatus: string;
-}
+};
 
-const ShareDetails: FC<ShareDetailsProps> = ({
-  businessId,
-  applicationStatus,
-}) => {
+const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
@@ -39,8 +43,10 @@ const ShareDetails: FC<ShareDetailsProps> = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(applicationStatus);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // INITIALIZE CREATE SHARE DETAILS MUTATION
   const [
@@ -137,8 +143,25 @@ const ShareDetails: FC<ShareDetailsProps> = ({
         toast.error((createShareDetailsError as ErrorResponse)?.data?.message);
       }
     } else if (createShareDetailsIsSuccess) {
-      dispatch(setBusinessCompletedStep('share_details'));
-      dispatch(setBusinessActiveStep('shareholders'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Share Details'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Shareholders'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [createShareDetailsIsSuccess]);
 
@@ -278,8 +301,16 @@ const ShareDetails: FC<ShareDetailsProps> = ({
               disabled={disableForm}
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('business_activity_vat'));
-                dispatch(setBusinessActiveTab('general_information'));
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Business Activity & VAT'
+                    ),
+                    isActive: true,
+                  })
+                );
               }}
             />
             <Button

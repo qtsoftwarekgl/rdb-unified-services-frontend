@@ -14,7 +14,6 @@ import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Input from '../../../../components/inputs/Input';
 import Button from '../../../../components/inputs/Button';
 import Loader from '../../../../components/Loader';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { BusinessActivity, businessId } from '@/types/models/business';
 import {
   useLazyFetchBusinessActivitiesSectorsQuery,
@@ -36,6 +35,14 @@ import {
   useLazyFetchBusinessActivitiesQuery,
 } from '@/states/api/businessRegApiSlice';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from '@/states/features/navigationFlowSlice';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -65,8 +72,12 @@ const BusinessActivities = ({
     selectedBusinessLinesList,
     selectedMainBusinessLine,
   } = useSelector((state: RootState) => state.businessActivity);
-  const { user } = useSelector((state: RootState) => state.user);
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(
+    String(applicationStatus)
+  );
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // INITIALIZE CREATE BUSINESS ACTIVITIES MUTATION
   const [
@@ -246,16 +257,34 @@ const BusinessActivities = ({
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success('Business activities have been successfully created');
-      dispatch(setBusinessCompletedTab('general_information'));
-      dispatch(setBusinessCompletedStep('business_activity_vat'));
-      dispatch(setBusinessActiveStep('share_details'));
-      dispatch(setBusinessActiveTab('capital_information'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Business Activity & VAT'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Share Details'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
     createBusinessActivitiesError,
     createBusinessActivitiesIsError,
+    businessNavigationFlowsList,
     createBusinessActivitiesIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   return (
@@ -564,7 +593,16 @@ const BusinessActivities = ({
                     disabled={disableForm}
                     onClick={(e) => {
                       e.preventDefault();
-                      dispatch(setBusinessActiveStep('company_address'));
+                      dispatch(
+                        createNavigationFlowThunk({
+                          businessId,
+                          massId: findNavigationFlowMassIdByStepName(
+                            navigationFlowMassList,
+                            'Company Address'
+                          ),
+                          isActive: true,
+                        })
+                      );
                     }}
                   />
                   {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(

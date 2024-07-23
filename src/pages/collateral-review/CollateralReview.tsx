@@ -1,5 +1,5 @@
-import ProgressNavigation from "@/components/business-registration/ProgressNavigation";
-import Tab from "@/components/business-registration/Tab";
+import ProgressNavigation from "@/pages/business-applications/ProgressNavigation";
+import NavigationTab from "@/pages/business-applications/NavigationTab";
 import AdminLayout from "@/containers/AdminLayout";
 import {
   setCollateralReviewActiveStep,
@@ -82,7 +82,7 @@ const CollateralReview = () => {
             const isActiveTab = tab.active;
             const activeStepName = collateral_review_active_step?.name;
             return (
-              <Tab
+              <NavigationTab
                 isOpen={isActiveTab}
                 steps={tab?.steps}
                 key={`${String(index)}-${tab?.name}`}
@@ -141,11 +141,11 @@ const CollateralReview = () => {
                     )}
                   </>
                 )}
-              </Tab>
+              </NavigationTab>
             );
           })}
         </menu>
-        {RDBAdminEmailPattern.test(user?.email) && (
+        {/* {RDBAdminEmailPattern.test(user?.email) && (
           <>
             <ReviewNavigation
               entryId={entryId}
@@ -174,7 +174,7 @@ const CollateralReview = () => {
               title="Collateral Review Comments"
             />
           </>
-        )}
+        )} */}
       </section>
     </AdminLayout>
   );

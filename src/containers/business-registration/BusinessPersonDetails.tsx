@@ -126,9 +126,10 @@ const BusinessPersonDetails = () => {
         dispatch(setBusinessPersonDetailsModal(false));
         dispatch(setSelectedBusinessPerson(undefined));
       }}
-      heading={`${selectedBusinessPerson?.firstName} ${
-        selectedBusinessPerson?.lastName || ""
-      }`}
+      heading={`${
+        selectedBusinessPerson?.firstName ||
+        selectedBusinessPerson?.organization?.organizationName
+      } ${selectedBusinessPerson?.lastName || ''}`}
     >
       {businessPersonIsFetching ? (
         <figure className="w-full flex items-center justify-center min-h-[30vh]">
@@ -139,13 +140,12 @@ const BusinessPersonDetails = () => {
           <p className="text-[14px]">First Name: {businessPerson?.firstName}</p>
           <p className="text-[14px]">Last Name: {businessPerson?.lastName}</p>
           <p className="text-[14px]">
-            Date of birth:{" "}
-            {(businessPerson?.dateOfBirth &&
-              formatDate(new Date(businessPerson?.dateOfBirth))) ||
-              "N/A"}
+            Date of birth:{' '}
+            {formatDate(businessPerson?.dateOfBirth as unknown as string) ||
+              'N/A'}
           </p>
           <p className="text-[14px]">
-            Sex:{" "}
+            Sex:{' '}
             {
               genderOptions?.find(
                 (gender) => gender?.value === businessPerson?.gender
@@ -153,7 +153,7 @@ const BusinessPersonDetails = () => {
             }
           </p>
           <p className="text-[14px]">
-            Nationality:{" "}
+            Nationality:{' '}
             {
               countriesList?.find(
                 (country) => country?.code === businessPerson?.nationality
@@ -161,13 +161,13 @@ const BusinessPersonDetails = () => {
             }
           </p>
           <p className="text-[14px]">
-            Document Type:{" "}
-            {businessPerson?.personIdentType === "nid"
-              ? "National Identification"
-              : "Passport"}
+            Document Type:{' '}
+            {businessPerson?.personIdentType === 'nid'
+              ? 'National Identification'
+              : 'Passport'}
           </p>
           <p className="text-[14px]">
-            Document Issue Place:{" "}
+            Document Issue Place:{' '}
             {
               countriesList?.find(
                 (country) => country?.code === businessPerson?.persDocIssuePlace
@@ -179,7 +179,7 @@ const BusinessPersonDetails = () => {
           </p>
           <p className="text-[14px]">Email: {businessPerson?.email}</p>
           <p className="text-[14px]">
-            Position:{" "}
+            Role:{' '}
             {capitalizeString(businessPerson?.personRole?.roleDescription) ||
               capitalizeString(businessPerson?.roleDescription)}
           </p>
@@ -206,7 +206,7 @@ const BusinessPersonDetails = () => {
                           {capitalizeString(personAttachment?.attachmentType)}
                         </p>
                         <p className="text-[12px]">
-                          {" "}
+                          {' '}
                           {convertFileSizeToMbs(
                             Number(personAttachment?.fileSize)
                           )}
@@ -229,7 +229,7 @@ const BusinessPersonDetails = () => {
       )}
       <menu className="flex items-center justify-between w-full gap-3">
         <Button
-          value={"Cancel"}
+          value={'Cancel'}
           onClick={(e) => {
             e.preventDefault();
             dispatch(setBusinessPersonDetailsModal(false));
@@ -238,7 +238,7 @@ const BusinessPersonDetails = () => {
         />
         <Button
           primary
-          value={"Remove"}
+          value={'Remove'}
           danger
           onClick={(e) => {
             e.preventDefault();

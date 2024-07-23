@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 import UserLayout from '../../containers/UserLayout';
-import ProgressNavigation from '../../components/business-registration/ProgressNavigation';
+import ProgressNavigation from '../business-applications/ProgressNavigation';
 import { RootState } from '../../states/store';
 import {
   setNameReservationActiveTab,
   setNameReservationActiveStep,
 } from '../../states/features/nameReservationSlice';
-import Tab from '../../components/business-registration/Tab';
+import Tab from '../business-applications/NavigationTab';
 import { TabType } from '../../types/navigationTypes';
 import OwnerDetails from './OwnerDetails';
 import NameReservationSearch from './NameReservationSearch';

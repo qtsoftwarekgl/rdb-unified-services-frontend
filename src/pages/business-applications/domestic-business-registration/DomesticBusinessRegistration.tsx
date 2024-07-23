@@ -1,10 +1,22 @@
-import { useEffect, useState } from 'react';
-import queryString, { ParsedQuery } from 'query-string';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../states/store';
 import UserLayout from '../../../containers/UserLayout';
 import ProgressNavigation from '../ProgressNavigation';
 import { ErrorResponse, useLocation } from 'react-router-dom';
-import { AppDispatch, RootState } from '../../../states/store';
+import NavigationTab from '../NavigationTab';
+import CompanyDetails from './general-information/CompanyDetails';
+import CompanyAddress from './general-information/CompanyAddress';
+import BoardOfDirectors from './management/BoardOfDirectors';
+import ExecutiveManagement from './management/ExecutiveManagement';
+import EmploymentInfo from './management/EmploymentInfo';
+import ShareDetails from './capital-information/ShareDetails';
+import ShareHolders from './capital-information/ShareHolders';
+import CapitalDetails from './capital-information/CapitalDetails';
+import CompanyAttachments from './attachments/CompanyAttachments';
+import PreviewSubmission from './preview-submission/BusinessPreviewSubmission';
+import { useEffect, useState } from 'react';
+import queryString, { ParsedQuery } from 'query-string';
+import BusinessActivities from './general-information/BusinessActivities';
 import {
   useCreateNavigationFlowMutation,
   useLazyFetchBusinessNavigationFlowsQuery,
@@ -13,6 +25,9 @@ import {
 } from '@/states/api/businessRegApiSlice';
 import { toast } from 'react-toastify';
 import { setBusiness } from '@/states/features/businessSlice';
+import Loader from '@/components/Loader';
+import Button from '@/components/inputs/Button';
+import DeleteBusinessAttachment from '@/containers/business-registration/DeleteBusinessAttachment';
 import BusinessPersonDetails from '@/containers/business-registration/BusinessPersonDetails';
 import DeleteBusinessPerson from '@/containers/business-registration/DeleteBusinessPerson';
 import {
@@ -23,29 +38,21 @@ import {
   AbstractNavigationFlow,
   NavigationFlow,
 } from '@/types/models/navigationFlow';
-import Loader from '@/components/Loader';
-import Button from '@/components/inputs/Button';
-import NavigationTab from '../NavigationTab';
-import CompanyDetails from './general-information/CompanyDetails';
-import CompanyAddress from './general-information/CompanyAddress';
-import BusinessActivities from './general-information/BusinessActivity';
-import BoardDirectors from './management/BoardDirectors';
-import ExecutiveManagement from './management/ExecutiveManagement';
-import EmploymentInfo from './management/EmploymentInfo';
-import CompanyAttachments from './attachments/CompanyAttachments';
-import PreviewSubmission from './preview-submission/ForeignCompanyPreviewSubmission';
+import DeleteFounder from "@/containers/business-registration/DeleteFounder";
 
-const ForeignBranchRegistration = () => {
+const DomesticBusinessRegistration = () => {
+  // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { business } = useSelector((state: RootState) => state.business);
-
-  const { search } = useLocation();
   const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
     {}
   );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+
+  // NAVIGATION
+  const { search } = useLocation();
 
   // GET PARAM FROM PATH
   useEffect(() => {
@@ -58,8 +65,8 @@ const ForeignBranchRegistration = () => {
     {
       data: businessData,
       error: businessError,
-      isFetching: businessIsFetching,
       isError: businessIsError,
+      isFetching: businessIsFetching,
       isSuccess: businessIsSuccess,
     },
   ] = useLazyGetBusinessQuery();
@@ -69,17 +76,17 @@ const ForeignBranchRegistration = () => {
     if (queryParams?.businessId) {
       getBusiness({ id: queryParams?.businessId });
     }
-  }, [getBusiness, queryParams?.businessId]);
+  }, [queryParams, getBusiness]);
 
   // HANDLE GET BUSINESS RESPONSE
   useEffect(() => {
     if (businessIsError) {
       if ((businessError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching business data');
+        toast.error('An error occurred. Please try again later.');
       } else {
         toast.error((businessError as ErrorResponse)?.data?.message);
       }
-    } else if (businessIsSuccess) {
+    } else if (businessIsSuccess && businessData) {
       dispatch(setBusiness(businessData?.data));
     }
   }, [
@@ -104,7 +111,7 @@ const ForeignBranchRegistration = () => {
 
   // FETCH NAVIGATION FLOW MASS
   useEffect(() => {
-    fetchNavigationFlowMass({ businessType: 'foreign' });
+    fetchNavigationFlowMass({ businessType: 'domestic' });
   }, [fetchNavigationFlowMass]);
 
   // HANDLE FETCH NAVIGATION FLOW MASS RESPONSE
@@ -221,7 +228,7 @@ const ForeignBranchRegistration = () => {
 
   return (
     <UserLayout>
-      <main className="flex flex-col gap-6 p-8">
+      <main className="flex flex-col w-full h-screen gap-6 p-8">
         <ProgressNavigation
           navigationTabs={Object.entries(navigationFlowMassList ?? {}).map(
             ([key, value]) => {
@@ -247,7 +254,7 @@ const ForeignBranchRegistration = () => {
             <Loader className="text-primary" size={'medium'} />
           </figure>
         ) : businessIsSuccess && navigationFlowMassIsSuccess ? (
-          <menu className="w-full flex flex-col gap-3">
+          <menu className="flex items-center w-full gap-5">
             {Object.values(navigationFlowMassList ?? {})
               ?.flat()
               .map(
@@ -273,7 +280,10 @@ const ForeignBranchRegistration = () => {
                       )}
                     >
                       {navigationFlow?.stepName === 'Company Details' && (
-                        <CompanyDetails businessId={queryParams?.businessId} />
+                        <CompanyDetails
+                          businessId={queryParams?.businessId}
+                          applicationStatus={business?.applicationStatus}
+                        />
                       )}
                       {navigationFlow?.stepName === 'Company Address' && (
                         <CompanyAddress
@@ -288,33 +298,60 @@ const ForeignBranchRegistration = () => {
                           applicationStatus={business?.applicationStatus}
                         />
                       )}
-                      {navigationFlow?.stepName === 'Board of Directors' && (
-                        <BoardDirectors
+
+                      {navigationFlow?.stepName === 'Executive Management' && (
+                        <ExecutiveManagement
                           businessId={queryParams?.businessId}
                           applicationStatus={business?.applicationStatus}
                         />
                       )}
-                      {navigationFlow?.stepName === 'Executive Management' && (
-                        <ExecutiveManagement
+
+                      {navigationFlow?.stepName === 'Board of Directors' && (
+                        <BoardOfDirectors
                           businessId={queryParams?.businessId}
-                          applicationStatus={business.applicationStatus}
+                          applicationStatus={business?.applicationStatus}
                         />
                       )}
+
                       {navigationFlow?.stepName === 'Employment Info' && (
                         <EmploymentInfo
                           businessId={queryParams?.businessId}
-                          applicationStatus={business.applicationStatus}
+                          applicationStatus={business?.applicationStatus}
                         />
                       )}
+
+                      {navigationFlow?.stepName === 'Share Details' && (
+                        <ShareDetails
+                          businessId={queryParams?.businessId}
+                          applicationStatus={business?.applicationStatus}
+                        />
+                      )}
+
+                      {navigationFlow?.stepName === 'Shareholders' && (
+                        <ShareHolders
+                          businessId={queryParams?.businessId}
+                          applicationStatus={business?.applicationStatus}
+                        />
+                      )}
+
+                      {navigationFlow?.stepName === 'Capital Details' && (
+                        <CapitalDetails
+                          businessId={queryParams?.businessId}
+                          applicationStatus={business?.applicationStatus}
+                        />
+                      )}
+
                       {navigationFlow?.stepName === 'Attachments' && (
                         <CompanyAttachments
                           businessId={queryParams?.businessId}
+                          status={business?.applicationStatus}
                         />
                       )}
+
                       {navigationFlow?.stepName === 'Preview & Submission' && (
                         <PreviewSubmission
                           businessId={queryParams?.businessId}
-                          applicationStatus={business.applicationStatus}
+                          applicationStatus={business?.applicationStatus}
                         />
                       )}
                     </NavigationTab>
@@ -329,10 +366,12 @@ const ForeignBranchRegistration = () => {
           </article>
         )}
       </main>
+      <DeleteBusinessAttachment />
       <BusinessPersonDetails />
       <DeleteBusinessPerson />
+      <DeleteFounder />
     </UserLayout>
   );
 };
 
-export default ForeignBranchRegistration;
+export default DomesticBusinessRegistration;

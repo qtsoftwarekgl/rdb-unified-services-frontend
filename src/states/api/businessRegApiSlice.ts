@@ -18,7 +18,7 @@ export const businessRegApiSlice = createApi({
       // FETCH BUSINESSES
       fetchBusinesses: builder.query({
         query: ({ page, size, applicationStatus, serviceId }) => {
-          let url = `?page=${page}&size=${size}`;
+          let url = `/?page=${page}&size=${size}`;
           if (applicationStatus) {
             url += `&applicationStatus=${applicationStatus}`;
           }
@@ -40,7 +40,7 @@ export const businessRegApiSlice = createApi({
         },
       }),
 
-      //GET BUSINESS DETAILS
+      // GET BUSINESS DETAILS
       getBusinessDetails: builder.query({
         query: ({ id }) => {
           return {
@@ -422,12 +422,12 @@ export const businessRegApiSlice = createApi({
 
       // UPDATE BUSINESS
       updateBusiness: builder.mutation({
-        query: ({ businessId, status }) => {
+        query: ({ businessId, applicationStatus }) => {
           return {
             url: `/?businessId=${businessId}`,
             method: "PATCH",
             body: {
-              status,
+              applicationStatus,
             },
           };
         },
@@ -595,6 +595,194 @@ export const businessRegApiSlice = createApi({
           return { url: `/founder/${id}`, method: "DELETE" };
         },
       }),
+
+      // FETCH NAVIGATION FLOW MASS
+      fetchNavigationFlowMass: builder.query({
+        query: ({ businessType }) => {
+          return {
+            url: `/navigation-flow/mass?businessType=${businessType}`,
+          };
+        },
+      }),
+
+      // FETCH BUSINESS NAVIGATION FLOWS
+      fetchBusinessNavigationFlows: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/navigation-flow?businessId=${businessId}`,
+          };
+        },
+      }),
+
+      // CREATE NAVIGATION FLOW
+      createNavigationFlow: builder.mutation({
+        query: ({ businessId, massId, isActive }) => {
+          return {
+            url: `/navigation-flow`,
+            method: 'POST',
+            body: {
+              businessId,
+              massId,
+              isActive,
+            },
+          };
+        },
+      }),
+
+      // COMPLETE NAVIGATION FLOW
+      completeNavigationFlow: builder.mutation({
+        query: ({ isCompleted = true, navigationFlowId }) => {
+          return {
+            url: `/navigation-flow/complete`,
+            method: 'POST',
+            body: {
+              isCompleted,
+              navigationFlowId,
+            },
+          };
+        },
+      }),
+
+      // DELETE BUSINESS FOUNDER
+      deleteBusinessFounder: builder.mutation({
+        query: ({ id }) => {
+          return {
+            url: `/founder/${id}`,
+            method: 'DELETE',
+          };
+        },
+      }),
+
+      // UPLOAD AMENDMENT ATTACHMENT
+      uploadAmendmentAttachment: builder.mutation({
+        query: ({ formData }) => {
+          return {
+            url: `/amendment/attachment`,
+            method: 'POST',
+            body: formData,
+            formData: true,
+          };
+        },
+      }),
+
+      // DECLARE BUSINESS DORMANCY
+      declareBusinessDormancy: builder.mutation({
+        query: ({
+          businessId,
+          dormantReason,
+          dormantStartDate,
+          dormantDeclarationDate,
+        }) => {
+          return {
+            url: `/amendment/dormant?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              dormantReason,
+              dormantStartDate,
+              dormantDeclarationDate,
+            },
+          };
+        },
+      }),
+
+      // CLOSE COMPANY
+      closeCompany: builder.mutation({
+        query: ({
+          businessId,
+          dissolutionReason,
+          dissolutionDate,
+          resolutionDate,
+          resolutionReason,
+        }) => {
+          return {
+            url: `/amendment/dissolution?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              dissolutionReason,
+              dissolutionDate,
+              resolutionDate,
+              resolutionReason,
+            },
+          };
+        },
+      }),
+
+      // CREATE BUSINESS BRANCH
+      createBusinessBranch: builder.mutation({
+        query: ({
+          businessId,
+          branchName,
+          workingHoursFrom,
+          workingHoursTo,
+          branchAddress,
+        }) => {
+          return {
+            url: `/amendment/new-branch?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              branchName,
+              workingHoursFrom,
+              workingHoursTo,
+              branchAddress,
+            },
+          };
+        },
+      }),
+
+      // REQUEST CESSATION TO DORMANCY
+      cessationToDormancy: builder.mutation({
+        query: ({ businessId, resolutionReason, resolutionStartDate, resolutionEndDate }) => {
+          return {
+            url: `/amendment/cessation?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              resolutionReason,
+              resolutionStartDate,
+              resolutionEndDate,
+            }
+          };
+        },
+      }),
+
+      // TRANSFER BUSINESS REGISTRATION
+      transferBusinessRegistration: builder.mutation({
+        query: ({ businessId, transferDate, transferReason }) => {
+          return {
+            url: `/amendment/transfer-registration?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              transferDate,
+              transferReason,
+            },
+          };
+        },
+      }),
+
+      // RESTORE BUSINESS
+      restoreBusiness: builder.mutation({
+        query: ({ businessId }) => {
+          return {
+            url: `/amendment/restore?businessId=${businessId}`,
+            method: 'POST',
+          };
+        },
+      }),
+
+      // FETCH BACK OFFICE BUSINESSES
+      fetchBackOfficeBusinesses: builder.query({
+        query: ({ page, size, applicationStatus, serviceId }) => {
+          let url = `/back-office/?page=${page}&size=${size}`;
+          if (applicationStatus) {
+            url += `&applicationStatus=${applicationStatus}`;
+          }
+          if (serviceId) {
+            url += `&serviceId=${serviceId}`;
+          }
+          return {
+            url
+          };
+        },
+      }),
     };
   },
 });
@@ -643,6 +831,19 @@ export const {
   useLazyFetchPersonAttachmentsQuery,
   useDeleteBusinessPersonMutation,
   useDeleteShareholderMutation,
+  useLazyFetchNavigationFlowMassQuery,
+  useLazyFetchBusinessNavigationFlowsQuery,
+  useCreateNavigationFlowMutation,
+  useCompleteNavigationFlowMutation,
+  useDeleteBusinessFounderMutation,
+  useUploadAmendmentAttachmentMutation,
+  useDeclareBusinessDormancyMutation,
+  useCloseCompanyMutation,
+  useCreateBusinessBranchMutation,
+  useCessationToDormancyMutation,
+  useTransferBusinessRegistrationMutation,
+  useRestoreBusinessMutation,
+  useLazyFetchBackOfficeBusinessesQuery,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

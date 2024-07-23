@@ -3,8 +3,7 @@ import Button from "@/components/inputs/Button";
 import { useDeleteShareholderMutation } from "@/states/api/businessRegApiSlice";
 import {
   removeFounderDetail,
-  setDeleteFounderDetailModal,
-  setFounderDetailModal,
+  setDeleteFounderModal,
   setSelectedFounderDetail,
 } from "@/states/features/founderDetailSlice";
 import { AppDispatch, RootState } from "@/states/store";
@@ -18,7 +17,7 @@ import { toast } from "react-toastify";
 const DeleteFounder = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { deleteFounderDetailModal, selectedFounderDetail } = useSelector(
+  const { deleteFounderModal, selectedFounderDetail } = useSelector(
     (state: RootState) => state.founderDetail
   );
 
@@ -52,8 +51,8 @@ const DeleteFounder = () => {
       );
       dispatch(removeFounderDetail(selectedFounderDetail?.id));
       dispatch(setSelectedFounderDetail(undefined));
-      dispatch(setDeleteFounderDetailModal(false));
-      dispatch(setFounderDetailModal(false));
+      dispatch(setDeleteFounderModal(false));
+      dispatch(setSelectedFounderDetail(false));
       founderReset();
     }
   }, [
@@ -67,32 +66,33 @@ const DeleteFounder = () => {
 
   return (
     <Modal
-      isOpen={deleteFounderDetailModal}
+      isOpen={deleteFounderModal}
       onClose={() => {
-        dispatch(setDeleteFounderDetailModal(false));
+        dispatch(setDeleteFounderModal(false));
         dispatch(setSelectedFounderDetail(undefined));
       }}
       heading={`Delete ${
         selectedFounderDetail?.personDetail?.firstName ||
-        selectedFounderDetail?.organization?.organizationName ||
-        ""
+        selectedFounderDetail?.personDetail?.organization?.organizationName ||
+        ''
       }`}
     >
       <section className="flex flex-col w-full gap-4">
         <p>
-          Are you sure you want to delete{" "}
+          Are you sure you want to delete{' '}
           {selectedFounderDetail?.personDetail?.firstName ||
-            selectedFounderDetail?.organization?.organizationName ||
-            ""}
+            selectedFounderDetail?.personDetail?.organization
+              ?.organizationName ||
+            ''}
           ? This action cannot be undone!
         </p>
         <div className="flex justify-end gap-4">
           <Button
-            value={"Cancel"}
+            value={'Cancel'}
             className="btn btn-secondary"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setDeleteFounderDetailModal(false));
+              dispatch(setDeleteFounderModal(false));
               dispatch(setSelectedFounderDetail(undefined));
             }}
           />
@@ -105,7 +105,7 @@ const DeleteFounder = () => {
               });
             }}
             danger
-            value={`${founderIsLoading ? <Loader /> : "Confirm"}`}
+            value={`${founderIsLoading ? <Loader /> : 'Confirm'}`}
           />
         </div>
       </section>

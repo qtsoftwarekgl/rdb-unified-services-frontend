@@ -1,18 +1,17 @@
-import Loader from "@/components/Loader";
-import Modal from "@/components/Modal";
-import Button from "@/components/inputs/Button";
-import { formatDate } from "@/helpers/strings";
-import { useDeleteBusinessMutation } from "@/states/api/businessRegApiSlice";
-import { setDeleteApplicationModal } from "@/states/features/businessRegistrationSlice";
+import Loader from '@/components/Loader';
+import Modal from '@/components/Modal';
+import Button from '@/components/inputs/Button';
+import { capitalizeString, formatDate } from '@/helpers/strings';
+import { useDeleteBusinessMutation } from '@/states/api/businessRegApiSlice';
 import {
   setBusinessesList,
   setDeleteBusinessModal,
-} from "@/states/features/businessSlice";
-import { AppDispatch, RootState } from "@/states/store";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
+} from '@/states/features/businessSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const DeleteBusinessApplication = () => {
   // STATE VARIABLES
@@ -38,12 +37,12 @@ const DeleteBusinessApplication = () => {
   useEffect(() => {
     if (deleteBusinessIsError) {
       if ((deleteBusinessError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while deleting business application");
+        toast.error('An error occurred while deleting business application');
       } else {
-        toast.error((deleteBusinessError as ErrorResponse)?.data?.message);
+        toast.error(capitalizeString((deleteBusinessError as ErrorResponse)?.data?.message));
       }
     } else if (deleteBusinessIsSuccess) {
-      toast.success("Business application deleted successfully");
+      toast.success('Business application deleted successfully');
       dispatch(setDeleteBusinessModal(false));
       resetDeleteBusiness();
       dispatch(
@@ -69,18 +68,19 @@ const DeleteBusinessApplication = () => {
         dispatch(setDeleteBusinessModal(false));
         resetDeleteBusiness();
       }}
+      heading={`Discard ${selectedBusiness?.companyName || 'N/A'}`}
     >
       <h1 className="text-start text-red-600 uppercase font-semibold text-[16px]">
-        Discard {selectedBusiness?.companyName || "N/A"}
+        Discard {selectedBusiness?.companyName || 'N/A'}
       </h1>
       <p className="max-w-[80%]">
         Are you sure you want to discard the following application?
       </p>
       <menu className="flex flex-col gap-3">
         <p>
-          Name:{" "}
+          Name:{' '}
           <span className="uppercase">
-            {selectedBusiness?.companyName || "N/A"}
+            {selectedBusiness?.companyName || 'N/A'}
           </span>
         </p>
         <p>Date Started: {formatDate(selectedBusiness?.createdAt)}</p>
@@ -91,12 +91,12 @@ const DeleteBusinessApplication = () => {
           value="Cancel"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setDeleteApplicationModal(false));
+            dispatch(setDeleteBusinessModal(false));
             resetDeleteBusiness();
           }}
         />
         <Button
-          value={deleteBusinessIsLoading ? <Loader /> : "Confirm"}
+          value={deleteBusinessIsLoading ? <Loader /> : 'Confirm'}
           danger
           onClick={(e) => {
             e.preventDefault();

@@ -7,11 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-  setBusinessCompletedStep,
-  setBusinessCompletedTab,
 } from '../../../../states/features/businessRegistrationSlice';
 import Loader from '../../../../components/Loader';
-import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import { ErrorResponse, Link } from 'react-router-dom';
 import ViewDocument from '@/pages/user-company-details/ViewDocument';
 import { businessId } from '@/types/models/business';
@@ -20,6 +17,14 @@ import { dayHoursArray } from '@/constants/time';
 import { useCreateEmploymentInfoMutation } from '@/states/api/businessRegApiSlice';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from '@/states/features/navigationFlowSlice';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
 
 type EmploymentInfoProps = {
   businessId: businessId;
@@ -42,11 +47,13 @@ const EmploymentInfo = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
-  const disableForm = RDBAdminEmailPattern.test(user?.email);
+  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(applicationStatus);
   const [customReferenceDate, setCustomReferenceDate] =
     useState<boolean>(false);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // INITIALIZE CREATE EMPLOYMENT INFO MUTATIon
   const [
@@ -90,16 +97,34 @@ const EmploymentInfo = ({
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
-      dispatch(setBusinessCompletedStep('employment_info'));
-      dispatch(setBusinessCompletedTab('management'));
-      dispatch(setBusinessActiveStep('attachments'));
-      dispatch(setBusinessActiveTab('attachments'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Employment Info'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Attachments'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createEmploymentInfoError,
     createEmploymentInfoIsError,
     createEmploymentInfoIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   return (
@@ -406,7 +431,16 @@ const EmploymentInfo = ({
                 disabled={disableForm}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep('board_of_directors'));
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Board of Directors'
+                      ),
+                      isActive: true,
+                    })
+                  );
                 }}
               />
               <Button

@@ -4,4 +4,6 @@ export type AbstractDomain = {
   id: UUID;
   createdAt: Date;
   updatedAt: Date;
+  state: string;
+  version: number;
 };

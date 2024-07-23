@@ -1,20 +1,19 @@
-import ProgressNavigation from "@/components/business-registration/ProgressNavigation";
-import Tab from "@/components/business-registration/Tab";
-import AdminLayout from "@/containers/AdminLayout";
+import ProgressNavigation from '@/pages/business-applications/ProgressNavigation';
+import NavigationTab from '@/pages/business-applications/NavigationTab';
+import AdminLayout from '@/containers/AdminLayout';
 import {
   setCollateralActiveStep,
   setCollateralActiveTab,
-} from "@/states/features/collateralRegistrationSlice";
-import { TabType } from "@/states/features/types";
-import { RootState } from "@/states/store";
-import { useSelector } from "react-redux";
-import DebtorInformation from "./DebtorInformation";
-import { useLocation } from "react-router-dom";
-import CollateralInformation from "./CollateralInformation";
-import CollateralAttachments from "./Attachments";
-import PreviewSubmission from "./PreviewSubmission";
-import UserReviewTabComments from "@/components/applications-review/UserReviewTabComments";
-import ReviewComments from "./ReviewComments";
+} from '@/states/features/collateralRegistrationSlice';
+import { RootState } from '@/states/store';
+import { useSelector } from 'react-redux';
+import DebtorInformation from './DebtorInformation';
+import { useLocation } from 'react-router-dom';
+import CollateralInformation from './CollateralInformation';
+import CollateralAttachments from './Attachments';
+import PreviewSubmission from './PreviewSubmission';
+import UserReviewTabComments from '@/components/applications-review/UserReviewTabComments';
+import ReviewComments from './ReviewComments';
 
 const NewCollateral = () => {
   const {
@@ -24,7 +23,7 @@ const NewCollateral = () => {
   } = useSelector((state: RootState) => state.collateralRegistration);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
-  const entryId = queryParams.get("entryId");
+  const entryId = queryParams.get('entryId');
 
   const { collateral_applications } = useSelector(
     (state: RootState) => state.collateralRegistration
@@ -46,11 +45,11 @@ const NewCollateral = () => {
           setActiveTab={setCollateralActiveTab}
         />
         <menu className="flex w-full gap-2 rounded">
-          {collateral_registration_tabs.map((tab: TabType, index: number) => {
+          {collateral_registration_tabs.map((tab, index: number) => {
             const isActiveTab = tab.active;
             const activeStepName = collateral_active_step?.name;
             return (
-              <Tab
+              <NavigationTab
                 isOpen={isActiveTab}
                 steps={tab?.steps}
                 key={`${String(index)}-${tab?.name}`}
@@ -59,13 +58,13 @@ const NewCollateral = () => {
               >
                 {isActiveTab && (
                   <>
-                    {activeStepName === "debtor_information" && (
+                    {activeStepName === 'debtor_information' && (
                       <DebtorInformation
                         entryId={entryId}
                         debtor_info={application?.debtor_info}
                       />
                     )}
-                    {activeStepName === "collateral_information" && (
+                    {activeStepName === 'collateral_information' && (
                       <CollateralInformation
                         entryId={entryId}
                         collateral_infos={application?.collateral_infos || []}
@@ -75,7 +74,7 @@ const NewCollateral = () => {
                         loan_amount_in_words={application?.loan_amount_in_words}
                       />
                     )}
-                    {activeStepName === "attachments" && (
+                    {activeStepName === 'attachments' && (
                       <CollateralAttachments
                         entryId={entryId}
                         attachments={application?.attachments?.fileNames || []}
@@ -84,7 +83,7 @@ const NewCollateral = () => {
                         }
                       />
                     )}
-                    {activeStepName === "preview" && (
+                    {activeStepName === 'preview' && (
                       <PreviewSubmission
                         entryId={entryId}
                         collateral_attachments={application?.attachments}
@@ -99,7 +98,7 @@ const NewCollateral = () => {
                     )}
                   </>
                 )}
-              </Tab>
+              </NavigationTab>
             );
           })}
           <ReviewComments />

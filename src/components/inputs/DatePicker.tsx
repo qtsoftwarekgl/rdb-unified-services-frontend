@@ -8,12 +8,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { SelectSingleEventHandler } from 'react-day-picker';
 import moment from 'moment';
 import Select from './Select';
 
-interface DatePickerProps {
+type DatePickerProps = {
   value: Date | undefined;
   onChange:
     | SelectSingleEventHandler
@@ -25,14 +25,14 @@ interface DatePickerProps {
   toDate?: Date;
 }
 
-const DatePicker: FC<DatePickerProps> = ({
+const DatePicker = ({
   onChange,
   value = undefined,
   selectionType,
   fromDate = undefined,
   placeholder = 'Select date',
   toDate = undefined,
-}) => {
+}: DatePickerProps) => {
   // SET MONTH AND YEAR
   const [year, setYear] = useState<string | undefined>(moment().format('YYYY'));
   const [defaultMonth, setDefaultMonth] = useState<Date | undefined>(
@@ -55,8 +55,10 @@ const DatePicker: FC<DatePickerProps> = ({
           {value ? (
             selectionType === 'recurringDate' ? (
               moment(value).format('MMMM DD')
-            ) : (
+            ) : selectionType !== 'recurringDate' ? (
               format(value, 'PPP')
+            ) : (
+              moment(value).format('MMMM DD')
             )
           ) : (
             <p className="text-[13px]">{placeholder}</p>
@@ -66,7 +68,7 @@ const DatePicker: FC<DatePickerProps> = ({
       <PopoverContent className="w-full p-0" align="start">
         <menu className="flex flex-col gap-2 p-2 w-full">
           <ul
-            className={`w-full grid gap-3 ${
+            className={`w-full grid gap-3 p-0 ${
               selectionType === 'recurringDate' ? 'grid-cols-1' : 'grid-cols-2'
             }`}
           >

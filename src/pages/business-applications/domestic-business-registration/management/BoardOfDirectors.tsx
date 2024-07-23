@@ -8,13 +8,11 @@ import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
 import {
   setBusinessActiveStep,
-  setBusinessCompletedStep,
 } from "../../../../states/features/businessRegistrationSlice";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { maskPhoneDigits } from "../../../../helpers/strings";
+import { formatDate, maskPhoneDigits } from "../../../../helpers/strings";
 import validateInputs from "../../../../helpers/validations";
-import BusinessPeople from "./BusinessPeople";
 import { businessId } from "@/types/models/business";
 import moment from "moment";
 import {
@@ -37,6 +35,8 @@ import {
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
 import { genderOptions } from "@/constants/inputs.constants";
 import BusinessPeopleTable from "./BusinessPeopleTable";
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
 
 type BoardOfDirectorsProps = {
   businessId: businessId;
@@ -70,6 +70,9 @@ const BoardOfDirectors = ({
   );
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
+  );
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
   );
 
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
@@ -116,6 +119,7 @@ const BoardOfDirectors = ({
       businessId,
       nationality: data?.nationality || data?.persDocIssuePlace,
       route: "board-member",
+      dateOfBirth: formatDate(data?.dateOfBirth),
     });
   };
 
@@ -148,6 +152,7 @@ const BoardOfDirectors = ({
           firstName: "",
           middleName: "",
           lastName: "",
+          email: "",
         });
         dispatch(addBoardMember(boardPersonData?.data));
         dispatch(setUserInformation(undefined));
@@ -190,6 +195,7 @@ const BoardOfDirectors = ({
         firstName: "",
         middleName: "",
         lastName: "",
+        email: "",
       });
       setAttachmentFile(null);
       dispatch(setBusinessPersonAttachments([]));
@@ -224,6 +230,7 @@ const BoardOfDirectors = ({
         nationality: userInformation?.nationality,
         persDocIssuePlace: userInformation?.nationality,
         isFromNida: true,
+        dateOfBirth: formatDate(userInformation?.dateOfBirth),
       });
     }
   }, [
@@ -851,7 +858,16 @@ const BoardOfDirectors = ({
                 value="Back"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setBusinessActiveStep("board_of_directors"));
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Executive Management'
+                      ),
+                      isActive: true,
+                    })
+                  );
                 }}
               />
               <Button
@@ -866,8 +882,25 @@ const BoardOfDirectors = ({
                     toast.info("Please add at least one board member");
                     return;
                   }
-                  dispatch(setBusinessCompletedStep("board_of_directors"));
-                  dispatch(setBusinessActiveStep("employment_info"));
+                  dispatch(
+                    completeNavigationFlowThunk({
+                      isCompleted: true,
+                      navigationFlowId: findNavigationFlowByStepName(
+                        businessNavigationFlowsList,
+                        'Board of Directors'
+                      )?.id,
+                    })
+                  );
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Employment Info'
+                      ),
+                      isActive: true,
+                    })
+                  );
                 }}
               />
             </menu>

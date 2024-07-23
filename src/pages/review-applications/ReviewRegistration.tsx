@@ -1,27 +1,43 @@
 import { useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch } from 'react-redux';
-import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
+import { useLazyFetchBackOfficeBusinessesQuery } from '@/states/api/businessRegApiSlice';
 import { useEffect } from 'react';
 import {
+  setBusinessPage,
+  setBusinessSize,
   setBusinessTotalElements,
   setBusinessTotalPages,
   setBusinessesList,
+  updateBusinessThunk,
 } from '@/states/features/businessSlice';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { Business } from '@/types/models/business';
-import Button from '@/components/inputs/Button';
 import Table from '@/components/table/Table';
 import AdminLayout from '@/containers/AdminLayout';
 import Loader from '@/components/Loader';
-import { ErrorResponse } from 'react-router-dom';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { capitalizeString, formatDate } from '@/helpers/strings';
+import { businessColumns } from '@/constants/business.constants';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCircleCheck,
+  faCircleInfo,
+  faEllipsisVertical,
+} from '@fortawesome/free-solid-svg-icons';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
 
 const ReviewRegistration = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessesList } = useSelector((state: RootState) => state.business);
+  const { businessesList, page, size, totalElements, totalPages } = useSelector(
+    (state: RootState) => state.business
+  );
+
+  // NAVIGATION
+  const navigate = useNavigate();
 
   // INITIALIZE FETCH BUSINESSES QUERY
   const [
@@ -33,16 +49,16 @@ const ReviewRegistration = () => {
       isSuccess: businessesIsSuccess,
       error: businessesError,
     },
-  ] = useLazyFetchBusinessesQuery();
+  ] = useLazyFetchBackOfficeBusinessesQuery();
 
   // FETCH BUSINESSES
   useEffect(() => {
     fetchBusinesses({
-      page: 1,
-      size: 10,
       applicationStatus: 'SUBMITTED',
+      page,
+      size,
     });
-  }, [fetchBusinesses]);
+  }, [fetchBusinesses, page, size]);
 
   // HANDLE FETCH BUSINESS RESPONSE
   useEffect(() => {
@@ -67,47 +83,62 @@ const ReviewRegistration = () => {
 
   // TABLE COLUMNS
   const businessesColumns = [
-    {
-      id: 'no',
-      header: 'No',
-      accessorKey: 'no',
-    },
-    {
-      id: 'companyName',
-      header: 'Company Name',
-      accessorKey: 'companyName',
-    },
-    {
-      id: 'companyType',
-      header: 'Company Type',
-      accessorKey: 'companyType',
-    },
-    {
-      id: 'dateOfIncorporation',
-      header: 'Date of Incorporation',
-      accessorKey: 'dateOfIncorporation',
-    },
-    {
-      id: 'applicationStatus',
-      header: 'Status',
-      accessorKey: 'applicationStatus',
-    },
-    {
-      id: 'assignee',
-      header: 'Assigned To',
-      accessorKey: 'assignee',
-    },
+    ...businessColumns,
     {
       id: 'action',
       header: 'Action',
       accessorKey: 'action',
       cell: ({ row }: { row: Row<Business> }) => {
         return (
-          <Button
-            styled={false}
-            route={`/services/company-details/${row.original.id}`}
-            value="Full info"
-          />
+          <CustomPopover
+            trigger={
+              <menu className="flex items-center justify-center w-full gap-2 text-[12px] cursor-pointer">
+                <CustomTooltip label="Click to view options">
+                  <FontAwesomeIcon
+                    className="text-primary text-md p-0 transition-all duration-300 hover:scale-[.98]"
+                    icon={faEllipsisVertical}
+                  />
+                </CustomTooltip>
+              </menu>
+            }
+          >
+            <menu className="bg-white flex flex-col gap-1 p-0 rounded-md">
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log(
+                    navigate(
+                      `${row?.original?.service?.path}?businessId=${row?.original?.id}`
+                    )
+                  );
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
+                View details
+              </Link>
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    updateBusinessThunk({
+                      businessId: row?.original?.id,
+                      applicationStatus: 'APPROVED',
+                    })
+                  );
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon
+                  className="text-primary"
+                  icon={faCircleCheck}
+                />{' '}
+                Approve
+              </Link>
+            </menu>
+          </CustomPopover>
         );
       },
     },
@@ -122,6 +153,12 @@ const ReviewRegistration = () => {
           </figure>
         ) : (
           <Table
+            page={page}
+            size={size}
+            totalElements={totalElements}
+            totalPages={totalPages}
+            setPage={setBusinessPage}
+            setSize={setBusinessSize}
             columns={businessesColumns as ColumnDef<Business>[]}
             data={businessesList?.map((business, index) => {
               return {

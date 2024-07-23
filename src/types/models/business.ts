@@ -29,7 +29,8 @@ export type Business = {
   enterpriseBusinessName?: string;
   employmentInfo?: string | object;
   address?: Address;
-  dateOfIncorporation?: Date
+  dateOfIncorporation?: Date;
+  service: Service
 };
 
 export type Details = {
@@ -82,3 +83,9 @@ export type BusinessActivity = {
   code: number;
   description: string;
 };
+
+export type Service = {
+  id: UUID;
+  name: string;
+  path?: string
+}
