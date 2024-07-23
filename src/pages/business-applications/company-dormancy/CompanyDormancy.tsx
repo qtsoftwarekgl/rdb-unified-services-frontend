@@ -61,7 +61,7 @@ const CompanyDormancy = () => {
 
   // FETCH BUSINESSES
   useEffect(() => {
-    dispatch(fetchBusinessesThunk({ page: 1, size: 100 }));
+    dispatch(fetchBusinessesThunk({ page: 1, size: 100, applicationStatus: 'APPROVED' }));
   }, [dispatch]);
 
   // INITIATE DECLARE BUSINESS DORMANCY MUTATION

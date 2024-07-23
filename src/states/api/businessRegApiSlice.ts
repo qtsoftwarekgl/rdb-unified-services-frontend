@@ -687,7 +687,13 @@ export const businessRegApiSlice = createApi({
 
       // CLOSE COMPANY
       closeCompany: builder.mutation({
-        query: ({ businessId, dissolutionReason, dissolutionDate, resolutionDate, resolutionReason }) => {
+        query: ({
+          businessId,
+          dissolutionReason,
+          dissolutionDate,
+          resolutionDate,
+          resolutionReason,
+        }) => {
           return {
             url: `/amendment/dissolution?businessId=${businessId}`,
             method: 'POST',
@@ -696,6 +702,28 @@ export const businessRegApiSlice = createApi({
               dissolutionDate,
               resolutionDate,
               resolutionReason,
+            },
+          };
+        },
+      }),
+
+      // CREATE BUSINESS BRANCH
+      createBusinessBranch: builder.mutation({
+        query: ({
+          businessId,
+          branchName,
+          workingHoursFrom,
+          workingHoursTo,
+          branchAddress,
+        }) => {
+          return {
+            url: `/amendment/new-branch?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              branchName,
+              workingHoursFrom,
+              workingHoursTo,
+              branchAddress,
             },
           };
         },
@@ -756,6 +784,7 @@ export const {
   useUploadAmendmentAttachmentMutation,
   useDeclareBusinessDormancyMutation,
   useCloseCompanyMutation,
+  useCreateBusinessBranchMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

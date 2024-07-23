@@ -59,7 +59,7 @@ const initialState: {
 // FETCH BUSINESSES
 export const fetchBusinessesThunk = createAsyncThunk<
   Business[],
-  { page: number; size: number },
+  { page: number; size: number, applicationStatus?: string, serviceId?: string },
   { dispatch: AppDispatch }
 >(
   'business/fetchBusinesses',
