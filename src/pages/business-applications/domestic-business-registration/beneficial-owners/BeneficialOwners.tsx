@@ -1719,7 +1719,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           />
         </menu>
       )}
-      {['IN_REVIEW', 'IS_APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
+      {['IN_REVIEW', 'APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"

@@ -907,7 +907,7 @@ const BoardOfDirectors = ({
           )}
           {[
             "IN_REVIEW",
-            "IS_APPROVED",
+            "APPROVED",
             "PENDING_APPROVAL",
             "PENDING_REJECTION",
           ].includes(String(applicationStatus)) && (

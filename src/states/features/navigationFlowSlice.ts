@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
 import {
   NavigationFlow,
   NavigationFlowMass,
@@ -24,17 +23,10 @@ export const createNavigationFlowThunk = createAsyncThunk<
   { businessId: businessId; massId: string; isActive: boolean },
   { dispatch: AppDispatch }
 >('navigationFlow/createNavigationFlow', async (payload, { dispatch }) => {
-  try {
     const response = await dispatch(
       businessRegApiSlice.endpoints.createNavigationFlow.initiate(payload)
     ).unwrap();
     return response.data;
-  } catch (error) {
-    toast.error(
-      'An error occurred while saving progress. Refresh and try again'
-    );
-    throw error;
-  }
 });
 
 export const completeNavigationFlowThunk = createAsyncThunk<
@@ -42,17 +34,10 @@ export const completeNavigationFlowThunk = createAsyncThunk<
   { isCompleted: boolean; navigationFlowId?: UUID },
   { dispatch: AppDispatch }
 >('navigationFlow/completeNavigationFlow', async (payload, { dispatch }) => {
-  try {
     const response = await dispatch(
       businessRegApiSlice.endpoints.completeNavigationFlow.initiate(payload)
     ).unwrap();
     return response.data;
-  } catch (error) {
-    toast.error(
-      'An error occurred while saving progress. Refresh and try again'
-    );
-    throw error;
-  }
 });
 
 const navigationFlowSlice = createSlice({

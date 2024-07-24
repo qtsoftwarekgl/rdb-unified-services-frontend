@@ -340,7 +340,7 @@ const CompanyAttachments = ({
         )}
         {[
           "IN_REVIEW",
-          "IS_APPROVED",
+          "APPROVED",
           "PENDING_APPROVAL",
           "PENDING_REJECTION",
         ].includes(status) && (

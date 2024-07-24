@@ -1,38 +1,43 @@
-import { FC, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../../../../components/Loader";
-import Select from "../../../../components/inputs/Select";
+import { FC, useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import Loader from '../../../../components/Loader';
+import Select from '../../../../components/inputs/Select';
 import {
   companyCategories,
   companyPositions,
   companyTypes,
   privateCompanyTypes,
-} from "../../../../constants/businessRegistration";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setForeignBusinessActiveStep,
-  setForeignBusinessCompletedStep,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
+} from '../../../../constants/businessRegistration';
+import Button from '../../../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setForeignBusinessActiveStep } from '../../../../states/features/foreignCompanyRegistrationSlice';
+import { RDBAdminEmailPattern } from '../../../../constants/Users';
 import {
   useLazyGetBusinessDetailsQuery,
   useLazySearchBusinessNameAvailabilityQuery,
-} from "@/states/api/businessRegApiSlice";
-import { ErrorResponse, Link } from "react-router-dom";
-import { toast } from "react-toastify";
+} from '@/states/api/businessRegApiSlice';
+import { ErrorResponse, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   setNameAvailabilitiesList,
   setBusinessDetails,
   setSimilarBusinessNamesModal,
-} from "@/states/features/businessSlice";
-import { useCreateOrUpdateCompanyDetailsMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
-import { convertDecimalToPercentage } from "@/helpers/strings";
-import { businessId } from "@/types/models/business";
-import SimilarBusinessNames from "../../SimilarBusinessNames";
+} from '@/states/features/businessSlice';
+import { useCreateOrUpdateCompanyDetailsMutation } from '@/states/api/foreignCompanyRegistrationApiSlice';
+import { convertDecimalToPercentage } from '@/helpers/strings';
+import { businessId } from '@/types/models/business';
+import SimilarBusinessNames from '../../SimilarBusinessNames';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from '@/states/features/navigationFlowSlice';
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -54,10 +59,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   const dispatch: AppDispatch = useDispatch();
 
   const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const isFormDisabled = RDBAdminEmailPattern.test(String(user?.email));
   const [companyTypesOptions, setBusinessTypesOptions] = useState(companyTypes);
   const { businessDetails, nameAvailabilitiesList } = useSelector(
     (state: RootState) => state.business
+  );
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
   );
 
   // GET BUSINESS DETAILS
@@ -90,7 +98,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     if (searchBusinessNameIsError) {
       if ((searchBusinessNameError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while searching for business name availability"
+          'An error occurred while searching for business name availability'
         );
       } else {
         toast.error((searchBusinessNameError as ErrorResponse)?.data?.message);
@@ -120,7 +128,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     if (businessIsError) {
       if ((businessError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while fetching business details. Please try again later."
+          'An error occurred while fetching business details. Please try again later.'
         );
       } else {
         toast.error((businessError as ErrorResponse)?.data?.message);
@@ -149,13 +157,13 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
 
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
-    if (watch("companyCategory") === "PUBLIC") {
+    if (watch('companyCategory') === 'PUBLIC') {
       setBusinessTypesOptions(companyTypes);
-    } else if (watch("companyCategory") === "PRIVATE") {
+    } else if (watch('companyCategory') === 'PRIVATE') {
       setBusinessTypesOptions(privateCompanyTypes);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("companyCategory"), businessDetails?.companyCategory]);
+  }, [watch('companyCategory'), businessDetails?.companyCategory]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -165,7 +173,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
       companyType: data.companyType,
       companyCategory: data.companyCategory,
       position: data.position,
-      hasArticlesOfAssociation: data.hasArticlesOfAssociation === "yes",
+      hasArticlesOfAssociation: data.hasArticlesOfAssociation === 'yes',
     });
   };
 
@@ -173,21 +181,41 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   useEffect(() => {
     if (createCompanyDetailsIsError) {
       if ((createCompanyDetailsError as ErrorResponse)?.status === 500) {
-        toast.error("Internal server error");
+        toast.error('Internal server error');
       } else {
         toast.error(
           (createCompanyDetailsError as ErrorResponse)?.data?.message
         );
       }
     } else if (createCompanyDetailsIsSuccess) {
-      dispatch(setForeignBusinessActiveStep("company_address"));
-      dispatch(setForeignBusinessCompletedStep("company_details"));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Details'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Company Address'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
     createCompanyDetailsIsSuccess,
     createCompanyDetailsError,
     createCompanyDetailsIsError,
     dispatch,
+    businessId,
+    businessNavigationFlowsList,
+    navigationFlowMassList,
   ]);
 
   useEffect(() => {
@@ -198,8 +226,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
         companyType: businessDetails?.companyType,
         position: businessDetails?.position,
         hasArticlesOfAssociation: businessDetails?.hasArticlesOfAssociation
-          ? "yes"
-          : "no",
+          ? 'yes'
+          : 'no',
       });
     }
   }, [businessDetails, reset]);
@@ -221,10 +249,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               name="companyName"
               control={control}
               defaultValue={
-                watch("companyName") || businessDetails?.companyName
+                watch('companyName') || businessDetails?.companyName
               }
               rules={{
-                required: "Company name is required",
+                required: 'Company name is required',
               }}
               render={({ field }) => {
                 return (
@@ -237,23 +265,23 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
-                        setError("companyName", {
-                          type: "manual",
+                        setError('companyName', {
+                          type: 'manual',
                           message:
-                            "Check if company name is available before proceeding",
+                            'Check if company name is available before proceeding',
                         });
                       }}
                       suffixIconHandler={(e) => {
                         e.preventDefault();
                         if (!field?.value || field?.value.length < 3) {
-                          setError("companyName", {
-                            type: "manual",
+                          setError('companyName', {
+                            type: 'manual',
                             message:
-                              "Company name must be at least 3 characters",
+                              'Company name must be at least 3 characters',
                           });
                           return;
                         }
-                        clearErrors("companyName");
+                        clearErrors('companyName');
                         searchBusinessNameAvailability({
                           companyName: field?.value,
                         });
@@ -272,7 +300,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                         !errors?.companyName && (
                           <section className="flex flex-col gap-1">
                             <p className="text-[11px] text-red-600">
-                              The given name has a similarity of up to{" "}
+                              The given name has a similarity of up to{' '}
                               {convertDecimalToPercentage(
                                 nameAvailabilitiesList[0]?.similarity
                               )}
@@ -280,7 +308,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                               to avoid conflicts.
                             </p>
                             <Link
-                              to={"#"}
+                              to={'#'}
                               className="text-[11px] underline text-primary"
                               onClick={(e) => {
                                 e.preventDefault();
@@ -312,7 +340,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               control={control}
               name="companyCategory"
               defaultValue={businessDetails?.companyCategory}
-              rules={{ required: "Select company category" }}
+              rules={{ required: 'Select company category' }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
@@ -346,7 +374,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
             <Controller
               control={control}
               name="companyType"
-              rules={{ required: "Select company type" }}
+              rules={{ required: 'Select company type' }}
               defaultValue={businessDetails?.companyType}
               render={({ field }) => {
                 return (
@@ -379,7 +407,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
             <Controller
               control={control}
               name="position"
-              rules={{ required: "Select your position" }}
+              rules={{ required: 'Select your position' }}
               defaultValue={businessDetails?.position}
               render={({ field }) => {
                 return (
@@ -414,7 +442,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
             <Controller
               control={control}
               name="hasArticlesOfAssociation"
-              rules={{ required: "Select one of the choices provided" }}
+              rules={{ required: 'Select one of the choices provided' }}
               defaultValue={businessDetailsData?.data?.hasArticlesOfAssociation}
               render={({ field }) => {
                 return (
@@ -433,9 +461,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);
-                          clearErrors("hasArticlesOfAssociation");
+                          clearErrors('hasArticlesOfAssociation');
                         }}
-                        value={"yes"}
+                        value={'yes'}
                       />
                       <Input
                         type="radio"
@@ -446,9 +474,9 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                         {...field}
                         onChange={async (e) => {
                           field.onChange(e.target.value);
-                          clearErrors("hasArticlesOfAssociation");
+                          clearErrors('hasArticlesOfAssociation');
                         }}
-                        value={"no"}
+                        value={'no'}
                       />
                       {errors?.hasArticlesOfAssociation && (
                         <p className="text-xs text-red-500">
@@ -472,12 +500,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
             <Button
               primary
               value={
-                createCompanyDetailsIsLoading ? <Loader /> : "Save & Continue"
+                createCompanyDetailsIsLoading ? <Loader /> : 'Save & Continue'
               }
               submit
             />
-            {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-              businessDetails?.applicationStatus || ""
+            {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+              businessDetails?.applicationStatus || ''
             ) && (
               <menu className="flex items-center justify-between w-full gap-3">
                 <Button
@@ -486,11 +514,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                   disabled
                 />
                 <Button
-                  value={"Next"}
+                  value={'Next'}
                   primary
                   onClick={(e) => {
                     e.preventDefault();
-                    dispatch(setForeignBusinessActiveStep("company_address"));
+                    dispatch(setForeignBusinessActiveStep('company_address'));
                   }}
                 />
               </menu>
@@ -498,7 +526,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           </menu>
         </fieldset>
       </form>
-      <SimilarBusinessNames companyName={watch("companyName")} />
+      <SimilarBusinessNames businessName={watch('companyName')} />
     </section>
   );
 };

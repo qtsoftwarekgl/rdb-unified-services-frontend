@@ -35,7 +35,7 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from '@/helpers/business.helpers';
-import { completeNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
 
 type PreviewSubmissionProps = {
   businessId: businessId;
@@ -646,8 +646,16 @@ const PreviewSubmission = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setBusinessActiveStep('attachments'));
-              dispatch(setBusinessActiveTab('attachments'));
+              dispatch(
+                createNavigationFlowThunk({
+                  businessId,
+                  massId: findNavigationFlowMassIdByStepName(
+                    navigationFlowMassList,
+                    'Attachments'
+                  ),
+                  isActive: true,
+                })
+              );
             }}
           />
           <Button

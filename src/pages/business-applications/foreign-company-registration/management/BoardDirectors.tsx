@@ -9,14 +9,12 @@ import { countriesList } from "../../../../constants/countries";
 import validateInputs from "../../../../helpers/validations";
 import Button from "../../../../components/inputs/Button";
 import {
-  setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { maskPhoneDigits } from "../../../../helpers/strings";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
+import { formatDate, maskPhoneDigits } from "../../../../helpers/strings";
 import ViewDocument from "../../../user-company-details/ViewDocument";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
 import { businessId } from "@/types/models/business";
@@ -42,6 +40,8 @@ import { genderOptions } from "@/constants/inputs.constants";
 import { setBusinessDetails } from "@/states/features/businessSlice";
 import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
 import moment from "moment";
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
 
 interface BoardDirectorsProps {
   businessId: businessId;
@@ -71,15 +71,17 @@ const BoardDirectors = ({
     null
   );
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
-  const { user } = useSelector((state: RootState) => state.user);
   const { boardMemberList } = useSelector(
     (state: RootState) => state.boardOfDirector
   );
-  const isFormDisabled = RDBAdminEmailPattern.test(String(user?.email));
+  const isFormDisabled = ['IN_REVIEW'].includes(applicationStatus);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
   const { businessDetails } = useSelector((state: RootState) => state.business);
   const { userInformation } = useSelector(
     (state: RootState) => state.businessPeople
+  );
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
   );
 
   // INITIALIZE CREATE BOARD MEMBER
@@ -143,6 +145,7 @@ const BoardDirectors = ({
         nationality: userInformation?.nationality,
         persDocIssuePlace: userInformation?.nationality,
         isFromNida: true,
+        dateOfBirth: formatDate(userInformation?.dateOfBirth),
       });
     }
   }, [reset, userInformation, watch, userInformationIsSuccess]);
@@ -160,7 +163,14 @@ const BoardDirectors = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    createBoardMember({ ...data, businessId, route: "board-member" });
+    createBoardMember({
+      ...data,
+      personDocNo: data?.personDocNo || data?.documentNumber,
+      businessId,
+      nationality: data?.nationality || data?.persDocIssuePlace,
+      route: "board-member",
+      dateOfBirth: formatDate(data?.dateOfBirth),
+    });
   };
 
   // HANDLE CREATE BOARD MEMBER RESPONSE
@@ -947,7 +957,16 @@ const BoardDirectors = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setForeignBusinessActiveStep("executive_management"));
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Executive Management'
+                    ),
+                    isActive: true,
+                  })
+                );
               }}
             />
             {applicationStatus === "IS_AMENDING" && (
@@ -1022,8 +1041,25 @@ const BoardDirectors = ({
                   }, 4000);
                   return;
                 }
-                dispatch(setForeignBusinessCompletedStep("board_of_directors"));
-                dispatch(setForeignBusinessActiveStep("employment_info"));
+                dispatch(
+                  completeNavigationFlowThunk({
+                    isCompleted: true,
+                    navigationFlowId: findNavigationFlowByStepName(
+                      businessNavigationFlowsList,
+                      'Board of Directors'
+                    )?.id,
+                  })
+                );
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Employment Info'
+                    ),
+                    isActive: true,
+                  })
+                );
               }}
             />
           </menu>

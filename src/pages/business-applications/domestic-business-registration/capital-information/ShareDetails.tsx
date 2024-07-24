@@ -43,7 +43,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -325,7 +325,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
         )}
         {[
           'IN_REVIEW',
-          'IS_APPROVED',
+          'APPROVED',
           'PENDING_APPROVAL',
           'PENDING_REJECTION',
         ].includes(String(applicationStatus)) && (

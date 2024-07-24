@@ -3,15 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { Controller, useForm } from "react-hook-form";
 import Input from "../../../../components/inputs/Input";
-import {
-  setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
-  setForeignBusinessCompletedStep,
-  setForeignBusinessCompletedTab,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import { businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessAttachmentsQuery,
@@ -29,9 +22,12 @@ import BusinessPeopleAttachments from "../../domestic-business-registration/Busi
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { BusinessAttachment } from "@/types/models/attachment";
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
 
 interface CompanyAttachmentsProps {
   businessId: businessId;
+  applicationStatus: string;
 }
 
 const attachmentFields = [
@@ -61,7 +57,7 @@ const attachmentFields = [
   },
 ];
 
-const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
+const CompanyAttachments = ({ businessId, applicationStatus }: CompanyAttachmentsProps) => {
   // REACT HOOK FORM
   const {
     control,
@@ -107,9 +103,11 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
     uploadBusinessAttachmentIsSuccess,
   ]);
 
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const isFormDisabled = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const { businessDetails } = useSelector((state: RootState) => state.business);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // GET BUSINESS DETAILS
   const [
@@ -195,10 +193,25 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
   };
 
   const onSubmit = () => {
-    dispatch(setForeignBusinessCompletedStep("attachments"));
-    dispatch(setForeignBusinessCompletedTab("attachments"));
-    dispatch(setForeignBusinessActiveStep("preview_submission"));
-    dispatch(setForeignBusinessActiveTab("preview_submission"));
+    dispatch(
+      completeNavigationFlowThunk({
+        isCompleted: true,
+        navigationFlowId: findNavigationFlowByStepName(
+          businessNavigationFlowsList,
+          'Attachments'
+        )?.id,
+      })
+    );
+    dispatch(
+      createNavigationFlowThunk({
+        businessId,
+        massId: findNavigationFlowMassIdByStepName(
+          navigationFlowMassList,
+          'Preview & Submission'
+        ),
+        isActive: true,
+      })
+    );
   };
 
   return (
@@ -352,8 +365,16 @@ const CompanyAttachments = ({ businessId }: CompanyAttachmentsProps) => {
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setForeignBusinessActiveStep("employment_info"));
-                dispatch(setForeignBusinessActiveTab("management"));
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Employment Info'
+                    ),
+                    isActive: true,
+                  })
+                );
               }}
             />
             <Button

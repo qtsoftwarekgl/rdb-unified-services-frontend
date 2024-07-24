@@ -76,7 +76,7 @@ const ExecutiveManagement = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
@@ -920,7 +920,7 @@ const ExecutiveManagement = ({
           )}
           {[
             'IN_REVIEW',
-            'IS_APPROVED',
+            'APPROVED',
             'PENDING_APPROVAL',
             'PENDING_REJECTION',
           ].includes(String(applicationStatus)) && (

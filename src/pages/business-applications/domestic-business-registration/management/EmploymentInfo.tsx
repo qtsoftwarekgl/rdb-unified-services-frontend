@@ -47,7 +47,7 @@ const EmploymentInfo = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const [customReferenceDate, setCustomReferenceDate] =
     useState<boolean>(false);
   const [attachmentPreview, setAttachmentPreview] = useState<string | null>('');
@@ -455,7 +455,7 @@ const EmploymentInfo = ({
           )}
           {[
             'IN_REVIEW',
-            'IS_APPROVED',
+            'APPROVED',
             'PENDING_APPROVAL',
             'PENDING_REJECTION',
           ].includes(String(applicationStatus)) && (

@@ -39,7 +39,11 @@ const DeleteBusinessApplication = () => {
       if ((deleteBusinessError as ErrorResponse)?.status === 500) {
         toast.error('An error occurred while deleting business application');
       } else {
-        toast.error(capitalizeString((deleteBusinessError as ErrorResponse)?.data?.message));
+        toast.error(
+          capitalizeString(
+            (deleteBusinessError as ErrorResponse)?.data?.message
+          )
+        );
       }
     } else if (deleteBusinessIsSuccess) {
       toast.success('Business application deleted successfully');
@@ -51,14 +55,15 @@ const DeleteBusinessApplication = () => {
         )
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    businessesList,
     deleteBusinessData,
     deleteBusinessError,
     deleteBusinessIsError,
     deleteBusinessIsSuccess,
     dispatch,
-    selectedBusiness?.id,
+    resetDeleteBusiness,
+    selectedBusiness,
   ]);
 
   return (

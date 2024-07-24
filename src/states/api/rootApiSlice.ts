@@ -34,8 +34,8 @@ export const businessBaseQueryWithReauth: BaseQueryFn<
       api.dispatch(setUser({}));
       window.location.href = '/auth/login';
     } else if (Number(result?.error?.status) === 500) {
-      toast.error(
-        'An error occurred on our side. Please refresh and try again'
+      toast.info(
+        'Please refresh and try again'
       );
     }
   }

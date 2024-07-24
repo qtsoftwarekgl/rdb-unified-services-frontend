@@ -309,6 +309,7 @@ const ForeignBranchRegistration = () => {
                       {navigationFlow?.stepName === 'Attachments' && (
                         <CompanyAttachments
                           businessId={queryParams?.businessId}
+                          applicationStatus={business.applicationStatus}
                         />
                       )}
                       {navigationFlow?.stepName === 'Preview & Submission' && (

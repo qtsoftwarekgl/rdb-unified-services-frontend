@@ -8,14 +8,11 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
 import {
-  setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
   setForeignBusinessCompletedStep,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import ViewDocument from "../../../user-company-details/ViewDocument";
 import validateInputs from "../../../../helpers/validations";
 import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
@@ -43,6 +40,8 @@ import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice
 import { setBusinessDetails } from "@/states/features/businessSlice";
 import { foreignExecutiveManagementPosition } from "@/constants/businessRegistration";
 import moment from "moment";
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
 
 interface ExecutiveManagementProps {
   businessId: businessId;
@@ -70,8 +69,10 @@ const ExecutiveManagement = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(String(user.email));
+  const isFormDisabled = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
   const [previewAttachment, setPreviewAttachment] = useState<string>("");
   const [showVerifyphoneNumber, setShowVerifyphoneNumber] = useState(false);
   const { businessDetails } = useSelector((state: RootState) => state.business);
@@ -955,8 +956,16 @@ const ExecutiveManagement = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setForeignBusinessActiveStep("business_activity_vat"));
-                dispatch(setForeignBusinessActiveTab("general_information"));
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Business Activity & VAT'
+                    ),
+                    isActive: true,
+                  })
+                );
               }}
             />
             {applicationStatus === "IS_AMENDING" && (
@@ -992,12 +1001,24 @@ const ExecutiveManagement = ({
                 e.preventDefault();
                 if (!validateExecutiveManager()) return;
                 dispatch(
-                  setUserApplications({ businessId, status: "IN_PROGRESS" })
+                  completeNavigationFlowThunk({
+                    isCompleted: true,
+                    navigationFlowId: findNavigationFlowByStepName(
+                      businessNavigationFlowsList,
+                      'Executive Management'
+                    )?.id,
+                  })
                 );
                 dispatch(
-                  setForeignBusinessCompletedStep("executive_management")
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Board of Directors'
+                    ),
+                    isActive: true,
+                  })
                 );
-                dispatch(setForeignBusinessActiveStep("board_of_directors"));
               }}
             />
           </menu>

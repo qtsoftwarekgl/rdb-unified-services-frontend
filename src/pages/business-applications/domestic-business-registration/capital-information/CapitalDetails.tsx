@@ -69,7 +69,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   const { founderDetailsList } = useSelector(
     (state: RootState) => state.founderDetail
   );
-  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -434,7 +434,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
       )}
       {[
         'IN_REVIEW',
-        'IS_APPROVED',
+        'APPROVED',
         'PENDING_APPROVAL',
         'PENDING_REJECTION',
       ].includes(applicationStatus) && (

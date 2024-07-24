@@ -8,17 +8,17 @@ import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setForeignBusinessActiveStep,
-  setForeignBusinessCompletedStep,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Select from "../../../../components/inputs/Select";
 import { countriesList } from "../../../../constants/countries";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import { businessId } from "@/types/models/business";
 import { useLazyGetBusinessAddressQuery } from "@/states/api/businessRegApiSlice";
 import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setBusinessAddress } from "@/states/features/businessSlice";
 import { useCreateOrUpdateCompanyAddressMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
 
 interface CompanyAddressProps {
   businessId: businessId;
@@ -38,10 +38,18 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     setValue,
   } = useForm();
 
+  // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
   const { businessAddress } = useSelector((state: RootState) => state.business);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const isFormDisabled = [
+    'IN_REVIEW',
+    'APPROVED',
+    'PENDING_APPROVAL',
+    'PENDING_REJECTION',
+  ].includes(applicationStatus);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // INITIALIZE GET BUSINESS QUERY
   const [
@@ -120,7 +128,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     if (createCompanyAddressIsError) {
       if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while creating or updating company address"
+          'An error occurred while creating or updating company address'
         );
       } else {
         toast.error(
@@ -128,29 +136,49 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
         );
       }
     } else if (createCompanyAddressIsSuccess) {
-      toast.success("Company address created or updated successfully");
-      dispatch(setForeignBusinessCompletedStep("company_address"));
-      dispatch(setForeignBusinessActiveStep("business_activity_vat"));
+      toast.success('Company address created or updated successfully');
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Address'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Business Activity & VAT'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createCompanyAddressError,
     createCompanyAddressIsError,
     createCompanyAddressIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   // SET DEFAULT VALUES FROM BUSINESS ADDRESS
   useEffect(() => {
     if (businessAddress && Object.keys(businessAddress).length > 0) {
       setValue(
-        "countryOfIncorporation",
+        'countryOfIncorporation',
         businessAddress?.countryOfIncorporation
       );
-      setValue("city", businessAddress?.city);
-      setValue("zipCode", businessAddress?.zipCode);
-      setValue("email", businessAddress?.email);
-      setValue("phoneNumber", businessAddress?.phoneNumber);
-      setValue("streetName", businessAddress?.streetName);
+      setValue('city', businessAddress?.city);
+      setValue('zipCode', businessAddress?.zipCode);
+      setValue('email', businessAddress?.email);
+      setValue('phoneNumber', businessAddress?.phoneNumber);
+      setValue('streetName', businessAddress?.streetName);
     }
   }, [businessAddress, setValue]);
 
@@ -369,7 +397,16 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                 disabled={isFormDisabled}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setForeignBusinessActiveStep("company_details"));
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Company Details'
+                      ),
+                      isActive: true,
+                    })
+                  );
                 }}
               />
               {["IS_AMENDING"].includes(applicationStatus) && (
@@ -397,7 +434,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           )}
           {[
             "IN_REVIEW",
-            "IS_APPROVED",
+            "APPROVED",
             "PENDING_APPROVAL",
             "PENDING_REJECTION",
           ].includes(applicationStatus) && (

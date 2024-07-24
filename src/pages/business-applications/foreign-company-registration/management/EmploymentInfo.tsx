@@ -7,11 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-  setForeignBusinessCompletedStep,
-  setForeignBusinessCompletedTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Loader from "../../../../components/Loader";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import moment from "moment";
 import { businessId } from "@/types/models/business";
 import {
@@ -24,6 +21,8 @@ import { setEmploymentInfo } from "@/states/features/businessSlice";
 import Select from "@/components/inputs/Select";
 import { dayHoursArray } from "@/constants/time";
 import { formatDate } from "@/helpers/strings";
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
 
 interface EmploymentInfoProps {
   businessId: businessId;
@@ -51,12 +50,13 @@ const EmploymentInfo = ({
     preview: false,
     amend: false,
   });
-
-  const { user } = useSelector((state: RootState) => state.user);
   const { employmentInfo } = useSelector((state: RootState) => state.business);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const isFormDisabled = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
   const [customReferenceDate, setCustomReferenceDate] =
     useState<boolean>(false);
+    const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+      (state: RootState) => state.navigationFlow
+    );
 
   // GET EMPLOYMENT INFO
   const [
@@ -130,43 +130,61 @@ const EmploymentInfo = ({
   useEffect(() => {
     if (createEmploymentInfoIsError) {
       if ((createEmploymentInfoError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred. Please try again later");
+        toast.error('An error occurred. Please try again later');
       } else {
         toast.error(
           (createEmploymentInfoError as ErrorResponse)?.data?.message
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
-      dispatch(setForeignBusinessCompletedStep("employment_info"));
-      dispatch(setForeignBusinessActiveStep("attachments"));
-      dispatch(setForeignBusinessActiveTab("attachments"));
-      dispatch(setForeignBusinessCompletedTab("management"));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Employment Info'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Attachments'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createEmploymentInfoError,
     createEmploymentInfoIsError,
     createEmploymentInfoIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   useEffect(() => {
     if (employmentInfo && Object.keys(employmentInfo).length > 0) {
       setValue(
-        "financialYearStartDate",
+        'financialYearStartDate',
         employmentInfo?.financialYearStartDate
       );
       setValue(
-        "has_employees",
-        employmentInfo?.numberOfEmployees > 0 ? "yes" : "no"
+        'has_employees',
+        employmentInfo?.numberOfEmployees > 0 ? 'yes' : 'no'
       );
-      setValue("hiringDate", employmentInfo?.hiringDate);
+      setValue('hiringDate', employmentInfo?.hiringDate);
       setValue(
-        "employeeDeclarationDate",
+        'employeeDeclarationDate',
         employmentInfo?.employmentDeclarationDate
       );
-      setValue("workingStartTime", employmentInfo?.workingStartTime);
-      setValue("workingEndTime", employmentInfo?.workingEndTime);
-      setValue("numberOfEmployees", employmentInfo?.numberOfEmployees);
+      setValue('workingStartTime', employmentInfo?.workingStartTime);
+      setValue('workingEndTime', employmentInfo?.workingEndTime);
+      setValue('numberOfEmployees', employmentInfo?.numberOfEmployees);
     }
   }, [employmentInfo, setValue]);
 
@@ -500,7 +518,16 @@ const EmploymentInfo = ({
                 disabled={isFormDisabled}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setForeignBusinessActiveStep("board_of_directors"));
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Board of Directors'
+                      ),
+                      isActive: true,
+                    })
+                  );
                 }}
               />
               {applicationStatus === "IS_AMENDING" && (
@@ -541,7 +568,7 @@ const EmploymentInfo = ({
           )}
           {[
             "IN_REVIEW",
-            "IS_APPROVED",
+            "APPROVED",
             "PENDING_APPROVAL",
             "PENDING_REJECTION",
           ].includes(applicationStatus) && (

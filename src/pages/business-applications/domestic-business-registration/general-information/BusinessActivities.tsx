@@ -72,7 +72,7 @@ const BusinessActivities = ({
     selectedBusinessLinesList,
     selectedMainBusinessLine,
   } = useSelector((state: RootState) => state.businessActivity);
-  const disableForm = ['IN_REVIEW', 'IS_APPROVED'].includes(
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(
     String(applicationStatus)
   );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
@@ -631,7 +631,7 @@ const BusinessActivities = ({
               )}
               {[
                 'IN_REVIEW',
-                'IS_APPROVED',
+                'APPROVED',
                 'PENDING_APPROVAL',
                 'PENDING_REJECTION',
               ].includes(String(applicationStatus)) && (

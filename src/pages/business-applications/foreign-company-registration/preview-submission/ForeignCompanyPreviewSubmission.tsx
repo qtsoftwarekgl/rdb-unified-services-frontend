@@ -38,7 +38,8 @@ import {
 import { useLazyFetchBusinessAttachmentsQuery } from '@/states/api/businessRegApiSlice';
 import { setBusinessAttachments } from '@/states/features/businessSlice';
 import BusinessPeopleAttachments from '../../domestic-business-registration/BusinessPeopleAttachments';
-import { findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
 
 interface ForeignCompanyPreviewSubmissionProps {
   businessId: businessId;
@@ -51,7 +52,7 @@ const ForeignCompanyPreviewSubmission = ({
 }: ForeignCompanyPreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessDetails, businessAddress } = useSelector(
+  const { businessAddress } = useSelector(
     (state: RootState) => state.business
   );
   const { selectedBusinessLinesList, selectedMainBusinessLine, vatRegistred } =
@@ -417,26 +418,44 @@ const ForeignCompanyPreviewSubmission = ({
           'Company Details'
         )}
       >
-        {businessDetails &&
-          Object?.entries(businessDetails)?.map(
+        {businessDetailsData?.data ? (
+          Object?.entries(businessDetailsData?.data)?.map(
             ([key, value], index: number) => {
               if (
-                key === 'step' ||
-                key === 'id' ||
-                key === 'isForeign' ||
-                value === null
+                value === null ||
+                ['createdAt', 'updatedAt', 'isForeign', 'id'].includes(key)
               )
                 return null;
+              if (key === 'service')
+                return (
+                  <p>
+                    {capitalizeString(key)}:{' '}
+                    <strong>
+                      {capitalizeString(
+                        String(
+                          (
+                            value as {
+                              name: string;
+                            }
+                          )?.name
+                        )
+                      )}
+                    </strong>
+                  </p>
+                );
               return (
-                <p key={index} className="flex items-center gap-2">
-                  <span className="">{capitalizeString(key)}:</span>{' '}
-                  <span className="font-bold">
-                    {String(value) && capitalizeString(String(value))}
-                  </span>
-                </p>
+                <li key={index}>
+                  <p className="flex text-[14px] items-center gap-2">
+                    {capitalizeString(key)}:{' '}
+                    <strong>{capitalizeString(String(value))}</strong>
+                  </p>
+                </li>
               );
             }
-          )}
+          )
+        ) : (
+          <p>No data</p>
+        )}
       </PreviewCard>
       {/* COMPANY ADDRESS */}
       <PreviewCard
@@ -625,13 +644,30 @@ const ForeignCompanyPreviewSubmission = ({
           value="Back"
           onClick={(e) => {
             e.preventDefault();
-            dispatch(setForeignBusinessActiveStep('foreign_attachments'));
-            dispatch(setForeignBusinessActiveTab('foreign_attachments'));
+            dispatch(
+              createNavigationFlowThunk({
+                businessId,
+                massId: findNavigationFlowMassIdByStepName(
+                  navigationFlowMassList,
+                  'Attachments'
+                ),
+                isActive: true,
+              })
+            );
           }}
         />
         <Button
           onClick={(e) => {
             e.preventDefault();
+            dispatch(
+              completeNavigationFlowThunk({
+                isCompleted: true,
+                navigationFlowId: findNavigationFlowByStepName(
+                  businessNavigationFlowsList,
+                  'Preview & Submission'
+                )?.id,
+              })
+            );
             if (
               !Object?.values(navigationFlowMassList ?? {})
                 ?.flat()

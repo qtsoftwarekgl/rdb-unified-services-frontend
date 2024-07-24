@@ -1177,7 +1177,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
           )}
           {[
             'IN_REVIEW',
-            'IS_APPROVED',
+            'APPROVED',
             'PENDING_APPROVAL',
             'PENDING_REJECTION',
           ].includes(String(applicationStatus)) && (
