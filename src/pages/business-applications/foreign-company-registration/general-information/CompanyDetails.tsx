@@ -492,11 +492,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
-            <Button
-              disabled={isFormDisabled}
-              value="Back"
-              route="/business-registration/new"
-            />
+            <Button disabled={isFormDisabled} value="Back" route="/services" />
             <Button
               primary
               value={

@@ -4,10 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../../../states/store';
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseCompletedStep,
-} from '../../../../states/features/enterpriseRegistrationSlice';
 import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import Button from '../../../../components/inputs/Button';
 import Loader from '../../../../components/Loader';
@@ -32,6 +28,8 @@ import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
 } from '@/states/api/businessRegApiSlice';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
 
 type BusinessActivitiesProps = {
   businessId: businessId;
@@ -60,6 +58,10 @@ const BusinessActivities = ({
     selectedBusinessLinesList,
     selectedMainBusinessLine,
   } = useSelector((state: RootState) => state.businessActivity);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
+
 
   // INITIALIZE FETCH BUSINESS ACTIVITIES QUERY
   const [
@@ -239,14 +241,34 @@ const BusinessActivities = ({
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success('Business activities have been successfully created');
-      dispatch(setEnterpriseActiveStep('office_address'));
-      dispatch(setEnterpriseCompletedStep('business_activity_vat'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Business Activity & VAT'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Enterprise Address'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createBusinessActivitiesError,
     createBusinessActivitiesIsError,
     createBusinessActivitiesIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   return (
@@ -460,7 +482,16 @@ const BusinessActivities = ({
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setEnterpriseActiveStep('company_details'));
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Enterprise Details'
+                    ),
+                    isActive: true,
+                  })
+                );
               }}
             />
             {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(

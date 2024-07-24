@@ -6,12 +6,6 @@ import Loader from '../../../../components/Loader';
 import validateInputs from '../../../../helpers/validations';
 import { AppDispatch, RootState } from '../../../../states/store';
 import { useDispatch } from 'react-redux';
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
-  setEnterpriseCompletedStep,
-  setEnterpriseCompletedTab,
-} from '../../../../states/features/enterpriseRegistrationSlice';
 import { businessId } from '@/types/models/business';
 import { StaticLocation } from '@/pages/business-applications/domestic-business-registration/general-information/CompanyAddress';
 import {
@@ -41,6 +35,8 @@ import {
   useCreateCompanyAddressMutation,
   useLazyGetBusinessAddressQuery,
 } from '@/states/api/businessRegApiSlice';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
 
 type OfficeAddressProps = {
   businessId: businessId;
@@ -73,6 +69,9 @@ const OfficeAddress = ({
     selectedDistrict,
     selectedSector,
   } = useSelector((state: RootState) => state.location);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // INITIALIZE GET BUSINESS QUERY
   const [
@@ -330,16 +329,34 @@ const OfficeAddress = ({
       }
     } else if (createCompanyAddressIsSuccess) {
       toast.success('Company address created or updated successfully');
-      dispatch(setEnterpriseCompletedStep('office_address'));
-      dispatch(setEnterpriseCompletedTab('general_information'));
-      dispatch(setEnterpriseActiveTab('attachments'));
-      dispatch(setEnterpriseActiveStep('attachments'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Enterprise Address'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Attachments'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createCompanyAddressError,
     createCompanyAddressIsError,
     createCompanyAddressIsSuccess,
     dispatch,
+    navigationFlowMassList,
   ]);
 
   return (
@@ -710,7 +727,16 @@ const OfficeAddress = ({
                 value="Back"
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(setEnterpriseActiveStep('business_activity_vat'));
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Business Activity & VAT'
+                      ),
+                      isActive: true,
+                    })
+                  );
                 }}
               />
               {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(

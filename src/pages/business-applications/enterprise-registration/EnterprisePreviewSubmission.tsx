@@ -17,9 +17,17 @@ import {
 import { useEffect } from 'react';
 import Button from '@/components/inputs/Button';
 import { toast } from 'react-toastify';
-import { findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/states/store';
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from '@/states/features/navigationFlowSlice';
+import { UnknownAction } from '@reduxjs/toolkit';
 
 type EnterprisePreviewSubmissionProps = {
   businessId: businessId;
@@ -156,12 +164,33 @@ const EnterprisePreviewSubmission = ({
             <menu className="flex flex-col gap-2">
               {Object?.entries(businessDetailsData?.data ?? {})?.map(
                 ([key, value], index: number) => {
-                  if (key === 'id' || value === null) return null;
+                  if (
+                    value === null ||
+                    ['createdAt', 'updatedAt', 'isForeign', 'id'].includes(key)
+                  )
+                    return null;
+                  if (key === 'service')
+                    return (
+                      <p>
+                        {capitalizeString(key)}:{' '}
+                        <strong>
+                          {capitalizeString(
+                            String(
+                              (
+                                value as {
+                                  name: string;
+                                }
+                              )?.name
+                            )
+                          )}
+                        </strong>
+                      </p>
+                    );
                   return (
                     <li key={index}>
                       <p className="flex text-[14px] items-center gap-2">
                         {capitalizeString(key)}:{' '}
-                        {capitalizeString(String(value))}
+                        <strong>{capitalizeString(String(value))}</strong>
                       </p>
                     </li>
                   );
@@ -276,13 +305,30 @@ const EnterprisePreviewSubmission = ({
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setEnterpriseActiveStep('attachments'));
-              dispatch(setEnterpriseActiveTab('attachments'));
+              dispatch(
+                createNavigationFlowThunk({
+                  businessId,
+                  massId: findNavigationFlowMassIdByStepName(
+                    navigationFlowMassList,
+                    'Attachments'
+                  ),
+                  isActive: true,
+                }) as unknown as UnknownAction
+              );
             }}
           />
           <Button
             onClick={(e) => {
               e.preventDefault();
+              dispatch(
+                completeNavigationFlowThunk({
+                  isCompleted: true,
+                  navigationFlowId: findNavigationFlowByStepName(
+                    businessNavigationFlowsList,
+                    'Preview & Submission'
+                  )?.id,
+                }) as unknown as UnknownAction
+              );
               if (
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()

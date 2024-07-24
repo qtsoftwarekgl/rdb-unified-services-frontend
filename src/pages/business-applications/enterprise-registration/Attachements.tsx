@@ -4,17 +4,14 @@ import Button from '../../../components/inputs/Button';
 import Input from '../../../components/inputs/Input';
 import Loader from '../../../components/Loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseActiveTab,
-  setEnterpriseCompletedStep,
-} from '../../../states/features/enterpriseRegistrationSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../states/store';
-import { RDBAdminEmailPattern } from '../../../constants/Users';
 import ViewDocument from '../../user-company-details/ViewDocument';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { businessId } from '@/types/models/business';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
+import { UnknownAction } from '@reduxjs/toolkit';
+import { RootState } from '@/states/store';
 
 type AttachmentsProps = {
   businessId: businessId;
@@ -42,17 +39,37 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
     { label: 'Article of Association', file: null },
     { label: 'Article of ownership ', file: null },
   ]);
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(user?.email);
+  const isFormDisabled = ['IN_REVIEW', 'APPROVED'].includes(
+    String(applicationStatus)
+  );
   const [previewAttachment, setPreviewAttachment] = useState<string>('');
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   const onSubmit = (data: FieldValues) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      dispatch(setEnterpriseActiveTab('enterprise_preview_submission'));
-      dispatch(setEnterpriseActiveStep('enterprise_preview_submission'));
-      dispatch(setEnterpriseCompletedStep('attachments'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Attachments'
+          )?.id,
+        }) as unknown as UnknownAction
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Preview & Submission'
+          ),
+          isActive: true,
+        }) as unknown as UnknownAction
+      );
     }, 4000);
     return {
       ...data,
@@ -61,7 +78,7 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
     };
   };
 
-  const handleFileChange = (index: number, file: File | undefined) => {
+  const handleFileChange = (index: number, file: File | null) => {
     const newAttachments = [...attachmentFiles];
     newAttachments[index].file = file;
     setAttachmentFiles(newAttachments);
@@ -96,7 +113,7 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
                             className="!w-fit max-sm:!w-full"
                             onChange={(e) => {
                               field.onChange(e?.target?.files?.[0]);
-                              handleFileChange(index, e?.target?.files?.[0]);
+                              handleFileChange(index, e?.target?.files?.[0] as File | null);
                             }}
                           />
                         </ul>
@@ -132,8 +149,16 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setEnterpriseActiveTab('general_information'));
-                dispatch(setEnterpriseActiveStep('office_address'));
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      'Enterprise Address'
+                    ),
+                    isActive: true,
+                  }) as unknown as UnknownAction
+                );
               }}
             />
             <Button

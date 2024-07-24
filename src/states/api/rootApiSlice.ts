@@ -7,7 +7,6 @@ import {
 import { setToken, setUser } from "../features/userSlice";
 import store from "store";
 import { businessRegApi } from "@/constants/environments";
-import { toast } from "react-toastify";
 
 const prepareHeaders = (headers: Headers) => {
   const user = store.get("user");
@@ -34,9 +33,7 @@ export const businessBaseQueryWithReauth: BaseQueryFn<
       api.dispatch(setUser({}));
       window.location.href = '/auth/login';
     } else if (Number(result?.error?.status) === 500) {
-      toast.info(
-        'Please refresh and try again'
-      );
+      return result;
     }
   }
 

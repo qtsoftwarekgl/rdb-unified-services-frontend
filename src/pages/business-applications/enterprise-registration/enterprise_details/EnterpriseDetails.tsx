@@ -21,10 +21,8 @@ import {
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { convertDecimalToPercentage } from '@/helpers/strings';
 import SimilarBusinessNames from '@/pages/business-applications/SimilarBusinessNames';
-import {
-  setEnterpriseActiveStep,
-  setEnterpriseCompletedStep,
-} from '@/states/features/enterpriseRegistrationSlice';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
 
 type EnterpriseDetailsProps = {
   businessId: businessId;
@@ -40,6 +38,9 @@ export const EnterpriseDetails = ({
   const { user } = useSelector((state: RootState) => state.user);
   const { nameAvailabilitiesList, businessDetails } = useSelector(
     (state: RootState) => state.business
+  );
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
   );
 
   // INITIALIZE GET BUSINESS QUERY
@@ -170,15 +171,35 @@ export const EnterpriseDetails = ({
       }
     } else if (createBusinessDetailsIsSuccess) {
       toast.success('Business details created successfully');
-      dispatch(setEnterpriseActiveStep('business_activity_vat'));
-      dispatch(setEnterpriseCompletedStep('company_details'));
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Enterprise Details'
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Business Activity & VAT'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
+    businessId,
+    businessNavigationFlowsList,
     createBusinessDetailsError,
     createBusinessDetailsIsError,
     createBusinessDetailsIsSuccess,
     dispatch,
     navigate,
+    navigationFlowMassList,
   ]);
 
   return (
@@ -302,13 +323,7 @@ export const EnterpriseDetails = ({
             <menu
               className={`flex items-center mt-8 gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
-              <Button
-                value="Back"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate('/enterprise-registration/new');
-                }}
-              />
+              <Button value="Back" route="/services" />
               {['IN_PREVIEW', 'ACTION_PREVIEW'].includes(
                 String(applicationStatus)
               ) && <Button value={'Save & Complete Review'} primary submit />}
