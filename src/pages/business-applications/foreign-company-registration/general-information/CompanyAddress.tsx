@@ -6,9 +6,7 @@ import Loader from "../../../../components/Loader";
 import validateInputs from "../../../../helpers/validations";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setForeignBusinessActiveStep,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
+import { setForeignBusinessActiveStep } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Select from "../../../../components/inputs/Select";
 import { countriesList } from "../../../../constants/countries";
 import { businessId } from "@/types/models/business";
@@ -17,8 +15,14 @@ import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setBusinessAddress } from "@/states/features/businessSlice";
 import { useCreateOrUpdateCompanyAddressMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
 
 interface CompanyAddressProps {
   businessId: businessId;
@@ -42,10 +46,10 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   const dispatch: AppDispatch = useDispatch();
   const { businessAddress } = useSelector((state: RootState) => state.business);
   const isFormDisabled = [
-    'IN_REVIEW',
-    'APPROVED',
-    'PENDING_APPROVAL',
-    'PENDING_REJECTION',
+    "IN_REVIEW",
+    "APPROVED",
+    "PENDING_APPROVAL",
+    "PENDING_REJECTION",
   ].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
@@ -128,7 +132,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     if (createCompanyAddressIsError) {
       if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
         toast.error(
-          'An error occurred while creating or updating company address'
+          "An error occurred while creating or updating company address"
         );
       } else {
         toast.error(
@@ -136,13 +140,13 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
         );
       }
     } else if (createCompanyAddressIsSuccess) {
-      toast.success('Company address created or updated successfully');
+      toast.success("Company address created or updated successfully");
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Company Address'
+            "Company Address"
           )?.id,
         })
       );
@@ -151,7 +155,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Business Activity & VAT'
+            "Business Activity & VAT"
           ),
           isActive: true,
         })
@@ -159,26 +163,24 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     }
   }, [
     businessId,
-    businessNavigationFlowsList,
     createCompanyAddressError,
     createCompanyAddressIsError,
     createCompanyAddressIsSuccess,
     dispatch,
-    navigationFlowMassList,
   ]);
 
   // SET DEFAULT VALUES FROM BUSINESS ADDRESS
   useEffect(() => {
     if (businessAddress && Object.keys(businessAddress).length > 0) {
       setValue(
-        'countryOfIncorporation',
+        "countryOfIncorporation",
         businessAddress?.countryOfIncorporation
       );
-      setValue('city', businessAddress?.city);
-      setValue('zipCode', businessAddress?.zipCode);
-      setValue('email', businessAddress?.email);
-      setValue('phoneNumber', businessAddress?.phoneNumber);
-      setValue('streetName', businessAddress?.streetName);
+      setValue("city", businessAddress?.city);
+      setValue("zipCode", businessAddress?.zipCode);
+      setValue("email", businessAddress?.email);
+      setValue("phoneNumber", businessAddress?.phoneNumber);
+      setValue("streetName", businessAddress?.streetName);
     }
   }, [businessAddress, setValue]);
 
@@ -402,7 +404,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                       businessId,
                       massId: findNavigationFlowMassIdByStepName(
                         navigationFlowMassList,
-                        'Company Details'
+                        "Company Details"
                       ),
                       isActive: true,
                     })

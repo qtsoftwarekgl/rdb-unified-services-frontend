@@ -1,26 +1,26 @@
-import { useEffect } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../../components/inputs/Select';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../../states/store';
+import { useEffect } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../../components/inputs/Select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../../states/store";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setBusinessCompletedTab,
-} from '../../../../states/features/businessRegistrationSlice';
-import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import Input from '../../../../components/inputs/Input';
-import Button from '../../../../components/inputs/Button';
-import Loader from '../../../../components/Loader';
-import { BusinessActivity, businessId } from '@/types/models/business';
+} from "../../../../states/features/businessRegistrationSlice";
+import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
+import Input from "../../../../components/inputs/Input";
+import Button from "../../../../components/inputs/Button";
+import Loader from "../../../../components/Loader";
+import { BusinessActivity, businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessActivitiesSectorsQuery,
   useLazyFetchBusinessLinesQuery,
-} from '@/states/api/businessRegApiSlice';
-import { ErrorResponse, Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@/states/api/businessRegApiSlice";
+import { ErrorResponse, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   addSelectedBusinessLine,
   removeSelectedBusinessLine,
@@ -29,20 +29,20 @@ import {
   setSelectedBusinessActivity,
   setSelectedBusinessLinesList,
   setSelectedMainBusinessLine,
-} from '@/states/features/businessActivitySlice';
+} from "@/states/features/businessActivitySlice";
 import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
-} from '@/states/api/businessRegApiSlice';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+} from "@/states/api/businessRegApiSlice";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from '@/states/features/navigationFlowSlice';
+} from "@/states/features/navigationFlowSlice";
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from '@/helpers/business.helpers';
+} from "@/helpers/business.helpers";
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -72,7 +72,7 @@ const BusinessActivities = ({
     selectedBusinessLinesList,
     selectedMainBusinessLine,
   } = useSelector((state: RootState) => state.businessActivity);
-  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(
+  const disableForm = ["IN_REVIEW", "APPROVED"].includes(
     String(applicationStatus)
   );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
@@ -112,7 +112,7 @@ const BusinessActivities = ({
     if (businessActivitiesIsError) {
       if ((businessActivitiesError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while fetching business activities. Please try again later.'
+          "An error occured while fetching business activities. Please try again later."
         );
       }
     } else if (businessActivitiesIsSuccess) {
@@ -181,7 +181,7 @@ const BusinessActivities = ({
     if (businessActivitiesSectorsIsError) {
       if ((businessActivitiesSectorsError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while fetching business activities. Please try again later.'
+          "An error occured while fetching business activities. Please try again later."
         );
       } else {
         toast.error(
@@ -205,7 +205,7 @@ const BusinessActivities = ({
     if (businessLinesIsError) {
       if ((businessLinesError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while fetching business lines. Please try again later.'
+          "An error occured while fetching business lines. Please try again later."
         );
       } else {
         toast.error((businessLinesError as ErrorResponse)?.data?.message);
@@ -225,18 +225,18 @@ const BusinessActivities = ({
   const onSubmit = (data: FieldValues) => {
     // VALIDATE BUSINESS LINES
     if (selectedBusinessLinesList?.length === 0) {
-      return toast.error('Please select at least one business line');
+      return toast.error("Please select at least one business line");
     }
     if (!selectedMainBusinessLine) {
-      setError('mainBusinessActivity', {
-        type: 'manual',
-        message: 'Please select the main business activity',
+      setError("mainBusinessActivity", {
+        type: "manual",
+        message: "Please select the main business activity",
       });
       return;
     }
 
     createBusinessActivities({
-      isVATRegistered: data?.isVATRegistered === 'yes',
+      isVATRegistered: data?.isVATRegistered === "yes",
       businessLines: selectedBusinessLinesList,
       mainBusinessActivity: selectedMainBusinessLine?.description,
       businessId,
@@ -248,7 +248,7 @@ const BusinessActivities = ({
     if (createBusinessActivitiesIsError) {
       if ((createBusinessActivitiesError as ErrorResponse).status === 500) {
         toast.error(
-          'An error occured while creating business activities. Please try again later.'
+          "An error occured while creating business activities. Please try again later."
         );
       } else {
         toast.error(
@@ -256,13 +256,13 @@ const BusinessActivities = ({
         );
       }
     } else if (createBusinessActivitiesIsSuccess) {
-      toast.success('Business activities have been successfully created');
+      toast.success("Business activities have been successfully created");
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Business Activity & VAT'
+            "Business Activity & VAT"
           )?.id,
         })
       );
@@ -271,7 +271,7 @@ const BusinessActivities = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Share Details'
+            "Share Details"
           ),
           isActive: true,
         })
@@ -281,10 +281,8 @@ const BusinessActivities = ({
     businessId,
     createBusinessActivitiesError,
     createBusinessActivitiesIsError,
-    businessNavigationFlowsList,
     createBusinessActivitiesIsSuccess,
     dispatch,
-    navigationFlowMassList,
   ]);
 
   return (
@@ -307,7 +305,7 @@ const BusinessActivities = ({
                 control={control}
                 render={({ field }) => {
                   return (
-                    <label className="flex flex-col gap-1 w-full items-start">
+                    <label className="flex flex-col items-start w-full gap-1">
                       <Select
                         label="Select sector"
                         required
@@ -365,11 +363,11 @@ const BusinessActivities = ({
                                   className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                                 >
                                   <p className="text-start text-[13px] max-w-[85%]">
-                                    {businessLine?.code} -{' '}
+                                    {businessLine?.code} -{" "}
                                     {businessLine?.description}
                                   </p>
                                   <Link
-                                    to={'#'}
+                                    to={"#"}
                                     className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                     onClick={(e) => {
                                       e.preventDefault();
@@ -414,8 +412,8 @@ const BusinessActivities = ({
                               >
                                 <menu className="flex items-center gap-2">
                                   <p className="text-start text-[13px] flex-col gap-2">
-                                    {businessLine?.code} -{' '}
-                                    {businessLine?.description}{' '}
+                                    {businessLine?.code} -{" "}
+                                    {businessLine?.description}{" "}
                                     {isMainBusinessLine && (
                                       <span className="text-[11px] block w-fit bg-primary text-white rounded-md p-1 my-1">
                                         Main activity
@@ -424,7 +422,7 @@ const BusinessActivities = ({
                                   </p>
                                 </menu>
                                 <Link
-                                  to={'#'}
+                                  to={"#"}
                                   className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                   onClick={(e) => {
                                     e.preventDefault();
@@ -484,7 +482,7 @@ const BusinessActivities = ({
                                 )
                               )
                             );
-                            clearErrors('mainBusinessActivity');
+                            clearErrors("mainBusinessActivity");
                           }}
                         />
                       );
@@ -505,7 +503,7 @@ const BusinessActivities = ({
                   <menu className="w-[50%] flex flex-col gap-6">
                     <Controller
                       name="isVATRegistered"
-                      rules={{ required: 'Select choice' }}
+                      rules={{ required: "Select choice" }}
                       defaultValue={
                         businessActivitiesData?.data?.isVATRegistered
                       }
@@ -514,7 +512,7 @@ const BusinessActivities = ({
                         return (
                           <label className="flex flex-col w-full gap-2">
                             <p className="flex items-center gap-2 text-[15px]">
-                              Would you like to register for VAT Certificate{' '}
+                              Would you like to register for VAT Certificate{" "}
                               <span className="text-red-600">*</span>
                             </p>
                             <menu className="flex items-center w-full gap-6">
@@ -527,9 +525,9 @@ const BusinessActivities = ({
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('isVATRegistered');
+                                  clearErrors("isVATRegistered");
                                 }}
-                                value={'yes'}
+                                value={"yes"}
                               />
                               <Input
                                 type="radio"
@@ -540,9 +538,9 @@ const BusinessActivities = ({
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('isVATRegistered');
+                                  clearErrors("isVATRegistered");
                                 }}
-                                value={'no'}
+                                value={"no"}
                               />
                               {errors?.isVATRegistered && (
                                 <p className="text-[13px] text-red-500">
@@ -554,7 +552,7 @@ const BusinessActivities = ({
                         );
                       }}
                     />
-                    {watch('isVATRegistered') === 'yes' && (
+                    {watch("isVATRegistered") === "yes" && (
                       <Controller
                         name="turnover"
                         control={control}
@@ -562,7 +560,7 @@ const BusinessActivities = ({
                           return (
                             <label className="flex flex-col gap-1 w-[60%]">
                               <Input
-                                defaultValue={watch('turnover')}
+                                defaultValue={watch("turnover")}
                                 label="Enter expected turnover (optional)"
                                 {...field}
                               />
@@ -580,10 +578,10 @@ const BusinessActivities = ({
                 </section>
               )}
               {[
-                'IN_PROGRESS',
-                'IN_PREVIEW',
-                'ACTION_REQUIRED',
-                'IS_AMENDING',
+                "IN_PROGRESS",
+                "IN_PREVIEW",
+                "ACTION_REQUIRED",
+                "IS_AMENDING",
               ].includes(String(applicationStatus)) && (
                 <menu
                   className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -598,18 +596,18 @@ const BusinessActivities = ({
                           businessId,
                           massId: findNavigationFlowMassIdByStepName(
                             navigationFlowMassList,
-                            'Company Address'
+                            "Company Address"
                           ),
                           isActive: true,
                         })
                       );
                     }}
                   />
-                  {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+                  {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                     String(applicationStatus)
                   ) && (
                     <Button
-                      value={'Save & Complete Review'}
+                      value={"Save & Complete Review"}
                       submit
                       primary
                       disabled={disableForm || Object.keys(errors).length > 0}
@@ -620,7 +618,7 @@ const BusinessActivities = ({
                       createBusinessActivitiesIsLoading ? (
                         <Loader />
                       ) : (
-                        'Save & Continue'
+                        "Save & Continue"
                       )
                     }
                     submit
@@ -630,30 +628,30 @@ const BusinessActivities = ({
                 </menu>
               )}
               {[
-                'IN_REVIEW',
-                'APPROVED',
-                'PENDING_APPROVAL',
-                'PENDING_REJECTION',
+                "IN_REVIEW",
+                "APPROVED",
+                "PENDING_APPROVAL",
+                "PENDING_REJECTION",
               ].includes(String(applicationStatus)) && (
-                <menu className="flex items-center gap-3 justify-between">
+                <menu className="flex items-center justify-between gap-3">
                   <Button
-                    value={'Back'}
+                    value={"Back"}
                     onClick={(e) => {
                       e.preventDefault();
-                      dispatch(setBusinessActiveStep('company_address'));
+                      dispatch(setBusinessActiveStep("company_address"));
                     }}
                   />
                   <Button
-                    value={'Next'}
+                    value={"Next"}
                     primary
                     onClick={(e) => {
                       e.preventDefault();
-                      dispatch(setBusinessCompletedTab('general_information'));
+                      dispatch(setBusinessCompletedTab("general_information"));
                       dispatch(
-                        setBusinessCompletedStep('business_activity_vat')
+                        setBusinessCompletedStep("business_activity_vat")
                       );
-                      dispatch(setBusinessActiveStep('share_details'));
-                      dispatch(setBusinessActiveTab('capital_information'));
+                      dispatch(setBusinessActiveStep("share_details"));
+                      dispatch(setBusinessActiveTab("capital_information"));
                     }}
                   />
                 </menu>

@@ -6,7 +6,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import { setToken, setUser } from "../features/userSlice";
 import store from "store";
-import { businessRegApi } from "@/constants/environments";
+import { businessRegApi, userManagementApi } from "@/constants/environments";
 
 const prepareHeaders = (headers: Headers) => {
   const user = store.get("user");
@@ -29,9 +29,33 @@ export const businessBaseQueryWithReauth: BaseQueryFn<
   const result = await businessRegBaseQuery(args, api, extraOptions);
   if (result.error) {
     if ([403, 401].includes(Number(result?.error?.status))) {
-      api.dispatch(setToken(''));
+      api.dispatch(setToken(""));
       api.dispatch(setUser({}));
-      window.location.href = '/auth/login';
+      window.location.href = "/auth/login";
+    } else if (Number(result?.error?.status) === 500) {
+      return result;
+    }
+  }
+
+  return result;
+};
+
+export const userManagementBaseQuery = fetchBaseQuery({
+  baseUrl: `${userManagementApi}`,
+  prepareHeaders,
+});
+
+export const userManagementBaseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  const result = await userManagementBaseQuery(args, api, extraOptions);
+  if (result.error) {
+    if ([403, 401].includes(Number(result?.error?.status))) {
+      api.dispatch(setToken(""));
+      api.dispatch(setUser({}));
+      window.location.href = "/auth/login";
     } else if (Number(result?.error?.status) === 500) {
       return result;
     }

@@ -1,31 +1,31 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import UserLayout from '../../../containers/UserLayout';
-import Select from '../../../components/inputs/Select';
-import { useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../states/store';
-import Table from '../../../components/table/Table';
-import { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { faCircleCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
-import Input from '../../../components/inputs/Input';
-import Button from '../../../components/inputs/Button';
-import Loader from '../../../components/Loader';
-import { ErrorResponse, useNavigate } from 'react-router-dom';
-import { attachmentColumns } from '@/constants/business.constants';
-import { BusinessAttachment } from '@/types/models/attachment';
-import { useDispatch } from 'react-redux';
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import UserLayout from "../../../containers/UserLayout";
+import Select from "../../../components/inputs/Select";
+import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../../states/store";
+import Table from "../../../components/table/Table";
+import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { faCircleCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Input from "../../../components/inputs/Input";
+import Button from "../../../components/inputs/Button";
+import Loader from "../../../components/Loader";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import { attachmentColumns } from "@/constants/business.constants";
+import { BusinessAttachment } from "@/types/models/attachment";
+import { useDispatch } from "react-redux";
 import {
   fetchBusinessesThunk,
   setUploadAmendmentAttachmentIsLoading,
   setUploadAmendmentAttachmentIsSuccess,
   uploadAmendmentAttachmentThunk,
-} from '@/states/features/businessSlice';
-import CustomTooltip from '@/components/inputs/CustomTooltip';
-import { ColumnDef } from '@tanstack/react-table';
-import ViewDocument from '@/pages/user-company-details/ViewDocument';
-import { useRestoreBusinessMutation } from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
+} from "@/states/features/businessSlice";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
+import { ColumnDef } from "@tanstack/react-table";
+import ViewDocument from "@/pages/user-company-details/ViewDocument";
+import { useRestoreBusinessMutation } from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
 
 const CompanyRestoration = () => {
   // REACT HOOK FORM
@@ -50,7 +50,7 @@ const CompanyRestoration = () => {
       attachmentUrl: string;
     }[]
   >([]);
-  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>('');
+  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>("");
   const {
     businessesList,
     businessesIsFetching,
@@ -64,7 +64,7 @@ const CompanyRestoration = () => {
       fetchBusinessesThunk({
         page: 1,
         size: 100,
-        applicationStatus: 'APPROVED',
+        applicationStatus: "APPROVED",
       })
     );
   }, [dispatch]);
@@ -95,7 +95,7 @@ const CompanyRestoration = () => {
       attachmentFiles?.forEach((attachmentFile) => {
         dispatch(
           uploadAmendmentAttachmentThunk({
-            businessId: watch('businessId'),
+            businessId: watch("businessId"),
             attachmentType: attachmentFile?.attachmentType,
             file: attachmentFile?.file,
             fileName: attachmentFile?.fileName,
@@ -106,7 +106,7 @@ const CompanyRestoration = () => {
     } else if (restoreBusinessIsError) {
       toast.error(
         (restoreBusinessError as ErrorResponse)?.data?.message ||
-          'An error occurred while restoring business. Refresh and try again'
+          "An error occurred while restoring business. Refresh and try again"
       );
     }
   }, [
@@ -126,12 +126,12 @@ const CompanyRestoration = () => {
       restoreBusinessIsSuccess &&
       attachmentFiles?.length > 0
     ) {
-      toast.success('Business restored successfully');
+      toast.success("Business restoration request submitted successfully");
       restoreBusinessReset();
       dispatch(setUploadAmendmentAttachmentIsSuccess(false));
       dispatch(setUploadAmendmentAttachmentIsLoading(false));
       setAttachmentFiles([]);
-      navigate('/services');
+      navigate("/services");
     }
   }, [
     attachmentFiles?.length,
@@ -146,8 +146,8 @@ const CompanyRestoration = () => {
   const attachmentExtendedColumns = [
     ...attachmentColumns,
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({
         row,
       }: {
@@ -187,26 +187,26 @@ const CompanyRestoration = () => {
   // BUSINESS RESTORATION ATTACHMENTS
   const businessRestorationAttachments = [
     {
-      label: 'Restoration resolution',
-      name: 'restorationResolution',
+      label: "Restoration resolution",
+      name: "restorationResolution",
       required: true,
     },
     {
-      label: 'Proof of publication',
-      name: 'proofOfPublication',
+      label: "Proof of publication",
+      name: "proofOfPublication",
       required: true,
     },
     {
-      label: 'Court Order',
-      name: 'courtOrder',
+      label: "Court Order",
+      name: "courtOrder",
       required: false,
     },
   ];
 
   return (
     <UserLayout>
-      <main className="p-6 bg-white rounded-md flex flex-col gap-6">
-        <h1 className="uppercase text-lg font-semibold text-center text-primary">
+      <main className="flex flex-col gap-6 p-6 bg-white rounded-md">
+        <h1 className="text-lg font-semibold text-center uppercase text-primary">
           Company restoration
         </h1>
         <form
@@ -216,7 +216,7 @@ const CompanyRestoration = () => {
           <Controller
             control={control}
             name="businessId"
-            rules={{ required: 'Select business to open new branch' }}
+            rules={{ required: "Select business to open new branch" }}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1">
@@ -226,7 +226,7 @@ const CompanyRestoration = () => {
                     options={businessesList?.map((business) => {
                       return {
                         label: businessesIsFetching
-                          ? '....'
+                          ? "...."
                           : (
                               business?.companyName ||
                               business?.enterpriseName ||
@@ -251,12 +251,12 @@ const CompanyRestoration = () => {
               );
             }}
           />
-          {watch('businessId') && (
+          {watch("businessId") && (
             <section className={`w-full flex flex-col gap-2 mt-2`}>
-              <h1 className="text-md uppercase font-medium flex items-center gap-2">
+              <h1 className="flex items-center gap-2 font-medium uppercase text-md">
                 Attachments <span className="text-red-600">*</span>
               </h1>
-              <menu className="grid grid-cols-2 gap-5 w-full">
+              <menu className="grid w-full grid-cols-2 gap-5">
                 {businessRestorationAttachments.map((attachment, index) => {
                   return (
                     <Controller
@@ -270,11 +270,11 @@ const CompanyRestoration = () => {
                       }}
                       render={({ field }) => {
                         return (
-                          <label className="w-full flex flex-col gap-1">
+                          <label className="flex flex-col w-full gap-1">
                             <p className="flex items-center gap-2">
-                              {attachment?.label}{' '}
+                              {attachment?.label}{" "}
                               {!attachment?.required ? (
-                                '(optional)'
+                                "(optional)"
                               ) : (
                                 <span className="text-red-600">*</span>
                               )}
@@ -285,7 +285,7 @@ const CompanyRestoration = () => {
                                 <CustomTooltip label="File has been added successfully">
                                   <FontAwesomeIcon
                                     icon={faCircleCheck}
-                                    className="text-primary cursor-pointer"
+                                    className="cursor-pointer text-primary"
                                   />
                                 </CustomTooltip>
                               )}
@@ -332,7 +332,7 @@ const CompanyRestoration = () => {
             </section>
           )}
           {attachmentFiles?.length > 0 && (
-            <menu className="flex flex-col gap-4 w-full">
+            <menu className="flex flex-col w-full gap-4">
               <Table
                 showFilter={false}
                 columns={
@@ -359,7 +359,7 @@ const CompanyRestoration = () => {
                 )}
               />
               {uploadAmendmentAttachmentIsLoading && (
-                <figure className="flex items-center gap-2 w-full justify-center">
+                <figure className="flex items-center justify-center w-full gap-2">
                   <Loader className="text-primary" />
                   <p className="text-[14px]">Uploading attachment(s)...</p>
                 </figure>
@@ -373,7 +373,7 @@ const CompanyRestoration = () => {
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/services');
+                navigate("/services");
               }}
             />
             <Button
@@ -385,7 +385,7 @@ const CompanyRestoration = () => {
                 uploadAmendmentAttachmentIsLoading ? (
                   <Loader />
                 ) : (
-                  'Submit'
+                  "Submit"
                 )
               }
               primary

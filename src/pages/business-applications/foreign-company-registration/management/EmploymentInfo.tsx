@@ -21,8 +21,14 @@ import { setEmploymentInfo } from "@/states/features/businessSlice";
 import Select from "@/components/inputs/Select";
 import { dayHoursArray } from "@/constants/time";
 import { formatDate } from "@/helpers/strings";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
 
 interface EmploymentInfoProps {
   businessId: businessId;
@@ -54,9 +60,9 @@ const EmploymentInfo = ({
   const isFormDisabled = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
   const [customReferenceDate, setCustomReferenceDate] =
     useState<boolean>(false);
-    const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
-      (state: RootState) => state.navigationFlow
-    );
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // GET EMPLOYMENT INFO
   const [
@@ -130,7 +136,7 @@ const EmploymentInfo = ({
   useEffect(() => {
     if (createEmploymentInfoIsError) {
       if ((createEmploymentInfoError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred. Please try again later');
+        toast.error("An error occurred. Please try again later");
       } else {
         toast.error(
           (createEmploymentInfoError as ErrorResponse)?.data?.message
@@ -142,7 +148,7 @@ const EmploymentInfo = ({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Employment Info'
+            "Employment Info"
           )?.id,
         })
       );
@@ -151,7 +157,7 @@ const EmploymentInfo = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Attachments'
+            "Attachments"
           ),
           isActive: true,
         })
@@ -159,32 +165,30 @@ const EmploymentInfo = ({
     }
   }, [
     businessId,
-    businessNavigationFlowsList,
     createEmploymentInfoError,
     createEmploymentInfoIsError,
     createEmploymentInfoIsSuccess,
     dispatch,
-    navigationFlowMassList,
   ]);
 
   useEffect(() => {
     if (employmentInfo && Object.keys(employmentInfo).length > 0) {
       setValue(
-        'financialYearStartDate',
+        "financialYearStartDate",
         employmentInfo?.financialYearStartDate
       );
       setValue(
-        'has_employees',
-        employmentInfo?.numberOfEmployees > 0 ? 'yes' : 'no'
+        "has_employees",
+        employmentInfo?.numberOfEmployees > 0 ? "yes" : "no"
       );
-      setValue('hiringDate', employmentInfo?.hiringDate);
+      setValue("hiringDate", employmentInfo?.hiringDate);
       setValue(
-        'employeeDeclarationDate',
+        "employeeDeclarationDate",
         employmentInfo?.employmentDeclarationDate
       );
-      setValue('workingStartTime', employmentInfo?.workingStartTime);
-      setValue('workingEndTime', employmentInfo?.workingEndTime);
-      setValue('numberOfEmployees', employmentInfo?.numberOfEmployees);
+      setValue("workingStartTime", employmentInfo?.workingStartTime);
+      setValue("workingEndTime", employmentInfo?.workingEndTime);
+      setValue("numberOfEmployees", employmentInfo?.numberOfEmployees);
     }
   }, [employmentInfo, setValue]);
 
@@ -523,7 +527,7 @@ const EmploymentInfo = ({
                       businessId,
                       massId: findNavigationFlowMassIdByStepName(
                         navigationFlowMassList,
-                        'Board of Directors'
+                        "Board of Directors"
                       ),
                       isActive: true,
                     })

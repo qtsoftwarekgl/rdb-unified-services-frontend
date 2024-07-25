@@ -1,13 +1,13 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Select from '../../../../components/inputs/Select';
-import Input from '../../../../components/inputs/Input';
-import Button from '../../../../components/inputs/Button';
-import Loader from '../../../../components/Loader';
-import validateInputs from '../../../../helpers/validations';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch } from 'react-redux';
-import { businessId } from '@/types/models/business';
-import { StaticLocation } from '@/pages/business-applications/domestic-business-registration/general-information/CompanyAddress';
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Select from "../../../../components/inputs/Select";
+import Input from "../../../../components/inputs/Input";
+import Button from "../../../../components/inputs/Button";
+import Loader from "../../../../components/Loader";
+import validateInputs from "../../../../helpers/validations";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch } from "react-redux";
+import { businessId } from "@/types/models/business";
+import { StaticLocation } from "@/pages/business-applications/domestic-business-registration/general-information/CompanyAddress";
 import {
   setCellsList,
   setDistrictsList,
@@ -18,25 +18,31 @@ import {
   setSelectedProvince,
   setSelectedSector,
   setVillagesList,
-} from '@/states/features/locationSlice';
-import { useEffect, useState } from 'react';
-import { ErrorResponse, Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
+} from "@/states/features/locationSlice";
+import { useEffect, useState } from "react";
+import { ErrorResponse, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import {
   useLazyFetchCellsQuery,
   useLazyFetchDistrictsQuery,
   useLazyFetchProvincesQuery,
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
-} from '@/states/api/businessRegApiSlice';
-import { setBusinessAddress } from '@/states/features/businessSlice';
+} from "@/states/api/businessRegApiSlice";
+import { setBusinessAddress } from "@/states/features/businessSlice";
 import {
   useCreateCompanyAddressMutation,
   useLazyGetBusinessAddressQuery,
-} from '@/states/api/businessRegApiSlice';
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from '@/helpers/business.helpers';
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+} from "@/states/api/businessRegApiSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
 
 type OfficeAddressProps = {
   businessId: businessId;
@@ -96,7 +102,7 @@ const OfficeAddress = ({
   useEffect(() => {
     if (businessAddressIsError) {
       if ((businessAddressError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching business data');
+        toast.error("An error occurred while fetching business data");
       } else {
         toast.error((businessAddressError as ErrorResponse)?.data?.message);
       }
@@ -208,7 +214,7 @@ const OfficeAddress = ({
   useEffect(() => {
     if (provincesIsError) {
       if ((provincesError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching provinces');
+        toast.error("An error occurred while fetching provinces");
       } else {
         toast.error((provincesError as ErrorResponse)?.data?.message);
       }
@@ -227,7 +233,7 @@ const OfficeAddress = ({
   useEffect(() => {
     if (districtsIsError) {
       if ((districtsError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching districts');
+        toast.error("An error occurred while fetching districts");
       } else {
         toast.error((districtsError as ErrorResponse)?.data?.message);
       }
@@ -246,7 +252,7 @@ const OfficeAddress = ({
   useEffect(() => {
     if (sectorsIsError) {
       if ((sectorsError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching sectors');
+        toast.error("An error occurred while fetching sectors");
       } else {
         toast.error((sectorsError as ErrorResponse)?.data?.message);
       }
@@ -265,7 +271,7 @@ const OfficeAddress = ({
   useEffect(() => {
     if (cellsIsError) {
       if ((cellsError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching cells');
+        toast.error("An error occurred while fetching cells");
       } else {
         toast.error((cellsError as ErrorResponse)?.data?.message);
       }
@@ -278,7 +284,7 @@ const OfficeAddress = ({
   useEffect(() => {
     if (villagesIsError) {
       if ((villagesError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching villages');
+        toast.error("An error occurred while fetching villages");
       } else {
         toast.error((villagesError as ErrorResponse)?.data?.message);
       }
@@ -320,7 +326,7 @@ const OfficeAddress = ({
     if (createCompanyAddressIsError) {
       if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
         toast.error(
-          'An error occurred while creating or updating company address'
+          "An error occurred while creating or updating company address"
         );
       } else {
         toast.error(
@@ -328,13 +334,13 @@ const OfficeAddress = ({
         );
       }
     } else if (createCompanyAddressIsSuccess) {
-      toast.success('Company address created or updated successfully');
+      toast.success("Company address created or updated successfully");
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Enterprise Address'
+            "Enterprise Address"
           )?.id,
         })
       );
@@ -343,7 +349,7 @@ const OfficeAddress = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Attachments'
+            "Attachments"
           ),
           isActive: true,
         })
@@ -351,12 +357,10 @@ const OfficeAddress = ({
     }
   }, [
     businessId,
-    businessNavigationFlowsList,
     createCompanyAddressError,
     createCompanyAddressIsError,
     createCompanyAddressIsSuccess,
     dispatch,
-    navigationFlowMassList,
   ]);
 
   return (
@@ -370,7 +374,7 @@ const OfficeAddress = ({
           <fieldset className="flex flex-col gap-4">
             {businessAddress?.location && !showStaticLocation && (
               <Link
-                to={'#'}
+                to={"#"}
                 onClick={(e) => {
                   e.preventDefault();
                   setShowStaticLocation(true);
@@ -386,7 +390,7 @@ const OfficeAddress = ({
                 control={control}
                 rules={{
                   required: !showStaticLocation
-                    ? 'Select province of residence'
+                    ? "Select province of residence"
                     : false,
                 }}
                 render={({ field }) => {
@@ -403,7 +407,7 @@ const OfficeAddress = ({
                           {...field}
                           required
                           placeholder={
-                            provincesIsLoading ? '...' : 'Select province'
+                            provincesIsLoading ? "..." : "Select province"
                           }
                           label="Province"
                           options={provincesList?.map((province) => {
@@ -440,7 +444,7 @@ const OfficeAddress = ({
                 control={control}
                 rules={{
                   required: !showStaticLocation
-                    ? 'Select district of residence'
+                    ? "Select district of residence"
                     : false,
                 }}
                 render={({ field }) => {
@@ -456,7 +460,7 @@ const OfficeAddress = ({
                         <Select
                           required
                           placeholder={
-                            districtsIsLoading ? '...' : 'Select district'
+                            districtsIsLoading ? "..." : "Select district"
                           }
                           label="District"
                           options={districtsList?.map((district) => {
@@ -493,7 +497,7 @@ const OfficeAddress = ({
                 control={control}
                 rules={{
                   required: !showStaticLocation
-                    ? 'Select sector of residence'
+                    ? "Select sector of residence"
                     : false,
                 }}
                 render={({ field }) => {
@@ -510,7 +514,7 @@ const OfficeAddress = ({
                           {...field}
                           required
                           placeholder={
-                            sectorsIsLoading ? '...' : 'Select sector'
+                            sectorsIsLoading ? "..." : "Select sector"
                           }
                           label="Sector"
                           options={sectorsList?.map((sector) => {
@@ -542,7 +546,7 @@ const OfficeAddress = ({
                 control={control}
                 rules={{
                   required: !showStaticLocation
-                    ? 'Select cell of residence'
+                    ? "Select cell of residence"
                     : false,
                 }}
                 render={({ field }) => {
@@ -556,7 +560,7 @@ const OfficeAddress = ({
                       ) : (
                         <Select
                           {...field}
-                          placeholder={cellsIsLoading ? '...' : 'Select cell'}
+                          placeholder={cellsIsLoading ? "..." : "Select cell"}
                           required
                           label="Cell"
                           options={cellsList?.map((cell) => {
@@ -588,7 +592,7 @@ const OfficeAddress = ({
                 control={control}
                 rules={{
                   required: !showStaticLocation
-                    ? 'Select village of residence'
+                    ? "Select village of residence"
                     : false,
                 }}
                 render={({ field }) => {
@@ -603,7 +607,7 @@ const OfficeAddress = ({
                       ) : (
                         <Select
                           placeholder={
-                            villagesIsLoading ? '...' : 'Select village'
+                            villagesIsLoading ? "..." : "Select village"
                           }
                           {...field}
                           required
@@ -651,11 +655,11 @@ const OfficeAddress = ({
                 control={control}
                 defaultValue={businessAddress?.email}
                 rules={{
-                  required: 'Email address is required',
+                  required: "Email address is required",
                   validate: (value) => {
                     return (
-                      validateInputs(String(value), 'email') ||
-                      'Invalid email address'
+                      validateInputs(String(value), "email") ||
+                      "Invalid email address"
                     );
                   },
                 }}
@@ -669,7 +673,7 @@ const OfficeAddress = ({
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          trigger('email');
+                          trigger("email");
                         }}
                       />
                       {errors?.email && (
@@ -685,13 +689,13 @@ const OfficeAddress = ({
                 name="phoneNumber"
                 defaultValue={businessAddress?.phoneNumber}
                 rules={{
-                  required: 'Phone number is required',
+                  required: "Phone number is required",
                   validate: (value) => {
                     return (
                       validateInputs(
                         value?.length < 10 ? `0${value}` : String(value),
-                        'tel'
-                      ) || 'Invalid phone number'
+                        "tel"
+                      ) || "Invalid phone number"
                     );
                   },
                 }}
@@ -707,7 +711,7 @@ const OfficeAddress = ({
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          trigger('phoneNumber');
+                          trigger("phoneNumber");
                         }}
                       />
                       {errors?.phoneNumber && (
@@ -732,19 +736,19 @@ const OfficeAddress = ({
                       businessId,
                       massId: findNavigationFlowMassIdByStepName(
                         navigationFlowMassList,
-                        'Business Activity & VAT'
+                        "Business Activity & VAT"
                       ),
                       isActive: true,
                     })
                   );
                 }}
               />
-              {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+              {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                 String(applicationStatus)
-              ) && <Button value={'Save & Complete Review'} primary submit />}
+              ) && <Button value={"Save & Complete Review"} primary submit />}
               <Button
                 value={
-                  createCompanyAddressIsLoading ? <Loader /> : 'Save & Continue'
+                  createCompanyAddressIsLoading ? <Loader /> : "Save & Continue"
                 }
                 primary
                 submit

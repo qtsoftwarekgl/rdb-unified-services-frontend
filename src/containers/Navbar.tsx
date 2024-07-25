@@ -117,16 +117,9 @@ const Navbar = ({ className }: Props) => {
               setIsOpen(!isOpen);
             }}
           >
-            <figure className="overflow-hidden inline w-[2.7rem] h-[2.7rem] relative rounded-full">
-              <img
-                src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                className="object-cover w-full h-full"
-              />
-            </figure>
-
             <article>
               <h1 className="text-[15px] font-semibold max-[600px]:text-[14px]">
-                {user?.firstName} {user?.lastName || ''}
+                {user?.firstName} {user?.lastName || ""}
               </h1>
               <p className="text-[12px] text-gray-500">
                 {user?.username?.toLowerCase()}

@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch } from 'react-redux';
-import { useLazyFetchBackOfficeBusinessesQuery } from '@/states/api/businessRegApiSlice';
-import { useEffect } from 'react';
+import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch } from "react-redux";
+import { useLazyFetchBackOfficeBusinessesQuery } from "@/states/api/businessRegApiSlice";
+import { useEffect } from "react";
 import {
   setBusinessPage,
   setBusinessSize,
@@ -10,24 +10,24 @@ import {
   setBusinessTotalPages,
   setBusinessesList,
   updateBusinessThunk,
-} from '@/states/features/businessSlice';
-import { ColumnDef, Row } from '@tanstack/react-table';
-import { Business } from '@/types/models/business';
-import Table from '@/components/table/Table';
-import AdminLayout from '@/containers/AdminLayout';
-import Loader from '@/components/Loader';
-import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { capitalizeString, formatDate } from '@/helpers/strings';
-import { businessColumns } from '@/constants/business.constants';
-import CustomPopover from '@/components/inputs/CustomPopover';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "@/states/features/businessSlice";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import { Business } from "@/types/models/business";
+import Table from "@/components/table/Table";
+import AdminLayout from "@/containers/AdminLayout";
+import Loader from "@/components/Loader";
+import { ErrorResponse, Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { capitalizeString, formatDate } from "@/helpers/strings";
+import { businessColumns } from "@/constants/business.constants";
+import CustomPopover from "@/components/inputs/CustomPopover";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleCheck,
   faCircleInfo,
   faEllipsisVertical,
-} from '@fortawesome/free-solid-svg-icons';
-import CustomTooltip from '@/components/inputs/CustomTooltip';
+} from "@fortawesome/free-solid-svg-icons";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
 
 const ReviewRegistration = () => {
   // STATE VARIABLES
@@ -54,7 +54,7 @@ const ReviewRegistration = () => {
   // FETCH BUSINESSES
   useEffect(() => {
     fetchBusinesses({
-      applicationStatus: 'SUBMITTED',
+      applicationStatus: "SUBMITTED",
       page,
       size,
     });
@@ -68,7 +68,7 @@ const ReviewRegistration = () => {
       dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
     } else if (businessesIsError) {
       if ((businessesError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred while fetching businesses');
+        toast.error("An error occurred while fetching businesses");
       } else {
         toast.error((businessesError as ErrorResponse)?.data?.message);
       }
@@ -85,9 +85,9 @@ const ReviewRegistration = () => {
   const businessesColumns = [
     ...businessColumns,
     {
-      id: 'action',
-      header: 'Action',
-      accessorKey: 'action',
+      id: "action",
+      header: "Action",
+      accessorKey: "action",
       cell: ({ row }: { row: Row<Business> }) => {
         return (
           <CustomPopover
@@ -102,18 +102,13 @@ const ReviewRegistration = () => {
               </menu>
             }
           >
-            <menu className="bg-white flex flex-col gap-1 p-0 rounded-md">
+            <menu className="flex flex-col gap-1 p-0 bg-white rounded-md">
               <Link
                 className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                 onClick={(e) => {
                   e.preventDefault();
-                  console.log(
-                    navigate(
-                      `${row?.original?.service?.path}?businessId=${row?.original?.id}`
-                    )
-                  );
                 }}
-                to={'#'}
+                to={"#"}
               >
                 <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                 View details
@@ -125,16 +120,16 @@ const ReviewRegistration = () => {
                   dispatch(
                     updateBusinessThunk({
                       businessId: row?.original?.id,
-                      applicationStatus: 'APPROVED',
+                      applicationStatus: "APPROVED",
                     })
                   );
                 }}
-                to={'#'}
+                to={"#"}
               >
                 <FontAwesomeIcon
                   className="text-primary"
                   icon={faCircleCheck}
-                />{' '}
+                />{" "}
                 Approve
               </Link>
             </menu>
@@ -146,9 +141,9 @@ const ReviewRegistration = () => {
 
   return (
     <AdminLayout>
-      <section className="w-full flex flex-col gap-3 bg-white p-6 rounded-md">
+      <section className="flex flex-col w-full gap-3 p-6 bg-white rounded-md">
         {businessesIsLoading ? (
-          <figure className="w-full flex justify-center">
+          <figure className="flex justify-center w-full">
             <Loader />
           </figure>
         ) : (
@@ -167,8 +162,8 @@ const ReviewRegistration = () => {
                 dateOfIncorporation: formatDate(
                   business?.createdAt
                 ) as unknown as Date,
-                companyType: capitalizeString(business?.companyType) || 'N/A',
-                assignee: 'RDB Verifier',
+                companyType: capitalizeString(business?.companyType) || "N/A",
+                assignee: "RDB Verifier",
                 companyName: (
                   business?.companyName ||
                   business?.enterpriseName ||

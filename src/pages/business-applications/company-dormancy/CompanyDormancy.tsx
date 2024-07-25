@@ -1,32 +1,32 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import UserLayout from '../../../containers/UserLayout';
-import { AppDispatch, RootState } from '../../../states/store';
-import { useSelector } from 'react-redux';
-import Select from '../../../components/inputs/Select';
-import Input from '../../../components/inputs/Input';
-import { dormancyReasons } from '../../../constants/amendment.constants';
-import Button from '../../../components/inputs/Button';
-import Loader from '../../../components/Loader';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { useEffect, useState } from 'react';
-import { ErrorResponse, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import UserLayout from "../../../containers/UserLayout";
+import { AppDispatch, RootState } from "../../../states/store";
+import { useSelector } from "react-redux";
+import Select from "../../../components/inputs/Select";
+import Input from "../../../components/inputs/Input";
+import { dormancyReasons } from "../../../constants/amendment.constants";
+import Button from "../../../components/inputs/Button";
+import Loader from "../../../components/Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { useEffect, useState } from "react";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   fetchBusinessesThunk,
   setUploadAmendmentAttachmentIsLoading,
   setUploadAmendmentAttachmentIsSuccess,
   uploadAmendmentAttachmentThunk,
-} from '@/states/features/businessSlice';
-import { attachmentColumns } from '@/constants/business.constants';
-import Table from '@/components/table/Table';
-import { ColumnDef } from '@tanstack/react-table';
-import { BusinessAttachment } from '@/types/models/attachment';
-import ViewDocument from '@/pages/user-company-details/ViewDocument';
-import { useDeclareBusinessDormancyMutation } from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
-import CustomTooltip from '@/components/inputs/CustomTooltip';
+} from "@/states/features/businessSlice";
+import { attachmentColumns } from "@/constants/business.constants";
+import Table from "@/components/table/Table";
+import { ColumnDef } from "@tanstack/react-table";
+import { BusinessAttachment } from "@/types/models/attachment";
+import ViewDocument from "@/pages/user-company-details/ViewDocument";
+import { useDeclareBusinessDormancyMutation } from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
 
 const CompanyDormancy = () => {
   // REACT HOOK FORM
@@ -54,7 +54,7 @@ const CompanyDormancy = () => {
     uploadAmendmentAttachmentIsLoading,
     uploadAmendmentAttachmentIsSuccess,
   } = useSelector((state: RootState) => state.business);
-  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>('');
+  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>("");
 
   // NAVIGATE
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ const CompanyDormancy = () => {
       fetchBusinessesThunk({
         page: 1,
         size: 100,
-        applicationStatus: 'APPROVED',
+        applicationStatus: "APPROVED",
       })
     );
   }, [dispatch]);
@@ -99,18 +99,18 @@ const CompanyDormancy = () => {
       Array.from(attachmentFiles)?.forEach((element) => {
         dispatch(
           uploadAmendmentAttachmentThunk({
-            businessId: watch('businessId'),
+            businessId: watch("businessId"),
             fileName: element?.fileName,
             file: element?.file,
             amendmentId: businessDormancyData?.data?.id,
-            attachmentType: 'Declaration of dormancy',
+            attachmentType: "Declaration of dormancy",
           })
         );
       });
     } else if (businessDormancyIsError) {
       toast.error(
         (businessDormancyError as ErrorResponse)?.data?.message ||
-          'An error occurred while declaring company dormancy. Refresh and try again'
+          "An error occurred while declaring company dormancy. Refresh and try again"
       );
     }
   }, [
@@ -131,12 +131,12 @@ const CompanyDormancy = () => {
       businessDormancyIsSuccess &&
       attachmentFiles?.length > 0
     ) {
-      toast.success('Company dormancy declared successfully');
+      toast.success("Company dormancy request submitted successfully");
       resetDeclareBusinessDormancy();
       dispatch(setUploadAmendmentAttachmentIsSuccess(false));
       dispatch(setUploadAmendmentAttachmentIsLoading(false));
       setAttachmentFiles([]);
-      navigate('/services');
+      navigate("/services");
     }
   }, [
     dispatch,
@@ -151,8 +151,8 @@ const CompanyDormancy = () => {
   const attachmentExtendedColumns = [
     ...attachmentColumns,
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({
         row,
       }: {
@@ -199,35 +199,35 @@ const CompanyDormancy = () => {
 
   const businessDormancyAttachments = [
     {
-      label: 'Resolution declaring dormancy',
-      name: 'resolutionDeclaringDormancy',
+      label: "Resolution declaring dormancy",
+      name: "resolutionDeclaringDormancy",
       required: true,
     },
     {
-      label: 'RRA Tax Clearance',
-      name: 'rraTaxClearance',
+      label: "RRA Tax Clearance",
+      name: "rraTaxClearance",
       required: true,
     },
   ];
 
   return (
     <UserLayout>
-      <main className="bg-white p-6 rounded-md w-full flex flex-col gap-5">
-        <h1 className="uppercase text-lg font-semibold text-center">
+      <main className="flex flex-col w-full gap-5 p-6 bg-white rounded-md">
+        <h1 className="text-lg font-semibold text-center uppercase">
           Declare company dormancy
         </h1>
         <form
           className="w-[90%] mx-auto flex flex-col gap-4"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <fieldset className="grid grid-cols-2 gap-5 w-full">
+          <fieldset className="grid w-full grid-cols-2 gap-5">
             <Controller
               name="businessId"
               control={control}
-              rules={{ required: 'Select a company to close' }}
+              rules={{ required: "Select a company to close" }}
               render={({ field }) => {
                 return (
-                  <label className="w-full flex flex-col gap-2">
+                  <label className="flex flex-col w-full gap-2">
                     <Select
                       label="Select company"
                       required
@@ -235,7 +235,7 @@ const CompanyDormancy = () => {
                         return {
                           value: business?.id,
                           label: businessesIsFetching
-                            ? '....'
+                            ? "...."
                             : (
                                 business?.companyName ||
                                 business?.enterpriseName ||
@@ -258,17 +258,17 @@ const CompanyDormancy = () => {
                 );
               }}
             />
-            {watch('businessId') && (
+            {watch("businessId") && (
               <>
                 <Controller
                   name="dormantDeclarationDate"
                   rules={{
-                    required: 'Date of dormant declaration is required',
+                    required: "Date of dormant declaration is required",
                   }}
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Input
                           type="date"
                           required
@@ -286,11 +286,11 @@ const CompanyDormancy = () => {
                 />
                 <Controller
                   name="dormantStartDate"
-                  rules={{ required: 'Start date of dormancy is required' }}
+                  rules={{ required: "Start date of dormancy is required" }}
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Input
                           type="date"
                           required
@@ -311,7 +311,7 @@ const CompanyDormancy = () => {
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Select
                           label="Dormancy reason"
                           options={dormancyReasons}
@@ -334,10 +334,10 @@ const CompanyDormancy = () => {
             )}
           </fieldset>
           <section className={`w-full flex flex-col gap-3`}>
-            <h1 className="text-md uppercase font-semibold flex items-center gap-1">
+            <h1 className="flex items-center gap-1 font-semibold uppercase text-md">
               Attachments <span className="text-red-600">*</span>
             </h1>
-            <menu className="grid grid-cols-2 gap-5 w-full">
+            <menu className="grid w-full grid-cols-2 gap-5">
               {businessDormancyAttachments.map((attachment, index) => {
                 return (
                   <Controller
@@ -351,11 +351,11 @@ const CompanyDormancy = () => {
                     }}
                     render={({ field }) => {
                       return (
-                        <label className="w-full flex flex-col gap-1">
+                        <label className="flex flex-col w-full gap-1">
                           <p className="flex items-center gap-2">
-                            {attachment?.label}{' '}
+                            {attachment?.label}{" "}
                             {!attachment?.required ? (
-                              '(optional)'
+                              "(optional)"
                             ) : (
                               <span className="text-red-600">*</span>
                             )}
@@ -366,7 +366,7 @@ const CompanyDormancy = () => {
                               <CustomTooltip label="File has been added successfully">
                                 <FontAwesomeIcon
                                   icon={faCircleCheck}
-                                  className="text-primary cursor-pointer"
+                                  className="cursor-pointer text-primary"
                                 />
                               </CustomTooltip>
                             )}
@@ -411,9 +411,9 @@ const CompanyDormancy = () => {
             </menu>
           </section>
           {attachmentFiles?.length > 0 && (
-            <menu className="flex flex-col gap-4 w-full">
+            <menu className="flex flex-col w-full gap-4">
               <Table
-showFilter={false}
+                showFilter={false}
                 columns={
                   attachmentExtendedColumns as ColumnDef<{
                     file: File;
@@ -427,7 +427,7 @@ showFilter={false}
                   (attachmentFile) => {
                     return {
                       file: attachmentFile?.file as File,
-                      attachmentType: 'Declaration of dormancy',
+                      attachmentType: "Declaration of dormancy",
                       size: attachmentFile?.size,
                       fileName: attachmentFile?.fileName,
                       attachmentUrl: (
@@ -449,14 +449,14 @@ showFilter={false}
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/services');
+                navigate("/services");
               }}
             />
             <Button
-              value={businessDormancyIsLoading ? <Loader /> : 'Submit'}
+              value={businessDormancyIsLoading ? <Loader /> : "Submit"}
               primary
               submit
-              disabled={!watch('businessId')}
+              disabled={!watch("businessId")}
             />
           </menu>
         </form>

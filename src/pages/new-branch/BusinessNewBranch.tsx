@@ -1,40 +1,40 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import UserLayout from '../../containers/UserLayout';
-import Select from '../../components/inputs/Select';
-import { AppDispatch, RootState } from '../../states/store';
-import { useSelector } from 'react-redux';
-import Input from '../../components/inputs/Input';
-import { useEffect, useState } from 'react';
-import validateInputs from '../../helpers/validations';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { faCircleCheck, faTrash } from '@fortawesome/free-solid-svg-icons';
-import Button from '../../components/inputs/Button';
-import { ErrorResponse, useNavigate } from 'react-router-dom';
-import Loader from '../../components/Loader';
-import { useDispatch } from 'react-redux';
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import UserLayout from "../../containers/UserLayout";
+import Select from "../../components/inputs/Select";
+import { AppDispatch, RootState } from "../../states/store";
+import { useSelector } from "react-redux";
+import Input from "../../components/inputs/Input";
+import { useEffect, useState } from "react";
+import validateInputs from "../../helpers/validations";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { faCircleCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Button from "../../components/inputs/Button";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import Loader from "../../components/Loader";
+import { useDispatch } from "react-redux";
 import {
   fetchBusinessesThunk,
   setUploadAmendmentAttachmentIsLoading,
   setUploadAmendmentAttachmentIsSuccess,
   uploadAmendmentAttachmentThunk,
-} from '@/states/features/businessSlice';
-import { attachmentColumns } from '@/constants/business.constants';
-import { BusinessAttachment } from '@/types/models/attachment';
-import CustomTooltip from '@/components/inputs/CustomTooltip';
-import ViewDocument from '../user-company-details/ViewDocument';
-import Table from '@/components/table/Table';
-import { ColumnDef } from '@tanstack/react-table';
+} from "@/states/features/businessSlice";
+import { attachmentColumns } from "@/constants/business.constants";
+import { BusinessAttachment } from "@/types/models/attachment";
+import CustomTooltip from "@/components/inputs/CustomTooltip";
+import ViewDocument from "../user-company-details/ViewDocument";
+import Table from "@/components/table/Table";
+import { ColumnDef } from "@tanstack/react-table";
 import {
   fetchCellsThunk,
   fetchDistrictsThunk,
   fetchProvincesThunk,
   fetchSectorsThunk,
   fetchVillagesThunk,
-} from '@/states/features/locationSlice';
-import { dayHoursArray } from '@/constants/time';
-import { useCreateBusinessBranchMutation } from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
+} from "@/states/features/locationSlice";
+import { dayHoursArray } from "@/constants/time";
+import { useCreateBusinessBranchMutation } from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
 
 const BusinessNewBranch = () => {
   // REACT HOOK FORM
@@ -76,7 +76,7 @@ const BusinessNewBranch = () => {
       attachmentUrl: string;
     }[]
   >([]);
-  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>('');
+  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>("");
 
   // NAVIGATE
   const navigate = useNavigate();
@@ -100,14 +100,14 @@ const BusinessNewBranch = () => {
       businessId: data?.businessId,
       branchName: data?.branchName,
       isForeign: false,
-      workingHoursFrom: data?.workingHoursFrom + ':00',
-      workingHoursTo: data?.workingHoursTo + ':00',
+      workingHoursFrom: data?.workingHoursFrom + ":00",
+      workingHoursTo: data?.workingHoursTo + ":00",
       branchAddress: {
         villageId: Number(data?.villageId),
         email: data?.email,
         phoneNumber: data?.phoneNumber,
         streetName: data?.streetName,
-        countryOfIncorporation: 'RW',
+        countryOfIncorporation: "RW",
       },
     });
   };
@@ -120,9 +120,9 @@ const BusinessNewBranch = () => {
           dispatch(
             uploadAmendmentAttachmentThunk({
               file: attachmentFile?.file,
-              businessId: watch('businessId'),
+              businessId: watch("businessId"),
               fileName: attachmentFile?.fileName,
-              attachmentType: 'Branch resolution',
+              attachmentType: "Branch resolution",
               amendmentId: createBusinessBranchData?.data?.id,
             })
           );
@@ -131,7 +131,7 @@ const BusinessNewBranch = () => {
     } else if (createBusinessBranchIsError) {
       toast.error(
         (createBusinessBranchError as ErrorResponse)?.data?.message ||
-          'An error occurred while creating business branch. Refresh and try again'
+          "An error occurred while creating business branch. Refresh and try again"
       );
     }
   }, [
@@ -155,8 +155,8 @@ const BusinessNewBranch = () => {
       dispatch(setUploadAmendmentAttachmentIsSuccess(false));
       resetCreateBusinessBranch();
       setAttachmentFiles([]);
-      toast.success('Business branch created successfully');
-      navigate('/services');
+      toast.success("New branch creation request submitted successfully");
+      navigate("/services");
     }
   }, [
     uploadAmendmentAttachmentIsSuccess,
@@ -174,7 +174,7 @@ const BusinessNewBranch = () => {
       fetchBusinessesThunk({
         page: 1,
         size: 100,
-        applicationStatus: 'APPROVED',
+        applicationStatus: "APPROVED",
       })
     );
   }, [dispatch]);
@@ -186,42 +186,42 @@ const BusinessNewBranch = () => {
 
   // FETCH DISTRICTS
   useEffect(() => {
-    if (watch('provinceId')) {
-      dispatch(fetchDistrictsThunk(Number(watch('provinceId'))));
+    if (watch("provinceId")) {
+      dispatch(fetchDistrictsThunk(Number(watch("provinceId"))));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, watch('provinceId'), watch]);
+  }, [dispatch, watch("provinceId"), watch]);
 
   // FETCH SECTORS
   useEffect(() => {
-    if (watch('districtId')) {
-      dispatch(fetchSectorsThunk(Number(watch('districtId'))));
+    if (watch("districtId")) {
+      dispatch(fetchSectorsThunk(Number(watch("districtId"))));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, watch('districtId'), watch]);
+  }, [dispatch, watch("districtId"), watch]);
 
   // FETCH CELLS
   useEffect(() => {
-    if (watch('sectorId')) {
-      dispatch(fetchCellsThunk(Number(watch('sectorId'))));
+    if (watch("sectorId")) {
+      dispatch(fetchCellsThunk(Number(watch("sectorId"))));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, watch('sectorId'), watch]);
+  }, [dispatch, watch("sectorId"), watch]);
 
   // FETCH VILLAGES
   useEffect(() => {
-    if (watch('cellId')) {
-      dispatch(fetchVillagesThunk(Number(watch('cellId'))));
+    if (watch("cellId")) {
+      dispatch(fetchVillagesThunk(Number(watch("cellId"))));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, watch('cellId'), watch]);
+  }, [dispatch, watch("cellId"), watch]);
 
   // TABLE COLUMNS
   const attachmentExtendedColumns = [
     ...attachmentColumns,
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({
         row,
       }: {
@@ -260,37 +260,37 @@ const BusinessNewBranch = () => {
 
   const businessNewBranchAttachments = [
     {
-      label: 'Branch resolution',
-      name: 'branchResolution',
+      label: "Branch resolution",
+      name: "branchResolution",
       required: true,
     },
   ];
 
   return (
     <UserLayout>
-      <main className="w-full flex flex-col gap-4 bg-white p-6 rounded-md">
-        <h1 className="text-center uppercase font-semibold text-lg">
+      <main className="flex flex-col w-full gap-4 p-6 bg-white rounded-md">
+        <h1 className="text-lg font-semibold text-center uppercase">
           New business branch
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="p-3 flex flex-col gap-4 w-[90%] mx-auto"
         >
-          <fieldset className="grid grid-cols-2 gap-5 w-full">
+          <fieldset className="grid w-full grid-cols-2 gap-5">
             <Controller
               control={control}
               name="businessId"
-              rules={{ required: 'Select business to open new branch' }}
+              rules={{ required: "Select business to open new branch" }}
               render={({ field }) => {
                 return (
-                  <label className="w-full flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       label="Select business"
                       required
                       options={businessesList?.map((business) => {
                         return {
                           label: businessesIsFetching
-                            ? '....'
+                            ? "...."
                             : (
                                 business?.companyName ||
                                 business?.enterpriseName ||
@@ -315,15 +315,15 @@ const BusinessNewBranch = () => {
                 );
               }}
             />
-            {watch('businessId') && (
+            {watch("businessId") && (
               <>
                 <Controller
                   name="branchName"
                   control={control}
-                  rules={{ required: 'Branch name is required' }}
+                  rules={{ required: "Branch name is required" }}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Input
                           placeholder="Branch name"
                           label="Branch name"
@@ -342,7 +342,7 @@ const BusinessNewBranch = () => {
                 <Controller
                   name="provinceId"
                   control={control}
-                  rules={{ required: 'Select province of residence' }}
+                  rules={{ required: "Select province of residence" }}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col w-full gap-1">
@@ -354,7 +354,7 @@ const BusinessNewBranch = () => {
                             ?.map((province) => {
                               return {
                                 label: fetchProvincesIsLoading
-                                  ? '...'
+                                  ? "..."
                                   : province?.name,
                                 value: String(province?.id),
                               };
@@ -377,7 +377,7 @@ const BusinessNewBranch = () => {
                 <Controller
                   name="districtId"
                   control={control}
-                  rules={{ required: 'Select district of residence' }}
+                  rules={{ required: "Select district of residence" }}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col w-full gap-1">
@@ -387,7 +387,7 @@ const BusinessNewBranch = () => {
                           options={districtsList?.map((district) => {
                             return {
                               label: fetchDistrictsIsLoading
-                                ? '...'
+                                ? "..."
                                 : district?.name,
                               value: String(district?.id),
                             };
@@ -410,7 +410,7 @@ const BusinessNewBranch = () => {
                 <Controller
                   name="sectorId"
                   control={control}
-                  rules={{ required: 'Select sector of residence' }}
+                  rules={{ required: "Select sector of residence" }}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col w-full gap-1">
@@ -420,7 +420,7 @@ const BusinessNewBranch = () => {
                           options={sectorsList?.map((sector) => {
                             return {
                               label: fetchSectorsIsLoading
-                                ? '...'
+                                ? "..."
                                 : sector?.name,
                               value: String(sector?.id),
                             };
@@ -443,7 +443,7 @@ const BusinessNewBranch = () => {
                 <Controller
                   name="cellId"
                   control={control}
-                  rules={{ required: 'Select cell of residence' }}
+                  rules={{ required: "Select cell of residence" }}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col w-full gap-1">
@@ -452,7 +452,7 @@ const BusinessNewBranch = () => {
                           label="Cell"
                           options={cellsList?.map((cell) => {
                             return {
-                              label: fetchCellsIsLoading ? '...' : cell?.name,
+                              label: fetchCellsIsLoading ? "..." : cell?.name,
                               value: String(cell?.id),
                             };
                           })}
@@ -474,7 +474,7 @@ const BusinessNewBranch = () => {
                 <Controller
                   name="villageId"
                   control={control}
-                  rules={{ required: 'Select village of residence' }}
+                  rules={{ required: "Select village of residence" }}
                   render={({ field }) => {
                     return (
                       <label className="flex flex-col w-full gap-1">
@@ -484,7 +484,7 @@ const BusinessNewBranch = () => {
                           options={villagesList?.map((village) => {
                             return {
                               label: fetchVillagesIsLoading
-                                ? '...'
+                                ? "..."
                                 : village?.name,
                               value: String(village?.id),
                             };
@@ -509,7 +509,7 @@ const BusinessNewBranch = () => {
                   name="streetName"
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Input
                           label="Street Name"
                           placeholder="Street name"
@@ -523,7 +523,7 @@ const BusinessNewBranch = () => {
                   name="phoneNumber"
                   control={control}
                   rules={{
-                    required: 'Phone number is required',
+                    required: "Phone number is required",
                   }}
                   render={({ field }) => {
                     return (
@@ -547,11 +547,11 @@ const BusinessNewBranch = () => {
                   name="email"
                   control={control}
                   rules={{
-                    required: 'Email address is required',
+                    required: "Email address is required",
                     validate: (value) => {
                       return (
-                        validateInputs(String(value), 'email') ||
-                        'Invalid email address'
+                        validateInputs(String(value), "email") ||
+                        "Invalid email address"
                       );
                     },
                   }}
@@ -579,24 +579,24 @@ const BusinessNewBranch = () => {
                     validate: (value) => {
                       if (
                         value &&
-                        Number(value) >= Number(watch('workingHoursTo'))
+                        Number(value) >= Number(watch("workingHoursTo"))
                       )
-                        return 'Working Start Time must be less than Working End Time';
+                        return "Working Start Time must be less than Working End Time";
                     },
-                    required: 'Select working start time',
+                    required: "Select working start time",
                   }}
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Select
                           options={dayHoursArray}
                           label="Working Start Time"
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger('workingHoursFrom');
-                            await trigger('workingHoursTo');
+                            await trigger("workingHoursFrom");
+                            await trigger("workingHoursTo");
                           }}
                         />
                         {errors?.workingHoursFrom && (
@@ -615,23 +615,23 @@ const BusinessNewBranch = () => {
                     validate: (value) => {
                       if (
                         value &&
-                        Number(value) <= Number(watch('workingHoursFrom'))
+                        Number(value) <= Number(watch("workingHoursFrom"))
                       )
-                        return 'Working End Time must be greater than Working Start Time';
+                        return "Working End Time must be greater than Working Start Time";
                     },
-                    required: 'Select working end time',
+                    required: "Select working end time",
                   }}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Select
                           options={dayHoursArray}
                           label="Working End Time"
                           {...field}
                           onChange={async (e) => {
                             field.onChange(e);
-                            await trigger('workingHoursTo');
-                            await trigger('workingHoursFrom');
+                            await trigger("workingHoursTo");
+                            await trigger("workingHoursFrom");
                           }}
                         />
                         {errors?.workingHoursTo && (
@@ -644,10 +644,10 @@ const BusinessNewBranch = () => {
                   }}
                 />
                 <section className={`w-full flex flex-col gap-3`}>
-                  <h1 className="text-md uppercase font-medium flex items-center gap-2">
+                  <h1 className="flex items-center gap-2 font-medium uppercase text-md">
                     Attachments <span className="text-red-600">*</span>
                   </h1>
-                  <menu className="grid grid-cols-2 gap-5 w-full">
+                  <menu className="grid w-full grid-cols-2 gap-5">
                     {businessNewBranchAttachments.map((attachment, index) => {
                       return (
                         <Controller
@@ -661,11 +661,11 @@ const BusinessNewBranch = () => {
                           }}
                           render={({ field }) => {
                             return (
-                              <label className="w-full flex flex-col gap-1">
+                              <label className="flex flex-col w-full gap-1">
                                 <p className="flex items-center gap-2">
-                                  {attachment?.label}{' '}
+                                  {attachment?.label}{" "}
                                   {!attachment?.required ? (
-                                    '(optional)'
+                                    "(optional)"
                                   ) : (
                                     <span className="text-red-600">*</span>
                                   )}
@@ -676,7 +676,7 @@ const BusinessNewBranch = () => {
                                     <CustomTooltip label="File has been added successfully">
                                       <FontAwesomeIcon
                                         icon={faCircleCheck}
-                                        className="text-primary cursor-pointer"
+                                        className="cursor-pointer text-primary"
                                       />
                                     </CustomTooltip>
                                   )}
@@ -727,9 +727,9 @@ const BusinessNewBranch = () => {
             )}
           </fieldset>
           {attachmentFiles?.length > 0 && (
-            <menu className="flex flex-col gap-4 w-full">
+            <menu className="flex flex-col w-full gap-4">
               <Table
-showFilter={false}
+                showFilter={false}
                 columns={
                   attachmentExtendedColumns as ColumnDef<{
                     file: File;
@@ -754,7 +754,7 @@ showFilter={false}
                 )}
               />
               {uploadAmendmentAttachmentIsLoading && (
-                <figure className="flex items-center gap-2 w-full justify-center">
+                <figure className="flex items-center justify-center w-full gap-2">
                   <Loader className="text-primary" />
                   <p className="text-[14px]">Uploading attachment(s)...</p>
                 </figure>
@@ -768,7 +768,7 @@ showFilter={false}
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/services');
+                navigate("/services");
               }}
             />
             <Button
@@ -781,7 +781,7 @@ showFilter={false}
                 uploadAmendmentAttachmentIsLoading ? (
                   <Loader />
                 ) : (
-                  'Submit'
+                  "Submit"
                 )
               }
               primary

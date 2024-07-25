@@ -619,7 +619,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, massId, isActive }) => {
           return {
             url: `/navigation-flow`,
-            method: 'POST',
+            method: "POST",
             body: {
               businessId,
               massId,
@@ -634,7 +634,7 @@ export const businessRegApiSlice = createApi({
         query: ({ isCompleted = true, navigationFlowId }) => {
           return {
             url: `/navigation-flow/complete`,
-            method: 'POST',
+            method: "POST",
             body: {
               isCompleted,
               navigationFlowId,
@@ -648,7 +648,7 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/founder/${id}`,
-            method: 'DELETE',
+            method: "DELETE",
           };
         },
       }),
@@ -658,7 +658,7 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/amendment/attachment`,
-            method: 'POST',
+            method: "POST",
             body: formData,
             formData: true,
           };
@@ -675,7 +675,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/dormant?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               dormantReason,
               dormantStartDate,
@@ -696,7 +696,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/dissolution?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               dissolutionReason,
               dissolutionDate,
@@ -718,7 +718,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/new-branch?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               branchName,
               workingHoursFrom,
@@ -731,15 +731,20 @@ export const businessRegApiSlice = createApi({
 
       // REQUEST CESSATION TO DORMANCY
       cessationToDormancy: builder.mutation({
-        query: ({ businessId, resolutionReason, resolutionStartDate, resolutionEndDate }) => {
+        query: ({
+          businessId,
+          resolutionReason,
+          resolutionStartDate,
+          resolutionEndDate,
+        }) => {
           return {
             url: `/amendment/cessation?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               resolutionReason,
               resolutionStartDate,
               resolutionEndDate,
-            }
+            },
           };
         },
       }),
@@ -749,7 +754,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, transferDate, transferReason }) => {
           return {
             url: `/amendment/transfer-registration?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               transferDate,
               transferReason,
@@ -763,7 +768,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId }) => {
           return {
             url: `/amendment/restore?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
           };
         },
       }),
@@ -779,7 +784,7 @@ export const businessRegApiSlice = createApi({
             url += `&serviceId=${serviceId}`;
           }
           return {
-            url
+            url,
           };
         },
       }),
