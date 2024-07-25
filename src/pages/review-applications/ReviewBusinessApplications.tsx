@@ -26,6 +26,7 @@ import {
   faCircleCheck,
   faCircleInfo,
   faEllipsisVertical,
+  faMagnifyingGlass,
 } from '@fortawesome/free-solid-svg-icons';
 import CustomTooltip from '@/components/inputs/CustomTooltip';
 import TableToolbar from '@/components/table/TableToolbar';
@@ -33,13 +34,20 @@ import TableToolbar from '@/components/table/TableToolbar';
 const ReviewBusinessApplications = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessesList, page, size, totalElements, totalPages } = useSelector(
-    (state: RootState) => state.business
-  );
+  const {
+    businessesList,
+    page,
+    size,
+    totalElements,
+    totalPages,
+    updateBusinessIsLoading,
+    updateBusinessIsSuccess,
+  } = useSelector((state: RootState) => state.business);
   const [applicationStatuses] = useState<string[]>([
     'SUBMITTED',
     'AMENDMENT_SUBMITTED',
     'APPROVED',
+    'IN_REVIEW',
   ]);
 
   // NAVIGATION
@@ -111,6 +119,28 @@ const ReviewBusinessApplications = () => {
             <menu className="flex flex-col gap-1 p-0 bg-white rounded-md">
               <Link
                 className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await dispatch(
+                    updateBusinessThunk({
+                      businessId: row?.original?.id,
+                      applicationStatus: 'IN_REVIEW',
+                    })
+                  );
+                  navigate(
+                    `${row?.original?.service?.path}?businessId=${row?.original?.id}`
+                  );
+                }}
+                to={'#'}
+              >
+                <FontAwesomeIcon
+                  className="text-primary"
+                  icon={faMagnifyingGlass}
+                />{' '}
+                Start review
+              </Link>
+              <Link
+                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                 onClick={(e) => {
                   e.preventDefault();
                 }}
@@ -144,6 +174,13 @@ const ReviewBusinessApplications = () => {
       },
     },
   ];
+
+  // HANDLE UPDATE BUSINESS RESPONSE
+  useEffect(() => {
+    if (updateBusinessIsSuccess) {
+      toast.success('Business review started');
+    }
+  }, [updateBusinessIsLoading, updateBusinessIsSuccess]);
 
   return (
     <AdminLayout>

@@ -35,6 +35,8 @@ const initialState: {
   businessesIsFetching: boolean;
   uploadAmendmentAttachmentIsLoading: boolean;
   uploadAmendmentAttachmentIsSuccess: boolean;
+  updateBusinessIsSuccess: boolean;
+  updateBusinessIsLoading: boolean;
 } = {
   businessesList: [],
   business: {} as Business,
@@ -55,6 +57,8 @@ const initialState: {
   businessesIsFetching: false,
   uploadAmendmentAttachmentIsLoading: false,
   uploadAmendmentAttachmentIsSuccess: false,
+  updateBusinessIsSuccess: false,
+  updateBusinessIsLoading: false,
 };
 
 // FETCH BUSINESSES
@@ -156,7 +160,6 @@ export const updateBusinessThunk = createAsyncThunk<
           applicationStatus,
         })
       ).unwrap();
-      toast.success("Business updated successfully");
       return response.data;
     } catch (error) {
       toast.error("An error occurred while updating business");
@@ -279,12 +282,22 @@ export const businessSlice = createSlice({
       state.uploadAmendmentAttachmentIsLoading = false;
     });
     builder.addCase(updateBusinessThunk.fulfilled, (state, action) => {
+      state.updateBusinessIsSuccess = true;
+      state.updateBusinessIsLoading = false;
       state.businessesList = state.businessesList.map((business) => {
         if (business.id === action.payload.id) {
           return action.payload;
         }
         return business;
       });
+    })
+    builder.addCase(updateBusinessThunk.rejected, (state) => {
+      state.updateBusinessIsSuccess = false;
+      state.updateBusinessIsLoading = false;
+    });
+    builder.addCase(updateBusinessThunk.pending, (state) => {
+      state.updateBusinessIsSuccess = false;
+      state.updateBusinessIsLoading = true;
     });
   },
 });

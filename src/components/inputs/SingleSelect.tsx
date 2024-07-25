@@ -6,11 +6,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { UUID } from "crypto";
 import { FC } from "react";
 
 interface SelectProps {
+  options: Array<{ label: string | undefined; value: string | UUID }>;
   label?: string;
-  options?: Array<{ label: string; value: string }>;
   defaultValue?: string | undefined;
   placeholder?: string;
   className?: string;
@@ -33,7 +34,7 @@ const Select: FC<SelectProps> = ({
       value={value}
     >
       <SelectTrigger
-        className={`w-fit !text-[10px] focus:ring-transparent ring-0 rounded-r-none bg-white ${className}`}
+        className={`w-fit !text-[10px] focus:ring-transparent ring-0 rounded-r-none bg-white h-10 ${className}`}
       >
         <SelectValue
           className="!text-[10px]"

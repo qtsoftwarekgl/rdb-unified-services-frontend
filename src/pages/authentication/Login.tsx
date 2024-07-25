@@ -22,7 +22,7 @@ import Loader from "../../components/Loader";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useTranslation } from "react-i18next";
 import { useLoginMutation } from "@/states/api/authApiSlice";
-import { setUser } from "@/states/features/userSlice";
+import { setToken, setUser } from "@/states/features/userSlice";
 
 const Login = () => {
   // LOCALES
@@ -67,17 +67,18 @@ const Login = () => {
   useEffect(() => {
     if (loginIsError) {
       if ((loginError as ErrorResponse)?.status === 500) {
-        toast.error("Internal server error");
+        toast.error('Internal server error');
       } else {
         toast.error((loginError as ErrorResponse)?.data?.message);
       }
     } else if (loginIsSuccess) {
-      toast.success("Login successful. Redirecting...");
+      toast.success('Login successful. Redirecting...');
       dispatch(setUser(loginData?.data));
-      if (loginData?.data?.roles?.includes("SYSTEM_ADMIN")) {
-        navigate("/back-office/dashboard");
-      } else if (loginData?.data?.roles?.includes("PUBLIC_USER")) {
-        navigate("/services");
+      dispatch(setToken(loginData?.data?.token));
+      if (loginData?.data?.roles?.includes('SYSTEM_ADMIN')) {
+        navigate('/back-office/dashboard');
+      } else if (loginData?.data?.roles?.includes('PUBLIC_USER')) {
+        navigate('/services');
       }
     }
   }, [dispatch, loginData, loginError, loginIsError, loginIsSuccess, navigate]);

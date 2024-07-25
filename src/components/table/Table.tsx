@@ -89,7 +89,7 @@ export default function Table<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4 w-full my-4">
+    <div className="space-y-4 w-full my-2">
       <div className="rounded-md border">
         <DataTable>
           <TableHeader className="px-0">
