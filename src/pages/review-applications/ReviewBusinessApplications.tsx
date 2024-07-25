@@ -1,8 +1,8 @@
-import { useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../states/store";
-import { useDispatch } from "react-redux";
-import { useLazyFetchBackOfficeBusinessesQuery } from "@/states/api/businessRegApiSlice";
-import { useEffect } from "react";
+import { useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../states/store';
+import { useDispatch } from 'react-redux';
+import { useLazyFetchBackOfficeBusinessesQuery } from '@/states/api/businessRegApiSlice';
+import { useEffect, useState } from 'react';
 import {
   setBusinessPage,
   setBusinessSize,
@@ -10,31 +10,37 @@ import {
   setBusinessTotalPages,
   setBusinessesList,
   updateBusinessThunk,
-} from "@/states/features/businessSlice";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import { Business } from "@/types/models/business";
-import Table from "@/components/table/Table";
-import AdminLayout from "@/containers/AdminLayout";
-import Loader from "@/components/Loader";
-import { ErrorResponse, Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { capitalizeString, formatDate } from "@/helpers/strings";
-import { businessColumns } from "@/constants/business.constants";
-import CustomPopover from "@/components/inputs/CustomPopover";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+} from '@/states/features/businessSlice';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { Business } from '@/types/models/business';
+import Table from '@/components/table/Table';
+import AdminLayout from '@/containers/AdminLayout';
+import Loader from '@/components/Loader';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { capitalizeString, formatDate } from '@/helpers/strings';
+import { businessColumns } from '@/constants/business.constants';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleCheck,
   faCircleInfo,
   faEllipsisVertical,
-} from "@fortawesome/free-solid-svg-icons";
-import CustomTooltip from "@/components/inputs/CustomTooltip";
+} from '@fortawesome/free-solid-svg-icons';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
+import TableToolbar from '@/components/table/TableToolbar';
 
-const ReviewRegistration = () => {
+const ReviewBusinessApplications = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { businessesList, page, size, totalElements, totalPages } = useSelector(
     (state: RootState) => state.business
   );
+  const [applicationStatuses] = useState<string[]>([
+    'SUBMITTED',
+    'AMENDMENT_SUBMITTED',
+    'APPROVED',
+  ]);
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -54,11 +60,11 @@ const ReviewRegistration = () => {
   // FETCH BUSINESSES
   useEffect(() => {
     fetchBusinesses({
-      applicationStatus: "SUBMITTED",
+      applicationStatus: applicationStatuses?.join(','),
       page,
       size,
     });
-  }, [fetchBusinesses, page, size]);
+  }, [applicationStatuses, fetchBusinesses, page, size]);
 
   // HANDLE FETCH BUSINESS RESPONSE
   useEffect(() => {
@@ -68,7 +74,7 @@ const ReviewRegistration = () => {
       dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
     } else if (businessesIsError) {
       if ((businessesError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching businesses");
+        toast.error('An error occurred while fetching businesses');
       } else {
         toast.error((businessesError as ErrorResponse)?.data?.message);
       }
@@ -85,9 +91,9 @@ const ReviewRegistration = () => {
   const businessesColumns = [
     ...businessColumns,
     {
-      id: "action",
-      header: "Action",
-      accessorKey: "action",
+      id: 'action',
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }: { row: Row<Business> }) => {
         return (
           <CustomPopover
@@ -108,7 +114,7 @@ const ReviewRegistration = () => {
                 onClick={(e) => {
                   e.preventDefault();
                 }}
-                to={"#"}
+                to={'#'}
               >
                 <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                 View details
@@ -120,16 +126,16 @@ const ReviewRegistration = () => {
                   dispatch(
                     updateBusinessThunk({
                       businessId: row?.original?.id,
-                      applicationStatus: "APPROVED",
+                      applicationStatus: 'APPROVED',
                     })
                   );
                 }}
-                to={"#"}
+                to={'#'}
               >
                 <FontAwesomeIcon
                   className="text-primary"
                   icon={faCircleCheck}
-                />{" "}
+                />{' '}
                 Approve
               </Link>
             </menu>
@@ -147,35 +153,38 @@ const ReviewRegistration = () => {
             <Loader />
           </figure>
         ) : (
-          <Table
-            page={page}
-            size={size}
-            totalElements={totalElements}
-            totalPages={totalPages}
-            setPage={setBusinessPage}
-            setSize={setBusinessSize}
-            columns={businessesColumns as ColumnDef<Business>[]}
-            data={businessesList?.map((business, index) => {
-              return {
-                ...business,
-                no: index + 1,
-                dateOfIncorporation: formatDate(
-                  business?.createdAt
-                ) as unknown as Date,
-                companyType: capitalizeString(business?.companyType) || "N/A",
-                assignee: "RDB Verifier",
-                companyName: (
-                  business?.companyName ||
-                  business?.enterpriseName ||
-                  business?.enterpriseBusinessName
-                )?.toUpperCase(),
-              };
-            })}
-          />
+          <menu className="w-full flex flex-col gap-4">
+            <TableToolbar />
+            <Table
+              page={page}
+              size={size}
+              totalElements={totalElements}
+              totalPages={totalPages}
+              setPage={setBusinessPage}
+              setSize={setBusinessSize}
+              columns={businessesColumns as ColumnDef<Business>[]}
+              data={businessesList?.map((business, index) => {
+                return {
+                  ...business,
+                  no: index + 1,
+                  dateOfIncorporation: formatDate(
+                    business?.createdAt
+                  ) as unknown as Date,
+                  companyType: capitalizeString(business?.companyType) || 'N/A',
+                  assignee: 'RDB Verifier',
+                  companyName: (
+                    business?.companyName ||
+                    business?.enterpriseName ||
+                    business?.enterpriseBusinessName
+                  )?.toUpperCase(),
+                };
+              })}
+            />
+          </menu>
         )}
       </section>
     </AdminLayout>
   );
 };
 
-export default ReviewRegistration;
+export default ReviewBusinessApplications;
