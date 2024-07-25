@@ -1,16 +1,16 @@
-import { BusinessAttachment } from '@/types/models/attachment';
+import { BusinessAttachment } from "@/types/models/attachment";
 import {
   Address,
   Business,
   businessId,
   Details,
   EmploymentInfo,
-} from '@/types/models/business';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import businessRegApiSlice from '../api/businessRegApiSlice';
-import { AppDispatch } from '../store';
-import { toast } from 'react-toastify';
-import { UUID } from 'crypto';
+} from "@/types/models/business";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import businessRegApiSlice from "../api/businessRegApiSlice";
+import { AppDispatch } from "../store";
+import { toast } from "react-toastify";
+import { UUID } from "crypto";
 
 const initialState: {
   businessesList: Business[];
@@ -60,10 +60,15 @@ const initialState: {
 // FETCH BUSINESSES
 export const fetchBusinessesThunk = createAsyncThunk<
   Business[],
-  { page: number; size: number, applicationStatus?: string, serviceId?: string },
+  {
+    page: number;
+    size: number;
+    applicationStatus?: string;
+    serviceId?: string;
+  },
   { dispatch: AppDispatch }
 >(
-  'business/fetchBusinesses',
+  "business/fetchBusinesses",
   async (
     {
       page,
@@ -93,7 +98,7 @@ export const fetchBusinessesThunk = createAsyncThunk<
       ).unwrap();
       return response.data;
     } catch (error) {
-      toast.error('An error occurred while fetching businesses');
+      toast.error("An error occurred while fetching businesses");
       throw error;
     }
   }
@@ -111,18 +116,18 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
   },
   { dispatch: AppDispatch }
 >(
-  'business/uploadAmendmentAttachment',
+  "business/uploadAmendmentAttachment",
   async (
     { file, businessId, amendmentId, fileName, attachmentType },
     { dispatch }
   ) => {
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('businessId', businessId);
-      formData.append('amendmentId', amendmentId);
-      formData.append('attachmentType', attachmentType);
-      formData.append('fileName', fileName);
+      formData.append("file", file);
+      formData.append("businessId", businessId);
+      formData.append("amendmentId", amendmentId);
+      formData.append("attachmentType", attachmentType);
+      formData.append("fileName", fileName);
       const response = await dispatch(
         businessRegApiSlice.endpoints.uploadAmendmentAttachment.initiate({
           formData,
@@ -130,8 +135,7 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
       ).unwrap();
       return response.data;
     } catch (error) {
-      console.log(error);
-      toast.error('An error occurred while uploading attachment');
+      toast.error("An error occurred while uploading attachment");
       throw error;
     }
   }
@@ -140,10 +144,10 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
 // UPDATE BUSINESS THUNK
 export const updateBusinessThunk = createAsyncThunk<
   Business,
-  { businessId: businessId, applicationStatus: string },
+  { businessId: businessId; applicationStatus: string },
   { dispatch: AppDispatch }
 >(
-  'business/updateBusiness',
+  "business/updateBusiness",
   async ({ applicationStatus, businessId }, { dispatch }) => {
     try {
       const response = await dispatch(
@@ -152,17 +156,17 @@ export const updateBusinessThunk = createAsyncThunk<
           applicationStatus,
         })
       ).unwrap();
-      toast.success('Business updated successfully');
+      toast.success("Business updated successfully");
       return response.data;
     } catch (error) {
-      toast.error('An error occurred while updating business');
+      toast.error("An error occurred while updating business");
       throw error;
     }
   }
 );
 
 export const businessSlice = createSlice({
-  name: 'business',
+  name: "business",
   initialState,
   reducers: {
     setBusinessesList: (state, action) => {
@@ -266,22 +270,21 @@ export const businessSlice = createSlice({
     });
     builder.addCase(uploadAmendmentAttachmentThunk.pending, (state) => {
       state.uploadAmendmentAttachmentIsLoading = true;
-    })
+    });
     builder.addCase(uploadAmendmentAttachmentThunk.fulfilled, (state) => {
       state.uploadAmendmentAttachmentIsLoading = false;
       state.uploadAmendmentAttachmentIsSuccess = true;
-    })
+    });
     builder.addCase(uploadAmendmentAttachmentThunk.rejected, (state) => {
       state.uploadAmendmentAttachmentIsLoading = false;
-    })
+    });
     builder.addCase(updateBusinessThunk.fulfilled, (state, action) => {
       state.businessesList = state.businessesList.map((business) => {
         if (business.id === action.payload.id) {
           return action.payload;
         }
         return business;
-      }
-      );
+      });
     });
   },
 });

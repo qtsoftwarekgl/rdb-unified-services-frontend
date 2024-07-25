@@ -1,17 +1,17 @@
-import { useSelector } from 'react-redux';
-import UserLayout from '../../containers/UserLayout';
-import { AppDispatch, RootState } from '../../states/store';
-import RegisteredBusinessesTable from './RegisteredBusinessesTable';
-import NotificationPreference from './NotificationPreference';
-import Divider from '../../components/Divider';
-import { useLazyGetUserQuery } from '@/states/api/userManagementApiSlice';
-import { useEffect } from 'react';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { setUserProfile } from '@/states/features/userSlice';
-import Loader from '@/components/Loader';
-import { formatDate } from '@/helpers/strings';
+import { useSelector } from "react-redux";
+import UserLayout from "../../containers/UserLayout";
+import { AppDispatch, RootState } from "../../states/store";
+import RegisteredBusinessesTable from "./RegisteredBusinessesTable";
+import NotificationPreference from "./NotificationPreference";
+import Divider from "../../components/Divider";
+import { useLazyGetUserQuery } from "@/states/api/userManagementApiSlice";
+import { useEffect } from "react";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setUserProfile } from "@/states/features/userSlice";
+import Loader from "@/components/Loader";
+import { formatDate } from "@/helpers/strings";
 
 const UserProfile = () => {
   // STATE VARIABLES
@@ -42,7 +42,7 @@ const UserProfile = () => {
     } else if (userIsError) {
       const errorResponse =
         (userError as ErrorResponse)?.data?.message ||
-        'An error occurred while fetching user data. Refresh and try again';
+        "An error occurred while fetching user data. Refresh and try again";
       toast.error(errorResponse);
     }
   }, [userIsSuccess, userData, userIsError, dispatch, userError]);
@@ -50,7 +50,7 @@ const UserProfile = () => {
   return (
     <UserLayout>
       <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f7f7f7] rounded-md">
-        <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
+        <h1 className="pb-2 text-2xl font-medium text-secondary w-fit">
           User Profile
         </h1>
         {/* User Info */}
@@ -58,7 +58,7 @@ const UserProfile = () => {
           <div className="flex">
             <div className="flex flex-col justify-center">
               <h1 className="text-xl font-semibold text-secondary">
-                {userProfile?.firstName} {userProfile?.lastName || ''}
+                {userProfile?.firstName} {userProfile?.lastName || ""}
               </h1>
               <p className="text-base font-light text-gray-500">
                 {user?.email}
@@ -66,12 +66,11 @@ const UserProfile = () => {
             </div>
           </div>
         </div>
-        <Divider />
         {/* Personal Details */}
         <h1 className=" text-tertiary w-fit">Personal Details</h1>
         {userIsFetching ? (
           <figure className="w-full flex items-center justify-center min-h-[40vh]">
-            <Loader className="text-primary" size={'medium'} />
+            <Loader className="text-primary" size={"medium"} />
           </figure>
         ) : (
           userIsSuccess && (
@@ -82,7 +81,7 @@ const UserProfile = () => {
                     Document Type
                   </h1>
                   <p className="w-1/2 text-gray-300">
-                    {userProfile?.personIdentType || ''}
+                    {userProfile?.personIdentType || ""}
                   </p>
                 </div>
                 <div className="flex ">
@@ -90,7 +89,7 @@ const UserProfile = () => {
                     Document Number
                   </h1>
                   <p className="w-1/2 text-gray-300">
-                    {userProfile?.personDocNo || ''}
+                    {userProfile?.personDocNo || ""}
                   </p>
                 </div>
                 <div className="flex text-base font-semibold ">
@@ -108,7 +107,7 @@ const UserProfile = () => {
                 <div className="flex text-base font-semibold">
                   <h1 className="w-1/2 text-secondary">Gender</h1>
                   <p className="w-1/2 text-gray-300">
-                    {userProfile?.gender || ''}
+                    {userProfile?.gender || ""}
                   </p>
                 </div>
                 <div className="flex text-base font-semibold ">
@@ -122,7 +121,7 @@ const UserProfile = () => {
                 <div className="flex text-base font-semibold ">
                   <h1 className="w-1/2 text-secondary ">Nationality</h1>
                   <p className="w-1/2 text-gray-300">
-                    {userProfile?.nationality || ''}
+                    {userProfile?.nationality || ""}
                   </p>
                 </div>
               </div>

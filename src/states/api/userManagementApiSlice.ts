@@ -1,19 +1,9 @@
-import { userManagementApi } from "@/constants/environments";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import store from "store";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { userManagementBaseQueryWithReauth } from "./rootApiSlice";
 
 export const userManagementApiSlice = createApi({
   reducerPath: "userManagementApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${userManagementApi}`,
-    prepareHeaders: (headers) => {
-      const user = store.get("user");
-      if (user?.token) {
-        headers.set("authorization", `Bearer ${user.token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: userManagementBaseQueryWithReauth,
   endpoints: (builder) => {
     return {
       // UPLOAD USER ATTACHMENT

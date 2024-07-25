@@ -1,32 +1,32 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import UserLayout from '../../containers/UserLayout';
-import Select from '../../components/inputs/Select';
-import Input from '../../components/inputs/Input';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import Button from '../../components/inputs/Button';
-import Table from '../../components/table/Table';
-import { useEffect, useState } from 'react';
-import { ErrorResponse, useNavigate } from 'react-router-dom';
-import { attachmentColumns } from '@/constants/business.constants';
-import { BusinessAttachment } from '@/types/models/attachment';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { AppDispatch, RootState } from '@/states/store';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import UserLayout from "../../containers/UserLayout";
+import Select from "../../components/inputs/Select";
+import Input from "../../components/inputs/Input";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import Button from "../../components/inputs/Button";
+import Table from "../../components/table/Table";
+import { useEffect, useState } from "react";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import { attachmentColumns } from "@/constants/business.constants";
+import { BusinessAttachment } from "@/types/models/attachment";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { AppDispatch, RootState } from "@/states/store";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   fetchBusinessesThunk,
   setUploadAmendmentAttachmentIsLoading,
   setUploadAmendmentAttachmentIsSuccess,
   uploadAmendmentAttachmentThunk,
-} from '@/states/features/businessSlice';
-import TextArea from '@/components/inputs/TextArea';
-import Loader from '@/components/Loader';
-import { ColumnDef } from '@tanstack/react-table';
-import ViewDocument from '../user-company-details/ViewDocument';
-import { formatDate } from '@/helpers/strings';
-import { useTransferBusinessRegistrationMutation } from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
+} from "@/states/features/businessSlice";
+import TextArea from "@/components/inputs/TextArea";
+import Loader from "@/components/Loader";
+import { ColumnDef } from "@tanstack/react-table";
+import ViewDocument from "../user-company-details/ViewDocument";
+import { formatDate } from "@/helpers/strings";
+import { useTransferBusinessRegistrationMutation } from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
 
 const TransferRegistration = () => {
   const {
@@ -47,7 +47,7 @@ const TransferRegistration = () => {
       attachmentUrl: string;
     }[]
   >([]);
-  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>('');
+  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>("");
   const {
     businessesList,
     businessesIsFetching,
@@ -64,7 +64,7 @@ const TransferRegistration = () => {
       fetchBusinessesThunk({
         page: 1,
         size: 100,
-        applicationStatus: 'APPROVED',
+        applicationStatus: "APPROVED",
       })
     );
   }, [dispatch]);
@@ -98,8 +98,8 @@ const TransferRegistration = () => {
         dispatch(
           uploadAmendmentAttachmentThunk({
             file: attachmentFile?.file,
-            attachmentType: 'Transfer of registration',
-            businessId: watch('businessId'),
+            attachmentType: "Transfer of registration",
+            businessId: watch("businessId"),
             fileName: attachmentFile?.fileName,
             amendmentId: transferBusinessRegistrationData?.data?.id,
           })
@@ -108,7 +108,7 @@ const TransferRegistration = () => {
     } else if (transferBusinessRegistrationIsError) {
       const errorResponse =
         (transferBusinessRegistrationError as ErrorResponse)?.data?.message ||
-        'An error occurred while processing your request. Refresh and try again';
+        "An error occurred while processing your request. Refresh and try again";
       toast.error(errorResponse);
     }
   }, [
@@ -129,12 +129,12 @@ const TransferRegistration = () => {
       transferBusinessRegistrationIsSuccess &&
       attachmentFiles?.length > 0
     ) {
-      toast.success('Transfer of registration submitted successfully');
+      toast.success("Transfer of registration request submitted successfully");
       resetTransferBusinessRegistration();
       setAttachmentFiles([]);
       dispatch(setUploadAmendmentAttachmentIsLoading(false));
       dispatch(setUploadAmendmentAttachmentIsSuccess(false));
-      navigate('/services');
+      navigate("/services");
     }
   }, [
     attachmentFiles?.length,
@@ -149,8 +149,8 @@ const TransferRegistration = () => {
   const attachmentExtendedColumns = [
     ...attachmentColumns,
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({
         row,
       }: {
@@ -189,29 +189,29 @@ const TransferRegistration = () => {
 
   return (
     <UserLayout>
-      <main className="flex flex-col gap-4 w-full bg-white rounded-md p-6">
-        <h1 className="uppercase text-primary font-semibold text-lg text-center">
-          Transfer of Registarion
+      <main className="flex flex-col w-full gap-4 p-6 bg-white rounded-md">
+        <h1 className="text-lg font-semibold text-center uppercase text-primary">
+          Transfer of Registration
         </h1>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="w-[90%] mx-auto flex flex-col gap-4"
         >
-          <fieldset className="grid grid-cols-2 gap-5 w-full">
+          <fieldset className="grid w-full grid-cols-2 gap-5">
             <Controller
               control={control}
               name="businessId"
-              rules={{ required: 'Select business to open new branch' }}
+              rules={{ required: "Select business to open new branch" }}
               render={({ field }) => {
                 return (
-                  <label className="w-full flex flex-col gap-1">
+                  <label className="flex flex-col w-full gap-1">
                     <Select
                       label="Select business"
                       required
                       options={businessesList?.map((business) => {
                         return {
                           label: businessesIsFetching
-                            ? '....'
+                            ? "...."
                             : (
                                 business?.companyName ||
                                 business?.enterpriseName ||
@@ -236,15 +236,15 @@ const TransferRegistration = () => {
                 );
               }}
             />
-            {watch('businessId') && (
+            {watch("businessId") && (
               <>
                 <Controller
                   name="transferDate"
                   control={control}
-                  rules={{ required: 'Tranfer date is required' }}
+                  rules={{ required: "Tranfer date is required" }}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <Input
                           type="date"
                           label="Transfer date"
@@ -262,11 +262,11 @@ const TransferRegistration = () => {
                 />
                 <Controller
                   name="transferReason"
-                  rules={{ required: 'Transfer reason is required' }}
+                  rules={{ required: "Transfer reason is required" }}
                   control={control}
                   render={({ field }) => {
                     return (
-                      <label className="w-full flex flex-col gap-1">
+                      <label className="flex flex-col w-full gap-1">
                         <TextArea
                           label="Transfer reason"
                           required
@@ -278,16 +278,16 @@ const TransferRegistration = () => {
                   }}
                 />
                 <section className={`w-full flex flex-col gap-2 mt-2`}>
-                  <h1 className="text-md uppercase font-medium flex items-center gap-2">
+                  <h1 className="flex items-center gap-2 font-medium uppercase text-md">
                     Attachments <span className="text-red-600">*</span>
                   </h1>
-                  <menu className="grid grid-cols-2 gap-5 w-full">
+                  <menu className="grid w-full grid-cols-2 gap-5">
                     <Controller
-                      name={'attachment'}
+                      name={"attachment"}
                       control={control}
                       render={({ field }) => {
                         return (
-                          <label className="w-full flex flex-col gap-1">
+                          <label className="flex flex-col w-full gap-1">
                             <p className="flex items-center gap-2">
                               Attachments (optional)
                             </p>
@@ -304,7 +304,7 @@ const TransferRegistration = () => {
                                         return {
                                           file,
                                           attachmentType:
-                                            'Transfer of registration',
+                                            "Transfer of registration",
                                           size: file?.size,
                                           fileName: file?.name,
                                           attachmentUrl:
@@ -331,7 +331,7 @@ const TransferRegistration = () => {
             )}
           </fieldset>
           {attachmentFiles?.length > 0 && (
-            <menu className="flex flex-col gap-4 w-full">
+            <menu className="flex flex-col w-full gap-4">
               <Table
                 showFilter={false}
                 columns={
@@ -358,19 +358,19 @@ const TransferRegistration = () => {
                 )}
               />
               {uploadAmendmentAttachmentIsLoading && (
-                <figure className="flex items-center gap-2 w-full justify-center">
+                <figure className="flex items-center justify-center w-full gap-2">
                   <Loader className="text-primary" />
                   <p className="text-[14px]">Uploading attachment(s)...</p>
                 </figure>
               )}
             </menu>
           )}
-          <menu className="w-full flex items-center gap-3 justify-between my-4">
+          <menu className="flex items-center justify-between w-full gap-3 my-4">
             <Button
-              value={'Cancel'}
+              value={"Cancel"}
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/services');
+                navigate("/services");
               }}
             />
             <Button
@@ -384,7 +384,7 @@ const TransferRegistration = () => {
                 uploadAmendmentAttachmentIsLoading ? (
                   <Loader />
                 ) : (
-                  'Submit'
+                  "Submit"
                 )
               }
               primary

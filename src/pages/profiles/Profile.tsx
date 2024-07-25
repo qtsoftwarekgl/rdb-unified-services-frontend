@@ -9,19 +9,12 @@ const Profile = () => {
 
   return (
     <main className="flex flex-col w-full gap-6 p-4 md:px-32 md:py-16 bg-[#f7f7f7] rounded-md">
-      <h1 className="pb-2 text-2xl font-medium border-b text-secondary w-fit">
+      <h1 className="pb-2 text-2xl font-medium text-secondary w-fit">
         User Profile
       </h1>
       {/* User Info */}
       <div className="flex flex-col justify-between md:flex-row">
         <div className="flex">
-          <figure className="overflow-hidden inline w-[7rem] h-[7rem] relative rounded-full mr-4">
-            <img
-              src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              className="object-cover w-full h-full"
-            />
-          </figure>
-
           <div className="flex flex-col justify-center">
             <h1 className="text-xl font-semibold text-secondary">
               {user?.first_name || "Nishimwe"}

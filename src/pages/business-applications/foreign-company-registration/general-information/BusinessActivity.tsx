@@ -34,8 +34,14 @@ import {
 } from "@/states/api/businessRegApiSlice";
 import { setBusinessActiveStep } from "@/states/features/businessRegistrationSlice";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
 
 interface BusinessActivityProps {
   businessId: businessId;
@@ -243,7 +249,7 @@ const BusinessActivities = ({
     if (createBusinessActivitiesIsError) {
       if ((createBusinessActivitiesError as ErrorResponse)?.status === 500) {
         toast.error(
-          'An error occured while creating business activities. Please try again later.'
+          "An error occured while creating business activities. Please try again later."
         );
       } else {
         toast.error(
@@ -251,13 +257,13 @@ const BusinessActivities = ({
         );
       }
     } else if (createBusinessActivitiesIsSuccess) {
-      toast.success('Business activities have been successfully created');
+      toast.success("Business activities have been successfully created");
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Business Activity & VAT'
+            "Business Activity & VAT"
           )?.id,
         })
       );
@@ -266,7 +272,7 @@ const BusinessActivities = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Executive Management'
+            "Executive Management"
           ),
           isActive: true,
         })
@@ -275,12 +281,10 @@ const BusinessActivities = ({
     }
   }, [
     businessId,
-    businessNavigationFlowsList,
     createBusinessActivitiesError,
     createBusinessActivitiesIsError,
     createBusinessActivitiesIsSuccess,
     dispatch,
-    navigationFlowMassList,
     resetCreateBusinessActivities,
   ]);
 
@@ -362,7 +366,7 @@ const BusinessActivities = ({
                                 {businessLine?.description}
                               </p>
                               <Link
-                                to={'#'}
+                                to={"#"}
                                 className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                                 onClick={(e) => {
                                   e.preventDefault();
@@ -406,7 +410,7 @@ const BusinessActivities = ({
                           >
                             <menu className="flex items-center gap-2">
                               <p className="text-start text-[13px]">
-                                {businesLine?.description}{' '}
+                                {businesLine?.description}{" "}
                                 {isMainBusinessLine && (
                                   <span className="text-[11px] bg-primary text-white rounded-md p-1 ml-2">
                                     Main activity
@@ -415,7 +419,7 @@ const BusinessActivities = ({
                               </p>
                             </menu>
                             <Link
-                              to={'#'}
+                              to={"#"}
                               className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
                               onClick={(e) => {
                                 e.preventDefault();
@@ -469,7 +473,7 @@ const BusinessActivities = ({
                                 )
                               )
                             );
-                            clearErrors('mainBusinessActivity');
+                            clearErrors("mainBusinessActivity");
                           }}
                         />
                       );
@@ -490,14 +494,14 @@ const BusinessActivities = ({
                   <menu className="w-[50%] flex flex-col gap-6">
                     <Controller
                       name="VATRegistered"
-                      rules={{ required: 'Select choice' }}
+                      rules={{ required: "Select choice" }}
                       defaultValue={businessActivitiesData?.data?.vatregistered}
                       control={control}
                       render={({ field }) => {
                         return (
                           <label className="flex flex-col w-full gap-2">
                             <p className="flex items-center gap-2 text-[15px]">
-                              Would you like to register for VAT Certificate{' '}
+                              Would you like to register for VAT Certificate{" "}
                               <span className="text-red-600">*</span>
                             </p>
                             <menu className="flex items-center w-full gap-6">
@@ -510,9 +514,9 @@ const BusinessActivities = ({
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('VATRegistered');
+                                  clearErrors("VATRegistered");
                                 }}
-                                value={'yes'}
+                                value={"yes"}
                               />
                               <Input
                                 type="radio"
@@ -523,9 +527,9 @@ const BusinessActivities = ({
                                 {...field}
                                 onChange={(e) => {
                                   field.onChange(e.target.value);
-                                  clearErrors('VATRegistered');
+                                  clearErrors("VATRegistered");
                                 }}
-                                value={'no'}
+                                value={"no"}
                               />
                               {errors?.VATRegistered && (
                                 <p className="text-[13px] text-red-500">
@@ -537,7 +541,7 @@ const BusinessActivities = ({
                         );
                       }}
                     />
-                    {watch('VATRegistered') === 'yes' && (
+                    {watch("VATRegistered") === "yes" && (
                       <Controller
                         name="turnover"
                         control={control}
@@ -545,7 +549,7 @@ const BusinessActivities = ({
                           return (
                             <label className="flex flex-col gap-1 w-[60%]">
                               <Input
-                                defaultValue={watch('turnover')}
+                                defaultValue={watch("turnover")}
                                 label="Enter expected turnover (optional)"
                                 {...field}
                               />
@@ -563,10 +567,10 @@ const BusinessActivities = ({
                 </section>
               )}
               {[
-                'IN_PROGRESS',
-                'IN_PREVIEW',
-                'ACTION_REQUIRED',
-                'IS_AMENDING',
+                "IN_PROGRESS",
+                "IN_PREVIEW",
+                "ACTION_REQUIRED",
+                "IS_AMENDING",
               ].includes(applicationStatus) && (
                 <menu
                   className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -581,28 +585,28 @@ const BusinessActivities = ({
                           businessId,
                           massId: findNavigationFlowMassIdByStepName(
                             navigationFlowMassList,
-                            'Company Address'
+                            "Company Address"
                           ),
                           isActive: true,
                         })
                       );
                     }}
                   />
-                  {applicationStatus === 'IS_AMENDING' && (
+                  {applicationStatus === "IS_AMENDING" && (
                     <Button
                       submit
-                      value={'Complete Amendment'}
+                      value={"Complete Amendment"}
                       disabled={
                         (errors && Object.keys(errors).length > 0) ||
                         isFormDisabled
                       }
                     />
                   )}
-                  {['IN_PREVIEW', 'ACTION_REQUIRED'].includes(
+                  {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                     applicationStatus
                   ) && (
                     <Button
-                      value={'Save & Complete Review'}
+                      value={"Save & Complete Review"}
                       submit
                       primary
                       disabled={
@@ -616,7 +620,7 @@ const BusinessActivities = ({
                       createBusinessActivitiesIsLoading ? (
                         <Loader />
                       ) : (
-                        'Save & Continue'
+                        "Save & Continue"
                       )
                     }
                     submit
@@ -629,14 +633,14 @@ const BusinessActivities = ({
                 </menu>
               )}
               {[
-                'IN_REVIEW',
-                'APPROVED',
-                'PENDING_APPROVAL',
-                'PENDING_REJECTION',
+                "IN_REVIEW",
+                "APPROVED",
+                "PENDING_APPROVAL",
+                "PENDING_REJECTION",
               ].includes(applicationStatus) && (
                 <menu className="flex items-center justify-between gap-3">
                   <Button
-                    value={'Back'}
+                    value={"Back"}
                     onClick={(e) => {
                       e.preventDefault();
                       dispatch(
@@ -644,7 +648,7 @@ const BusinessActivities = ({
                           businessId,
                           massId: findNavigationFlowMassIdByStepName(
                             navigationFlowMassList,
-                            'Company Address'
+                            "Company Address"
                           ),
                           isActive: true,
                         })
@@ -652,18 +656,18 @@ const BusinessActivities = ({
                     }}
                   />
                   <Button
-                    value={'Next'}
+                    value={"Next"}
                     primary
                     onClick={(e) => {
                       e.preventDefault();
                       dispatch(
-                        setForeignBusinessActiveTab('general_information')
+                        setForeignBusinessActiveTab("general_information")
                       );
                       dispatch(
-                        setForeignBusinessCompletedStep('business_activity_vat')
+                        setForeignBusinessCompletedStep("business_activity_vat")
                       );
-                      dispatch(setBusinessActiveStep('board_of_directors'));
-                      dispatch(setBusinessActiveStep('management'));
+                      dispatch(setBusinessActiveStep("board_of_directors"));
+                      dispatch(setBusinessActiveStep("management"));
                     }}
                   />
                 </menu>
