@@ -1,3 +1,4 @@
+import { UUID } from "crypto";
 import { FC, LegacyRef, useEffect, useRef, useState } from "react";
 import ReactSelect, {
   SingleValue,
@@ -18,7 +19,7 @@ interface Option {
 }
 
 interface SelectProps {
-  options?: Option[] | undefined;
+  options?: Array<{ label: string | undefined; value: string | UUID }>;
   onChange: (e: SingleValue<Option> | MultiValue<Option>) => void;
   className?: string;
   disabled?: boolean;

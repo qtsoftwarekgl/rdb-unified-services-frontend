@@ -1,4 +1,3 @@
-import { Role } from './role';
 import { AbstractDomain } from '.';
 
 export interface User extends AbstractDomain {
@@ -24,6 +23,6 @@ export interface User extends AbstractDomain {
   userType: string;
   failedLoginAttempts: number;
   isLocked: boolean;
-  roles: Role[];
+  roles: string[];
   permissions: string[];
 }

@@ -31,10 +31,13 @@ export const businessColumns = [
   },
   {
     id: 'applicationStatus',
-    header: 'Status',
+    header: 'Application status',
     accessorKey: 'applicationStatus',
     cell: ({ row }: { row: Row<Business> }) =>
       capitalizeString(row?.original?.applicationStatus),
+    filterFn: (row: Row<unknown>, id: string, value: string) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     id: 'assignee',

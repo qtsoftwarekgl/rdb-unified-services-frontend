@@ -5,9 +5,10 @@ import { RootState } from '../states/store';
 
 const AuthenticatedRoutes = () => {
   // STATE VARIABLES
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user, token } = useSelector((state: RootState) => state.user);
 
-  if (!user?.roles?.includes('PUBLIC_USER')) {
+  if ((user?.roles?.length ?? 0) <= 0 || !token) {
+    console.log(user?.roles?.length, token);
     store.remove('user');
     return <Navigate to="/auth/login" />;
   }

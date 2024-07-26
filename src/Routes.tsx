@@ -45,7 +45,7 @@ import SearchCompanies from './pages/business-applications/company-availability/
 import CompanyRestoration from './pages/business-applications/company-restoration/CompanyRestoration';
 import CloseCompany from './pages/business-applications/company-closure/CloseCompany';
 import CompanyDormancy from './pages/business-applications/company-dormancy/CompanyDormancy';
-import ReviewRegistration from './pages/review-applications/ReviewRegistration';
+import ReviewBusinessApplications from './pages/review-applications/ReviewBusinessApplications';
 import LandingPage from './pages/home/LandingPage';
 import BackOfficeDashboard from './pages/dashboard/BackOfficeDashboard';
 import CollateralList from './pages/business-applications/collateral/CollateralList';
@@ -187,7 +187,7 @@ const Routes = () => {
           />
           <Route
             path="/admin/review-applications"
-            element={<ReviewRegistration />}
+            element={<ReviewBusinessApplications />}
           />
         </Route>
 

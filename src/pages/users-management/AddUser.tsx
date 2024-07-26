@@ -48,10 +48,10 @@ const AddUser = ({ openUserModal, setOpenUserModal }: Props) => {
       onClose={() => {
         setOpenUserModal(false);
       }}
-      className="!min-w-[70%] !max-w-[1400px]"
+      heading="Add New User"
+      className="!max-w-[50%]"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="px-8">
-        <h1 className="text-2xl font-normal md:my-4 2xl:my-12">Add New User</h1>
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-8">
             <div className="w-1/2">
