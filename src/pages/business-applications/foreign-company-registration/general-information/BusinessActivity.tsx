@@ -42,6 +42,8 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 
 interface BusinessActivityProps {
   businessId: businessId;
@@ -76,6 +78,11 @@ const BusinessActivities = ({
     (state: RootState) => state.navigationFlow
   );
 
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
+  );
+
   // INITIALIZE CREATE BUSINESS ACTIVITIES MUTATION
   const [
     createBusinessActivities,
@@ -84,6 +91,7 @@ const BusinessActivities = ({
       isSuccess: createBusinessActivitiesIsSuccess,
       isError: createBusinessActivitiesIsError,
       error: createBusinessActivitiesError,
+      data: createBusinessActivitiesData,
       reset: resetCreateBusinessActivities,
     },
   ] = useCreateBusinessActivitiesMutation();
@@ -258,6 +266,17 @@ const BusinessActivities = ({
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success("Business activities have been successfully created");
+      // Upload resolution attachment
+      if (file && businessId)
+        dispatch(
+          uploadAmendmentAttachmentThunk({
+            file,
+            fileName,
+            attachmentType,
+            businessId: businessId.toString(),
+            amendmentId: createBusinessActivitiesData?.data?.amendmentId,
+          })
+        );
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -566,6 +585,9 @@ const BusinessActivities = ({
                   </menu>
                 </section>
               )}
+              {applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment errors={errors} control={control} />
+              )}
               {[
                 "IN_PROGRESS",
                 "IN_PREVIEW",
@@ -592,16 +614,6 @@ const BusinessActivities = ({
                       );
                     }}
                   />
-                  {applicationStatus === "IS_AMENDING" && (
-                    <Button
-                      submit
-                      value={"Complete Amendment"}
-                      disabled={
-                        (errors && Object.keys(errors).length > 0) ||
-                        isFormDisabled
-                      }
-                    />
-                  )}
                   {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                     applicationStatus
                   ) && (

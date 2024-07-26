@@ -17,7 +17,10 @@ import {
 } from "@/states/api/businessRegApiSlice";
 import { ErrorResponse, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { setEmploymentInfo } from "@/states/features/businessSlice";
+import {
+  setEmploymentInfo,
+  uploadAmendmentAttachmentThunk,
+} from "@/states/features/businessSlice";
 import Select from "@/components/inputs/Select";
 import { dayHoursArray } from "@/constants/time";
 import { formatDate } from "@/helpers/strings";
@@ -29,6 +32,7 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 interface EmploymentInfoProps {
   businessId: businessId;
@@ -51,17 +55,17 @@ const EmploymentInfo = ({
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState({
-    submit: false,
-    preview: false,
-    amend: false,
-  });
   const { employmentInfo } = useSelector((state: RootState) => state.business);
   const isFormDisabled = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
   const [customReferenceDate, setCustomReferenceDate] =
     useState<boolean>(false);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+
+  // Resolution Attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // GET EMPLOYMENT INFO
@@ -106,6 +110,7 @@ const EmploymentInfo = ({
       error: createEmploymentInfoError,
       isSuccess: createEmploymentInfoIsSuccess,
       isError: createEmploymentInfoIsError,
+      data: createEmploymentInfoData,
     },
   ] = useCreateEmploymentInfoMutation();
 
@@ -143,6 +148,20 @@ const EmploymentInfo = ({
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
+      toast.success("Employment info saved successfully");
+      // Upload resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createEmploymentInfoData?.data?.amendmentId,
+            })
+          );
+      }
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -508,6 +527,9 @@ const EmploymentInfo = ({
               }}
             />
           </menu>
+          {applicationStatus === "IS_AMENDING" && (
+            <ResolutionAttachment errors={errors} control={control} />
+          )}
           {[
             "IN_PREVIEW",
             "ACTION_REQUIRED",
@@ -534,27 +556,11 @@ const EmploymentInfo = ({
                   );
                 }}
               />
-              {applicationStatus === "IS_AMENDING" && (
-                <Button
-                  value={isLoading?.amend ? <Loader /> : "Complete Amendment"}
-                  onClick={() => {
-                    setIsLoading({
-                      ...isLoading,
-                      amend: true,
-                      submit: false,
-                      preview: false,
-                    });
-                  }}
-                  submit
-                />
-              )}
               {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                 applicationStatus
               ) && (
                 <Button
-                  value={
-                    isLoading?.preview ? <Loader /> : "Save & Complete Review"
-                  }
+                  value={"Save & Complete Review"}
                   submit
                   primary
                   disabled={isFormDisabled}

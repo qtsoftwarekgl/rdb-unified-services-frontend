@@ -25,6 +25,8 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 type EmploymentInfoProps = {
   businessId: businessId;
@@ -54,6 +56,10 @@ const EmploymentInfo = ({
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  // Resolution Attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
+  );
 
   // INITIALIZE CREATE EMPLOYMENT INFO MUTATIon
   const [
@@ -63,6 +69,7 @@ const EmploymentInfo = ({
       error: createEmploymentInfoError,
       isSuccess: createEmploymentInfoIsSuccess,
       isError: createEmploymentInfoIsError,
+      data: createEmploymentInfoData,
     },
   ] = useCreateEmploymentInfoMutation();
 
@@ -97,6 +104,21 @@ const EmploymentInfo = ({
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
+      toast.success("Employment info saved successfully");
+      // Upload resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createEmploymentInfoData?.data?.amendmentId,
+            })
+          );
+      }
+
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -415,6 +437,9 @@ const EmploymentInfo = ({
               }}
             />
           </menu>
+          {applicationStatus === "IS_AMENDING" && (
+            <ResolutionAttachment errors={errors} control={control} />
+          )}
           {[
             "IN_PREVIEW",
             "ACTION_REQUIRED",

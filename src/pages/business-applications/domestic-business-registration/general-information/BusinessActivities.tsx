@@ -43,6 +43,8 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -79,6 +81,11 @@ const BusinessActivities = ({
     (state: RootState) => state.navigationFlow
   );
 
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
+  );
+
   // INITIALIZE CREATE BUSINESS ACTIVITIES MUTATION
   const [
     createBusinessActivities,
@@ -87,6 +94,7 @@ const BusinessActivities = ({
       isSuccess: createBusinessActivitiesIsSuccess,
       isError: createBusinessActivitiesIsError,
       error: createBusinessActivitiesError,
+      data: createBusinessActivitiesData,
     },
   ] = useCreateBusinessActivitiesMutation();
 
@@ -257,6 +265,18 @@ const BusinessActivities = ({
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success("Business activities have been successfully created");
+      // Upload resolution attachment
+      if (file && businessId)
+        dispatch(
+          uploadAmendmentAttachmentThunk({
+            file,
+            fileName,
+            attachmentType,
+            businessId: businessId.toString(),
+            amendmentId: createBusinessActivitiesData?.data?.amendmentId,
+          })
+        );
+
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -576,6 +596,9 @@ const BusinessActivities = ({
                     )}
                   </menu>
                 </section>
+              )}
+              {applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment errors={errors} control={control} />
               )}
               {[
                 "IN_PROGRESS",

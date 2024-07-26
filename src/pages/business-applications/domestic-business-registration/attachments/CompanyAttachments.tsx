@@ -19,22 +19,22 @@ import { toast } from "react-toastify";
 import {
   addBusinessAttachment,
   setBusinessAttachments,
-} from '@/states/features/businessSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import BusinessPeopleAttachments from '../BusinessPeopleAttachments';
-import Loader from '@/components/Loader';
-import { BusinessAttachment } from '@/types/models/attachment';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "@/states/features/businessSlice";
+import { ErrorResponse } from "react-router-dom";
+import { useEffect, useState } from "react";
+import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
+import Loader from "@/components/Loader";
+import { BusinessAttachment } from "@/types/models/attachment";
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from '@/states/features/navigationFlowSlice';
+} from "@/states/features/navigationFlowSlice";
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from '@/helpers/business.helpers';
+} from "@/helpers/business.helpers";
 
 type CompanyAttachmentsProps = {
   businessId: businessId;
@@ -70,7 +70,7 @@ const CompanyAttachments = ({
   const { businessAttachments } = useSelector(
     (state: RootState) => state.business
   );
-  const [selectedAttachment, setSelectedAttachment] = useState<string>('');
+  const [selectedAttachment, setSelectedAttachment] = useState<string>("");
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -303,7 +303,7 @@ const CompanyAttachments = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Employment Info'
+                      "Employment Info"
                     ),
                     isActive: true,
                   })
@@ -320,7 +320,7 @@ const CompanyAttachments = ({
                     isCompleted: true,
                     navigationFlowId: findNavigationFlowByStepName(
                       businessNavigationFlowsList,
-                      'Attachments'
+                      "Attachments"
                     )?.id,
                   })
                 );
@@ -329,7 +329,7 @@ const CompanyAttachments = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Preview & Submission'
+                      "Preview & Submission"
                     ),
                     isActive: true,
                   })

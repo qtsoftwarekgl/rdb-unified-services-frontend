@@ -90,7 +90,7 @@ const Navbar = ({ className }: Props) => {
         <img src={rdb_logo} className="w-fit" />
       </figure>
       <nav className="flex items-center gap-4 self-end max-[600px]:gap-3">
-        {!/info|admin/.test(user.email) && (
+        {!/info|admin/.test(user?.email) && (
           <Link
             to="/services"
             className="w-full text-primary font-normal p-1 px-4 rounded-full text-[16px] hover:underline"
@@ -98,7 +98,7 @@ const Navbar = ({ className }: Props) => {
             Services
           </Link>
         )}
-        {unresolvedComments > 0 && !/info|admin/.test(user.email) && (
+        {unresolvedComments > 0 && !/info|admin/.test(user?.email) && (
           <Link to="/user-applications" className="relative">
             <FontAwesomeIcon
               className=" bg-tertiary p-2 h-4 text-white rounded-md cursor-pointer ease-in-out duration-200 hover:scale-[1.02]"

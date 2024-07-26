@@ -37,11 +37,21 @@ import {
   setUserInformation,
 } from "@/states/features/businessPeopleSlice";
 import { genderOptions } from "@/constants/inputs.constants";
-import { setBusinessDetails } from "@/states/features/businessSlice";
+import {
+  setBusinessDetails,
+  uploadAmendmentAttachmentThunk,
+} from "@/states/features/businessSlice";
 import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
 import moment from "moment";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 interface BoardDirectorsProps {
   businessId: businessId;
@@ -74,7 +84,7 @@ const BoardDirectors = ({
   const { boardMemberList } = useSelector(
     (state: RootState) => state.boardOfDirector
   );
-  const isFormDisabled = ['IN_REVIEW'].includes(applicationStatus);
+  const isFormDisabled = ["IN_REVIEW"].includes(applicationStatus);
   const [showVerifyPhone, setShowVerifyPhone] = useState(false);
   const { businessDetails } = useSelector((state: RootState) => state.business);
   const { userInformation } = useSelector(
@@ -82,6 +92,10 @@ const BoardDirectors = ({
   );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+  // Resolutions attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // INITIALIZE CREATE BOARD MEMBER
@@ -205,7 +219,20 @@ const BoardDirectors = ({
         });
         dispatch(setUserInformation(undefined));
       }
-      dispatch(addBoardMember(createBoardMemberData?.data));
+      dispatch(addBoardMember(createBoardMemberData?.data?.data));
+      // Upload resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createBoardMemberData?.data?.amendmentId,
+            })
+          );
+      }
     }
   }, [
     createBoardMemberData,
@@ -922,6 +949,12 @@ const BoardDirectors = ({
                 </menu>
               </menu>
             )}
+            {
+              // Resolutions attachment
+              applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment errors={errors} control={control} />
+              )
+            }
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
@@ -962,22 +995,13 @@ const BoardDirectors = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Executive Management'
+                      "Executive Management"
                     ),
                     isActive: true,
                   })
                 );
               }}
             />
-            {applicationStatus === "IS_AMENDING" && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setForeignBusinessActiveTab("preview_submission"));
-                }}
-              />
-            )}
             {["IN_PREVIEW", "ACTION_REQUIRED"].includes(applicationStatus) && (
               <Button
                 value={"Save & Complete Review"}
@@ -1046,7 +1070,7 @@ const BoardDirectors = ({
                     isCompleted: true,
                     navigationFlowId: findNavigationFlowByStepName(
                       businessNavigationFlowsList,
-                      'Board of Directors'
+                      "Board of Directors"
                     )?.id,
                   })
                 );
@@ -1055,7 +1079,7 @@ const BoardDirectors = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Employment Info'
+                      "Employment Info"
                     ),
                     isActive: true,
                   })

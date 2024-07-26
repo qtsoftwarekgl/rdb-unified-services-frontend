@@ -13,7 +13,10 @@ import { businessId } from "@/types/models/business";
 import { useLazyGetBusinessAddressQuery } from "@/states/api/businessRegApiSlice";
 import { ErrorResponse } from "react-router-dom";
 import { toast } from "react-toastify";
-import { setBusinessAddress } from "@/states/features/businessSlice";
+import {
+  setBusinessAddress,
+  uploadAmendmentAttachmentThunk,
+} from "@/states/features/businessSlice";
 import { useCreateOrUpdateCompanyAddressMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import {
   completeNavigationFlowThunk,
@@ -23,6 +26,7 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 interface CompanyAddressProps {
   businessId: businessId;
@@ -53,6 +57,11 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
   ].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // INITIALIZE GET BUSINESS QUERY
@@ -111,6 +120,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       isLoading: createCompanyAddressIsLoading,
       isError: createCompanyAddressIsError,
       isSuccess: createCompanyAddressIsSuccess,
+      data: createCompanyAddressData,
     },
   ] = useCreateOrUpdateCompanyAddressMutation();
 
@@ -141,6 +151,19 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
       }
     } else if (createCompanyAddressIsSuccess) {
       toast.success("Company address created or updated successfully");
+      if (applicationStatus === "IS_AMENDING") {
+        // upload resolution attachment
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createCompanyAddressData?.data?.amendmentId,
+            })
+          );
+      }
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -384,7 +407,12 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               }}
             />
           </menu>
-          {/* TO DO status should be passed from the parent component by fetch the business */}
+          {
+            // resolution attachment
+            applicationStatus === "IS_AMENDING" && (
+              <ResolutionAttachment control={control} errors={errors} />
+            )
+          }
           {[
             "IN_PROGRESS",
             "ACTION_REQUIRED",
@@ -411,9 +439,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                   );
                 }}
               />
-              {["IS_AMENDING"].includes(applicationStatus) && (
-                <Button submit value={"Complete Amendment"} />
-              )}
               {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                 applicationStatus
               ) && (

@@ -6,9 +6,7 @@ import Input from "../../../../components/inputs/Input";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
-import {
-  setBusinessActiveStep,
-} from "../../../../states/features/businessRegistrationSlice";
+import { setBusinessActiveStep } from "../../../../states/features/businessRegistrationSlice";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDate, maskPhoneDigits } from "../../../../helpers/strings";
@@ -35,8 +33,16 @@ import {
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
 import { genderOptions } from "@/constants/inputs.constants";
 import BusinessPeopleTable from "./BusinessPeopleTable";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 type BoardOfDirectorsProps = {
   businessId: businessId;
@@ -73,6 +79,11 @@ const BoardOfDirectors = ({
   );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+
+  // Resolutions attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
@@ -154,8 +165,21 @@ const BoardOfDirectors = ({
           lastName: "",
           email: "",
         });
-        dispatch(addBoardMember(boardPersonData?.data));
+        dispatch(addBoardMember(boardPersonData?.data?.data));
         dispatch(setUserInformation(undefined));
+      }
+      // Upload resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: boardPersonData?.data?.amendmentId,
+            })
+          );
       }
     }
   }, [
@@ -183,7 +207,7 @@ const BoardOfDirectors = ({
       }
     } else if (uploadAttachmentIsSuccess) {
       toast.success("Person added successfully");
-      dispatch(addBoardMember(boardPersonData?.data));
+      dispatch(addBoardMember(boardPersonData?.data?.data));
       reset({
         position: "",
         personIdentType: "",
@@ -815,6 +839,12 @@ const BoardOfDirectors = ({
                 }}
               />
             </menu>
+            {
+              // Resolutions attachment
+              applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment errors={errors} control={control} />
+              )
+            }
           </section>
           {uploadAttachmentIsLoading ? (
             <figure className="w-full flex items-center justify-center min-h-[20vh]">
@@ -863,7 +893,7 @@ const BoardOfDirectors = ({
                       businessId,
                       massId: findNavigationFlowMassIdByStepName(
                         navigationFlowMassList,
-                        'Executive Management'
+                        "Executive Management"
                       ),
                       isActive: true,
                     })
@@ -887,7 +917,7 @@ const BoardOfDirectors = ({
                       isCompleted: true,
                       navigationFlowId: findNavigationFlowByStepName(
                         businessNavigationFlowsList,
-                        'Board of Directors'
+                        "Board of Directors"
                       )?.id,
                     })
                   );
@@ -896,7 +926,7 @@ const BoardOfDirectors = ({
                       businessId,
                       massId: findNavigationFlowMassIdByStepName(
                         navigationFlowMassList,
-                        'Employment Info'
+                        "Employment Info"
                       ),
                       isActive: true,
                     })
