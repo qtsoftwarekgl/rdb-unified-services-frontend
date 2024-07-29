@@ -37,7 +37,7 @@ export const validateInputs = (value: string, type: string) => {
     if (type === "tin" && value?.length !== 9) {
       return false;
     }
-    if (type === "nid" && value?.length !== 16) {
+    if (type === "nid" && value.replace(/\s+/g, "")?.length !== 16) {
       return false;
     }
     if (
@@ -58,63 +58,76 @@ export const validateInputs = (value: string, type: string) => {
 };
 
 export const validatePassword = (password: string) => {
-  const missingCharacters = [
+  const missingPasswordRules = [
     {
-      message: 'Uppercase letter',
-      type: 'uppercase',
-      color: 'red',
+      message: "At least 8 characters",
+      type: "length",
+      color: "red",
     },
     {
-      message: 'Lowercase letter',
-      type: 'lowercase',
-      color: 'red',
+      message: "Uppercase letter",
+      type: "uppercase",
+      color: "red",
     },
     {
-      message: 'Numeral character',
-      type: 'number',
-      color: 'red',
+      message: "Lowercase letter",
+      type: "lowercase",
+      color: "red",
     },
     {
-      message: 'Special characters',
-      type: 'special',
-      color: 'red',
+      message: "Numeral character",
+      type: "number",
+      color: "red",
+    },
+    {
+      message: "Special characters",
+      type: "special",
+      color: "red",
     },
   ];
 
   if (password && /(?=.*[A-Z])/.test(password)) {
-    const uppercaseCharacter = missingCharacters.find(
-      (character) => character.type === 'uppercase'
+    const uppercaseCharacter = missingPasswordRules.find(
+      (character) => character.type === "uppercase"
     );
     if (uppercaseCharacter) {
-      uppercaseCharacter.color = 'green';
+      uppercaseCharacter.color = "green";
     }
   }
   if (password && /(?=.*[a-z])/.test(password)) {
-    const lowercaseCharacter = missingCharacters.find(
-      (character) => character.type === 'lowercase'
+    const lowercaseCharacter = missingPasswordRules.find(
+      (character) => character.type === "lowercase"
     );
     if (lowercaseCharacter) {
-      lowercaseCharacter.color = 'green';
+      lowercaseCharacter.color = "green";
     }
   }
   if (password && /(?=.*\d)/.test(password)) {
-    const numeralCharacter = missingCharacters.find(
-      (character) => character.type === 'number'
+    const numeralCharacter = missingPasswordRules.find(
+      (character) => character.type === "number"
     );
     if (numeralCharacter) {
-      numeralCharacter.color = 'green';
+      numeralCharacter.color = "green";
     }
   }
   if (password && /(?=.*[^\w\s])/.test(password)) {
-    const specialCharacter = missingCharacters.find(
-      (character) => character.type === 'special'
+    const specialCharacter = missingPasswordRules.find(
+      (character) => character.type === "special"
     );
     if (specialCharacter) {
-      specialCharacter.color = 'green';
+      specialCharacter.color = "green";
+    }
+  }
+  if (password && password.length >= 8) {
+    const lengthCharacter = missingPasswordRules.find(
+      (character) => character.type === "length"
+    );
+    if (lengthCharacter) {
+      lengthCharacter.color = "green";
     }
   }
 
-  return missingCharacters;
+  return missingPasswordRules;
 };
 
 export default validateInputs;

@@ -154,7 +154,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
         formData.append("file", attachmentFile as File);
         formData.append(
           "personId",
-          createShareholderData?.data?.personDetail?.id
+          createShareholderData?.data?.data?.personDetail?.id
         );
         formData.append("attachmentType", String(attachmentFile?.type));
         formData.append("businessId", String(businessId));

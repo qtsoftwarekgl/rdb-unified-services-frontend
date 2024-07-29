@@ -190,7 +190,7 @@ const ExecutiveManagement = ({
       if (watch("nationality") !== "RW") {
         const formData = new FormData();
         formData.append("file", attachmentFile as File);
-        formData.append("personId", createManagementMemberData?.data?.id);
+        formData.append("personId", createManagementMemberData?.data?.data?.id);
         formData.append("attachmentType", "passport");
         formData.append("businessId", String(businessId));
         formData.append("fileName", String(attachmentFile?.name));
@@ -210,7 +210,7 @@ const ExecutiveManagement = ({
         });
         dispatch(setUserInformation(undefined));
       }
-      dispatch(addExecutiveManager(createManagementMemberData?.data));
+      dispatch(addExecutiveManager(createManagementMemberData?.data?.data));
     }
   }, [
     dispatch,

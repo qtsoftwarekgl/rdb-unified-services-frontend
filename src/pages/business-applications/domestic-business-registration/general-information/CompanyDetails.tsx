@@ -38,6 +38,7 @@ import {
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -472,28 +473,20 @@ const CompanyDetails = ({
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
-                    <Input
-                      type="radio"
-                      label="Yes"
-                      defaultChecked={businessDetails?.hasArticlesOfAssociation}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e.target.value);
-                      }}
-                      value={"yes"}
-                    />
-                    <Input
-                      type="radio"
-                      label="No"
-                      defaultChecked={
-                        !businessDetails?.hasArticlesOfAssociation
-                      }
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e.target.value);
-                      }}
-                      value={"no"}
-                    />
+                    <RadioGroup
+                      value={watch("hasArticlesOfAssociation")}
+                      onValueChange={field.onChange}
+                      className="flex items-center gap-6"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="yes" />
+                        <label htmlFor="yes">Yes</label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="no" />
+                        <label htmlFor="no">No</label>
+                      </div>
+                    </RadioGroup>
                     {errors?.hasArticlesOfAssociation && (
                       <p className="text-xs text-red-500">
                         {String(errors?.hasArticlesOfAssociation?.message)}

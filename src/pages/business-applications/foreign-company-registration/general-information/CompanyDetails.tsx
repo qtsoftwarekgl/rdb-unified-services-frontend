@@ -40,6 +40,7 @@ import {
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -473,32 +474,20 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       <span className="text-red-600">*</span>
                     </p>
                     <menu className="flex items-center w-full gap-6">
-                      <Input
-                        type="radio"
-                        label="Yes"
-                        defaultChecked={
-                          businessDetailsData?.data?.hasArticlesOfAssociation
-                        }
-                        {...field}
-                        onChange={async (e) => {
-                          field.onChange(e.target.value);
-                          clearErrors("hasArticlesOfAssociation");
-                        }}
-                        value={"yes"}
-                      />
-                      <Input
-                        type="radio"
-                        label="No"
-                        defaultChecked={
-                          !businessDetailsData?.data?.hasArticlesOfAssociation
-                        }
-                        {...field}
-                        onChange={async (e) => {
-                          field.onChange(e.target.value);
-                          clearErrors("hasArticlesOfAssociation");
-                        }}
-                        value={"no"}
-                      />
+                      <RadioGroup
+                        value={watch("hasArticlesOfAssociation")}
+                        onValueChange={field.onChange}
+                        className="flex items-center gap-6"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="yes" id="yes" />
+                          <label htmlFor="yes">Yes</label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="no" id="no" />
+                          <label htmlFor="no">No</label>
+                        </div>
+                      </RadioGroup>
                       {errors?.hasArticlesOfAssociation && (
                         <p className="text-xs text-red-500">
                           {String(errors?.hasArticlesOfAssociation?.message)}

@@ -199,7 +199,7 @@ const BoardDirectors = ({
       if (watch("nationality") !== "RW") {
         const formData = new FormData();
         formData.append("file", attachmentFile as File);
-        formData.append("personId", createBoardMemberData?.data?.id);
+        formData.append("personId", createBoardMemberData?.data?.data?.id);
         formData.append("attachmentType", String(attachmentFile?.type));
         formData.append("businessId", String(businessId));
         formData.append("fileName", String(attachmentFile?.name));
