@@ -20,6 +20,7 @@ import {
   setBusinessDetails,
   setNameAvailabilitiesList,
   setSimilarBusinessNamesModal,
+  uploadAmendmentAttachmentThunk,
 } from "@/states/features/businessSlice";
 import {
   useCreateBusinessDetailsMutation,
@@ -36,6 +37,8 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -66,6 +69,9 @@ const CompanyDetails = ({
     (state: RootState) => state.navigationFlow
   );
   const [formDisabled, setFormDisabled] = useState(false);
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
+  );
 
   // DISABLE FORM
   useEffect(() => {
@@ -166,6 +172,7 @@ const CompanyDetails = ({
       isLoading: createCompanyDetailsIsLoading,
       isError: createCompanyDetailsIsError,
       isSuccess: createCompanyDetailsIsSuccess,
+      data: createCompanyDetailsData,
     },
   ] = useCreateBusinessDetailsMutation();
 
@@ -203,6 +210,19 @@ const CompanyDetails = ({
       }
     } else if (createCompanyDetailsIsSuccess) {
       toast.success("Company details created or updated successfully");
+      if (applicationStatus === "IS_AMENDING") {
+        // upload resolution attachment
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createCompanyDetailsData?.data?.amendmentId,
+            })
+          );
+      }
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -453,28 +473,20 @@ const CompanyDetails = ({
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
-                    <Input
-                      type="radio"
-                      label="Yes"
-                      defaultChecked={businessDetails?.hasArticlesOfAssociation}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e.target.value);
-                      }}
-                      value={"yes"}
-                    />
-                    <Input
-                      type="radio"
-                      label="No"
-                      defaultChecked={
-                        !businessDetails?.hasArticlesOfAssociation
-                      }
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e.target.value);
-                      }}
-                      value={"no"}
-                    />
+                    <RadioGroup
+                      value={watch("hasArticlesOfAssociation")}
+                      onValueChange={field.onChange}
+                      className="flex items-center gap-6"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="yes" />
+                        <label htmlFor="yes">Yes</label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="no" />
+                        <label htmlFor="no">No</label>
+                      </div>
+                    </RadioGroup>
                     {errors?.hasArticlesOfAssociation && (
                       <p className="text-xs text-red-500">
                         {String(errors?.hasArticlesOfAssociation?.message)}
@@ -485,6 +497,10 @@ const CompanyDetails = ({
               }}
             />
           </menu>
+          {applicationStatus === "IS_AMENDING" && (
+            // Resolution Attachment
+            <ResolutionAttachment control={control} errors={errors} />
+          )}
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >

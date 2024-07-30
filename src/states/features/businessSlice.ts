@@ -11,6 +11,7 @@ import businessRegApiSlice from "../api/businessRegApiSlice";
 import { AppDispatch } from "../store";
 import { toast } from "react-toastify";
 import { UUID } from "crypto";
+import { setResolutionAttachment } from "./resolutionAttachmentSlice";
 
 const initialState: {
   businessesList: Business[];
@@ -137,6 +138,14 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
           formData,
         })
       ).unwrap();
+      // Reset resolution attachment
+      dispatch(
+        setResolutionAttachment({
+          file: null,
+          fileName: "",
+          attachmentType: "",
+        })
+      );
       return response.data;
     } catch (error) {
       toast.error("An error occurred while uploading attachment");

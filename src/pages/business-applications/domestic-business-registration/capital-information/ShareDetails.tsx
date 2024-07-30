@@ -1,28 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../../../components/inputs/Input';
-import Button from '../../../../components/inputs/Button';
-import Loader from '../../../../components/Loader';
-import { AppDispatch, RootState } from '../../../../states/store';
-import { useDispatch } from 'react-redux';
+import { useEffect } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../../../components/inputs/Input";
+import Button from "../../../../components/inputs/Button";
+import Loader from "../../../../components/Loader";
+import { AppDispatch, RootState } from "../../../../states/store";
+import { useDispatch } from "react-redux";
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
-} from '../../../../states/features/businessRegistrationSlice';
-import { businessId } from '@/types/models/business';
-import { useCreateShareDetailsMutation } from '@/states/api/businessRegApiSlice';
-import { ErrorResponse } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+} from "../../../../states/features/businessRegistrationSlice";
+import { businessId } from "@/types/models/business";
+import { useCreateShareDetailsMutation } from "@/states/api/businessRegApiSlice";
+import { ErrorResponse } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from '@/states/features/navigationFlowSlice';
+} from "@/states/features/navigationFlowSlice";
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from '@/helpers/business.helpers';
+} from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 
 type ShareDetailsProps = {
   businessId: businessId;
@@ -43,9 +45,14 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
+  const disableForm = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // INITIALIZE CREATE SHARE DETAILS MUTATION
@@ -56,68 +63,69 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
       error: createShareDetailsError,
       isError: createShareDetailsIsError,
       isSuccess: createShareDetailsIsSuccess,
+      data: createShareDetailsData,
     },
   ] = useCreateShareDetailsMutation();
 
   // TABLE HEADERS
   const tableHeaders = [
-    'Share type',
-    'Number of shares',
-    'Per Value',
-    'Total Value',
+    "Share type",
+    "Number of shares",
+    "Per Value",
+    "Total Value",
   ];
 
   // TABLE ROWS
   const tableRows = [
-    { name: 'ordinaryShare', label: 'Ordinary Share' },
-    { name: 'preferenceShare', label: 'Preference Share' },
-    { name: 'nonVotingShare', label: 'Non-voting Share' },
-    { name: 'redeemableShare', label: 'Redeemable Share' },
-    { name: 'irredeemableShare', label: 'Irredeemable Share' },
+    { name: "ordinaryShare", label: "Ordinary Share" },
+    { name: "preferenceShare", label: "Preference Share" },
+    { name: "nonVotingShare", label: "Non-voting Share" },
+    { name: "redeemableShare", label: "Redeemable Share" },
+    { name: "irredeemableShare", label: "Irredeemable Share" },
   ];
 
   // HANDLE CAPITAL SHARES OVERFLOW
   useEffect(() => {
     setValue(
-      'totalShares',
+      "totalShares",
       tableRows
         ?.map((row) => watch(`${row.name}Quantity`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
   }, [
-    watch('ordinaryShareQuantity'),
-    watch('preferenceShareQuantity'),
-    watch('nonVotingShareQuantity'),
-    watch('redeemableShareQuantity'),
-    watch('irredeemableShareQuantity'),
+    watch("ordinaryShareQuantity"),
+    watch("preferenceShareQuantity"),
+    watch("nonVotingShareQuantity"),
+    watch("redeemableShareQuantity"),
+    watch("irredeemableShareQuantity"),
   ]);
 
   // HANDLE CAPITAL TOTAL OVERFLOW
   useEffect(() => {
     setValue(
-      'totalAmount',
+      "totalAmount",
       tableRows
         ?.map((row) => watch(`${row.name}TotalAmount`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
-    setValue('companyCapital', watch('totalAmount'));
-    if (Number(watch('totalAmount')) > Number(watch('companyCapital'))) {
-      setError('totalAmount', {
-        type: 'manual',
-        message: 'Share values cannot exceed total company capital',
+    setValue("companyCapital", watch("totalAmount"));
+    if (Number(watch("totalAmount")) > Number(watch("companyCapital"))) {
+      setError("totalAmount", {
+        type: "manual",
+        message: "Share values cannot exceed total company capital",
       });
     } else {
-      clearErrors('totalAmount');
+      clearErrors("totalAmount");
     }
   }, [
-    watch('ordinaryShareTotalAmount'),
-    watch('preferenceShareTotalAmount'),
-    watch('nonVotingShareTotalAmount'),
-    watch('redeemableShareTotalAmount'),
-    watch('irredeemableShareTotalAmount'),
-    watch('companyCapital'),
+    watch("ordinaryShareTotalAmount"),
+    watch("preferenceShareTotalAmount"),
+    watch("nonVotingShareTotalAmount"),
+    watch("redeemableShareTotalAmount"),
+    watch("irredeemableShareTotalAmount"),
+    watch("companyCapital"),
   ]);
 
   // HANDLE SUBMIT
@@ -138,17 +146,30 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
   useEffect(() => {
     if (createShareDetailsIsError) {
       if ((createShareDetailsError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred, please try again later');
+        toast.error("An error occurred, please try again later");
       } else {
         toast.error((createShareDetailsError as ErrorResponse)?.data?.message);
       }
     } else if (createShareDetailsIsSuccess) {
+      // Uplioad resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createShareDetailsData?.data?.amendmentId,
+            })
+          );
+      }
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Share Details'
+            "Share Details"
           )?.id,
         })
       );
@@ -157,7 +178,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Shareholders'
+            "Shareholders"
           ),
           isActive: true,
         })
@@ -172,7 +193,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
           <Controller
             name="companyCapital"
             control={control}
-            rules={{ required: 'Total company capital is required' }}
+            rules={{ required: "Total company capital is required" }}
             render={({ field }) => {
               return (
                 <label className="w-[49%] flex flex-col gap-1">
@@ -271,12 +292,12 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
               <tr className="flex flex-row items-center justify-between w-full gap-3 p-3">
                 <h2 className="w-full font-semibold uppercase">Total</h2>
                 <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch('totalShares')} />
+                  <Input required readOnly value={watch("totalShares")} />
                 </td>
                 <span className="w-full"></span>
 
                 <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch('totalAmount')} />
+                  <Input required readOnly value={watch("totalAmount")} />
                 </td>
               </tr>
             </tfoot>
@@ -286,12 +307,15 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
               </caption>
             )}
           </table>
+          {applicationStatus === "IS_AMENDING" && (
+            <ResolutionAttachment errors={errors} control={control} />
+          )}
         </fieldset>
         {[
-          'IN_PROGRESS',
-          'ACTION_REQUIRED',
-          'IN_PREVIEW',
-          'IS_AMENDING',
+          "IN_PROGRESS",
+          "ACTION_REQUIRED",
+          "IN_PREVIEW",
+          "IS_AMENDING",
         ].includes(String(applicationStatus)) && (
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -306,7 +330,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Business Activity & VAT'
+                      "Business Activity & VAT"
                     ),
                     isActive: true,
                   })
@@ -315,7 +339,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
             />
             <Button
               value={
-                createShareDetailsIsLoading ? <Loader /> : 'Save & Continue'
+                createShareDetailsIsLoading ? <Loader /> : "Save & Continue"
               }
               primary
               submit
@@ -324,18 +348,18 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
           </menu>
         )}
         {[
-          'IN_REVIEW',
-          'APPROVED',
-          'PENDING_APPROVAL',
-          'PENDING_REJECTION',
+          "IN_REVIEW",
+          "APPROVED",
+          "PENDING_APPROVAL",
+          "PENDING_REJECTION",
         ].includes(String(applicationStatus)) && (
-          <menu className="flex items-center gap-3 justify-between">
+          <menu className="flex items-center justify-between gap-3">
             <Button
               value="Back"
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('business_activity_vat'));
-                dispatch(setBusinessActiveTab('general_information'));
+                dispatch(setBusinessActiveStep("business_activity_vat"));
+                dispatch(setBusinessActiveTab("general_information"));
               }}
             />
             <Button
@@ -343,7 +367,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
               primary
               onClick={(e) => {
                 e.preventDefault();
-                dispatch(setBusinessActiveStep('shareholders'));
+                dispatch(setBusinessActiveStep("shareholders"));
               }}
             />
           </menu>

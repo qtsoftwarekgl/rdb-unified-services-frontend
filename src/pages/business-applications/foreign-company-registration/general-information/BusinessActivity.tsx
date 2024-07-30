@@ -42,6 +42,9 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface BusinessActivityProps {
   businessId: businessId;
@@ -58,6 +61,7 @@ const BusinessActivities = ({
     control,
     watch,
     setError,
+    reset,
     clearErrors,
     formState: { errors },
   } = useForm();
@@ -76,6 +80,11 @@ const BusinessActivities = ({
     (state: RootState) => state.navigationFlow
   );
 
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
+  );
+
   // INITIALIZE CREATE BUSINESS ACTIVITIES MUTATION
   const [
     createBusinessActivities,
@@ -84,6 +93,7 @@ const BusinessActivities = ({
       isSuccess: createBusinessActivitiesIsSuccess,
       isError: createBusinessActivitiesIsError,
       error: createBusinessActivitiesError,
+      data: createBusinessActivitiesData,
       reset: resetCreateBusinessActivities,
     },
   ] = useCreateBusinessActivitiesMutation();
@@ -117,6 +127,11 @@ const BusinessActivities = ({
       dispatch(
         setSelectedBusinessLinesList(businessActivitiesData?.data?.businessLine)
       );
+      reset({
+        isVATRegistered: businessActivitiesData?.data?.vatregistered
+          ? "yes"
+          : "no",
+      });
       if (
         selectedMainBusinessLine === undefined ||
         Object.keys(selectedMainBusinessLine).length === 0
@@ -237,7 +252,7 @@ const BusinessActivities = ({
     }
 
     createBusinessActivities({
-      isVATRegistered: data?.VATRegistered === "yes",
+      isVATRegistered: data?.isVATRegistered === "yes",
       businessLines: selectedBusinessLinesList,
       mainBusinessActivity: selectedMainBusinessLine?.description,
       businessId,
@@ -258,6 +273,17 @@ const BusinessActivities = ({
       }
     } else if (createBusinessActivitiesIsSuccess) {
       toast.success("Business activities have been successfully created");
+      // Upload resolution attachment
+      if (file && businessId)
+        dispatch(
+          uploadAmendmentAttachmentThunk({
+            file,
+            fileName,
+            attachmentType,
+            businessId: businessId.toString(),
+            amendmentId: createBusinessActivitiesData?.data?.amendmentId,
+          })
+        );
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -486,85 +512,79 @@ const BusinessActivities = ({
                   )}
                 </menu>
               )}
-              {businessActivitiesIsSuccess && (
-                <section className="flex flex-col w-full gap-6">
-                  <h1 className="text-lg font-semibold text-center uppercase">
-                    VAT Certificate
-                  </h1>
-                  <menu className="w-[50%] flex flex-col gap-6">
-                    <Controller
-                      name="VATRegistered"
-                      rules={{ required: "Select choice" }}
-                      defaultValue={businessActivitiesData?.data?.vatregistered}
-                      control={control}
-                      render={({ field }) => {
-                        return (
-                          <label className="flex flex-col w-full gap-2">
-                            <p className="flex items-center gap-2 text-[15px]">
-                              Would you like to register for VAT Certificate{" "}
-                              <span className="text-red-600">*</span>
-                            </p>
-                            <menu className="flex items-center w-full gap-6">
-                              <Input
-                                type="radio"
-                                label="Yes"
-                                defaultChecked={
-                                  businessActivitiesData?.data?.vatregistered
-                                }
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(e.target.value);
-                                  clearErrors("VATRegistered");
-                                }}
-                                value={"yes"}
-                              />
-                              <Input
-                                type="radio"
-                                label="No"
-                                defaultChecked={
-                                  !businessActivitiesData?.data?.vatregistered
-                                }
-                                {...field}
-                                onChange={(e) => {
-                                  field.onChange(e.target.value);
-                                  clearErrors("VATRegistered");
-                                }}
-                                value={"no"}
-                              />
-                              {errors?.VATRegistered && (
-                                <p className="text-[13px] text-red-500">
-                                  {String(errors?.VATRegistered.message)}
-                                </p>
-                              )}
-                            </menu>
-                          </label>
-                        );
-                      }}
-                    />
-                    {watch("VATRegistered") === "yes" && (
+              {businessLinesIsSuccess ||
+                (selectedBusinessLinesList.length !== 0 && (
+                  <section className="flex flex-col w-full gap-6">
+                    <h1 className="text-lg font-semibold text-center uppercase">
+                      VAT Certificate
+                    </h1>
+                    <menu className="w-[50%] flex flex-col gap-6">
                       <Controller
-                        name="turnover"
+                        name="isVATRegistered"
+                        rules={{ required: "Select choice" }}
+                        defaultValue={
+                          businessActivitiesData?.data?.isVATRegistered
+                        }
                         control={control}
                         render={({ field }) => {
                           return (
-                            <label className="flex flex-col gap-1 w-[60%]">
-                              <Input
-                                defaultValue={watch("turnover")}
-                                label="Enter expected turnover (optional)"
-                                {...field}
-                              />
-                              <p className="text-[10px] text-secondary">
-                                Turnover amount is not required to submit the
-                                application. You can also add it later after the
-                                application has been processed.
+                            <label className="flex flex-col w-full gap-2">
+                              <p className="flex items-center gap-2 text-[15px]">
+                                Would you like to register for VAT Certificate{" "}
+                                <span className="text-red-600">*</span>
                               </p>
+                              <menu className="flex items-center w-full gap-6">
+                                <RadioGroup
+                                  value={watch("isVATRegistered")}
+                                  onValueChange={field.onChange}
+                                  className="flex items-center gap-6"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="yes" id="yes" />
+                                    <label htmlFor="yes">Yes</label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="no" id="no" />
+                                    <label htmlFor="no">No</label>
+                                  </div>
+                                </RadioGroup>
+                                {errors?.isVATRegistered && (
+                                  <p className="text-[13px] text-red-500">
+                                    {String(errors?.isVATRegistered.message)}
+                                  </p>
+                                )}
+                              </menu>
                             </label>
                           );
                         }}
                       />
-                    )}
-                  </menu>
-                </section>
+                      {watch("isVATRegistered") === "yes" && (
+                        <Controller
+                          name="turnover"
+                          control={control}
+                          render={({ field }) => {
+                            return (
+                              <label className="flex flex-col gap-1 w-[60%]">
+                                <Input
+                                  defaultValue={watch("turnover")}
+                                  label="Enter expected turnover (optional)"
+                                  {...field}
+                                />
+                                <p className="text-[10px] text-secondary">
+                                  Turnover amount is not required to submit the
+                                  application. You can also add it later after
+                                  the application has been processed.
+                                </p>
+                              </label>
+                            );
+                          }}
+                        />
+                      )}
+                    </menu>
+                  </section>
+                ))}
+              {applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment errors={errors} control={control} />
               )}
               {[
                 "IN_PROGRESS",
@@ -592,16 +612,6 @@ const BusinessActivities = ({
                       );
                     }}
                   />
-                  {applicationStatus === "IS_AMENDING" && (
-                    <Button
-                      submit
-                      value={"Complete Amendment"}
-                      disabled={
-                        (errors && Object.keys(errors).length > 0) ||
-                        isFormDisabled
-                      }
-                    />
-                  )}
                   {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                     applicationStatus
                   ) && (

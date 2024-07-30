@@ -25,6 +25,7 @@ import {
   setNameAvailabilitiesList,
   setBusinessDetails,
   setSimilarBusinessNamesModal,
+  uploadAmendmentAttachmentThunk,
 } from "@/states/features/businessSlice";
 import { useCreateOrUpdateCompanyDetailsMutation } from "@/states/api/foreignCompanyRegistrationApiSlice";
 import { convertDecimalToPercentage } from "@/helpers/strings";
@@ -38,6 +39,8 @@ import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -66,6 +69,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // GET BUSINESS DETAILS
@@ -152,6 +160,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
       isLoading: createCompanyDetailsIsLoading,
       isError: createCompanyDetailsIsError,
       isSuccess: createCompanyDetailsIsSuccess,
+      data: createCompanyDetailsData,
     },
   ] = useCreateOrUpdateCompanyDetailsMutation();
 
@@ -189,28 +198,39 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
       }
     } else if (createCompanyDetailsIsSuccess) {
       toast.success("Company details created or updated successfully");
-      const createNavigation = async () => {
-        await dispatch(
-          completeNavigationFlowThunk({
-            isCompleted: true,
-            navigationFlowId: findNavigationFlowByStepName(
-              businessNavigationFlowsList,
-              "Company Details"
-            )?.id,
-          })
-        );
-        await dispatch(
-          createNavigationFlowThunk({
-            businessId,
-            massId: findNavigationFlowMassIdByStepName(
-              navigationFlowMassList,
-              "Company Address"
-            ),
-            isActive: true,
-          })
-        );
-      };
-      createNavigation();
+      if (businessDetails?.applicationStatus === "IS_AMENDING") {
+        // upload resolution attachment
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createCompanyDetailsData?.data?.amendmentId,
+            })
+          );
+      }
+
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Company Details"
+          )?.id,
+        })
+      );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            "Company Address"
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
     createCompanyDetailsIsSuccess,
@@ -454,32 +474,20 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                       <span className="text-red-600">*</span>
                     </p>
                     <menu className="flex items-center w-full gap-6">
-                      <Input
-                        type="radio"
-                        label="Yes"
-                        defaultChecked={
-                          businessDetailsData?.data?.hasArticlesOfAssociation
-                        }
-                        {...field}
-                        onChange={async (e) => {
-                          field.onChange(e.target.value);
-                          clearErrors("hasArticlesOfAssociation");
-                        }}
-                        value={"yes"}
-                      />
-                      <Input
-                        type="radio"
-                        label="No"
-                        defaultChecked={
-                          !businessDetailsData?.data?.hasArticlesOfAssociation
-                        }
-                        {...field}
-                        onChange={async (e) => {
-                          field.onChange(e.target.value);
-                          clearErrors("hasArticlesOfAssociation");
-                        }}
-                        value={"no"}
-                      />
+                      <RadioGroup
+                        value={watch("hasArticlesOfAssociation")}
+                        onValueChange={field.onChange}
+                        className="flex items-center gap-6"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="yes" id="yes" />
+                          <label htmlFor="yes">Yes</label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="no" id="no" />
+                          <label htmlFor="no">No</label>
+                        </div>
+                      </RadioGroup>
                       {errors?.hasArticlesOfAssociation && (
                         <p className="text-xs text-red-500">
                           {String(errors?.hasArticlesOfAssociation?.message)}
@@ -491,6 +499,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               }}
             />
           </menu>
+          {businessDetails?.applicationStatus === "IS_AMENDING" && (
+            // Resolution Attachment
+            <ResolutionAttachment control={control} errors={errors} />
+          )}
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >

@@ -34,7 +34,7 @@ export const nameReservationSlice = createSlice({
             tab_name: "name_reservation",
             active: false,
             completed: false,
-          }
+          },
         ],
       },
       {
@@ -49,7 +49,7 @@ export const nameReservationSlice = createSlice({
             tab_name: "complete",
             active: false,
             completed: false,
-          }
+          },
         ],
       },
     ],
@@ -71,7 +71,7 @@ export const nameReservationSlice = createSlice({
       JSON.parse(String(localStorage.getItem("name_reservation"))) || null,
     reservedNames:
       JSON.parse(String(localStorage.getItem("reservedNames"))) || [],
-      selectReservedNameModal: false
+    selectReservedNameModal: false,
   },
 
   reducers: {
@@ -236,10 +236,8 @@ export const nameReservationSlice = createSlice({
     },
     removeFromReservedNames: (state, action) => {
       state.reservedNames = state.reservedNames?.filter(
-        (reserved: {
-          name: string,
-          entryId?: string
-        }) => reserved?.name !== action.payload
+        (reserved: { name: string; entryId?: string }) =>
+          reserved?.name !== action.payload
       );
       localStorage.setItem(
         "reservedNames",
@@ -263,5 +261,5 @@ export const {
   resetToInitialState,
   setReservedNames,
   removeFromReservedNames,
-  setSelectReservedNameModal
+  setSelectReservedNameModal,
 } = nameReservationSlice.actions;

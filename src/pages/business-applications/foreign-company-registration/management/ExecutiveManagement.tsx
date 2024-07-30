@@ -37,11 +37,21 @@ import {
 import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
 import { genderOptions } from "@/constants/inputs.constants";
 import { useLazyGetBusinessDetailsQuery } from "@/states/api/businessRegApiSlice";
-import { setBusinessDetails } from "@/states/features/businessSlice";
+import {
+  setBusinessDetails,
+  uploadAmendmentAttachmentThunk,
+} from "@/states/features/businessSlice";
 import { foreignExecutiveManagementPosition } from "@/constants/businessRegistration";
 import moment from "moment";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 interface ExecutiveManagementProps {
   businessId: businessId;
@@ -69,7 +79,7 @@ const ExecutiveManagement = ({
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
   );
-  const isFormDisabled = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
+  const isFormDisabled = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -81,6 +91,9 @@ const ExecutiveManagement = ({
   );
   const { executiveManagersList } = useSelector(
     (state: RootState) => state.executiveManager
+  );
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // INITIALIZE GET USER INFORMATION QUERY
@@ -177,7 +190,7 @@ const ExecutiveManagement = ({
       if (watch("nationality") !== "RW") {
         const formData = new FormData();
         formData.append("file", attachmentFile as File);
-        formData.append("personId", createManagementMemberData?.data?.id);
+        formData.append("personId", createManagementMemberData?.data?.data?.id);
         formData.append("attachmentType", "passport");
         formData.append("businessId", String(businessId));
         formData.append("fileName", String(attachmentFile?.name));
@@ -197,7 +210,7 @@ const ExecutiveManagement = ({
         });
         dispatch(setUserInformation(undefined));
       }
-      dispatch(addExecutiveManager(createManagementMemberData?.data));
+      dispatch(addExecutiveManager(createManagementMemberData?.data?.data));
     }
   }, [
     dispatch,
@@ -236,6 +249,19 @@ const ExecutiveManagement = ({
       });
       setAttachmentFile(null);
       dispatch(setBusinessPersonAttachments([]));
+      // Upload resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createManagementMemberData?.data?.amendmentId,
+            })
+          );
+      }
     }
   }, [
     dispatch,
@@ -926,6 +952,12 @@ const ExecutiveManagement = ({
                 </menu>
               </menu>
             )}
+            {
+              // Resolution attachment
+              applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment errors={errors} control={control} />
+              )
+            }
           </section>
           <section className="flex items-center justify-end w-full">
             <Button
@@ -961,25 +993,13 @@ const ExecutiveManagement = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Business Activity & VAT'
+                      "Business Activity & VAT"
                     ),
                     isActive: true,
                   })
                 );
               }}
             />
-            {applicationStatus === "IS_AMENDING" && (
-              <Button
-                value={"Complete Amendment"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!validateExecutiveManager()) return;
-                  dispatch(
-                    setForeignBusinessActiveTab("foreign_preview_submission")
-                  );
-                }}
-              />
-            )}
             {["IN_PREVIEW", "ACTION_REQUIRED"].includes(applicationStatus) && (
               <Button
                 value="Save & Complete Review"
@@ -1005,7 +1025,7 @@ const ExecutiveManagement = ({
                     isCompleted: true,
                     navigationFlowId: findNavigationFlowByStepName(
                       businessNavigationFlowsList,
-                      'Executive Management'
+                      "Executive Management"
                     )?.id,
                   })
                 );
@@ -1014,7 +1034,7 @@ const ExecutiveManagement = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Board of Directors'
+                      "Board of Directors"
                     ),
                     isActive: true,
                   })

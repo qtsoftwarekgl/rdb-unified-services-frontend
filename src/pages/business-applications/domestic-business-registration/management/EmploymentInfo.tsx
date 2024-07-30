@@ -25,6 +25,9 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type EmploymentInfoProps = {
   businessId: businessId;
@@ -54,6 +57,10 @@ const EmploymentInfo = ({
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  // Resolution Attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
+  );
 
   // INITIALIZE CREATE EMPLOYMENT INFO MUTATIon
   const [
@@ -63,6 +70,7 @@ const EmploymentInfo = ({
       error: createEmploymentInfoError,
       isSuccess: createEmploymentInfoIsSuccess,
       isError: createEmploymentInfoIsError,
+      data: createEmploymentInfoData,
     },
   ] = useCreateEmploymentInfoMutation();
 
@@ -97,6 +105,21 @@ const EmploymentInfo = ({
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
+      toast.success("Employment info saved successfully");
+      // Upload resolution attachment
+      if (applicationStatus === "IS_AMENDING") {
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createEmploymentInfoData?.data?.amendmentId,
+            })
+          );
+      }
+
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -218,28 +241,20 @@ const EmploymentInfo = ({
                     <span className="text-red-600">*</span>
                   </h4>
                   <ul className="flex items-center gap-6">
-                    <Input
-                      type="radio"
-                      label="Yes"
-                      defaultChecked={watch("has_employees") === "yes"}
-                      name={field?.name}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setValue(field?.name, "yes");
-                        }
-                      }}
-                    />
-                    <Input
-                      type="radio"
-                      label="No"
-                      name={field?.name}
-                      defaultChecked={watch("has_employees") === "no"}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setValue(field?.name, "no");
-                        }
-                      }}
-                    />
+                    <RadioGroup
+                      value={watch("has_employees")}
+                      onValueChange={field.onChange}
+                      className="flex items-center gap-6"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="yes" id="yes" />
+                        <label htmlFor="yes">Yes</label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="no" id="no" />
+                        <label htmlFor="no">No</label>
+                      </div>
+                    </RadioGroup>
                   </ul>
                   {errors?.has_employees && (
                     <p className="text-red-600 text-[13px]">
@@ -415,6 +430,9 @@ const EmploymentInfo = ({
               }}
             />
           </menu>
+          {applicationStatus === "IS_AMENDING" && (
+            <ResolutionAttachment errors={errors} control={control} />
+          )}
           {[
             "IN_PREVIEW",
             "ACTION_REQUIRED",

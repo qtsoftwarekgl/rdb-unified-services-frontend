@@ -8,7 +8,10 @@ import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { setBusinessActiveStep } from "../../../../states/features/businessRegistrationSlice";
 import { businessId } from "@/types/models/business";
-import { setBusinessAddress } from "@/states/features/businessSlice";
+import {
+  setBusinessAddress,
+  uploadAmendmentAttachmentThunk,
+} from "@/states/features/businessSlice";
 import { toast } from "react-toastify";
 import { ErrorResponse, Link } from "react-router-dom";
 import {
@@ -42,6 +45,7 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 
 type CompanyAddressProps = {
   businessId: businessId;
@@ -78,6 +82,11 @@ const CompanyAddress = ({
   const [showStaticLocation, setShowStaticLocation] = useState(true);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
+  );
+
+  // Resolution attachment
+  const { file, fileName, attachmentType } = useSelector(
+    (state: RootState) => state.resolutionAttachment
   );
 
   // DISABLE FORM
@@ -315,6 +324,7 @@ const CompanyAddress = ({
       isLoading: createCompanyAddressIsLoading,
       isError: createCompanyAddressIsError,
       isSuccess: createCompanyAddressIsSuccess,
+      data: createCompanyAddressData,
     },
   ] = useCreateCompanyAddressMutation();
 
@@ -343,6 +353,19 @@ const CompanyAddress = ({
       }
     } else if (createCompanyAddressIsSuccess) {
       toast.success("Company address created or updated successfully");
+      if (applicationStatus === "IS_AMENDING") {
+        // upload resolution attachment
+        if (file && businessId)
+          dispatch(
+            uploadAmendmentAttachmentThunk({
+              file,
+              fileName,
+              attachmentType,
+              businessId: businessId.toString(),
+              amendmentId: createCompanyAddressData?.data?.amendmentId,
+            })
+          );
+      }
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
@@ -736,6 +759,12 @@ const CompanyAddress = ({
                 }}
               />
             </menu>
+            {
+              // resolution attachment
+              applicationStatus === "IS_AMENDING" && (
+                <ResolutionAttachment control={control} errors={errors} />
+              )
+            }
             {[
               "IN_PROGRESS",
               "ACTION_REQUIRED",
@@ -762,9 +791,6 @@ const CompanyAddress = ({
                     );
                   }}
                 />
-                {["IS_AMENDING"].includes(String(applicationStatus)) && (
-                  <Button submit value={"Complete Amendment"} />
-                )}
                 {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
                   String(applicationStatus)
                 ) && (
