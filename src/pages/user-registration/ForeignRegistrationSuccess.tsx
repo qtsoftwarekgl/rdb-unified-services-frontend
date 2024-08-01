@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import Button from '../../components/inputs/Button';
+import { FC } from "react";
+import Button from "../../components/inputs/Button";
 
 interface ForeignRegistrationSuccessProps {
   isOpen: boolean;
@@ -12,10 +12,10 @@ const ForeignRegistrationSuccess: FC<ForeignRegistrationSuccessProps> = ({
 
   return (
     <section className="flex flex-col gap-5 bg-white p-6 w-[50%] mx-auto rounded-md shadow-sm h-[50%]">
-      <section className="flex flex-col gap-5 w-full items-center justify-center m-auto">
+      <section className="flex flex-col items-center justify-center w-full gap-5 m-auto">
         <h2 className="text-[14px] p-2 text-black rounded-md bg-green-200 text-center">
           Your account application has been submitted successully. You will
-          receive a notification on the email address you provied once the
+          receive a notification on the email address you provided once the
           application is approved by RDB.
         </h2>
         <Button
