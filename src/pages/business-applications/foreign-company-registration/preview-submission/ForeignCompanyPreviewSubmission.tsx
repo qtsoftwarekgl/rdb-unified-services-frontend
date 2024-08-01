@@ -7,9 +7,7 @@ import {
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
 } from "../../../../states/features/foreignCompanyRegistrationSlice";
-import { capitalizeString, formatDate } from "../../../../helpers/strings";
-import Table from "../../../../components/table/Table";
-import { countriesList } from "../../../../constants/countries";
+import { capitalizeString } from "../../../../helpers/strings";
 import Button from "../../../../components/inputs/Button";
 import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
@@ -22,21 +20,8 @@ import {
   useUpdateBusinessMutation,
 } from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
-import {
-  setBusinessAddress,
-  setBusinessDetails,
-  setEmploymentInfo,
-} from "@/states/features/businessSlice";
 import { useLazyFetchBusinessPeopleQuery } from "@/states/api/foreignCompanyRegistrationApiSlice";
-import { setBoardOfDirectorsList } from "@/states/features/boardOfDirectorSlice";
-import { setExecutiveManagersList } from "@/states/features/executiveManagerSlice";
-import {
-  setSelectedBusinessLinesList,
-  setSelectedMainBusinessLine,
-  setVatRegistred,
-} from "@/states/features/businessActivitySlice";
 import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessRegApiSlice";
-import { setBusinessAttachments } from "@/states/features/businessSlice";
 import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
 import {
   findNavigationFlowByStepName,
@@ -46,6 +31,9 @@ import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
+import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople";
+import moment from "moment";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface ForeignCompanyPreviewSubmissionProps {
   businessId: businessId;
@@ -58,20 +46,7 @@ const ForeignCompanyPreviewSubmission = ({
 }: ForeignCompanyPreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { businessAddress } = useSelector((state: RootState) => state.business);
-  const { selectedBusinessLinesList, selectedMainBusinessLine, vatRegistred } =
-    useSelector((state: RootState) => state.businessActivity);
-  const { boardMemberList } = useSelector(
-    (state: RootState) => state.boardOfDirector
-  );
-  const { executiveManagersList } = useSelector(
-    (state: RootState) => state.executiveManager
-  );
-  const { employmentInfo } = useSelector((state: RootState) => state.business);
   const navigate = useNavigate();
-  const { businessAttachments } = useSelector(
-    (state: RootState) => state.business
-  );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -79,37 +54,19 @@ const ForeignCompanyPreviewSubmission = ({
   // GET BUSINESS DETAILS
   const [
     getBusinessDetails,
-    {
-      data: businessDetailsData,
-      isLoading: businessIsLoading,
-      error: businessError,
-      isError: businessIsError,
-      isSuccess: businessIsSuccess,
-    },
+    { data: businessDetailsData, isLoading: businessIsLoading },
   ] = useLazyGetBusinessDetailsQuery();
 
   // INITIALIZE GET BUSINESS QUERY
   const [
     getBusinessAddress,
-    {
-      data: businessAddressData,
-      error: businessAddressError,
-      isLoading: businessAddressIsLoading,
-      isError: businessAddressIsError,
-      isSuccess: businessAddressIsSuccess,
-    },
+    { data: businessAddressData, isLoading: businessAddressIsLoading },
   ] = useLazyGetBusinessAddressQuery();
 
   // INITIALIZE FETCH BOARD MEMEBER QUERY
   const [
     fetchBoardMembers,
-    {
-      data: boardMemberData,
-      error: boardMemberError,
-      isLoading: boardMemberIsLoading,
-      isError: boardMemberIsError,
-      isSuccess: boardMemberIsSuccess,
-    },
+    { data: boardMemberData, isLoading: boardMemberIsLoading },
   ] = useLazyFetchBusinessPeopleQuery();
 
   // INITIALIZE FETCH BUSINESS ACTIVITIES QUERY
@@ -119,21 +76,13 @@ const ForeignCompanyPreviewSubmission = ({
       data: businessActivitiesData,
       isLoading: businessActivitiesIsLoading,
       isSuccess: businessActivitiesIsSuccess,
-      isError: businessActivitiesIsError,
-      error: businessActivitiesError,
     },
   ] = useLazyFetchBusinessActivitiesQuery();
 
   // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
   const [
     fetchManagementMember,
-    {
-      data: managementMemberData,
-      error: managementMemberError,
-      isLoading: managementMemberIsLoading,
-      isError: managementMemberIsError,
-      isSuccess: managementMemberIsSuccess,
-    },
+    { data: managementMemberData, isLoading: managementMemberIsLoading },
   ] = useLazyFetchBusinessPeopleQuery();
 
   // GET EMPLOYMENT INFO
@@ -142,7 +91,6 @@ const ForeignCompanyPreviewSubmission = ({
     {
       data: employmentInfoData,
       isLoading: employmentInfoIsLoading,
-      error: employmentInfoError,
       isSuccess: employmentInfoIsSuccess,
     },
   ] = useLazyGetEmploymentInfoQuery();
@@ -150,13 +98,7 @@ const ForeignCompanyPreviewSubmission = ({
   // INITIALIZE FETC BUSINESS ATTACHMENTS
   const [
     fetchBusinessAttachments,
-    {
-      data: businessAttachmentsData,
-      isLoading: businessAttachmentsIsLoading,
-      error: businessAttachmentsError,
-      isSuccess: businessAttachmentsIsSuccess,
-      isError: businessAttachmentsIsError,
-    },
+    { data: businessAttachmentsData, isLoading: businessAttachmentsIsLoading },
   ] = useLazyFetchBusinessAttachmentsQuery();
 
   // GET BUSINESS
@@ -172,6 +114,17 @@ const ForeignCompanyPreviewSubmission = ({
       });
       fetchEmploymentInfo({ id: businessId });
       fetchBusinessAttachments({ businessId });
+
+      // complete preview tab
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Preview & Submission"
+          )?.id,
+        })
+      );
     }
   }, [
     businessId,
@@ -183,139 +136,6 @@ const ForeignCompanyPreviewSubmission = ({
     getBusinessAddress,
     getBusinessDetails,
   ]);
-
-  // HANDLE BUSINESS DETAILS DATA RESPONSE
-  useEffect(() => {
-    if (businessIsError) {
-      if ((businessError as ErrorResponse)?.status === 500) {
-        toast.error(
-          "An error occurred while fetching business details. Please try again later."
-        );
-      } else {
-        toast.error((businessError as ErrorResponse)?.data?.message);
-      }
-    } else if (businessIsSuccess) {
-      dispatch(setBusinessDetails(businessDetailsData?.data));
-    }
-  }, [
-    businessDetailsData,
-    businessError,
-    businessIsError,
-    businessIsSuccess,
-    dispatch,
-  ]);
-
-  // HANDLE GET BUSINESS ADDRESS RESPONSE
-  useEffect(() => {
-    if (businessAddressIsError) {
-      if ((businessAddressError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching business data");
-      } else {
-        toast.error((businessAddressError as ErrorResponse)?.data?.message);
-      }
-    } else if (businessAddressIsSuccess) {
-      dispatch(setBusinessAddress(businessAddressData?.data));
-    }
-  }, [
-    businessAddressData,
-    businessAddressError,
-    businessAddressIsError,
-    businessAddressIsSuccess,
-    dispatch,
-  ]);
-
-  // FETCH BUSINESS ACTIVITIES
-  useEffect(() => {
-    fetchBusinessActivities({ businessId });
-  }, [businessId, fetchBusinessActivities]);
-
-  // HANDLE FETCH BUSINESS ACTIVITIES RESPONSE
-  useEffect(() => {
-    if (businessActivitiesIsError) {
-      if ((businessActivitiesError as ErrorResponse).status === 500) {
-        toast.error(
-          "An error occured while fetching business activities. Please try again later."
-        );
-      }
-    } else if (businessActivitiesIsSuccess) {
-      dispatch(
-        setSelectedBusinessLinesList(businessActivitiesData?.data?.businessLine)
-      );
-      dispatch(setVatRegistred(businessActivitiesData?.data?.vatregistered));
-      if (
-        selectedMainBusinessLine === undefined ||
-        Object.keys(selectedMainBusinessLine).length === 0
-      ) {
-        dispatch(
-          setSelectedMainBusinessLine(
-            businessActivitiesData?.data?.businessLine?.find(
-              (activity: BusinessActivity) =>
-                activity.description ===
-                businessActivitiesData?.data?.mainBusinessActivity
-            )
-          )
-        );
-      }
-    }
-  }, [
-    businessActivitiesData,
-    businessActivitiesError,
-    businessActivitiesIsError,
-    businessActivitiesIsSuccess,
-    dispatch,
-    selectedMainBusinessLine,
-  ]);
-
-  // HANDLE FETCH BOARD MEMBERS RESPONSE
-  useEffect(() => {
-    if (boardMemberIsError) {
-      if ((boardMemberError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching board members");
-      } else {
-        toast.error((boardMemberError as ErrorResponse)?.data?.message);
-      }
-    } else if (boardMemberIsSuccess) {
-      dispatch(setBoardOfDirectorsList(boardMemberData.data));
-    }
-  }, [
-    boardMemberData,
-    boardMemberError,
-    boardMemberIsError,
-    boardMemberIsSuccess,
-    dispatch,
-  ]);
-
-  // HANDLE MANAGEMENT PEOPLE RESPONSE
-  useEffect(() => {
-    if (managementMemberIsError) {
-      if ((managementMemberError as ErrorResponse).status === 500) {
-        toast.error(
-          "An error occured while fetching people. Please try again later"
-        );
-      } else {
-        toast.error((managementMemberError as ErrorResponse).data?.message);
-      }
-    } else if (managementMemberIsSuccess) {
-      dispatch(setExecutiveManagersList(managementMemberData?.data));
-    }
-  }, [
-    dispatch,
-    managementMemberData?.data,
-    managementMemberError,
-    managementMemberIsSuccess,
-    managementMemberIsError,
-  ]);
-
-  // HANDLE FETCH EMPLOYMENT INFO QUERY
-  useEffect(() => {
-    if (employmentInfoError) {
-      if ((employmentInfoError as ErrorResponse)?.status === 500)
-        toast.error(
-          "An error occurred while fetching employment info. Please try again later."
-        );
-      else toast.error((employmentInfoError as ErrorResponse)?.data?.message);
-    } else dispatch(setEmploymentInfo(employmentInfoData?.data));
-  }, [dispatch, employmentInfoData?.data, employmentInfoError]);
 
   // INITIALIZE UPDATE BUSINESS MUTATION
   const [
@@ -358,46 +178,25 @@ const ForeignCompanyPreviewSubmission = ({
     updateBusinessIsSuccess,
   ]);
 
-  // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
-  useEffect(() => {
-    if (businessAttachmentsIsError) {
-      if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
-        toast.error(
-          "An error occurred while fetching business attachments. Please try again later."
-        );
-      } else {
-        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
-      }
-    } else if (businessAttachmentsIsSuccess) {
-      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
-    }
-  }, [
-    businessAttachmentsData,
-    businessAttachmentsError,
-    businessAttachmentsIsError,
-    businessAttachmentsIsSuccess,
-    dispatch,
-  ]);
-
-  // TABLE COLUMNS
-  const managementColumns = [
-    {
-      header: "Name",
-      accessorKey: "name",
-    },
-    {
-      header: "Document Number (NID/Passport)",
-      accessorKey: "documentNumber",
-    },
-    {
-      header: "Position",
-      accessorKey: "position",
-    },
-    {
-      header: "Country",
-      accessorKey: "country",
-    },
-  ];
+  // // TABLE COLUMNS
+  // const managementColumns = [
+  //   {
+  //     header: "Name",
+  //     accessorKey: "name",
+  //   },
+  //   {
+  //     header: "Document Number (NID/Passport)",
+  //     accessorKey: "documentNumber",
+  //   },
+  //   {
+  //     header: "Position",
+  //     accessorKey: "position",
+  //   },
+  //   {
+  //     header: "Country",
+  //     accessorKey: "country",
+  //   },
+  // ];
 
   return (
     <section className="flex flex-col w-full h-full gap-6">
@@ -477,8 +276,8 @@ const ForeignCompanyPreviewSubmission = ({
           "Company Address"
         )}
       >
-        {businessAddress &&
-          Object?.entries(businessAddress)?.map(
+        {businessAddressData?.data &&
+          Object?.entries(businessAddressData?.data)?.map(
             ([key, value], index: number) => {
               if (key === "id" || key === "location" || value === null)
                 return null;
@@ -492,161 +291,165 @@ const ForeignCompanyPreviewSubmission = ({
             }
           )}
       </PreviewCard>
+      {/* BUSINESS ACTIVITIES & VAT */}
       <PreviewCard
-        header="Business Activities & VAT"
-        businessId={businessId}
         applicationStatus={applicationStatus}
+        businessId={businessId}
+        header="Business Activities & VAT"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           "Business Activity & VAT"
         )}
       >
-        <p className="font-semibold">
-          Register for VAT:{" "}
-          <span className="font-normal">
-            {capitalizeString(vatRegistred ? "yes" : "no")}
-          </span>
-        </p>
-        <p className="font-semibold">
-          Main business line:{" "}
-          <span className="font-normal">
-            {selectedMainBusinessLine?.description}
-          </span>
-        </p>
-        {/* <p className="font-semibold">
-          Annual turnover:{" "}
-          <span className="font-normal">
-            {foreign_company_activities?.turnover
-              ? String(capitalizeString(foreign_company_activities?.turnover))
-              : "N/A"}
-          </span>
-        </p> */}
-        <menu className="flex flex-col gap-3">
-          <h3 className="font-semibold underline text-md">Business lines: </h3>
-          <ul className="flex flex-col gap-2">
-            {selectedBusinessLinesList?.map((line, index) => {
-              return (
-                <li key={index} className="flex items-center gap-1">
-                  {line?.description}
-                </li>
-              );
-            })}
-          </ul>
-        </menu>
+        {businessActivitiesIsLoading ? (
+          <figure className="flex items-center justify-center w-full h-full">
+            <Loader />
+          </figure>
+        ) : (
+          businessActivitiesIsSuccess && (
+            <menu className="flex flex-col gap-2">
+              <p className="flex text-[14px] items-center gap-2">
+                Main business activity:{" "}
+                {capitalizeString(
+                  businessActivitiesData?.data?.mainBusinessActivity
+                )}
+              </p>
+              <ul className="flex flex-col gap-2">
+                {businessActivitiesData?.data?.businessLine?.map(
+                  (activity: BusinessActivity, index: number) => {
+                    return (
+                      <li key={index}>
+                        <p className="flex text-[14px] items-center gap-2">
+                          {activity?.code} -{" "}
+                          {capitalizeString(activity?.description)}
+                        </p>
+                      </li>
+                    );
+                  }
+                )}
+              </ul>
+            </menu>
+          )
+        )}
       </PreviewCard>
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
-        header="Board of Directors"
-        businessId={businessId}
         applicationStatus={applicationStatus}
+        businessId={businessId}
+        header="Board of Directors"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           "Board of Directors"
         )}
       >
-        <Table
-          rowClickHandler={undefined}
-          showFilter={false}
-          showPagination={false}
-          columns={managementColumns}
-          data={boardMemberList?.map((director) => {
-            return {
-              ...director,
-              name: `${director?.firstName} ${director?.lastName}`,
-              documentNumber: director?.personDocNo,
-              position:
-                director?.roleDescription &&
-                capitalizeString(director?.roleDescription),
-              country: countriesList?.find(
-                (country) => country?.code === director?.nationality
-              )?.name,
-            };
-          })}
-        />
+        {boardMemberIsLoading ? (
+          <figure className="flex items-center justify-center w-full h-full">
+            <Loader />
+          </figure>
+        ) : (
+          <BusinessPeople
+            businessPeopleList={boardMemberData?.data}
+            businessId={businessId}
+          />
+        )}
       </PreviewCard>
-      {/* SENIOR MANAGEMENT */}
+      {/*  EXECUTIVE MANAGEMENT */}
       <PreviewCard
+        applicationStatus={applicationStatus}
+        businessId={businessId}
         header="Executive Management"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Executive Management"
+          "Senior Management"
         )}
-        businessId={businessId}
-        applicationStatus={applicationStatus}
       >
-        <Table
-          rowClickHandler={undefined}
-          showFilter={false}
-          showPagination={false}
-          columns={managementColumns}
-          data={executiveManagersList?.map((director) => {
-            return {
-              ...director,
-              name: `${director?.firstName} ${director?.lastName}`,
-              documentNumber: director?.personDocNo,
-              position:
-                director?.roleDescription &&
-                capitalizeString(director?.roleDescription),
-              country: countriesList?.find(
-                (country) => country?.code === director?.nationality
-              )?.name,
-            };
-          })}
-        />
+        {managementMemberIsLoading ? (
+          <figure className="flex items-center justify-center w-full h-full">
+            <Loader />
+          </figure>
+        ) : (
+          <BusinessPeople
+            businessPeopleList={managementMemberData?.data}
+            businessId={businessId}
+          />
+        )}
       </PreviewCard>
       {/* EMPLOYMENT INFO */}
       <PreviewCard
+        applicationStatus={applicationStatus}
+        businessId={businessId}
         header="Employment Information"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           "Employment Info"
         )}
-        businessId={businessId}
-        applicationStatus={applicationStatus}
       >
-        <p>
-          Company has employees:{" "}
-          <span className="font-semibold">
-            {employmentInfo?.numberOfEmployees > 0 ? "yes" : "no"}
-          </span>
-        </p>
-        {employmentInfo?.numberOfEmployees > 0 && (
-          <p>
-            Number of employees:{" "}
-            <span className="font-semibold">
-              {employmentInfo?.numberOfEmployees}
-            </span>
-          </p>
+        {employmentInfoIsLoading ? (
+          <figure className="flex items-center justify-center w-full h-full">
+            <Loader />
+          </figure>
+        ) : (
+          employmentInfoIsSuccess && (
+            <menu className="flex flex-col gap-2">
+              <p>
+                Working Start Time: {employmentInfoData?.data?.workingStartTime}
+              </p>
+              <p>
+                Working End Time: {employmentInfoData?.data?.workingEndTime}
+              </p>
+              <p>
+                Number Of Employees:{" "}
+                {employmentInfoData?.data?.numberOfEmployees}
+              </p>
+              <p>
+                Hiring Date:{" "}
+                {new Date(
+                  employmentInfoData?.data?.hiringDate
+                ).toLocaleDateString()}
+              </p>
+              <p>
+                Employment Declaration Date:{" "}
+                {new Date(
+                  employmentInfoData?.data?.employmentDeclarationDate
+                ).toLocaleDateString()}
+              </p>
+              <p>
+                Financial Year Start Date:{" "}
+                {moment(
+                  employmentInfoData?.data?.financialYearStartDate
+                ).format("MMMM DD")}
+              </p>
+              <p>
+                Financial Year End Date:{" "}
+                {moment(employmentInfoData?.data?.financialYearEndDate)
+                  .subtract(1, "day")
+                  .format("MMMM DD")}
+              </p>
+            </menu>
+          )
         )}
-        <p>
-          <span>
-            Financial year start date:{" "}
-            <span className="font-semibold">
-              {formatDate(employmentInfo?.financialYearStartDate) || "N/A"}
-            </span>
-          </span>
-        </p>
-        <p>
-          <span>
-            Financial year end date:{" "}
-            <span className="font-semibold">
-              {formatDate(employmentInfo?.financialYearEndDate) || "N/A"}
-            </span>
-          </span>
-        </p>
       </PreviewCard>
       {/* ATTACHMENTS */}
       <PreviewCard
+        applicationStatus={applicationStatus}
         header="Attachments"
+        businessId={businessId}
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
           "Attachments"
         )}
-        businessId={businessId}
-        applicationStatus={applicationStatus}
       >
-        {businessAttachments?.length > 0 && (
-          <BusinessPeopleAttachments attachments={businessAttachments} />
+        {businessAttachmentsIsLoading ? (
+          <figure className="flex items-center gap-3 w-full min-h-[20vh]">
+            <Loader className="text-primary" />
+            Fetching business attachments...
+          </figure>
+        ) : (
+          businessAttachmentsData?.data?.length > 0 && (
+            <BusinessPeopleAttachments
+              attachments={businessAttachmentsData.data}
+            />
+          )
         )}
       </PreviewCard>
       <menu
@@ -694,7 +497,13 @@ const ForeignCompanyPreviewSubmission = ({
               toast.error("All steps must be completed before submission");
               return;
             }
-            updateBusiness({ businessId, applicationStatus: "SUBMITTED" });
+            updateBusiness({
+              businessId,
+              applicationStatus:
+                applicationStatus === ApplicationStatus.Inprogress
+                  ? ApplicationStatus.Submitted
+                  : ApplicationStatus.AmendmentSubmitted,
+            });
           }}
           value={updateBusinessIsLoading ? <Loader /> : "Submit"}
           primary

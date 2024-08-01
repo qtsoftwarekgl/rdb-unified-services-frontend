@@ -4,10 +4,6 @@ import Select from "../../../../components/inputs/Select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
-import {
-  setForeignBusinessActiveTab,
-  setForeignBusinessCompletedStep,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { faCircleCheck } from "@fortawesome/free-regular-svg-icons";
 import { ErrorResponse, Link } from "react-router-dom";
 import Input from "../../../../components/inputs/Input";
@@ -32,7 +28,6 @@ import {
   useCreateBusinessActivitiesMutation,
   useLazyFetchBusinessActivitiesQuery,
 } from "@/states/api/businessRegApiSlice";
-import { setBusinessActiveStep } from "@/states/features/businessRegistrationSlice";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import {
   completeNavigationFlowThunk,
@@ -45,6 +40,7 @@ import {
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface BusinessActivityProps {
   businessId: businessId;
@@ -369,7 +365,7 @@ const BusinessActivities = ({
               {(selectedBusinessActivity ||
                 businessActivitiesList?.length > 0) && (
                 <section className="flex flex-col w-full gap-4">
-                  <h1 className="text-md">Select business line</h1>
+                  <h1 className="text-md">Select business activities</h1>
                   <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                     {businessLinesIsLoading && (
                       <figure className="flex items-center justify-center w-full h-full">
@@ -389,6 +385,7 @@ const BusinessActivities = ({
                               className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                             >
                               <p className="text-start text-[13px] max-w-[85%]">
+                                {businessLine?.code} -{" "}
                                 {businessLine?.description}
                               </p>
                               <Link
@@ -436,7 +433,7 @@ const BusinessActivities = ({
                           >
                             <menu className="flex items-center gap-2">
                               <p className="text-start text-[13px]">
-                                {businesLine?.description}{" "}
+                                {businesLine?.code} - {businesLine?.description}{" "}
                                 {isMainBusinessLine && (
                                   <span className="text-[11px] bg-primary text-white rounded-md p-1 ml-2">
                                     Main activity
@@ -583,15 +580,14 @@ const BusinessActivities = ({
                     </menu>
                   </section>
                 ))}
-              {applicationStatus === "IS_AMENDING" && (
+              {applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment errors={errors} control={control} />
               )}
               {[
-                "IN_PROGRESS",
-                "IN_PREVIEW",
-                "ACTION_REQUIRED",
-                "IS_AMENDING",
-              ].includes(applicationStatus) && (
+                ApplicationStatus.Inprogress,
+                ApplicationStatus.IsAmending,
+                ApplicationStatus.Forcorrection,
+              ].includes(applicationStatus as ApplicationStatus) && (
                 <menu
                   className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
                 >
@@ -612,19 +608,6 @@ const BusinessActivities = ({
                       );
                     }}
                   />
-                  {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-                    applicationStatus
-                  ) && (
-                    <Button
-                      value={"Save & Complete Review"}
-                      submit
-                      primary
-                      disabled={
-                        isFormDisabled ||
-                        (errors && Object.keys(errors).length > 0)
-                      }
-                    />
-                  )}
                   <Button
                     value={
                       createBusinessActivitiesIsLoading ? (
@@ -639,46 +622,6 @@ const BusinessActivities = ({
                       isFormDisabled ||
                       (errors && Object.keys(errors).length > 0)
                     }
-                  />
-                </menu>
-              )}
-              {[
-                "IN_REVIEW",
-                "APPROVED",
-                "PENDING_APPROVAL",
-                "PENDING_REJECTION",
-              ].includes(applicationStatus) && (
-                <menu className="flex items-center justify-between gap-3">
-                  <Button
-                    value={"Back"}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      dispatch(
-                        createNavigationFlowThunk({
-                          businessId,
-                          massId: findNavigationFlowMassIdByStepName(
-                            navigationFlowMassList,
-                            "Company Address"
-                          ),
-                          isActive: true,
-                        })
-                      );
-                    }}
-                  />
-                  <Button
-                    value={"Next"}
-                    primary
-                    onClick={(e) => {
-                      e.preventDefault();
-                      dispatch(
-                        setForeignBusinessActiveTab("general_information")
-                      );
-                      dispatch(
-                        setForeignBusinessCompletedStep("business_activity_vat")
-                      );
-                      dispatch(setBusinessActiveStep("board_of_directors"));
-                      dispatch(setBusinessActiveStep("management"));
-                    }}
                   />
                 </menu>
               )}

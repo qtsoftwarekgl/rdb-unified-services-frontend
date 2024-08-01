@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { setShareDetailsList } from "@/states/features/shareDetailSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type AssignShareDetailsProps = {
   businessId: businessId;
@@ -285,7 +286,7 @@ const AssignShareDetails = ({
             </tfoot>
             {
               // Resolution attachment
-              applicationStatus === "IS_AMENDING" && (
+              applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment errors={{}} control={control} />
               )
             }

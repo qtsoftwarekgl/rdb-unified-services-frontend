@@ -8,10 +8,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../../../states/features/businessRegistrationSlice";
 import CapitalDetailsModal from "./AssignShareDetails";
 import Button from "../../../../components/inputs/Button";
 import Loader from "../../../../components/Loader";
@@ -45,6 +41,7 @@ import {
 import CustomPopover from "@/components/inputs/CustomPopover";
 import CustomTooltip from "@/components/inputs/CustomTooltip";
 import DeleteBusinessFounder from "./DeleteBusinessFounder";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface CapitalDetailsProps {
   businessId: businessId;
@@ -263,7 +260,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 no: index + 1,
                 name: `${
                   founder?.personDetail?.firstName ||
-                  founder?.personDetail?.organization?.organizationName ||
+                  founder?.organization?.organizationName ||
                   ""
                 } ${founder?.personDetail?.middleName || ""} ${
                   founder?.personDetail?.lastName || ""
@@ -353,9 +350,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           </>
         )}
       </section>
-      {["IN_PROGRESS", "IS_AMENDING", "IN_PREVIEW", "ACTION_REQUIRED"].includes(
-        applicationStatus
-      ) && (
+      {[
+        ApplicationStatus.Inprogress,
+        ApplicationStatus.IsAmending,
+        ApplicationStatus.Forcorrection,
+      ].includes(applicationStatus as ApplicationStatus) && (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
@@ -376,13 +375,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               );
             }}
           />
-          {["IN_PREVIEW", "ACTION_REQUIRED"].includes(applicationStatus) && (
-            <Button
-              value={"Save & Complete Review"}
-              primary
-              disabled={disableForm || Object.keys(errors).length > 0}
-            />
-          )}
           <Button
             value={"Save & Continue"}
             primary
@@ -422,31 +414,6 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   isActive: true,
                 })
               );
-            }}
-          />
-        </menu>
-      )}
-      {[
-        "IN_REVIEW",
-        "APPROVED",
-        "PENDING_APPROVAL",
-        "PENDING_REJECTION",
-      ].includes(applicationStatus) && (
-        <menu className="flex items-center justify-between gap-3">
-          <Button
-            value="Back"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setBusinessActiveStep("shareholders"));
-            }}
-          />
-          <Button
-            value="Next"
-            primary
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setBusinessActiveStep("attachments"));
-              dispatch(setBusinessActiveTab("attachments"));
             }}
           />
         </menu>

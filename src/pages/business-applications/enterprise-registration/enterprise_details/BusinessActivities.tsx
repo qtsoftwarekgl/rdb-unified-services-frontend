@@ -324,7 +324,7 @@ const BusinessActivities = ({
               )}
               {businessLinesIsSuccess && (
                 <section className="flex flex-col w-full gap-4">
-                  <h1 className="text-md">Select business line</h1>
+                  <h1 className="text-md">Select business activities</h1>
                   <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                     {!businessLinesIsFetching &&
                       businessLinesList.map(
@@ -339,6 +339,7 @@ const BusinessActivities = ({
                               className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                             >
                               <p className="text-start text-[13px] max-w-[85%]">
+                                {businessLine?.code} -{" "}
                                 {businessLine?.description}
                               </p>
                               <Link
@@ -397,6 +398,7 @@ const BusinessActivities = ({
                             >
                               <menu className="flex items-center gap-2">
                                 <p className="text-start text-[13px]">
+                                  {businesLine?.code} -{" "}
                                   {businesLine?.description}{" "}
                                   {isMainBusinessLine && (
                                     <span className="text-[11px] bg-primary text-white rounded-md p-1 ml-2">

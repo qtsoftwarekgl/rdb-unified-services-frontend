@@ -43,6 +43,7 @@ import {
   setForeignBusinessCompletedStep,
 } from "@/states/features/foreignCompanyRegistrationSlice";
 import { businessId } from "@/types/models/business";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 export interface business_beneficial_owners {
   no: number;
@@ -1596,7 +1597,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             dispatch(setForeignBusinessActiveTab("foreign_management"));
           }}
         />
-        {status === "is_amending" && (
+        {status === ApplicationStatus.IsAmending && (
           <Button
             value={"Complete Amendment"}
             onClick={(e) => {

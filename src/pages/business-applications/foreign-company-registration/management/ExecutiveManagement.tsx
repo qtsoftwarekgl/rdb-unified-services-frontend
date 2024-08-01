@@ -52,6 +52,7 @@ import {
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface ExecutiveManagementProps {
   businessId: businessId;
@@ -250,7 +251,7 @@ const ExecutiveManagement = ({
       setAttachmentFile(null);
       dispatch(setBusinessPersonAttachments([]));
       // Upload resolution attachment
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -954,7 +955,7 @@ const ExecutiveManagement = ({
             )}
             {
               // Resolution attachment
-              applicationStatus === "IS_AMENDING" && (
+              applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment errors={errors} control={control} />
               )
             }

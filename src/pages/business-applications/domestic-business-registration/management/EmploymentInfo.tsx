@@ -28,6 +28,7 @@ import {
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type EmploymentInfoProps = {
   businessId: businessId;
@@ -107,7 +108,7 @@ const EmploymentInfo = ({
     } else if (createEmploymentInfoIsSuccess) {
       toast.success("Employment info saved successfully");
       // Upload resolution attachment
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -430,15 +431,14 @@ const EmploymentInfo = ({
               }}
             />
           </menu>
-          {applicationStatus === "IS_AMENDING" && (
+          {applicationStatus === ApplicationStatus.IsAmending && (
             <ResolutionAttachment errors={errors} control={control} />
           )}
           {[
-            "IN_PREVIEW",
-            "ACTION_REQUIRED",
-            "IS_AMENDING",
-            "IN_PROGRESS",
-          ].includes(String(applicationStatus)) && (
+            ApplicationStatus.Inprogress,
+            ApplicationStatus.IsAmending,
+            ApplicationStatus.Forcorrection,
+          ].includes(String(applicationStatus) as ApplicationStatus) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
@@ -466,31 +466,6 @@ const EmploymentInfo = ({
                 submit
                 primary
                 disabled={disableForm}
-              />
-            </menu>
-          )}
-          {[
-            "IN_REVIEW",
-            "APPROVED",
-            "PENDING_APPROVAL",
-            "PENDING_REJECTION",
-          ].includes(String(applicationStatus)) && (
-            <menu className="flex items-center justify-between gap-3">
-              <Button
-                value="Back"
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveStep("executive_management"));
-                }}
-              />
-              <Button
-                value="Next"
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveStep("share_details"));
-                  dispatch(setBusinessActiveTab("capital_information"));
-                }}
               />
             </menu>
           )}

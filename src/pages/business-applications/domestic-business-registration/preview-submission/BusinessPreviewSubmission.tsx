@@ -2,10 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import PreviewCard from "../../../../components/business-registration/PreviewCard";
-import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../../../states/features/businessRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
@@ -27,10 +23,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { FounderDetail } from "@/types/models/personDetail";
 import Table from "@/components/table/Table";
 import { toast } from "react-toastify";
-import { setFounderDetailsList } from "@/states/features/founderDetailSlice";
 import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
 import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessRegApiSlice";
-import { setBusinessAttachments } from "@/states/features/businessSlice";
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
@@ -39,6 +33,7 @@ import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type PreviewSubmissionProps = {
   businessId: businessId;
@@ -51,13 +46,7 @@ const PreviewSubmission = ({
 }: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { founderDetailsList } = useSelector(
-    (state: RootState) => state.founderDetail
-  );
   const [attachmentPreview, setAttachmentPreview] = useState<string>("");
-  const { businessAttachments } = useSelector(
-    (state: RootState) => state.business
-  );
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -70,8 +59,6 @@ const PreviewSubmission = ({
     fetchBusinessDetails,
     {
       data: businessDetailsData,
-      error: businessDetailsError,
-      isError: businessDetailsIsError,
       isLoading: businessDetailsIsLoading,
       isSuccess: businessDetailsIsSuccess,
     },
@@ -82,8 +69,6 @@ const PreviewSubmission = ({
     fetchBusinessAddress,
     {
       data: businessAddressData,
-      error: businessAddressError,
-      isError: businessAddressIsError,
       isLoading: businessAddressIsLoading,
       isSuccess: businessAddressIsSuccess,
     },
@@ -92,32 +77,13 @@ const PreviewSubmission = ({
   // INITIALIZE FETCH EXECUTIVE MANAGEMENT QUERY
   const [
     fetchExecutiveManagement,
-    {
-      data: executiveManagementData,
-      isLoading: executiveManagementIsLoading,
-      error: executiveManagementError,
-      isError: executiveManagementIsError,
-      isSuccess: executiveManagementIsSuccess,
-    },
+    { data: executiveManagementData, isLoading: executiveManagementIsLoading },
   ] = useLazyFetchBusinessPeopleQuery();
-
-  // FETCH EXECUTIVE MANAGEMENT
-  useEffect(() => {
-    if (businessId) {
-      fetchExecutiveManagement({ businessId, route: "management" });
-    }
-  }, [businessId, fetchExecutiveManagement]);
 
   // INITIALIZE FETCH BOARD MEMBERS QUERY
   const [
     fetchBoardMembers,
-    {
-      data: boardMembersData,
-      isLoading: boardMembersIsLoading,
-      error: boardMembersError,
-      isError: boardMembersIsError,
-      isSuccess: boardMembersIsSuccess,
-    },
+    { data: boardMembersData, isLoading: boardMembersIsLoading },
   ] = useLazyFetchBusinessPeopleQuery();
 
   // FETCH BOARD MEMBERS
@@ -130,33 +96,27 @@ const PreviewSubmission = ({
   // INITIALIZE FETCH FOUNDER DETAILS QUERY
   const [
     fetchShareholders,
-    {
-      data: shareholdersData,
-      isLoading: shareholdersIsLoading,
-      error: shareholdersError,
-      isError: shareholdersIsError,
-      isSuccess: shareholdersIsSuccess,
-    },
+    { data: shareholdersData, isFetching: shareholderIsFetching },
   ] = useLazyFetchShareholdersQuery();
-
-  // FETCH SHAREHOLDERS
-  useEffect(() => {
-    if (businessId) {
-      fetchShareholders({ businessId });
-    }
-  }, [businessId, fetchShareholders]);
 
   // INITIALIZE FETCHING BUSINESS ACTIVITIES QUERY
   const [
     fetchBusinessActivities,
     {
       data: businessActivitiesData,
-      error: businessActivitiesError,
-      isError: businessActivitiesIsError,
       isLoading: businessActivitiesIsLoading,
       isSuccess: businessActivitiesIsSuccess,
     },
   ] = useLazyFetchBusinessActivitiesQuery();
+
+  // INITIALIZE FETCH BUSINESS ATTACHMENTS
+  const [
+    fetchBusinessAttachments,
+    {
+      data: businessAttachmentsData,
+      isFetching: businessAttachmentsIsFetching,
+    },
+  ] = useLazyFetchBusinessAttachmentsQuery();
 
   // INITIALIZE UPDATE BUSINESS MUTATION
   const [
@@ -201,40 +161,35 @@ const PreviewSubmission = ({
     fetchBusinessEmploymentInfo,
     {
       data: businessEmploymentInfoData,
-      error: businessEmploymentInfoError,
-      isError: businessEmploymentInfoIsError,
       isLoading: businessEmploymentInfoIsLoading,
       isSuccess: businessEmploymentInfoIsSuccess,
     },
   ] = useLazyFetchBusinessEmploymentInfoQuery();
 
-  // FETCH BUSINESS ADDRESS
+  // FETCH ALL BUSINESS DATA
   useEffect(() => {
     if (businessId) {
       fetchBusinessEmploymentInfo({ businessId });
-    }
-  }, [businessId, fetchBusinessEmploymentInfo]);
-
-  // FETCH BUSINESS ACTIVITIES
-  useEffect(() => {
-    if (businessId) {
       fetchBusinessActivities({ businessId });
-    }
-  }, [businessId, fetchBusinessActivities]);
-
-  // FETCH BUSINESS ADDRESS
-  useEffect(() => {
-    if (businessId) {
       fetchBusinessAddress({ businessId });
-    }
-  }, [businessId, fetchBusinessAddress]);
-
-  // FETCH BUSINESS DETAILS
-  useEffect(() => {
-    if (businessId) {
       fetchBusinessDetails({ businessId });
+      fetchBoardMembers({ businessId, route: "board-member" });
+      fetchExecutiveManagement({ businessId, route: "management" });
+      fetchShareholders({ businessId });
+      fetchBusinessAttachments({ businessId });
+
+      // Complete preview tab
+      dispatch(
+        completeNavigationFlowThunk({
+          isCompleted: true,
+          navigationFlowId: findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Preview & Submission"
+          )?.id,
+        })
+      );
     }
-  }, [businessId, fetchBusinessDetails]);
+  }, [businessId]);
 
   // TABLE COLUMNS
   const founderDetailsColumns = [
@@ -260,65 +215,6 @@ const PreviewSubmission = ({
     },
   ];
 
-  // HANDLE FETCH SHAREHOLDERS RESPONSE
-  useEffect(() => {
-    if (shareholdersIsError) {
-      if ((shareholdersError as ErrorResponse).status === 500) {
-        toast.error("An error occurred while fetching shareholders");
-      } else {
-        toast.error(
-          (shareholdersError as ErrorResponse).data?.message ??
-            "An error occurred while fetching shareholders"
-        );
-      }
-    } else if (shareholdersIsSuccess) {
-      dispatch(setFounderDetailsList(shareholdersData?.data));
-    }
-  }, [
-    dispatch,
-    shareholdersData,
-    shareholdersError,
-    shareholdersIsError,
-    shareholdersIsSuccess,
-  ]);
-
-  // INITIALIZE FETCH BUSINESS ATTACHMENTS
-  const [
-    fetchBusinessAttachments,
-    {
-      data: businessAttachmentsData,
-      isFetching: businessAttachmentsIsFetching,
-      error: businessAttachmentsError,
-      isSuccess: businessAttachmentsIsSuccess,
-      isError: businessAttachmentsIsError,
-    },
-  ] = useLazyFetchBusinessAttachmentsQuery();
-
-  // FETCH BUSINESS ATTACHMENTS
-  useEffect(() => {
-    if (businessId) {
-      fetchBusinessAttachments({ businessId });
-    }
-  }, [businessId, fetchBusinessAttachments]);
-
-  // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
-  useEffect(() => {
-    if (businessAttachmentsIsError) {
-      const errorMessage =
-        (businessAttachmentsError as ErrorResponse)?.data?.message ||
-        "An error occurred while fetching business attachments. Please try again later.";
-      toast.error(errorMessage);
-    } else if (businessAttachmentsIsSuccess) {
-      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
-    }
-  }, [
-    businessAttachmentsData,
-    businessAttachmentsError,
-    businessAttachmentsIsError,
-    businessAttachmentsIsSuccess,
-    dispatch,
-  ]);
-
   return (
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
@@ -331,7 +227,13 @@ const PreviewSubmission = ({
           "Company Details"
         )}
       >
-        {businessDetailsIsLoading ? (
+        {businessDetailsIsLoading ||
+        businessAddressIsLoading ||
+        businessActivitiesIsLoading ||
+        boardMembersIsLoading ||
+        executiveManagementIsLoading ||
+        businessEmploymentInfoIsLoading ||
+        businessAttachmentsIsFetching ? (
           <figure className="flex items-center justify-center w-full h-full">
             <Loader />
           </figure>
@@ -587,39 +489,45 @@ const PreviewSubmission = ({
       </PreviewCard>
 
       {/* SHAREHOLDERS */}
-      <PreviewCard
-        applicationStatus={applicationStatus}
-        businessId={businessId}
-        header="Shareholders"
-        navigationFlowMassId={findNavigationFlowMassIdByStepName(
-          navigationFlowMassList,
-          "Employment Info"
-        )}
-      >
-        <Table
-          showFilter={false}
-          showPagination={false}
-          data={founderDetailsList?.map((founder: FounderDetail) => {
-            return {
-              ...founder,
-              name: `${
-                founder?.personDetail?.firstName ||
-                founder?.personDetail?.organization?.organizationName ||
-                ""
-              } ${founder?.personDetail?.middleName || ""} ${
-                founder?.personDetail?.lastName || ""
-              }`,
-              shareHolderType: capitalizeString(founder?.shareHolderType),
-              personDocNo: founder?.personDetail?.personDocNo || "-",
-              phoneNumber:
-                founder?.personDetail?.phoneNumber ||
-                founder?.personDetail?.organization?.phone ||
-                "-",
-            };
-          })}
-          columns={founderDetailsColumns as ColumnDef<FounderDetail>[]}
-        />
-      </PreviewCard>
+      {shareholderIsFetching ? (
+        <figure className="flex items-center justify-center w-full h-full">
+          <Loader />
+        </figure>
+      ) : (
+        <PreviewCard
+          applicationStatus={applicationStatus}
+          businessId={businessId}
+          header="Shareholders"
+          navigationFlowMassId={findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            "Employment Info"
+          )}
+        >
+          <Table
+            showFilter={false}
+            showPagination={false}
+            data={shareholdersData?.data?.map((founder: FounderDetail) => {
+              return {
+                ...founder,
+                name: `${
+                  founder?.personDetail?.firstName ||
+                  founder?.organization?.organizationName ||
+                  ""
+                } ${founder?.personDetail?.middleName || ""} ${
+                  founder?.personDetail?.lastName || ""
+                }`,
+                shareHolderType: capitalizeString(founder?.shareHolderType),
+                personDocNo: founder?.personDetail?.personDocNo || "-",
+                phoneNumber:
+                  founder?.personDetail?.phoneNumber ||
+                  founder?.organization?.phone ||
+                  "-",
+              };
+            })}
+            columns={founderDetailsColumns as ColumnDef<FounderDetail>[]}
+          />
+        </PreviewCard>
+      )}
 
       {/* ATTACHMENTS */}
       <PreviewCard
@@ -637,15 +545,19 @@ const PreviewSubmission = ({
             Fetching business attachments...
           </figure>
         ) : (
-          businessAttachments?.length > 0 && (
-            <BusinessPeopleAttachments attachments={businessAttachments} />
+          businessAttachmentsData?.data?.length > 0 && (
+            <BusinessPeopleAttachments
+              attachments={businessAttachmentsData?.data}
+            />
           )
         )}
       </PreviewCard>
 
-      {["IN_PROGRESS", "ACTION_REQUIRED", "IN_PREVIEW", "IS_AMENDING"].includes(
-        String(applicationStatus)
-      ) && (
+      {[
+        ApplicationStatus.Inprogress,
+        ApplicationStatus.IsAmending,
+        ApplicationStatus.Forcorrection,
+      ].includes(String(applicationStatus) as ApplicationStatus) && (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
@@ -668,15 +580,6 @@ const PreviewSubmission = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
-              dispatch(
-                completeNavigationFlowThunk({
-                  isCompleted: true,
-                  navigationFlowId: findNavigationFlowByStepName(
-                    businessNavigationFlowsList,
-                    "Preview & Submission"
-                  )?.id,
-                })
-              );
               if (
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()
@@ -694,9 +597,9 @@ const PreviewSubmission = ({
               updateBusiness({
                 businessId,
                 applicationStatus:
-                  applicationStatus === "IN_PROGRESS"
-                    ? "SUBMITTED"
-                    : "AMENDMENT_SUBMITTED",
+                  applicationStatus === ApplicationStatus.Inprogress
+                    ? ApplicationStatus.Submitted
+                    : ApplicationStatus.AmendmentSubmitted,
               });
             }}
             value={updateBusinessIsLoading ? <Loader /> : "Submit"}

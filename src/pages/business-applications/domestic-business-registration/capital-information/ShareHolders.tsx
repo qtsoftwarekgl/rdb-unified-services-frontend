@@ -47,6 +47,7 @@ import {
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type ShareHoldersProps = {
   businessId: businessId;
@@ -177,7 +178,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
         dispatch(addFounderDetail(createShareholderData?.data?.data));
       }
 
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -1104,7 +1105,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
           )}
           {
             // Resolution attachment
-            applicationStatus === "IS_AMENDING" && (
+            applicationStatus === ApplicationStatus.IsAmending && (
               <ResolutionAttachment errors={errors} control={control} />
             )
           }
@@ -1123,11 +1124,10 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
             />
           </article>
           {[
-            "IN_PROGRESS",
-            "IS_AMENDING",
-            "IN_PREVIEW",
-            "ACTION_REQUIRED",
-          ].includes(String(applicationStatus)) && (
+            ApplicationStatus.Inprogress,
+            ApplicationStatus.IsAmending,
+            ApplicationStatus.Forcorrection,
+          ].includes(String(applicationStatus) as ApplicationStatus) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
@@ -1147,32 +1147,6 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                   );
                 }}
               />
-              {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-                String(applicationStatus)
-              ) && (
-                <Button
-                  value="Save & Complete Review"
-                  primary
-                  onClick={(e) => {
-                    e.preventDefault();
-
-                    // SET ACTIVE TAB AND STEP
-                    const active_tab = "preview_submission";
-                    const active_step = "preview_submission";
-
-                    dispatch(setBusinessCompletedStep("shareholders"));
-                    dispatch(setBusinessActiveStep(active_step));
-                    dispatch(setBusinessActiveTab(active_tab));
-                    dispatch(
-                      setUserApplications({
-                        businessId,
-                        active_tab,
-                        active_step,
-                      })
-                    );
-                  }}
-                />
-              )}
               <Button
                 value="Save & Continue"
                 primary
@@ -1197,30 +1171,6 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       isActive: true,
                     })
                   );
-                }}
-              />
-            </menu>
-          )}
-          {[
-            "IN_REVIEW",
-            "APPROVED",
-            "PENDING_APPROVAL",
-            "PENDING_REJECTION",
-          ].includes(String(applicationStatus)) && (
-            <menu className="flex items-center justify-between gap-3">
-              <Button
-                value="Back"
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveStep("share_details"));
-                }}
-              />
-              <Button
-                value="Next"
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveStep("capital_details"));
                 }}
               />
             </menu>

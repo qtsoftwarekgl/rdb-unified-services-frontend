@@ -1,18 +1,19 @@
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, ReactNode, useEffect } from 'react';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from '../inputs/Button';
-import { RDBAdminEmailPattern } from '@/constants/Users';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { ErrorResponse, Link } from 'react-router-dom';
-import { businessId } from '@/types/models/business';
-import { UUID } from 'crypto';
-import { useCreateNavigationFlowMutation } from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
-import { setBusinessNavigationFlowsList } from '@/states/features/navigationFlowSlice';
-import Loader from '../Loader';
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FC, ReactNode, useEffect } from "react";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Button from "../inputs/Button";
+import { RDBAdminEmailPattern } from "@/constants/Users";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { ErrorResponse, Link } from "react-router-dom";
+import { businessId } from "@/types/models/business";
+import { UUID } from "crypto";
+import { useCreateNavigationFlowMutation } from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
+import { setBusinessNavigationFlowsList } from "@/states/features/navigationFlowSlice";
+import Loader from "../Loader";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface PreviewCardProps {
   header: string;
@@ -51,7 +52,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
     if (createNavigationFlowIsError) {
       const errorResponse =
         (createNavigationFlowError as ErrorResponse)?.data?.message ||
-        'An error occurred while creating business navigation flow. Refresh and try again';
+        "An error occurred while creating business navigation flow. Refresh and try again";
       toast.error(errorResponse);
       resetCreateNavigationFlow();
     } else if (createNavigationFlowIsSuccess) {
@@ -73,7 +74,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
     >
       <menu className="flex items-center justify-between w-full gap-3">
         <Link
-          to={'#'}
+          to={"#"}
           onClick={(e) => {
             e.preventDefault();
           }}
@@ -81,13 +82,15 @@ const PreviewCard: FC<PreviewCardProps> = ({
         >
           {header}
         </Link>
-        <menu className="flex items-center gap-4 relative">
+        <menu className="relative flex items-center gap-4">
           {createNavigationFlowIsLoading ? (
             <Loader className="text-primary" />
           ) : (
-            ['IN_PROGRESS', 'IS_AMENDING'].includes(
-              String(applicationStatus)
-            ) && (
+            [
+              ApplicationStatus.Inprogress,
+              ApplicationStatus.IsAmending,
+              ApplicationStatus.Forcorrection,
+            ].includes(applicationStatus as ApplicationStatus) && (
               <FontAwesomeIcon
                 icon={faPenToSquare}
                 onClick={(e) => {
@@ -107,7 +110,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
           {false && (
             <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
               <Link
-                to={'#'}
+                to={"#"}
                 onClick={(e) => {
                   e.preventDefault();
                 }}
@@ -116,7 +119,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
                 View
               </Link>
               <Link
-                to={'#'}
+                to={"#"}
                 onClick={(e) => {
                   e.preventDefault();
                 }}
@@ -130,14 +133,14 @@ const PreviewCard: FC<PreviewCardProps> = ({
       </menu>
       <section className="flex flex-col w-full gap-3 my-2">{children}</section>
       {RDBAdminEmailPattern.test(String(user?.email)) && (
-        <menu className="flex items-center w-full justify-center">
+        <menu className="flex items-center justify-center w-full">
           <Button
             styled={false}
             onClick={(e) => {
               e.preventDefault();
             }}
             value={
-              <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-300">
+              <menu className="flex items-center gap-2 transition-all duration-300 hover:gap-3">
                 <p className="text-[13px]">View details</p>
                 <FontAwesomeIcon className="text-[13px]" icon={faArrowRight} />
               </menu>
