@@ -1,22 +1,22 @@
-import Button from "@/components/inputs/Button";
-import Table from "@/components/table/Table";
-import { attachmentColumns } from "@/constants/business.constants";
-import DeleteBusinessAttachment from "@/containers/business-registration/DeleteBusinessAttachment";
-import ViewDocument from "@/pages/user-company-details/ViewDocument";
+import Button from '@/components/inputs/Button';
+import Table from '@/components/table/Table';
+import { attachmentColumns } from '@/constants/business.constants';
+import DeleteBusinessAttachment from '@/containers/business-registration/DeleteBusinessAttachment';
+import ViewDocument from '@/pages/user-company-details/ViewDocument';
 import {
   setDeleteBusinessAttachmentModal,
   setSelectedBusinessAttachment,
-} from "@/states/features/businessSlice";
-import { AppDispatch } from "@/states/store";
+} from '@/states/features/businessSlice';
+import { AppDispatch } from '@/states/store';
 import {
   BusinessAttachment,
   PersonAttachment,
-} from "@/types/models/attachment";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+} from '@/types/models/attachment';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 type BusinessPeopleAttachmentsProps = {
   attachments: PersonAttachment[] | BusinessAttachment[];
@@ -25,7 +25,7 @@ type BusinessPeopleAttachmentsProps = {
 const BusinessPeopleAttachments = ({
   attachments,
 }: BusinessPeopleAttachmentsProps) => {
-  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState("");
+  const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState('');
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -34,8 +34,8 @@ const BusinessPeopleAttachments = ({
   const attachmentExtendedColumns = [
     ...attachmentColumns,
     {
-      header: "Actions",
-      accessorKey: "actions",
+      header: 'Actions',
+      accessorKey: 'actions',
       cell: ({ row }: { row: Row<PersonAttachment | BusinessAttachment> }) => {
         return (
           <menu className="flex items-center gap-4">
@@ -93,7 +93,7 @@ const BusinessPeopleAttachments = ({
               ),
               size: String(attachment?.fileSize)
                 ? `${(+attachment.fileSize / (1024 * 1024)).toFixed(2)} MB`
-                : "N/A",
+                : 'N/A',
             };
           }
         )}

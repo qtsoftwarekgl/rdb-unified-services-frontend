@@ -1,50 +1,50 @@
-import { FC, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../../components/inputs/Select";
+import { FC, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Select from '../../../../components/inputs/Select';
 import {
   attachmentFileColumns,
   ownerRelationships,
   personnelTypes,
   searchedCompanies,
-} from "../../../../constants/businessRegistration";
-import Input from "../../../../components/inputs/Input";
+} from '../../../../constants/businessRegistration';
+import Input from '../../../../components/inputs/Input';
 import {
   faCircleInfo,
   faSearch,
   faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 import {
   previewUrl,
   userData,
   validTinNumber,
-} from "../../../../constants/authentication";
-import Loader from "../../../../components/Loader";
-import validateInputs from "../../../../helpers/validations";
-import { countriesList } from "../../../../constants/countries";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "../../../../components/inputs/Button";
-import Table from "../../../../components/table/Table";
-import { capitalizeString, maskPhoneDigits } from "../../../../helpers/strings";
+} from '../../../../constants/authentication';
+import Loader from '../../../../components/Loader';
+import validateInputs from '../../../../helpers/validations';
+import { countriesList } from '../../../../constants/countries';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from '../../../../components/inputs/Button';
+import Table from '../../../../components/table/Table';
+import { capitalizeString, maskPhoneDigits } from '../../../../helpers/strings';
 import {
   setBusinessActiveStep,
   setBusinessActiveTab,
   setBusinessCompletedStep,
   setBusinessPersonDetailsModal,
-} from "../../../../states/features/businessRegistrationSlice";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import moment from "moment";
+} from '../../../../states/features/businessRegistrationSlice';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserApplications } from '../../../../states/features/userApplicationSlice';
+import moment from 'moment';
 import {
   RDBAdminEmailPattern,
   validNationalID,
-} from "../../../../constants/Users";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import Modal from "../../../../components/Modal";
-import ViewDocument from "../../../user-company-details/ViewDocument";
-import OTPVerificationCard from "@/components/cards/OTPVerificationCard";
-import BusinessPersonDetails from "../../../../containers/business-registration/BusinessPersonDetails";
-import TextArea from "@/components/inputs/TextArea";
+} from '../../../../constants/Users';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import Modal from '../../../../components/Modal';
+import ViewDocument from '../../../user-company-details/ViewDocument';
+import OTPVerificationCard from '@/components/cards/OTPVerificationCard';
+import BusinessPersonDetails from '../../../../containers/business-registration/BusinessPersonDetails';
+import TextArea from '@/components/inputs/TextArea';
 
 export interface business_beneficial_owners {
   no: number;
@@ -67,7 +67,6 @@ interface BeneficialOwnersProps {
 }
 
 const BeneficialOwners: FC<BeneficialOwnersProps> = ({
-  isOpen,
   beneficial_owners = [],
   entryId,
   status,
@@ -88,9 +87,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [attachmentFiles, setAttachmentFiles] = useState<File[]>(
-  []
-  );
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [searchMember, setSearchMember] = useState({
     loading: false,
     error: false,
@@ -323,8 +320,6 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
     },
   ];
 
-  if (!isOpen) return null;
-
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -361,7 +356,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             />
           </menu>
           <ul className={`w-full flex items-start gap-6`}>
-            {watch('type') === 'person' && (
+            {watch('type') === 'individual' && (
               <Controller
                 name="document_type"
                 rules={{ required: 'Select document type' }}
@@ -441,7 +436,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   </label>
                 </menu>
               )}
-              {watch('type') && watch('type') !== 'person' && (
+              {watch('type') && watch('type') !== 'individual' && (
                 <menu className="flex flex-col w-full gap-6">
                   <Controller
                     control={control}
@@ -459,7 +454,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                               type="radio"
                               label="Yes"
                               value="yes"
-                              defaultChecked={watch('rwandan_company') === 'yes'}
+                              defaultChecked={
+                                watch('rwandan_company') === 'yes'
+                              }
                               onChange={(e) => {
                                 setSearchMember({
                                   ...searchMember,
@@ -500,13 +497,13 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       control={control}
                       rules={{
                         required:
-                          watch('type') !== 'person' &&
+                          watch('type') !== 'individual' &&
                           watch('rwandan_company') === 'yes'
                             ? 'Company code is required'
                             : false,
                         validate: (value) => {
                           if (
-                            watch('type') === 'person' ||
+                            watch('type') === 'individual' ||
                             watch('rwandan_company') === 'no'
                           )
                             return true;
@@ -592,7 +589,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                             />
                             {searchMember?.loading && !errors?.reference_no && (
                               <p className="flex items-center gap-[2px] text-[13px]">
-                                <Loader size={4} /> Validating company code
+                                <Loader className="text-primary" /> Validating
+                                company code
                               </p>
                             )}
                             {errors?.reference_no && (
@@ -608,7 +606,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 </menu>
               )}
             </menu>
-            {watch('document_type') === 'nid' && watch('type') === 'person' && (
+            {watch('document_type') === 'nid' && watch('type') === 'individual' && (
               <Controller
                 control={control}
                 name="documentNumber"
@@ -682,7 +680,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                         !errors?.documentNumber &&
                         !searchMember?.error && (
                           <span className="flex items-center gap-[2px] text-[13px]">
-                            <Loader size={4} /> Validating document
+                            <Loader className="text-primary" /> Validating
+                            document
                           </span>
                         )}
                       {searchMember?.error && !searchMember?.loading && (
@@ -708,7 +707,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 ? 'flex'
                 : 'hidden'
             } ${
-              watch('type') !== 'person' && 'hidden'
+              watch('type') !== 'individual' && 'hidden'
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             {watch('document_type') === 'passport' && (
@@ -718,11 +717,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 rules={{
                   required:
                     watch('document_type') === 'passport' &&
-                    watch('type') === 'person'
+                    watch('type') === 'individual'
                       ? 'Passport number is required'
                       : false,
                   validate: (value) => {
-                    if (watch('type') !== 'person') return true;
+                    if (watch('type') !== 'individual') return true;
                     if (watch('document_type') !== 'passport') {
                       return true;
                     }
@@ -763,7 +762,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.first_name}
               rules={{
                 required:
-                  watch('type') === 'person' ? 'First name is required' : false,
+                  watch('type') === 'individual' ? 'First name is required' : false,
               }}
               render={({ field }) => {
                 return (
@@ -827,7 +826,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch('type') === 'person' && watch('document_type') !== 'nid'
+                  watch('type') === 'individual' && watch('document_type') !== 'nid'
                     ? 'Select gender'
                     : false,
               }}
@@ -880,7 +879,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') === 'person' &&
+                  watch('type') === 'individual' &&
                   watch('document_type') === 'passport' &&
                   'Nationality is required',
               }}
@@ -941,7 +940,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') === 'person' && 'Phone number is required',
+                  watch('type') === 'individual' && 'Phone number is required',
               }}
               render={({ field }) => {
                 return (
@@ -990,7 +989,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 rules={{
                   required:
                     watch('document_type') === 'passport' &&
-                    watch('type') === 'person'
+                    watch('type') === 'individual'
                       ? 'Passport is required'
                       : false,
                 }}
@@ -1023,7 +1022,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               />
             </menu>
           </section>
-          {watch('type') === 'person' &&
+          {watch('type') === 'individual' &&
             (watch('document_type') === 'passport' ||
               (watch('document_type') === 'nid' && !!searchMember?.data)) && (
               <article className="flex flex-col gap-3">
@@ -1084,7 +1083,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               rules={{
                 required:
                   watch('address') === 'no' &&
-                  watch('type') === 'person' &&
+                  watch('type') === 'individual' &&
                   watch('document_type') === 'passport' &&
                   'Nationality is required',
               }}
@@ -1137,7 +1136,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch('address') === 'no' && watch('type') === 'person'
+                  watch('address') === 'no' && watch('type') === 'individual'
                     ? 'Phone number is required'
                     : false,
               }}
@@ -1167,7 +1166,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           <section
             className={`${
               (watch('type') &&
-                watch('type') !== 'person' &&
+                watch('type') !== 'individual' &&
                 watch('rwandan_company') === 'no') ||
               (watch('rwandan_company') === 'yes' && searchMember?.data)
                 ? 'flex'
@@ -1179,7 +1178,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') !== 'person' &&
+                  watch('type') !== 'individual' &&
                   watch('rwandan_company') === 'no'
                     ? 'Company name is required'
                     : false,
@@ -1225,7 +1224,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') !== 'person' &&
+                  watch('type') !== 'individual' &&
                   watch('rwandan_company') === 'no'
                     ? 'Select country of incorporation'
                     : false,
@@ -1233,7 +1232,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
-                    {watch('type') !== 'person' &&
+                    {watch('type') !== 'individual' &&
                     watch('rwandan_company') === 'yes' ? (
                       <menu className="flex flex-col gap-2">
                         <p className="flex items-center gap-1 text-[14px]">
@@ -1274,7 +1273,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch('type') !== 'person' &&
+                  watch('type') !== 'individual' &&
                   watch('rwandan_company') === 'no'
                     ? 'Registration date is required'
                     : false,
@@ -1290,7 +1289,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
-                    {watch('type') !== 'person' &&
+                    {watch('type') !== 'individual' &&
                     watch('rwandan_company') === 'yes' ? (
                       <menu className="flex flex-col gap-2">
                         <p className="flex items-center gap-1 text-[14px]">
@@ -1326,9 +1325,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.email}
               rules={{
                 required:
-                  watch('type') !== 'person' && 'Email address is required',
+                  watch('type') !== 'individual' && 'Email address is required',
                 validate: (value) => {
-                  if (watch('type') !== 'person') {
+                  if (watch('type') !== 'individual') {
                     return (
                       validateInputs(String(value), 'email') ||
                       'Invalid email address'
@@ -1361,14 +1360,14 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch('type') !== 'person' &&
+                  watch('type') !== 'individual' &&
                   watch('rwandan_company') === 'no'
                     ? 'Company phone number is required'
                     : false,
                 validate: (value) => {
                   if (
                     watch('rwandan_company') === 'yes' &&
-                    watch('type') !== 'person'
+                    watch('type') !== 'individual'
                   ) {
                     return (
                       validateInputs(value, 'tel') || 'Invalid phone number'
@@ -1591,7 +1590,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 setTimeout(() => {
                   setIsLoading(false);
                   if (
-                    watch('type') === 'person' &&
+                    watch('type') === 'individual' &&
                     watch('document_type') === 'nid'
                   ) {
                     setShowVerifyPhone(true);
@@ -1719,7 +1718,12 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           />
         </menu>
       )}
-      {['IN_REVIEW', 'APPROVED', 'PENDING_APPROVAL', 'PENDING_REJECTION'].includes(status) && (
+      {[
+        'IN_REVIEW',
+        'APPROVED',
+        'PENDING_APPROVAL',
+        'PENDING_REJECTION',
+      ].includes(status) && (
         <menu className="flex items-center gap-3 justify-between">
           <Button
             value="Back"

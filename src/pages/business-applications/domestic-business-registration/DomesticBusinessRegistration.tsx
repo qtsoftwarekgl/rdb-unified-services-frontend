@@ -39,6 +39,7 @@ import {
   NavigationFlow,
 } from '@/types/models/navigationFlow';
 import DeleteFounder from "@/containers/business-registration/DeleteFounder";
+import BeneficialOwners from './beneficial-owners/BeneficialOwners';
 
 const DomesticBusinessRegistration = () => {
   // STATE VARIABLES
@@ -336,6 +337,13 @@ const DomesticBusinessRegistration = () => {
 
                       {navigationFlow?.stepName === 'Capital Details' && (
                         <CapitalDetails
+                          businessId={queryParams?.businessId}
+                          applicationStatus={business?.applicationStatus}
+                        />
+                      )}
+
+                      {navigationFlow?.stepName === 'Beneficial Owners' && (
+                        <BeneficialOwners
                           businessId={queryParams?.businessId}
                           applicationStatus={business?.applicationStatus}
                         />
