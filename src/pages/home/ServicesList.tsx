@@ -154,7 +154,7 @@ const ServicesList = () => {
           <menu className="flex flex-col items-center w-full gap-6 p-2 my-4">
             {servicesIsLoading ? (
               <figure className="h-[40%] flex items-center justify-center min-h-[40vh]">
-                <Loader size={'medium'} className="text-primary" />
+                <Loader size={"medium"} className="text-primary" />
               </figure>
             ) : servicesList?.length > 0 ? (
               servicesList.map((service: Service, index: number) => {
@@ -183,7 +183,7 @@ const ServicesList = () => {
                             (item: Service, index: number) => {
                               return (
                                 <Link
-                                  className="w-full text-[15px]"
+                                  className="w-full text-[15px] hover:underline"
                                   key={index}
                                   to={"#"}
                                   onClick={(e) => {
