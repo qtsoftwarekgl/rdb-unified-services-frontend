@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../states/store";
-import PreviewCard from "../../../../components/business-registration/PreviewCard";
-import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../../../states/features/businessRegistrationSlice";
-import Button from "../../../../components/inputs/Button";
-import { ErrorResponse, useNavigate } from "react-router-dom";
-import Loader from "../../../../components/Loader";
-import ViewDocument from "../../../user-company-details/ViewDocument";
-import { Address, BusinessActivity, businessId } from "@/types/models/business";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../states/store';
+import PreviewCard from '../../../../components/business-registration/PreviewCard';
+import Button from '../../../../components/inputs/Button';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
+import Loader from '../../../../components/Loader';
+import ViewDocument from '../../../user-company-details/ViewDocument';
+import { Address, BusinessActivity, businessId } from '@/types/models/business';
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyFetchBusinessAddressQuery,
@@ -34,11 +30,9 @@ import { setBusinessAttachments } from "@/states/features/businessSlice";
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import {
-  completeNavigationFlowThunk,
-  createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+} from '@/helpers/business.helpers';
+import { completeNavigationFlowThunk, createNavigationFlowThunk } from '@/states/features/navigationFlowSlice';
+import ListBusinessReviewComments from '../../business-review/ListBusinessReviewComments';
 
 type PreviewSubmissionProps = {
   businessId: businessId;
@@ -61,17 +55,29 @@ const PreviewSubmission = ({
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  const { businessReviewCommentsList } = useSelector((state: RootState) => state.businessReviewComment);
 
   // NAVIGATION
   const navigate = useNavigate();
+
+  // UPDATE NAVIGATION FLOW ON LOAD
+  useEffect(() => {
+    dispatch(
+      completeNavigationFlowThunk({
+        isCompleted: true,
+        navigationFlowId: findNavigationFlowByStepName(
+          businessNavigationFlowsList,
+          'Preview & Submission'
+        )?.id,
+      })
+    );
+  }, [dispatch, businessId]);
 
   // INITIALIZE FETCHING COMPANY DETAILS QUERY
   const [
     fetchBusinessDetails,
     {
       data: businessDetailsData,
-      error: businessDetailsError,
-      isError: businessDetailsIsError,
       isLoading: businessDetailsIsLoading,
       isSuccess: businessDetailsIsSuccess,
     },
@@ -82,8 +88,6 @@ const PreviewSubmission = ({
     fetchBusinessAddress,
     {
       data: businessAddressData,
-      error: businessAddressError,
-      isError: businessAddressIsError,
       isLoading: businessAddressIsLoading,
       isSuccess: businessAddressIsSuccess,
     },
@@ -95,9 +99,6 @@ const PreviewSubmission = ({
     {
       data: executiveManagementData,
       isLoading: executiveManagementIsLoading,
-      error: executiveManagementError,
-      isError: executiveManagementIsError,
-      isSuccess: executiveManagementIsSuccess,
     },
   ] = useLazyFetchBusinessPeopleQuery();
 
@@ -114,9 +115,6 @@ const PreviewSubmission = ({
     {
       data: boardMembersData,
       isLoading: boardMembersIsLoading,
-      error: boardMembersError,
-      isError: boardMembersIsError,
-      isSuccess: boardMembersIsSuccess,
     },
   ] = useLazyFetchBusinessPeopleQuery();
 
@@ -132,7 +130,6 @@ const PreviewSubmission = ({
     fetchShareholders,
     {
       data: shareholdersData,
-      isLoading: shareholdersIsLoading,
       error: shareholdersError,
       isError: shareholdersIsError,
       isSuccess: shareholdersIsSuccess,
@@ -151,8 +148,6 @@ const PreviewSubmission = ({
     fetchBusinessActivities,
     {
       data: businessActivitiesData,
-      error: businessActivitiesError,
-      isError: businessActivitiesIsError,
       isLoading: businessActivitiesIsLoading,
       isSuccess: businessActivitiesIsSuccess,
     },
@@ -201,8 +196,6 @@ const PreviewSubmission = ({
     fetchBusinessEmploymentInfo,
     {
       data: businessEmploymentInfoData,
-      error: businessEmploymentInfoError,
-      isError: businessEmploymentInfoIsError,
       isLoading: businessEmploymentInfoIsLoading,
       isSuccess: businessEmploymentInfoIsSuccess,
     },
@@ -330,6 +323,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Company Details"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Details'
+          )?.id
+        }
       >
         {businessDetailsIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -394,6 +393,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Company Address"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Address'
+          )?.id
+        }
       >
         {businessAddressIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -451,6 +456,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Business Activity & VAT"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Business Activity & VAT'
+          )?.id
+        }
       >
         {businessActivitiesIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -493,6 +504,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Board of Directors"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Board of Directors'
+          )?.id
+        }
       >
         {boardMembersIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -515,6 +532,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Senior Management"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Senior Management'
+          )?.id
+        }
       >
         {executiveManagementIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -537,6 +560,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Employment Info"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Employment Info'
+          )?.id
+        }
       >
         {businessEmploymentInfoIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -595,6 +624,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Employment Info"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Employment Info'
+          )?.id
+        }
       >
         <Table
           showFilter={false}
@@ -630,6 +665,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Attachments"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Attachments'
+          )?.id
+        }
       >
         {businessAttachmentsIsFetching ? (
           <figure className="flex items-center gap-3 w-full min-h-[20vh]">
@@ -643,40 +684,33 @@ const PreviewSubmission = ({
         )}
       </PreviewCard>
 
-      {["IN_PROGRESS", "ACTION_REQUIRED", "IN_PREVIEW", "IS_AMENDING"].includes(
-        String(applicationStatus)
-      ) && (
-        <menu
-          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-        >
+      <menu
+        className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+      >
+        <Button
+          value="Back"
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(
+              createNavigationFlowThunk({
+                businessId,
+                massId: findNavigationFlowMassIdByStepName(
+                  navigationFlowMassList,
+                  'Attachments'
+                ),
+                isActive: true,
+              })
+            );
+          }}
+        />
+        {[
+          'IN_PROGRESS',
+          'IN_PREVIEW',
+          'IS_AMENDING',
+        ].includes(String(applicationStatus)) ? (
           <Button
-            value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(
-                createNavigationFlowThunk({
-                  businessId,
-                  massId: findNavigationFlowMassIdByStepName(
-                    navigationFlowMassList,
-                    "Attachments"
-                  ),
-                  isActive: true,
-                })
-              );
-            }}
-          />
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(
-                completeNavigationFlowThunk({
-                  isCompleted: true,
-                  navigationFlowId: findNavigationFlowByStepName(
-                    businessNavigationFlowsList,
-                    "Preview & Submission"
-                  )?.id,
-                })
-              );
               if (
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()
@@ -702,14 +736,35 @@ const PreviewSubmission = ({
             value={updateBusinessIsLoading ? <Loader /> : "Submit"}
             primary
           />
-        </menu>
-      )}
+        ) : (
+          ['ACTION_REQUIRED'].includes(String(applicationStatus)) && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                updateBusiness({
+                  businessId,
+                  applicationStatus: 'RESUBMITTED',
+                });
+              }}
+              disabled={
+                businessReviewCommentsList?.filter(
+                  (reviewComment) => reviewComment?.status === 'UNRESOLVED'
+                ).length > 0
+              }
+              value={updateBusinessIsLoading ? <Loader /> : 'Submit again'}
+              primary
+            />
+          )
+        )}
+      </menu>
+
       {attachmentPreview && (
         <ViewDocument
           documentUrl={attachmentPreview}
           setDocumentUrl={setAttachmentPreview}
         />
       )}
+      <ListBusinessReviewComments />
     </section>
   );
 };

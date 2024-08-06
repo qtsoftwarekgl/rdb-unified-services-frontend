@@ -788,6 +788,33 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+
+      // FETCH BUSINESS REVIEW COMMENTS
+      fetchBusinessReviewComments: builder.query({
+        query: ({ navigationFlowId, businessId }) => {
+          let url = `/review-comments?businessId=${businessId}`;
+          if (navigationFlowId) {
+            url += `&navigationFlowId=${navigationFlowId}`;
+          }
+          return {
+            url
+          };
+        },
+      }),
+
+       // UPDATE BUSINESS REVIEW COMMENT STATUS
+       updateBusinessReviewCommentStatus: builder.mutation({
+        query: ({ id, status }) => {
+          return {
+            url: `/review-comments/${id}/status`,
+            method: 'PATCH',
+            body: {
+              status,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -849,6 +876,8 @@ export const {
   useTransferBusinessRegistrationMutation,
   useRestoreBusinessMutation,
   useLazyFetchBackOfficeBusinessesQuery,
+  useLazyFetchBusinessReviewCommentsQuery,
+  useUpdateBusinessReviewCommentStatusMutation
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

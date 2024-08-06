@@ -178,8 +178,9 @@ const AssignShareDetails = ({
       }}
       heading={`Assign shares to ${
         selectedFounderDetail?.personDetail?.firstName ||
-        selectedFounderDetail?.organization?.organizationName
+        selectedFounderDetail?.personDetail?.organization?.organizationName
       }`}
+      className='min-w-[60vw]'
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset disabled={disableForm} className="flex flex-col gap-4">

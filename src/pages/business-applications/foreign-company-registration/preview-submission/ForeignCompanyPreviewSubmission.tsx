@@ -1,51 +1,52 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../states/store";
-import PreviewCard from "../../../../components/business-registration/PreviewCard";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../states/store';
+import PreviewCard from '../../../../components/business-registration/PreviewCard';
 import {
   removeForeignCompanyRegistrationTabs,
   setForeignBusinessActiveStep,
   setForeignBusinessActiveTab,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
-import { capitalizeString, formatDate } from "../../../../helpers/strings";
-import Table from "../../../../components/table/Table";
-import { countriesList } from "../../../../constants/countries";
-import Button from "../../../../components/inputs/Button";
-import { ErrorResponse, useNavigate } from "react-router-dom";
-import Loader from "../../../../components/Loader";
-import { BusinessActivity, businessId } from "@/types/models/business";
+} from '../../../../states/features/foreignCompanyRegistrationSlice';
+import { capitalizeString, formatDate } from '../../../../helpers/strings';
+import Table from '../../../../components/table/Table';
+import { countriesList } from '../../../../constants/countries';
+import Button from '../../../../components/inputs/Button';
+import { ErrorResponse, useNavigate } from 'react-router-dom';
+import Loader from '../../../../components/Loader';
+import { BusinessActivity, businessId } from '@/types/models/business';
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyGetBusinessAddressQuery,
   useLazyGetBusinessDetailsQuery,
   useLazyGetEmploymentInfoQuery,
   useUpdateBusinessMutation,
-} from "@/states/api/businessRegApiSlice";
-import { toast } from "react-toastify";
+} from '@/states/api/businessRegApiSlice';
+import { toast } from 'react-toastify';
 import {
   setBusinessAddress,
   setBusinessDetails,
   setEmploymentInfo,
-} from "@/states/features/businessSlice";
-import { useLazyFetchBusinessPeopleQuery } from "@/states/api/foreignCompanyRegistrationApiSlice";
-import { setBoardOfDirectorsList } from "@/states/features/boardOfDirectorSlice";
-import { setExecutiveManagersList } from "@/states/features/executiveManagerSlice";
+} from '@/states/features/businessSlice';
+import { useLazyFetchBusinessPeopleQuery } from '@/states/api/foreignCompanyRegistrationApiSlice';
+import { setBoardOfDirectorsList } from '@/states/features/boardOfDirectorSlice';
+import { setExecutiveManagersList } from '@/states/features/executiveManagerSlice';
 import {
   setSelectedBusinessLinesList,
   setSelectedMainBusinessLine,
   setVatRegistred,
-} from "@/states/features/businessActivitySlice";
-import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessRegApiSlice";
-import { setBusinessAttachments } from "@/states/features/businessSlice";
-import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
+} from '@/states/features/businessActivitySlice';
+import { useLazyFetchBusinessAttachmentsQuery } from '@/states/api/businessRegApiSlice';
+import { setBusinessAttachments } from '@/states/features/businessSlice';
+import BusinessPeopleAttachments from '../../domestic-business-registration/BusinessPeopleAttachments';
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
+} from '@/helpers/business.helpers';
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+} from '@/states/features/navigationFlowSlice';
+import ListBusinessReviewComments from '../../business-review/ListBusinessReviewComments';
 
 interface ForeignCompanyPreviewSubmissionProps {
   businessId: businessId;
@@ -75,6 +76,20 @@ const ForeignCompanyPreviewSubmission = ({
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  const { businessReviewCommentsList } = useSelector((state: RootState) => state.businessReviewComment);
+
+  // UPDATE NAVIGATION FLOW ON LOAD
+  useEffect(() => {
+    dispatch(
+      completeNavigationFlowThunk({
+        isCompleted: true,
+        navigationFlowId: findNavigationFlowByStepName(
+          businessNavigationFlowsList,
+          'Preview & Submission'
+        )?.id,
+      })
+    );
+  }, [dispatch, businessId]);
 
   // GET BUSINESS DETAILS
   const [
@@ -165,10 +180,10 @@ const ForeignCompanyPreviewSubmission = ({
       getBusinessDetails({ id: businessId });
       getBusinessAddress({ businessId });
       fetchBusinessActivities({ businessId });
-      fetchBoardMembers({ businessId, route: "board-member" });
+      fetchBoardMembers({ businessId, route: 'board-member' });
       fetchManagementMember({
         businessId,
-        route: "management",
+        route: 'management',
       });
       fetchEmploymentInfo({ id: businessId });
       fetchBusinessAttachments({ businessId });
@@ -189,7 +204,7 @@ const ForeignCompanyPreviewSubmission = ({
     if (businessIsError) {
       if ((businessError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while fetching business details. Please try again later."
+          'An error occurred while fetching business details. Please try again later.'
         );
       } else {
         toast.error((businessError as ErrorResponse)?.data?.message);
@@ -209,7 +224,7 @@ const ForeignCompanyPreviewSubmission = ({
   useEffect(() => {
     if (businessAddressIsError) {
       if ((businessAddressError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching business data");
+        toast.error('An error occurred while fetching business data');
       } else {
         toast.error((businessAddressError as ErrorResponse)?.data?.message);
       }
@@ -234,7 +249,7 @@ const ForeignCompanyPreviewSubmission = ({
     if (businessActivitiesIsError) {
       if ((businessActivitiesError as ErrorResponse).status === 500) {
         toast.error(
-          "An error occured while fetching business activities. Please try again later."
+          'An error occured while fetching business activities. Please try again later.'
         );
       }
     } else if (businessActivitiesIsSuccess) {
@@ -270,7 +285,7 @@ const ForeignCompanyPreviewSubmission = ({
   useEffect(() => {
     if (boardMemberIsError) {
       if ((boardMemberError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching board members");
+        toast.error('An error occurred while fetching board members');
       } else {
         toast.error((boardMemberError as ErrorResponse)?.data?.message);
       }
@@ -290,7 +305,7 @@ const ForeignCompanyPreviewSubmission = ({
     if (managementMemberIsError) {
       if ((managementMemberError as ErrorResponse).status === 500) {
         toast.error(
-          "An error occured while fetching people. Please try again later"
+          'An error occured while fetching people. Please try again later'
         );
       } else {
         toast.error((managementMemberError as ErrorResponse).data?.message);
@@ -311,7 +326,7 @@ const ForeignCompanyPreviewSubmission = ({
     if (employmentInfoError) {
       if ((employmentInfoError as ErrorResponse)?.status === 500)
         toast.error(
-          "An error occurred while fetching employment info. Please try again later."
+          'An error occurred while fetching employment info. Please try again later.'
         );
       else toast.error((employmentInfoError as ErrorResponse)?.data?.message);
     } else dispatch(setEmploymentInfo(employmentInfoData?.data));
@@ -333,20 +348,20 @@ const ForeignCompanyPreviewSubmission = ({
   useEffect(() => {
     if (updateBusinessIsError) {
       if ((updateBusinessError as ErrorResponse).status === 500) {
-        toast.error("An error occurred while updating business");
+        toast.error('An error occurred while updating business');
       } else {
         toast.error(
           (updateBusinessError as ErrorResponse).data?.message ??
-            "An error occurred while updating business"
+            'An error occurred while updating business'
         );
       }
     } else if (updateBusinessIsSuccess) {
-      toast.success("Business updated successfully");
-      dispatch(setForeignBusinessActiveStep("company_details"));
-      dispatch(setForeignBusinessActiveTab("general_information"));
+      toast.success('Business updated successfully');
+      dispatch(setForeignBusinessActiveStep('company_details'));
+      dispatch(setForeignBusinessActiveTab('general_information'));
       dispatch(removeForeignCompanyRegistrationTabs());
-      navigate("/success", {
-        state: { redirectUrl: "/services" },
+      navigate('/success', {
+        state: { redirectUrl: '/services' },
       });
     }
   }, [
@@ -363,7 +378,7 @@ const ForeignCompanyPreviewSubmission = ({
     if (businessAttachmentsIsError) {
       if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while fetching business attachments. Please try again later."
+          'An error occurred while fetching business attachments. Please try again later.'
         );
       } else {
         toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
@@ -382,20 +397,20 @@ const ForeignCompanyPreviewSubmission = ({
   // TABLE COLUMNS
   const managementColumns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Document Number (NID/Passport)",
-      accessorKey: "documentNumber",
+      header: 'Document Number (NID/Passport)',
+      accessorKey: 'documentNumber',
     },
     {
-      header: "Position",
-      accessorKey: "position",
+      header: 'Position',
+      accessorKey: 'position',
     },
     {
-      header: "Country",
-      accessorKey: "country",
+      header: 'Country',
+      accessorKey: 'country',
     },
   ];
 
@@ -419,8 +434,14 @@ const ForeignCompanyPreviewSubmission = ({
         applicationStatus={applicationStatus}
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Company Details"
+          'Company Details'
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Details'
+          )?.id
+        }
       >
         {businessDetailsData?.data ? (
           Object?.entries(businessDetailsData?.data)?.map(
@@ -428,18 +449,18 @@ const ForeignCompanyPreviewSubmission = ({
               if (
                 value === null ||
                 [
-                  "createdAt",
-                  "updatedAt",
-                  "isForeign",
-                  "id",
-                  "applicationStatus",
+                  'createdAt',
+                  'updatedAt',
+                  'isForeign',
+                  'id',
+                  'applicationStatus',
                 ].includes(key)
               )
                 return null;
-              if (key === "service")
+              if (key === 'service')
                 return (
                   <p>
-                    {capitalizeString(key)}:{" "}
+                    {capitalizeString(key)}:{' '}
                     <strong>
                       {capitalizeString(
                         String(
@@ -456,7 +477,7 @@ const ForeignCompanyPreviewSubmission = ({
               return (
                 <li key={index}>
                   <p className="flex text-[14px] items-center gap-2">
-                    {capitalizeString(key)}:{" "}
+                    {capitalizeString(key)}:{' '}
                     <strong>{capitalizeString(String(value))}</strong>
                   </p>
                 </li>
@@ -474,13 +495,19 @@ const ForeignCompanyPreviewSubmission = ({
         applicationStatus={applicationStatus}
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Company Address"
+          'Company Address'
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Company Address'
+          )?.id
+        }
       >
         {businessAddress &&
           Object?.entries(businessAddress)?.map(
             ([key, value], index: number) => {
-              if (key === "id" || key === "location" || value === null)
+              if (key === 'id' || key === 'location' || value === null)
                 return null;
               return (
                 <li key={index}>
@@ -498,29 +525,27 @@ const ForeignCompanyPreviewSubmission = ({
         applicationStatus={applicationStatus}
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Business Activity & VAT"
+          'Business Activity & VAT'
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Business Activity & VAT'
+          )?.id
+        }
       >
         <p className="font-semibold">
-          Register for VAT:{" "}
+          Register for VAT:{' '}
           <span className="font-normal">
-            {capitalizeString(vatRegistred ? "yes" : "no")}
+            {capitalizeString(vatRegistred ? 'yes' : 'no')}
           </span>
         </p>
         <p className="font-semibold">
-          Main business line:{" "}
+          Main business line:{' '}
           <span className="font-normal">
             {selectedMainBusinessLine?.description}
           </span>
         </p>
-        {/* <p className="font-semibold">
-          Annual turnover:{" "}
-          <span className="font-normal">
-            {foreign_company_activities?.turnover
-              ? String(capitalizeString(foreign_company_activities?.turnover))
-              : "N/A"}
-          </span>
-        </p> */}
         <menu className="flex flex-col gap-3">
           <h3 className="font-semibold underline text-md">Business lines: </h3>
           <ul className="flex flex-col gap-2">
@@ -541,8 +566,14 @@ const ForeignCompanyPreviewSubmission = ({
         applicationStatus={applicationStatus}
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Board of Directors"
+          'Board of Directors'
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Board of Directors'
+          )?.id
+        }
       >
         <Table
           rowClickHandler={undefined}
@@ -569,8 +600,14 @@ const ForeignCompanyPreviewSubmission = ({
         header="Executive Management"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Executive Management"
+          'Executive Management'
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Executive Management'
+          )?.id
+        }
         businessId={businessId}
         applicationStatus={applicationStatus}
       >
@@ -594,25 +631,51 @@ const ForeignCompanyPreviewSubmission = ({
           })}
         />
       </PreviewCard>
+      {/* ATTACHMENTS */}
+      <PreviewCard
+        header="Attachments"
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
+          navigationFlowMassList,
+          'Attachments'
+        )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Attachments'
+          )?.id
+        }
+        businessId={businessId}
+        applicationStatus={applicationStatus}
+      >
+        {businessAttachments?.length > 0 && (
+          <BusinessPeopleAttachments attachments={businessAttachments} />
+        )}
+      </PreviewCard>
       {/* EMPLOYMENT INFO */}
       <PreviewCard
         header="Employment Information"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Employment Info"
+          'Employment Info'
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            'Employment Info'
+          )?.id
+        }
         businessId={businessId}
         applicationStatus={applicationStatus}
       >
         <p>
-          Company has employees:{" "}
+          Company has employees:{' '}
           <span className="font-semibold">
-            {employmentInfo?.numberOfEmployees > 0 ? "yes" : "no"}
+            {employmentInfo?.numberOfEmployees > 0 ? 'yes' : 'no'}
           </span>
         </p>
         {employmentInfo?.numberOfEmployees > 0 && (
           <p>
-            Number of employees:{" "}
+            Number of employees:{' '}
             <span className="font-semibold">
               {employmentInfo?.numberOfEmployees}
             </span>
@@ -620,34 +683,20 @@ const ForeignCompanyPreviewSubmission = ({
         )}
         <p>
           <span>
-            Financial year start date:{" "}
+            Financial year start date:{' '}
             <span className="font-semibold">
-              {formatDate(employmentInfo?.financialYearStartDate) || "N/A"}
+              {formatDate(employmentInfo?.financialYearStartDate) || 'N/A'}
             </span>
           </span>
         </p>
         <p>
           <span>
-            Financial year end date:{" "}
+            Financial year end date:{' '}
             <span className="font-semibold">
-              {formatDate(employmentInfo?.financialYearEndDate) || "N/A"}
+              {formatDate(employmentInfo?.financialYearEndDate) || 'N/A'}
             </span>
           </span>
         </p>
-      </PreviewCard>
-      {/* ATTACHMENTS */}
-      <PreviewCard
-        header="Attachments"
-        navigationFlowMassId={findNavigationFlowMassIdByStepName(
-          navigationFlowMassList,
-          "Attachments"
-        )}
-        businessId={businessId}
-        applicationStatus={applicationStatus}
-      >
-        {businessAttachments?.length > 0 && (
-          <BusinessPeopleAttachments attachments={businessAttachments} />
-        )}
       </PreviewCard>
       <menu
         className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -661,45 +710,66 @@ const ForeignCompanyPreviewSubmission = ({
                 businessId,
                 massId: findNavigationFlowMassIdByStepName(
                   navigationFlowMassList,
-                  "Attachments"
+                  'Attachments'
                 ),
                 isActive: true,
               })
             );
           }}
         />
-        <Button
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(
-              completeNavigationFlowThunk({
-                isCompleted: true,
-                navigationFlowId: findNavigationFlowByStepName(
-                  businessNavigationFlowsList,
-                  "Preview & Submission"
-                )?.id,
-              })
-            );
-            if (
-              !Object?.values(navigationFlowMassList ?? {})
-                ?.flat()
-                ?.every((navigationStep) => {
-                  return businessNavigationFlowsList?.find(
-                    (businessStep) =>
-                      businessStep?.navigationFlowMass?.stepName ===
-                        navigationStep?.stepName && businessStep?.completed
-                  );
-                })
-            ) {
-              toast.error("All steps must be completed before submission");
-              return;
-            }
-            updateBusiness({ businessId, applicationStatus: "SUBMITTED" });
-          }}
-          value={updateBusinessIsLoading ? <Loader /> : "Submit"}
-          primary
-        />
+        {['IN_PROGRESS', 'IN_PREVIEW', 'IS_AMENDING'].includes(
+          String(applicationStatus)
+        ) ? (
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              if (
+                !Object?.values(navigationFlowMassList ?? {})
+                  ?.flat()
+                  ?.every((navigationStep) => {
+                    return businessNavigationFlowsList?.find(
+                      (businessStep) =>
+                        businessStep?.navigationFlowMass?.stepName ===
+                          navigationStep?.stepName && businessStep?.completed
+                    );
+                  })
+              ) {
+                toast.error('All steps must be completed before submission');
+                return;
+              }
+              updateBusiness({
+                businessId,
+                applicationStatus:
+                  applicationStatus === 'IN_PROGRESS'
+                    ? 'SUBMITTED'
+                    : 'AMENDMENT_SUBMITTED',
+              });
+            }}
+            value={updateBusinessIsLoading ? <Loader /> : 'Submit'}
+            primary
+          />
+        ) : (
+          ['ACTION_REQUIRED'].includes(String(applicationStatus)) && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                updateBusiness({
+                  businessId,
+                  applicationStatus: 'RESUBMITTED',
+                });
+              }}
+              disabled={
+                businessReviewCommentsList?.filter(
+                  (reviewComment) => reviewComment?.status === 'UNRESOLVED'
+                ).length > 0
+              }
+              value={updateBusinessIsLoading ? <Loader /> : 'Submit again'}
+              primary
+            />
+          )
+        )}
       </menu>
+      <ListBusinessReviewComments />
     </section>
   );
 };
