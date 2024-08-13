@@ -484,6 +484,7 @@ const ForeignCompanyPreviewSubmission = ({
               })
             );
             if (
+              applicationStatus !== ApplicationStatus.IsAmending &&
               !Object?.values(navigationFlowMassList ?? {})
                 ?.flat()
                 ?.every((navigationStep) => {

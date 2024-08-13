@@ -581,6 +581,7 @@ const PreviewSubmission = ({
             onClick={(e) => {
               e.preventDefault();
               if (
+                applicationStatus !== ApplicationStatus.IsAmending &&
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()
                   ?.every((navigationStep) => {

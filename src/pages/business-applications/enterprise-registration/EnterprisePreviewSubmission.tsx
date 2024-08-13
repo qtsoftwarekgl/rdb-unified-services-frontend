@@ -327,6 +327,7 @@ const EnterprisePreviewSubmission = ({
                 }) as unknown as UnknownAction
               );
               if (
+                applicationStatus !== ApplicationStatus.IsAmending &&
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()
                   ?.every((navigationStep) => {
