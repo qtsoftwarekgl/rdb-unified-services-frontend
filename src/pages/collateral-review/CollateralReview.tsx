@@ -5,7 +5,6 @@ import {
   setCollateralReviewActiveStep,
   setCollateralReviewActiveTab,
 } from "@/states/features/collateralReviewSlice";
-import { TabType } from "@/states/features/types";
 import { RootState } from "@/states/store";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -78,7 +77,7 @@ const CollateralReview = () => {
           setActiveTab={setCollateralReviewActiveTab}
         />
         <menu className="flex items-center w-full gap-2 rounded">
-          {collateral_review_tabs.map((tab: TabType, index: number) => {
+          {collateral_review_tabs.map((tab, index: number) => {
             const isActiveTab = tab.active;
             const activeStepName = collateral_review_active_step?.name;
             return (
