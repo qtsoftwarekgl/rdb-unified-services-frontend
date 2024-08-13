@@ -12,7 +12,7 @@ import {
 } from '@/states/api/businessRegApiSlice';
 import { useLazyGetServiceQuery } from '@/states/api/businessRegApiSlice';
 import {
-  addToBusinessesList,
+  setBusinessesList,
   setBusinessPage,
   setBusinessSize,
   setBusinessTotalElements,
@@ -110,17 +110,7 @@ const NewServiceApplication = () => {
   useEffect(() => {
     fetchBusinesses({
       serviceId: id,
-      applicationStatus: 'IN_PROGRESS',
-      page,
-      size,
-    });
-  }, [fetchBusinesses, id, page, size]);
-
-  // GET APPLICATIONS IS AMENDING
-  useEffect(() => {
-    fetchBusinesses({
-      serviceId: id,
-      applicationStatus: 'IS_AMENDING',
+      applicationStatus: 'IN_PROGRESS,IS_AMENDING,ACTION_REQUIRED',
       page,
       size,
     });
@@ -137,7 +127,7 @@ const NewServiceApplication = () => {
         );
       }
     } else if (businessesIsSuccess) {
-      dispatch(addToBusinessesList(businessesData?.data?.data));
+      dispatch(setBusinessesList(businessesData?.data?.data));
       dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
       dispatch(setBusinessTotalElements(businessesData?.data?.totalElements));
     }
@@ -186,10 +176,10 @@ const NewServiceApplication = () => {
         return (
           <CustomPopover
             trigger={
-              <menu className="flex items-center justify-center">
+              <menu className="flex items-center cursor-pointer justify-center">
                 <FontAwesomeIcon
                   icon={faEllipsisVertical}
-                  className="text-primary cursor-pointer"
+                  className="text-primary"
                 />
               </menu>
             }
@@ -257,9 +247,7 @@ const NewServiceApplication = () => {
                 <figure className="min-h-[40vh] flex items-center justify-center bg-white">
                   <Loader />
                 </figure>
-              ) : (
-                businessesList &&
-                businessesList?.length > 0 && (
+              ) : businessesIsSuccess && businessesList?.length > 0 && (
                   <menu className="flex flex-col gap-2 max-md:w-full">
                     <h1 className="px-2 text-primary text-base font-semibold uppercase">
                       Applications in progress
@@ -282,7 +270,6 @@ const NewServiceApplication = () => {
                       columns={applicationsColumns as ColumnDef<Business>[]}
                     />
                   </menu>
-                )
               )}
             </section>
           </section>

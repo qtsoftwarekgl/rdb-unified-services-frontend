@@ -12,10 +12,12 @@ const initialState: {
   navigationFlowMassList?: NavigationFlowMass;
   businessNavigationFlowsList: NavigationFlow[];
   businessNavigationFlowIsLoading: boolean;
+  selectedBusinessNavigationFlow?: NavigationFlow;
 } = {
   navigationFlowMassList: undefined,
   businessNavigationFlowsList: [],
   businessNavigationFlowIsLoading: false,
+  selectedBusinessNavigationFlow: undefined,
 };
 
 export const createNavigationFlowThunk = createAsyncThunk<
@@ -62,6 +64,9 @@ const navigationFlowSlice = createSlice({
     setBusinessNavigationFlowIsLoading: (state, action) => {
       state.businessNavigationFlowIsLoading = action.payload;
     },
+    setSelectedNavigationFlow: (state, action) => {
+      state.selectedBusinessNavigationFlow = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -106,6 +111,7 @@ export const {
   addBusinessNavigationFlow,
   removeBusinessNavigationFlow,
   setBusinessNavigationFlowIsLoading,
+  setSelectedNavigationFlow
 } = navigationFlowSlice.actions;
 
 export default navigationFlowSlice.reducer;
