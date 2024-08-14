@@ -37,10 +37,25 @@ export function capitalizeCamelCase(string: string) {
     .trim();
 }
 
-export const formatNumbers = (number: number | string) => {
+// FORMAT NUMBERS
+export const formatNumbers = (number?: number | string) => {
   if (!number) return '';
   return new Intl.NumberFormat().format(Number(number));
 };
+
+// FORMAT CURRENCY
+export const formatCurrency = (
+  amount: number | string | undefined,
+  currency: string = 'USD'
+) => {
+  if (!amount) return '';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  }).format(Number(amount));
+};
+
+// GENERATE UUID
 export const generateUUID = () => {
   return uuid();
 };
@@ -98,10 +113,12 @@ export function filterObject(
   return cleanedObj;
 }
 
+// MASK PHONE DIGITS
 export const maskPhoneDigits = (phone: string) => {
   return `${phone?.slice(0, 3)}X XXX ${phone?.slice(-3)}`;
 };
 
+// GET STATUS BACKGROUND COLOR
 export const getStatusBgColor = (status: string | undefined) => {
   if (!status) return 'bg-gray-700';
   switch (status) {
@@ -131,4 +148,13 @@ export const getStatusBgColor = (status: string | undefined) => {
 // REMOVE DUPLICATES FROM ARRAY
 export const removeArrayDuplicates = (array: object[]) => {
   return [...new Set(array)];
+};
+
+// FIND COUNTRY NAME BY CODE
+export const findCountryNameByCode = (code: string, countries: {
+  name: string;
+  code: string;
+  dial_code: string;
+}[]) => {
+  return countries.find((country) => country?.code === code)?.name;
 };

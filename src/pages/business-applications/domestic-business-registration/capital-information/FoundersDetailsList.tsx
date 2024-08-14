@@ -1,24 +1,24 @@
-import Loader from "@/components/Loader";
-import CustomTooltip from "@/components/inputs/CustomTooltip";
-import Table from "@/components/table/Table";
-import { capitalizeString } from "@/helpers/strings";
-import { useLazyFetchShareholdersQuery } from "@/states/api/businessRegApiSlice";
+import Loader from '@/components/Loader';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
+import Table from '@/components/table/Table';
+import { capitalizeString } from '@/helpers/strings';
+import { useLazyFetchShareholdersQuery } from '@/states/api/businessRegApiSlice';
 import {
   setDeleteFounderModal,
   setFounderDetailsList,
   setSelectedFounderDetail,
-} from "@/states/features/founderDetailSlice";
-import { AppDispatch, RootState } from "@/states/store";
-import { businessId } from "@/types/models/business";
-import { FounderDetail } from "@/types/models/personDetail";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
+} from '@/states/features/founderDetailSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { businessId } from '@/types/models/business';
+import { FounderDetail } from '@/types/models/personDetail';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 type FoundersDetailsProps = {
   businessId: businessId;
@@ -51,24 +51,24 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
   // SHAREHOLDERS COLUMNS
   const shareholderColumns = [
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Document Number",
-      accessorKey: "personDocNo",
+      header: 'Document Number',
+      accessorKey: 'personDocNo',
     },
     {
-      header: "Phone number",
-      accessorKey: "phoneNumber",
+      header: 'Phone number',
+      accessorKey: 'phoneNumber',
     },
     {
-      header: "Shareholder Type",
-      accessorKey: "shareHolderType",
+      header: 'Shareholder Type',
+      accessorKey: 'shareHolderType',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }: { row: Row<FounderDetail> }) => {
         return (
           <menu className="flex items-center justify-center gap-6 w-ful">
@@ -93,7 +93,7 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
   useEffect(() => {
     if (shareholdersIsError) {
       if ((shareholdersError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching shareholders");
+        toast.error('An error occurred while fetching shareholders');
       } else {
         toast.error((shareholdersError as ErrorResponse)?.data?.message);
       }
@@ -128,20 +128,20 @@ const FoundersDetails = ({ businessId }: FoundersDetailsProps) => {
           return {
             ...founder,
             shareHolderType: capitalizeString(founder.shareHolderType),
-            personDocNo: founder?.personDetail?.personDocNo || "-",
+            personDocNo: founder?.personDetail?.personDocNo || '-',
             phoneNumber:
               founder?.personDetail?.phoneNumber ||
-              founder?.organization?.phone ||
-              "-",
+              founder?.personDetail?.organization?.phone ||
+              '-',
             name: `${
               founder?.personDetail?.firstName ||
-              founder?.organization?.organizationName
-            } ${founder?.personDetail?.middleName || ""} ${
-              founder?.personDetail?.lastName || ""
+              founder?.personDetail?.organization?.organizationName
+            } ${founder?.personDetail?.middleName || ''} ${
+              founder?.personDetail?.lastName || ''
             }`,
           };
         })}
-        columns={shareholderColumns as ColumnDef<Row<FounderDetail>, unknown>[]}
+        columns={shareholderColumns as ColumnDef<FounderDetail>[]}
         showFilter={false}
         showPagination={false}
       />

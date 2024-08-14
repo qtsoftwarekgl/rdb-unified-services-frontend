@@ -80,16 +80,9 @@ export const fetchBusinessesThunk = createAsyncThunk<
       size,
       serviceId,
       applicationStatus,
-    }: {
-      page: number;
-      size: number;
-      serviceId?: string;
-      applicationStatus?: string;
     },
     {
       dispatch,
-    }: {
-      dispatch: AppDispatch;
     }
   ) => {
     try {

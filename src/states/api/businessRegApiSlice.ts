@@ -815,6 +815,15 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+      // FETCH FOUNDERS WITH SHARE PERCENTAGES
+      fetchFoundersWithSharePercentages: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/founders-with-shares?businessId=${businessId}`,
+          };
+        },
+      }),
     };
   },
 });
@@ -877,7 +886,8 @@ export const {
   useRestoreBusinessMutation,
   useLazyFetchBackOfficeBusinessesQuery,
   useLazyFetchBusinessReviewCommentsQuery,
-  useUpdateBusinessReviewCommentStatusMutation
+  useUpdateBusinessReviewCommentStatusMutation,
+  useLazyFetchFoundersWithSharePercentagesQuery
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;
