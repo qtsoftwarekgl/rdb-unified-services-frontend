@@ -9,6 +9,7 @@ import { AppDispatch } from '@/states/store';
 import { FounderDetail } from '@/types/models/personDetail';
 import { faFlag } from '@fortawesome/free-regular-svg-icons';
 import {
+  faAdd,
   faCircleInfo,
   faEllipsisVertical,
 } from '@fortawesome/free-solid-svg-icons';
@@ -18,16 +19,19 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FounderDetailsWithSharesDetails from './FounderDetailsWithSharesDetails';
+import Button from '@/components/inputs/Button';
 
 interface FounderDetailsWithPercentagesProps {
   founderDetailsList: {
     founderDetail: FounderDetail;
     shareQuantityPercentage: number;
   }[];
+  setAddNewBeneficialOwner?: (value: boolean) => void;
 }
 
 const FounderDetailsWithShares = ({
   founderDetailsList,
+  setAddNewBeneficialOwner,
 }: FounderDetailsWithPercentagesProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -104,9 +108,24 @@ const FounderDetailsWithShares = ({
 
   return (
     <section className="w-full flex flex-col gap-4">
-      <h1 className="font-medium text-center uppercase">
-        Existing founders eligible to become beneficial owners
-      </h1>
+      <menu className="w-full flex items-center gap-3 justify-between">
+        <h1 className="font-medium text-center uppercase">
+          Existing founders eligible to become beneficial owners
+        </h1>
+        <Button
+          primary
+          onClick={(e) => {
+            e.preventDefault();
+            setAddNewBeneficialOwner && setAddNewBeneficialOwner(true);
+          }}
+          value={
+            <menu className="flex items-center gap-2 text-[11px]">
+              <FontAwesomeIcon className="text-[14px]" icon={faAdd} />
+              <p className="text-[14px]">Report new</p>
+            </menu>
+          }
+        />
+      </menu>
       {founderDetailsWithPercentagesList?.length > 0 && (
         <Table
           data={founderDetailsWithPercentagesList}

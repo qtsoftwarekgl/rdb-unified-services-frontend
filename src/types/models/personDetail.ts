@@ -1,13 +1,13 @@
-import { UUID } from "crypto";
-import { PersonRole } from "./personRole";
-import { Organization } from "./organization";
+import { UUID } from 'crypto';
+import { Organization } from './organization';
+import { PersonRole } from './personRole';
 
 export interface PersonDetail {
   id: UUID;
   version?: number;
   state?: string;
   createdAt?: number;
-  updatedAt?: number;
+  updatedAt?: number; 
   personId?: UUID;
   firstName?: string;
   middleName?: string;
@@ -34,6 +34,8 @@ export interface PersonDetail {
   poBox?: string;
   personRole?: PersonRole;
   roleDescription?: string;
+  organization: Organization;
+  villageId?: number;
 }
 
 export type FounderDetail = {
@@ -51,5 +53,25 @@ export type FounderDetail = {
   verificationCodeExpiration?: number;
   verified?: boolean;
   personDetail?: PersonDetail;
-  organization?: Organization;
 };
+
+export interface BeneficialOwner extends PersonDetail {
+  proCountry?: string;
+  proVillageId?: number;
+  proStreetNumber?: string;
+  proPoBox?: string;
+  proEmail?: string;
+  proPhoneNumber?: string;
+  proFax?: string;
+  occupation?: string;
+
+  registeredDate?: Date;
+  extentOfShare?: number;
+  extentOfVoting?: number;
+  significantInfluence?: string;
+  controlType?: string;
+  OtherControlMeansDesc?: string;
+
+  beneficialOwnerType?: string;
+  seniorManagementPosition?: string;
+}

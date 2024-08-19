@@ -1,8 +1,8 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import { businessBaseQueryWithReauth } from "./rootApiSlice";
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { businessBaseQueryWithReauth } from './rootApiSlice';
 
 export const businessRegApiSlice = createApi({
-  reducerPath: "businessRegistrationApi",
+  reducerPath: 'businessRegistrationApi',
   baseQuery: businessBaseQueryWithReauth,
   endpoints: (builder) => {
     return {
@@ -62,8 +62,8 @@ export const businessRegApiSlice = createApi({
       createBusiness: builder.mutation({
         query: ({ isForeign, serviceId }) => {
           return {
-            url: "/register",
-            method: "POST",
+            url: '/register',
+            method: 'POST',
             body: {
               isForeign,
               serviceId,
@@ -77,7 +77,7 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/${id}`,
-            method: "DELETE",
+            method: 'DELETE',
           };
         },
       }),
@@ -105,7 +105,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/details?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               companyName,
               position,
@@ -140,7 +140,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/address?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               villageId,
               address,
@@ -162,7 +162,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/business-activities?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               isVATRegistered,
               mainBusinessActivity,
@@ -184,7 +184,7 @@ export const businessRegApiSlice = createApi({
       // CREATE MANAGEMENT OR BOARD PEOPLE
       createManagementOrBoardPerson: builder.mutation({
         query: ({
-          route = "management",
+          route = 'management',
           businessId,
           position,
           firstName,
@@ -213,7 +213,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               position,
               firstName,
@@ -246,7 +246,7 @@ export const businessRegApiSlice = createApi({
 
       // FETCH MANAGEMENT OR BOARD PEOPLE
       fetchBusinessPeople: builder.query({
-        query: ({ businessId, route = "management" }) => {
+        query: ({ businessId, route = 'management' }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
           };
@@ -267,7 +267,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/employment-info?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               workingStartTime,
               workingEndTime,
@@ -295,7 +295,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, shareDetails }) => {
           return {
             url: `/share-details?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: shareDetails,
           };
         },
@@ -337,7 +337,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/founder-details?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               shareHolderType,
               description,
@@ -396,7 +396,7 @@ export const businessRegApiSlice = createApi({
         query: ({ founderId, shareDetails }) => {
           return {
             url: `/assign-share?founderId=${founderId}`,
-            method: "POST",
+            method: 'POST',
             body: shareDetails,
           };
         },
@@ -425,7 +425,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, applicationStatus }) => {
           return {
             url: `/?businessId=${businessId}`,
-            method: "PATCH",
+            method: 'PATCH',
             body: {
               applicationStatus,
             },
@@ -437,7 +437,7 @@ export const businessRegApiSlice = createApi({
       fetchServices: builder.query({
         query: ({ category }) => {
           return {
-            url: `/services?${category ? `category=${category}` : ""}`,
+            url: `/services?${category ? `category=${category}` : ''}`,
           };
         },
       }),
@@ -534,7 +534,7 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/attachment/person-upload`,
-            method: "POST",
+            method: 'POST',
             body: formData,
             formData: true,
           };
@@ -546,7 +546,7 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/attachment/business-upload`,
-            method: "POST",
+            method: 'POST',
             body: formData,
             formData: true,
           };
@@ -567,7 +567,7 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/attachment/business/${id}`,
-            method: "DELETE",
+            method: 'DELETE',
           };
         },
       }),
@@ -585,14 +585,14 @@ export const businessRegApiSlice = createApi({
       // DELETE BUSINESS PERSON
       deleteBusinessPerson: builder.mutation({
         query: ({ id }) => {
-          return { url: `/person/${id}`, method: "DELETE" };
+          return { url: `/person/${id}`, method: 'DELETE' };
         },
       }),
 
       // DELETE FOUNDER
       deleteShareholder: builder.mutation({
         query: ({ id }) => {
-          return { url: `/founder/${id}`, method: "DELETE" };
+          return { url: `/founder/${id}`, method: 'DELETE' };
         },
       }),
 
@@ -619,7 +619,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, massId, isActive }) => {
           return {
             url: `/navigation-flow`,
-            method: "POST",
+            method: 'POST',
             body: {
               businessId,
               massId,
@@ -634,7 +634,7 @@ export const businessRegApiSlice = createApi({
         query: ({ isCompleted = true, navigationFlowId }) => {
           return {
             url: `/navigation-flow/complete`,
-            method: "POST",
+            method: 'POST',
             body: {
               isCompleted,
               navigationFlowId,
@@ -648,7 +648,7 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/founder/${id}`,
-            method: "DELETE",
+            method: 'DELETE',
           };
         },
       }),
@@ -658,7 +658,7 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/amendment/attachment`,
-            method: "POST",
+            method: 'POST',
             body: formData,
             formData: true,
           };
@@ -675,7 +675,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/dormant?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               dormantReason,
               dormantStartDate,
@@ -696,7 +696,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/dissolution?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               dissolutionReason,
               dissolutionDate,
@@ -718,7 +718,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/new-branch?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               branchName,
               workingHoursFrom,
@@ -739,7 +739,7 @@ export const businessRegApiSlice = createApi({
         }) => {
           return {
             url: `/amendment/cessation?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               resolutionReason,
               resolutionStartDate,
@@ -754,7 +754,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, transferDate, transferReason }) => {
           return {
             url: `/amendment/transfer-registration?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
             body: {
               transferDate,
               transferReason,
@@ -768,7 +768,7 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId }) => {
           return {
             url: `/amendment/restore?businessId=${businessId}`,
-            method: "POST",
+            method: 'POST',
           };
         },
       }),
@@ -789,7 +789,6 @@ export const businessRegApiSlice = createApi({
         },
       }),
 
-
       // FETCH BUSINESS REVIEW COMMENTS
       fetchBusinessReviewComments: builder.query({
         query: ({ navigationFlowId, businessId }) => {
@@ -798,13 +797,13 @@ export const businessRegApiSlice = createApi({
             url += `&navigationFlowId=${navigationFlowId}`;
           }
           return {
-            url
+            url,
           };
         },
       }),
 
-       // UPDATE BUSINESS REVIEW COMMENT STATUS
-       updateBusinessReviewCommentStatus: builder.mutation({
+      // UPDATE BUSINESS REVIEW COMMENT STATUS
+      updateBusinessReviewCommentStatus: builder.mutation({
         query: ({ id, status }) => {
           return {
             url: `/review-comments/${id}/status`,
@@ -821,6 +820,88 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId }) => {
           return {
             url: `/founders-with-shares?businessId=${businessId}`,
+          };
+        },
+      }),
+
+      // CREATE BENEFICIAL OWNER
+      createBeneficialOwner: builder.mutation({
+        query: ({
+          founderId,
+          tinNumber,
+          personIdentType,
+          personDocNo,
+          firstName,
+          middleName,
+          lastName,
+          dateOfBirth,
+          gender,
+          nationality,
+          persDocIssuePlace,
+          persDocExpiryDate,
+          villageId,
+          streetNumber,
+          poBox,
+          email,
+          phoneNumber,
+          fax,
+          proCountry,
+          proVillageId,
+          proStreetNumber,
+          proPoBox,
+          proEmail,
+          proPhoneNumber,
+          proFax,
+          occupation,
+          registeredDate,
+          extentOfShare,
+          extentOfVoting,
+          significantInfluence,
+          controlType,
+          OtherControlMeansDesc,
+          beneficialOwnerType,
+          seniorManagementPosition,
+          businessId,
+        }) => {
+          return {
+            url: `/beneficial-owner/register?businessId=${businessId}`,
+            method: 'POST',
+            body: {
+              founderId,
+              tinNumber,
+              personIdentType,
+              personDocNo,
+              firstName,
+              middleName,
+              lastName,
+              dateOfBirth,
+              gender,
+              nationality,
+              persDocIssuePlace,
+              persDocExpiryDate,
+              villageId,
+              streetNumber,
+              poBox,
+              email,
+              phoneNumber,
+              fax,
+              proCountry,
+              proVillageId,
+              proStreetNumber,
+              proPoBox,
+              proEmail,
+              proPhoneNumber,
+              proFax,
+              occupation,
+              registeredDate,
+              extentOfShare,
+              extentOfVoting,
+              significantInfluence,
+              controlType,
+              OtherControlMeansDesc,
+              beneficialOwnerType,
+              seniorManagementPosition,
+            },
           };
         },
       }),
@@ -887,7 +968,8 @@ export const {
   useLazyFetchBackOfficeBusinessesQuery,
   useLazyFetchBusinessReviewCommentsQuery,
   useUpdateBusinessReviewCommentStatusMutation,
-  useLazyFetchFoundersWithSharePercentagesQuery
+  useLazyFetchFoundersWithSharePercentagesQuery,
+  useCreateBeneficialOwnerMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

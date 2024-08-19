@@ -8,6 +8,7 @@ import {
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import businessRegApiSlice from '../api/businessRegApiSlice';
 import { toast } from 'react-toastify';
+import { AppDispatch } from '../store';
 
 const initialState: {
   provincesList: Province[];
@@ -25,6 +26,9 @@ const initialState: {
   fetchSectorsIsLoading: boolean;
   fetchCellsIsLoading: boolean;
   fetchVillagesIsLoading: boolean;
+  searchVillageIsFetching: boolean;
+  searchVillageIsError: boolean;
+  searchVillageIsSuccess: boolean;
 } = {
   provincesList: [],
   districtsList: [],
@@ -41,6 +45,9 @@ const initialState: {
   fetchSectorsIsLoading: false,
   fetchCellsIsLoading: false,
   fetchVillagesIsLoading: false,
+  searchVillageIsFetching: false,
+  searchVillageIsError: false,
+  searchVillageIsSuccess: false,
 };
 
 // FETCH PROVINCES THUNK
@@ -81,7 +88,7 @@ export const fetchSectorsThunk = createAsyncThunk<Sector[], number>(
       const response = await dispatch(
         businessRegApiSlice.endpoints.fetchSectors.initiate({ districtId })
       ).unwrap();
-      return response.data;
+      return response.data?.data;
     } catch (error) {
       toast.error('An error occurred while fetching sectors');
     }
@@ -114,6 +121,36 @@ export const fetchVillagesThunk = createAsyncThunk<Village[], number>(
       return response.data;
     } catch (error) {
       toast.error('An error occurred while fetching villages');
+    }
+  }
+);
+
+// SEARCH VILLAGE THUNK
+export const searchVillageThunk = createAsyncThunk<Village, {
+  provinceName: string;
+  districtName: string;
+  sectorName: string;
+  cellName: string;
+  villageName: string;
+}, {
+  dispatch: AppDispatch;
+}
+>(
+  'location/searchVillage',
+  async ({ provinceName, districtName, sectorName, cellName, villageName }, { dispatch }) => {
+    try {
+      const response = await dispatch(
+        businessRegApiSlice.endpoints.searchVillage.initiate({
+          provinceName,
+          districtName,
+          sectorName,
+          cellName,
+          villageName,
+         })
+      ).unwrap();
+      return response.data;
+    } catch (error) {
+      toast.error('An error occurred while searching for villages');
     }
   }
 );
@@ -232,8 +269,19 @@ export const locationSlice = createSlice({
       state.fetchVillagesIsLoading = false;
     })
     builder.addCase(fetchVillagesThunk.pending, (state) => {
-      state.fetchVillagesIsLoading = true;
-    })
+      state.searchVillageIsError = false;
+      state.searchVillageIsFetching = true;
+      state.searchVillageIsSuccess = false;
+    });
+    builder.addCase(searchVillageThunk.fulfilled, (state, action) => {
+      state.searchVillageIsFetching = false;
+      state.searchVillageIsSuccess = true;
+      state.villagesList = [action.payload];
+    });
+    builder.addCase(searchVillageThunk.rejected, (state) => {
+      state.searchVillageIsFetching = false;
+      state.searchVillageIsError = true;
+    });
   }
 });
 

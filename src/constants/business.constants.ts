@@ -60,3 +60,18 @@ export const attachmentColumns = [
     accessorKey: 'size',
   },
 ];
+
+export const beneficialOwnerControlMeans = [
+  'CLOSE_FAMILY_RELATIONSHIP',
+  'CONNECTION_TO_PERSON_THAT_POSSESS_OWNERSHIP',
+  'CONTRACTUAL_ASSOCIATION',
+  'ENJOYS_OR_BENEFITS_FROM_THE_ASSETS_OF_THE_ORGANIZATIONS',
+  'PARTICIPATES_IN_FINANCING_OF_THE_ORGANIZATIONS',
+  'RESPONSIBLE_FOR_KEY_MANAGEMENT_DECISIONS',
+  'RIGHT_TO_APPOINT_MAJORITY_OF_DIRECTORS',
+  'OTHERS',
+];
+
+export const beneficialOwnerControlType = ['DIRECT', 'INDIRECT'];
+
+export const beneficialOwnerTypes = ['REGULAR_MANAGEMENT', 'SENIOR_MANAGEMENT'];
