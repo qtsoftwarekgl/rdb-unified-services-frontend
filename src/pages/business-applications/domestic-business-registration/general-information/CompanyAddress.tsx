@@ -46,6 +46,7 @@ import {
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type CompanyAddressProps = {
   businessId: businessId;
@@ -353,7 +354,7 @@ const CompanyAddress = ({
       }
     } else if (createCompanyAddressIsSuccess) {
       toast.success("Company address created or updated successfully");
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         // upload resolution attachment
         if (file && businessId)
           dispatch(
@@ -761,16 +762,15 @@ const CompanyAddress = ({
             </menu>
             {
               // resolution attachment
-              applicationStatus === "IS_AMENDING" && (
+              applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment control={control} errors={errors} />
               )
             }
             {[
-              "IN_PROGRESS",
-              "ACTION_REQUIRED",
-              "IS_AMENDING",
-              "IN_PREVIEW",
-            ].includes(String(applicationStatus)) && (
+              ApplicationStatus.Inprogress,
+              ApplicationStatus.IsAmending,
+              ApplicationStatus.Forcorrection,
+            ].includes(String(applicationStatus) as ApplicationStatus) && (
               <menu
                 className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
               >
@@ -791,16 +791,6 @@ const CompanyAddress = ({
                     );
                   }}
                 />
-                {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-                  String(applicationStatus)
-                ) && (
-                  <Button
-                    value={"Save & Complete Preview"}
-                    primary
-                    submit
-                    disabled={formDisabled}
-                  />
-                )}
                 <Button
                   value={
                     createCompanyAddressIsLoading ? (
@@ -812,30 +802,6 @@ const CompanyAddress = ({
                   primary
                   submit
                   disabled={formDisabled}
-                />
-              </menu>
-            )}
-            {[
-              "IN_REVIEW",
-              "APPROVED",
-              "PENDING_APPROVAL",
-              "PENDING_REJECTION",
-            ].includes(String(applicationStatus)) && (
-              <menu className="flex items-center justify-between gap-3">
-                <Button
-                  value={"Back"}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    dispatch(setBusinessActiveStep("company_details"));
-                  }}
-                />
-                <Button
-                  value={"Next"}
-                  primary
-                  onClick={(e) => {
-                    e.preventDefault();
-                    dispatch(setBusinessActiveStep("business_activity_vat"));
-                  }}
                 />
               </menu>
             )}

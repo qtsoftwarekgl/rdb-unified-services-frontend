@@ -1,12 +1,6 @@
 import { useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { Controller, useForm } from "react-hook-form";
-import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-  setBusinessCompletedStep,
-  setBusinessCompletedTab,
-} from "../../../../states/features/businessRegistrationSlice";
 import Button from "../../../../components/inputs/Button";
 import { businessId } from "@/types/models/business";
 import {
@@ -35,6 +29,7 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type CompanyAttachmentsProps = {
   businessId: businessId;
@@ -286,11 +281,10 @@ const CompanyAttachments = ({
           )
         )}
         {[
-          "IN_PROGRESS",
-          "IS_AMENDING",
-          "IN_PREVIEW",
-          "ACTION_REQUIRED",
-        ].includes(status) && (
+          ApplicationStatus.Inprogress,
+          ApplicationStatus.IsAmending,
+          ApplicationStatus.Forcorrection,
+        ].includes(status as ApplicationStatus) && (
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -334,34 +328,6 @@ const CompanyAttachments = ({
                     isActive: true,
                   })
                 );
-              }}
-            />
-          </menu>
-        )}
-        {[
-          "IN_REVIEW",
-          "APPROVED",
-          "PENDING_APPROVAL",
-          "PENDING_REJECTION",
-        ].includes(status) && (
-          <menu className="flex items-center justify-between gap-3">
-            <Button
-              value="Back"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep("beneficial_owners"));
-                dispatch(setBusinessActiveTab("beneficial_owners"));
-              }}
-            />
-            <Button
-              value="Next"
-              primary
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessCompletedStep("attachments"));
-                dispatch(setBusinessCompletedTab("attachments"));
-                dispatch(setBusinessActiveStep("preview_submission"));
-                dispatch(setBusinessActiveTab("preview_submission"));
               }}
             />
           </menu>

@@ -1,29 +1,30 @@
-import { faComments, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { FC, ReactNode, useEffect, useState } from 'react';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from '../inputs/Button';
-import { RDBAdminEmailPattern } from '@/constants/Users';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { ErrorResponse, Link } from 'react-router-dom';
-import { businessId } from '@/types/models/business';
-import { UUID } from 'crypto';
-import { useCreateNavigationFlowMutation } from '@/states/api/businessRegApiSlice';
-import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FC, ReactNode, useEffect, useState } from "react";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import Button from "../inputs/Button";
+import { RDBAdminEmailPattern } from "@/constants/Users";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { ErrorResponse, Link } from "react-router-dom";
+import { businessId } from "@/types/models/business";
+import { UUID } from "crypto";
+import { useCreateNavigationFlowMutation } from "@/states/api/businessRegApiSlice";
+import { toast } from "react-toastify";
+import Loader from "../Loader";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { faComments, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import {
   setBusinessNavigationFlowsList,
   setSelectedNavigationFlow,
-} from '@/states/features/navigationFlowSlice';
-import Loader from '../Loader';
+} from "@/states/features/navigationFlowSlice";
 import {
   fetchBusinessReviewCommentsThunk,
   setListBusinessReviewCommentsModal,
-} from '@/states/features/businessReviewCommentSlice';
-import { findNavigationFlowById } from '@/helpers/business.helpers';
-import CustomTooltip from '../inputs/CustomTooltip';
-import { removeArrayDuplicates } from '@/helpers/strings';
-import { BusinessReviewComment } from '@/types/models/businessReviewComment';
+} from "@/states/features/businessReviewCommentSlice";
+import { findNavigationFlowById } from "@/helpers/business.helpers";
+import CustomTooltip from "../inputs/CustomTooltip";
+import { removeArrayDuplicates } from "@/helpers/strings";
+import { BusinessReviewComment } from "@/types/models/businessReviewComment";
 
 interface PreviewCardProps {
   header: string;
@@ -66,7 +67,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
       businessReviewCommentsList?.filter(
         (reviewComment) =>
           reviewComment?.navigationFlow?.id === navigationFlowId &&
-          reviewComment?.status === 'UNRESOLVED'
+          reviewComment?.status === "UNRESOLVED"
       )
     ) as BusinessReviewComment[]
   );
@@ -89,7 +90,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
     if (createNavigationFlowIsError) {
       const errorResponse =
         (createNavigationFlowError as ErrorResponse)?.data?.message ||
-        'An error occurred while creating business navigation flow. Refresh and try again';
+        "An error occurred while creating business navigation flow. Refresh and try again";
       toast.error(errorResponse);
       resetCreateNavigationFlow();
     } else if (createNavigationFlowIsSuccess) {
@@ -136,7 +137,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
         businessReviewCommentsList?.filter(
           (reviewComment) =>
             reviewComment?.navigationFlow?.id === navigationFlowId &&
-            reviewComment?.status === 'UNRESOLVED'
+            reviewComment?.status === "UNRESOLVED"
         )
       ) as BusinessReviewComment[]
     );
@@ -148,7 +149,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
     >
       <menu className="flex items-center justify-between w-full gap-3">
         <Link
-          to={'#'}
+          to={"#"}
           onClick={(e) => {
             e.preventDefault();
           }}
@@ -156,13 +157,15 @@ const PreviewCard: FC<PreviewCardProps> = ({
         >
           {header}
         </Link>
-        <menu className="flex items-center gap-4 relative">
+        <menu className="relative flex items-center gap-4">
           {createNavigationFlowIsLoading ? (
             <Loader className="text-primary" />
           ) : (
-            ['IN_PROGRESS', 'IS_AMENDING', 'ACTION_REQUIRED'].includes(
-              String(applicationStatus)
-            ) && (
+            [
+              ApplicationStatus.Inprogress,
+              ApplicationStatus.IsAmending,
+              "ACTION_REQUIRED",
+            ].includes(String(applicationStatus)) && (
               <CustomTooltip label="Click to update this step">
                 <FontAwesomeIcon
                   icon={faPenToSquare}
@@ -190,7 +193,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
             businessReviewCommentsIsSuccess &&
             reviewComments?.length > 0 && (
               <Link
-                to={'#'}
+                to={"#"}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(
@@ -207,7 +210,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
               >
                 <menu className="flex items-center gap-2 text-[13px] relative p-1 rounded-full z-[10000]">
                   {reviewComments?.filter(
-                    (comment) => comment?.status === 'UNRESOLVED'
+                    (comment) => comment?.status === "UNRESOLVED"
                   )?.length > 0 && (
                     <p
                       className={`absolute top-[-20px] right-0 text-red-600 font-bold`}
@@ -229,14 +232,14 @@ const PreviewCard: FC<PreviewCardProps> = ({
       </menu>
       <section className="flex flex-col w-full gap-3 my-2">{children}</section>
       {RDBAdminEmailPattern.test(String(user?.email)) && (
-        <menu className="flex items-center w-full justify-center">
+        <menu className="flex items-center justify-center w-full">
           <Button
             styled={false}
             onClick={(e) => {
               e.preventDefault();
             }}
             value={
-              <menu className="flex items-center gap-2 hover:gap-3 transition-all duration-300">
+              <menu className="flex items-center gap-2 transition-all duration-300 hover:gap-3">
                 <p className="text-[13px]">View details</p>
                 <FontAwesomeIcon className="text-[13px]" icon={faArrowRight} />
               </menu>

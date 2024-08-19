@@ -13,7 +13,6 @@ import {
 import Button from "../../../../components/inputs/Button";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setForeignBusinessActiveStep } from "../../../../states/features/foreignCompanyRegistrationSlice";
 import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import {
   useLazyGetBusinessDetailsQuery,
@@ -41,6 +40,7 @@ import {
 } from "@/states/features/navigationFlowSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -198,7 +198,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
       }
     } else if (createCompanyDetailsIsSuccess) {
       toast.success("Company details created or updated successfully");
-      if (businessDetails?.applicationStatus === "IS_AMENDING") {
+      if (businessDetails?.applicationStatus === ApplicationStatus.IsAmending) {
         // upload resolution attachment
         if (file && businessId)
           dispatch(
@@ -499,7 +499,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               }}
             />
           </menu>
-          {businessDetails?.applicationStatus === "IS_AMENDING" && (
+          {businessDetails?.applicationStatus ===
+            ApplicationStatus.IsAmending && (
             // Resolution Attachment
             <ResolutionAttachment control={control} errors={errors} />
           )}
@@ -514,25 +515,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               }
               submit
             />
-            {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-              businessDetails?.applicationStatus || ""
-            ) && (
-              <menu className="flex items-center justify-between w-full gap-3">
-                <Button
-                  value="Back"
-                  route="/business-registration/new"
-                  disabled
-                />
-                <Button
-                  value={"Next"}
-                  primary
-                  onClick={(e) => {
-                    e.preventDefault();
-                    dispatch(setForeignBusinessActiveStep("company_address"));
-                  }}
-                />
-              </menu>
-            )}
           </menu>
         </fieldset>
       </form>

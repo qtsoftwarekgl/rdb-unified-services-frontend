@@ -1,11 +1,11 @@
-import { FC } from 'react';
-import ReactDOM from 'react-dom';
+import { FC } from "react";
+import ReactDOM from "react-dom";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 interface ModalProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ const JSX_MODAL: FC<ModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={`z-[10000] ${className}`}>
+      <DialogContent className={`z-[10000] w-full ${className}`}>
         <DialogHeader>
           <DialogTitle>
             <h1
@@ -44,9 +44,9 @@ const JSX_MODAL: FC<ModalProps> = ({
 };
 
 const Modal: FC<ModalProps> = (props) => {
-  const modalContainer = document.querySelector('#modal');
+  const modalContainer = document.querySelector("#modal");
   if (!modalContainer) {
-    throw new Error('Modal container not found');
+    throw new Error("Modal container not found");
   }
 
   return ReactDOM.createPortal(<JSX_MODAL {...props} />, modalContainer);

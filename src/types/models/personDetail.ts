@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
-import { Organization } from "./organization";
 import { PersonRole } from "./personRole";
+import { Organization } from "./organization";
 
 export interface PersonDetail {
   id: UUID;
@@ -34,7 +34,6 @@ export interface PersonDetail {
   poBox?: string;
   personRole?: PersonRole;
   roleDescription?: string;
-  organization: Organization;
 }
 
 export type FounderDetail = {
@@ -52,4 +51,5 @@ export type FounderDetail = {
   verificationCodeExpiration?: number;
   verified?: boolean;
   personDetail?: PersonDetail;
-}
+  organization?: Organization;
+};

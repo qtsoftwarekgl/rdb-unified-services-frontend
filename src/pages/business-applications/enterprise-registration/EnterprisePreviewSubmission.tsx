@@ -1,33 +1,34 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import {
   setEnterpriseActiveStep,
   setEnterpriseActiveTab,
-} from '../../../states/features/enterpriseRegistrationSlice';
-import { ErrorResponse, useNavigate } from 'react-router-dom';
-import { Address, BusinessActivity, businessId } from '@/types/models/business';
-import PreviewCard from '@/components/business-registration/PreviewCard';
-import Loader from '@/components/Loader';
-import { capitalizeString } from '@/helpers/strings';
+} from "../../../states/features/enterpriseRegistrationSlice";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import { Address, BusinessActivity, businessId } from "@/types/models/business";
+import PreviewCard from "@/components/business-registration/PreviewCard";
+import Loader from "@/components/Loader";
+import { capitalizeString } from "@/helpers/strings";
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyFetchBusinessAddressQuery,
   useLazyFetchBusinessDetailsQuery,
   useUpdateBusinessMutation,
-} from '@/states/api/businessRegApiSlice';
-import { useEffect } from 'react';
-import Button from '@/components/inputs/Button';
-import { toast } from 'react-toastify';
+} from "@/states/api/businessRegApiSlice";
+import { useEffect } from "react";
+import Button from "@/components/inputs/Button";
+import { toast } from "react-toastify";
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from '@/helpers/business.helpers';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/states/store';
+} from "@/helpers/business.helpers";
+import { useSelector } from "react-redux";
+import { RootState } from "@/states/store";
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from '@/states/features/navigationFlowSlice';
-import { UnknownAction } from '@reduxjs/toolkit';
+} from "@/states/features/navigationFlowSlice";
+import { UnknownAction } from "@reduxjs/toolkit";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type EnterprisePreviewSubmissionProps = {
   businessId: businessId;
@@ -64,8 +65,6 @@ const EnterprisePreviewSubmission = ({
     fetchBusinessDetails,
     {
       data: businessDetailsData,
-      error: businessDetailsError,
-      isError: businessDetailsIsError,
       isLoading: businessDetailsIsLoading,
       isSuccess: businessDetailsIsSuccess,
     },
@@ -76,8 +75,6 @@ const EnterprisePreviewSubmission = ({
     fetchBusinessActivities,
     {
       data: businessActivitiesData,
-      error: businessActivitiesError,
-      isError: businessActivitiesIsError,
       isLoading: businessActivitiesIsLoading,
       isSuccess: businessActivitiesIsSuccess,
     },
@@ -88,8 +85,6 @@ const EnterprisePreviewSubmission = ({
     fetchBusinessAddress,
     {
       data: businessAddressData,
-      error: businessAddressError,
-      isError: businessAddressIsError,
       isLoading: businessAddressIsLoading,
       isSuccess: businessAddressIsSuccess,
     },
@@ -119,19 +114,19 @@ const EnterprisePreviewSubmission = ({
   useEffect(() => {
     if (updateBusinessIsError) {
       if ((updateBusinessError as ErrorResponse).status === 500) {
-        toast.error('An error occurred while updating business');
+        toast.error("An error occurred while updating business");
       } else {
         toast.error(
           (updateBusinessError as ErrorResponse).data?.message ??
-            'An error occurred while updating business'
+            "An error occurred while updating business"
         );
       }
     } else if (updateBusinessIsSuccess) {
-      toast.success('Business updated successfully');
-      dispatch(setEnterpriseActiveStep('company_details'));
-      dispatch(setEnterpriseActiveTab('general_information'));
-      navigate('/success', {
-        state: { redirectUrl: '/services' },
+      toast.success("Business updated successfully");
+      dispatch(setEnterpriseActiveStep("company_details"));
+      dispatch(setEnterpriseActiveTab("general_information"));
+      navigate("/success", {
+        state: { redirectUrl: "/services" },
       });
     }
   }, [
@@ -152,7 +147,7 @@ const EnterprisePreviewSubmission = ({
         header="Enterprise Details"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          'Enterprise Details'
+          "Enterprise Details"
         )}
       >
         {businessDetailsIsLoading ? (
@@ -166,13 +161,13 @@ const EnterprisePreviewSubmission = ({
                 ([key, value], index: number) => {
                   if (
                     value === null ||
-                    ['createdAt', 'updatedAt', 'isForeign', 'id'].includes(key)
+                    ["createdAt", "updatedAt", "isForeign", "id"].includes(key)
                   )
                     return null;
-                  if (key === 'service')
+                  if (key === "service")
                     return (
                       <p>
-                        {capitalizeString(key)}:{' '}
+                        {capitalizeString(key)}:{" "}
                         <strong>
                           {capitalizeString(
                             String(
@@ -189,7 +184,7 @@ const EnterprisePreviewSubmission = ({
                   return (
                     <li key={index}>
                       <p className="flex text-[14px] items-center gap-2">
-                        {capitalizeString(key)}:{' '}
+                        {capitalizeString(key)}:{" "}
                         <strong>{capitalizeString(String(value))}</strong>
                       </p>
                     </li>
@@ -207,7 +202,7 @@ const EnterprisePreviewSubmission = ({
         header="Enterprise Address"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          'Enterprise Address'
+          "Enterprise Address"
         )}
       >
         {businessAddressIsLoading ? (
@@ -219,17 +214,17 @@ const EnterprisePreviewSubmission = ({
             <menu className="flex flex-col gap-2">
               {Object?.entries(businessAddressData?.data ?? {})?.map(
                 ([key, value], index: number) => {
-                  if (key === 'id' || value === null) return null;
-                  if (key === 'location')
+                  if (key === "id" || value === null) return null;
+                  if (key === "location")
                     return (
                       <ul key={index} className="flex flex-col gap-2">
                         {Object?.entries(value as Address)?.map(
                           ([key, value], index: number) => {
-                            if (key === 'id' || value === null) return null;
+                            if (key === "id" || value === null) return null;
                             return (
                               <li key={index}>
                                 <p className="flex text-[14px] items-center gap-2">
-                                  {capitalizeString(key)}:{' '}
+                                  {capitalizeString(key)}:{" "}
                                   {capitalizeString(String(value))}
                                 </p>
                               </li>
@@ -241,7 +236,7 @@ const EnterprisePreviewSubmission = ({
                   return (
                     <li key={index}>
                       <p className="flex text-[14px] items-center gap-2">
-                        {capitalizeString(key)}:{' '}
+                        {capitalizeString(key)}:{" "}
                         {capitalizeString(String(value))}
                       </p>
                     </li>
@@ -260,7 +255,7 @@ const EnterprisePreviewSubmission = ({
         header="Business Activities & VAT"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          'Business Activity & VAT'
+          "Business Activity & VAT"
         )}
       >
         {businessActivitiesIsLoading ? (
@@ -271,7 +266,7 @@ const EnterprisePreviewSubmission = ({
           businessActivitiesIsSuccess && (
             <menu className="flex flex-col gap-2">
               <p className="flex text-[14px] items-center gap-2">
-                Main business activity:{' '}
+                Main business activity:{" "}
                 {capitalizeString(
                   businessActivitiesData?.data?.mainBusinessActivity
                 )}
@@ -282,7 +277,7 @@ const EnterprisePreviewSubmission = ({
                     return (
                       <li key={index}>
                         <p className="flex text-[14px] items-center gap-2">
-                          {activity?.code} -{' '}
+                          {activity?.code} -{" "}
                           {capitalizeString(activity?.description)}
                         </p>
                       </li>
@@ -295,9 +290,11 @@ const EnterprisePreviewSubmission = ({
         )}
       </PreviewCard>
 
-      {['IN_PROGRESS', 'ACTION_REQUIRED', 'IN_PREVIEW', 'IS_AMENDING'].includes(
-        String(applicationStatus)
-      ) && (
+      {[
+        ApplicationStatus.IsAmending,
+        ApplicationStatus.Inprogress,
+        ApplicationStatus.Forcorrection,
+      ].includes(String(applicationStatus) as ApplicationStatus) && (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
@@ -310,7 +307,7 @@ const EnterprisePreviewSubmission = ({
                   businessId,
                   massId: findNavigationFlowMassIdByStepName(
                     navigationFlowMassList,
-                    'Attachments'
+                    "Attachments"
                   ),
                   isActive: true,
                 }) as unknown as UnknownAction
@@ -325,11 +322,12 @@ const EnterprisePreviewSubmission = ({
                   isCompleted: true,
                   navigationFlowId: findNavigationFlowByStepName(
                     businessNavigationFlowsList,
-                    'Preview & Submission'
+                    "Preview & Submission"
                   )?.id,
                 }) as unknown as UnknownAction
               );
               if (
+                applicationStatus !== ApplicationStatus.IsAmending &&
                 !Object?.values(navigationFlowMassList ?? {})
                   ?.flat()
                   ?.every((navigationStep) => {
@@ -340,12 +338,18 @@ const EnterprisePreviewSubmission = ({
                     );
                   })
               ) {
-                toast.error('All steps must be completed before submission');
+                toast.error("All steps must be completed before submission");
                 return;
               }
-              updateBusiness({ businessId, applicationStatus: 'SUBMITTED' });
+              updateBusiness({
+                businessId,
+                applicationStatus:
+                  applicationStatus === ApplicationStatus.Inprogress
+                    ? ApplicationStatus.Submitted
+                    : ApplicationStatus.AmendmentSubmitted,
+              });
             }}
-            value={updateBusinessIsLoading ? <Loader /> : 'Submit'}
+            value={updateBusinessIsLoading ? <Loader /> : "Submit"}
             primary
           />
         </menu>

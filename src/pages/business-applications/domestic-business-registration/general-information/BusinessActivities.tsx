@@ -46,6 +46,7 @@ import {
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -374,7 +375,7 @@ const BusinessActivities = ({
                   )}
                   {businessLinesIsSuccess && (
                     <section className="flex flex-col w-full gap-4">
-                      <h1 className="text-md">Select business line</h1>
+                      <h1 className="text-md">Select business activities</h1>
                       <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                         {!businessLinesIsLoading &&
                           businessLinesList.map(
@@ -593,15 +594,14 @@ const BusinessActivities = ({
                     </menu>
                   </section>
                 ))}
-              {applicationStatus === "IS_AMENDING" && (
+              {applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment errors={errors} control={control} />
               )}
               {[
-                "IN_PROGRESS",
-                "IN_PREVIEW",
-                "ACTION_REQUIRED",
-                "IS_AMENDING",
-              ].includes(String(applicationStatus)) && (
+                ApplicationStatus.Inprogress,
+                ApplicationStatus.IsAmending,
+                ApplicationStatus.Forcorrection,
+              ].includes(String(applicationStatus) as ApplicationStatus) && (
                 <menu
                   className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
                 >

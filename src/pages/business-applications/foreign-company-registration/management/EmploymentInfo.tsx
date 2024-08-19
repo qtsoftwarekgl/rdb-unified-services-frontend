@@ -4,10 +4,6 @@ import Input from "../../../../components/inputs/Input";
 import Button from "../../../../components/inputs/Button";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
 import Loader from "../../../../components/Loader";
 import moment from "moment";
 import { businessId } from "@/types/models/business";
@@ -34,6 +30,7 @@ import {
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface EmploymentInfoProps {
   businessId: businessId;
@@ -151,7 +148,7 @@ const EmploymentInfo = ({
     } else if (createEmploymentInfoIsSuccess) {
       toast.success("Employment info saved successfully");
       // Upload resolution attachment
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -520,80 +517,38 @@ const EmploymentInfo = ({
               }}
             />
           </menu>
-          {applicationStatus === "IS_AMENDING" && (
+          {applicationStatus === ApplicationStatus.IsAmending && (
             <ResolutionAttachment errors={errors} control={control} />
           )}
-          {[
-            "IN_PREVIEW",
-            "ACTION_REQUIRED",
-            "IS_AMENDING",
-            "IN_PROGRESS",
-          ].includes(applicationStatus) && (
-            <menu
-              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-            >
-              <Button
-                value="Back"
-                disabled={isFormDisabled}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    createNavigationFlowThunk({
-                      businessId,
-                      massId: findNavigationFlowMassIdByStepName(
-                        navigationFlowMassList,
-                        "Board of Directors"
-                      ),
-                      isActive: true,
-                    })
-                  );
-                }}
-              />
-              {["IN_PREVIEW", "ACTION_REQUIRED"].includes(
-                applicationStatus
-              ) && (
-                <Button
-                  value={"Save & Complete Review"}
-                  submit
-                  primary
-                  disabled={isFormDisabled}
-                />
-              )}
-              <Button
-                value={
-                  createEmploymentInfoIsLoading ? <Loader /> : "Save & Continue"
-                }
-                submit
-                primary
-                disabled={isFormDisabled}
-              />
-            </menu>
-          )}
-          {[
-            "IN_REVIEW",
-            "APPROVED",
-            "PENDING_APPROVAL",
-            "PENDING_REJECTION",
-          ].includes(applicationStatus) && (
-            <menu className="flex items-center justify-between gap-3">
-              <Button
-                value="Back"
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setForeignBusinessActiveStep("board_of_directors"));
-                }}
-              />
-              <Button
-                value="Next"
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setForeignBusinessActiveStep("attachment"));
-                  dispatch(setForeignBusinessActiveTab("attachment"));
-                }}
-              />
-            </menu>
-          )}
+          <menu
+            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+          >
+            <Button
+              value="Back"
+              disabled={isFormDisabled}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      "Board of Directors"
+                    ),
+                    isActive: true,
+                  })
+                );
+              }}
+            />
+            <Button
+              value={
+                createEmploymentInfoIsLoading ? <Loader /> : "Save & Continue"
+              }
+              submit
+              primary
+              disabled={isFormDisabled}
+            />
+          </menu>
         </fieldset>
       </form>
     </section>

@@ -6,7 +6,6 @@ import Input from "../../../../components/inputs/Input";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { countriesList } from "../../../../constants/countries";
 import Button from "../../../../components/inputs/Button";
-import { setBusinessActiveStep } from "../../../../states/features/businessRegistrationSlice";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDate, maskPhoneDigits } from "../../../../helpers/strings";
@@ -43,6 +42,7 @@ import {
 } from "@/helpers/business.helpers";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type BoardOfDirectorsProps = {
   businessId: businessId;
@@ -169,7 +169,7 @@ const BoardOfDirectors = ({
         dispatch(setUserInformation(undefined));
       }
       // Upload resolution attachment
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -841,7 +841,7 @@ const BoardOfDirectors = ({
             </menu>
             {
               // Resolutions attachment
-              applicationStatus === "IS_AMENDING" && (
+              applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment errors={errors} control={control} />
               )
             }
@@ -876,11 +876,10 @@ const BoardOfDirectors = ({
             />
           )}
           {[
-            "IN_PREVIEW",
-            "IN_PROGRESS",
-            "IS_AMENDING",
-            "ACTION_REQUIRED",
-          ].includes(String(applicationStatus)) && (
+            ApplicationStatus.Inprogress,
+            ApplicationStatus.IsAmending,
+            ApplicationStatus.Forcorrection,
+          ].includes(String(applicationStatus) as ApplicationStatus) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
             >
@@ -931,30 +930,6 @@ const BoardOfDirectors = ({
                       isActive: true,
                     })
                   );
-                }}
-              />
-            </menu>
-          )}
-          {[
-            "IN_REVIEW",
-            "APPROVED",
-            "PENDING_APPROVAL",
-            "PENDING_REJECTION",
-          ].includes(String(applicationStatus)) && (
-            <menu className="flex items-center justify-between gap-3">
-              <Button
-                value="Back"
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveStep("business_activity_vat"));
-                }}
-              />
-              <Button
-                value="Next"
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setBusinessActiveStep("board_of_directors"));
                 }}
               />
             </menu>

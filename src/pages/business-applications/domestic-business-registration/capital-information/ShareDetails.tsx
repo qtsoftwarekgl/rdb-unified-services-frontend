@@ -25,6 +25,7 @@ import {
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type ShareDetailsProps = {
   businessId: businessId;
@@ -152,7 +153,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
       }
     } else if (createShareDetailsIsSuccess) {
       // Uplioad resolution attachment
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -307,16 +308,15 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
               </caption>
             )}
           </table>
-          {applicationStatus === "IS_AMENDING" && (
+          {applicationStatus === ApplicationStatus.IsAmending && (
             <ResolutionAttachment errors={errors} control={control} />
           )}
         </fieldset>
         {[
-          "IN_PROGRESS",
-          "ACTION_REQUIRED",
-          "IN_PREVIEW",
-          "IS_AMENDING",
-        ].includes(String(applicationStatus)) && (
+          ApplicationStatus.Inprogress,
+          ApplicationStatus.IsAmending,
+          ApplicationStatus.Forcorrection,
+        ].includes(applicationStatus as ApplicationStatus) && (
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
@@ -344,31 +344,6 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
               primary
               submit
               disabled={Object.keys(errors)?.length > 0 || disableForm}
-            />
-          </menu>
-        )}
-        {[
-          "IN_REVIEW",
-          "APPROVED",
-          "PENDING_APPROVAL",
-          "PENDING_REJECTION",
-        ].includes(String(applicationStatus)) && (
-          <menu className="flex items-center justify-between gap-3">
-            <Button
-              value="Back"
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep("business_activity_vat"));
-                dispatch(setBusinessActiveTab("general_information"));
-              }}
-            />
-            <Button
-              value="Next"
-              primary
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(setBusinessActiveStep("shareholders"));
-              }}
             />
           </menu>
         )}

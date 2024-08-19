@@ -52,6 +52,7 @@ import {
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 interface BoardDirectorsProps {
   businessId: businessId;
@@ -221,7 +222,7 @@ const BoardDirectors = ({
       }
       dispatch(addBoardMember(createBoardMemberData?.data?.data));
       // Upload resolution attachment
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
             uploadAmendmentAttachmentThunk({
@@ -951,7 +952,7 @@ const BoardDirectors = ({
             )}
             {
               // Resolutions attachment
-              applicationStatus === "IS_AMENDING" && (
+              applicationStatus === ApplicationStatus.IsAmending && (
                 <ResolutionAttachment errors={errors} control={control} />
               )
             }
@@ -1002,34 +1003,6 @@ const BoardDirectors = ({
                 );
               }}
             />
-            {["IN_PREVIEW", "ACTION_REQUIRED"].includes(applicationStatus) && (
-              <Button
-                value={"Save & Complete Review"}
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (
-                    boardMemberList?.length <= 0 &&
-                    businessDetails?.companyCategory !== "PRIVATE"
-                  ) {
-                    setError("board_of_directors", {
-                      type: "manual",
-                      message: "Add at least one board member",
-                    });
-                    setTimeout(() => {
-                      clearErrors("board_of_directors");
-                    }, 4000);
-                    return;
-                  }
-                  dispatch(
-                    setForeignBusinessCompletedStep("board_of_directors")
-                  );
-
-                  dispatch(setForeignBusinessActiveTab("employment_info"));
-                }}
-                disabled={isFormDisabled}
-              />
-            )}
             <Button
               value="Save & Continue"
               primary

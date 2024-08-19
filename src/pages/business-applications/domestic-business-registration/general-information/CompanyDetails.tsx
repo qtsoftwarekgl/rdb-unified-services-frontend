@@ -39,6 +39,7 @@ import {
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -210,7 +211,7 @@ const CompanyDetails = ({
       }
     } else if (createCompanyDetailsIsSuccess) {
       toast.success("Company details created or updated successfully");
-      if (applicationStatus === "IS_AMENDING") {
+      if (applicationStatus === ApplicationStatus.IsAmending) {
         // upload resolution attachment
         if (file && businessId)
           dispatch(
@@ -497,7 +498,7 @@ const CompanyDetails = ({
               }}
             />
           </menu>
-          {applicationStatus === "IS_AMENDING" && (
+          {applicationStatus === ApplicationStatus.IsAmending && (
             // Resolution Attachment
             <ResolutionAttachment control={control} errors={errors} />
           )}
@@ -514,28 +515,6 @@ const CompanyDetails = ({
               submit
             />
           </menu>
-          {["IN_REVIEW"].includes(String(applicationStatus)) && (
-            <menu className="flex items-center justify-between w-full gap-3">
-              <Button value="Back" route="/services" disabled />
-              <Button
-                value={"Next"}
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    createNavigationFlowThunk({
-                      businessId,
-                      massId: findNavigationFlowMassIdByStepName(
-                        navigationFlowMassList,
-                        "Company Address"
-                      ),
-                      isActive: true,
-                    })
-                  );
-                }}
-              />
-            </menu>
-          )}
         </fieldset>
       </form>
       <SimilarBusinessNames businessName={watch("companyName")} />

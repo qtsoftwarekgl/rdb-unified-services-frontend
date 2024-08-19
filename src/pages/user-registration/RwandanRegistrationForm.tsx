@@ -1,27 +1,27 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '../../components/inputs/Input';
-import Button from '../../components/inputs/Button';
-import { AppDispatch, RootState } from '../../states/store';
-import { useDispatch, useSelector } from 'react-redux';
-import { setRegistrationStep } from '../../states/features/authSlice';
-import validateInputs, { validatePassword } from '../../helpers/validations';
-import Select from '../../components/inputs/Select';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ChangeEvent, useEffect, useState } from "react";
+import { Controller, FieldValues, useForm } from "react-hook-form";
+import Input from "../../components/inputs/Input";
+import Button from "../../components/inputs/Button";
+import { AppDispatch, RootState } from "../../states/store";
+import { useDispatch, useSelector } from "react-redux";
+import { setRegistrationStep } from "../../states/features/authSlice";
+import validateInputs, { validatePassword } from "../../helpers/validations";
+import Select from "../../components/inputs/Select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircle,
   faCircleCheck,
   faEyeSlash,
   faInfo,
-} from '@fortawesome/free-solid-svg-icons';
-import { formatDate, maskPhoneDigits } from '@/helpers/strings';
-import { faEye } from '@fortawesome/free-regular-svg-icons';
-import { useTranslation } from 'react-i18next';
-import { useSignupMutation } from '@/states/api/authApiSlice';
-import { toast } from 'react-toastify';
-import { ErrorResponse, useNavigate } from 'react-router-dom';
-import { setUser } from '@/states/features/userSlice';
-import Loader from '@/components/Loader';
+} from "@fortawesome/free-solid-svg-icons";
+import { formatDate, maskPhoneDigits } from "@/helpers/strings";
+import { faEye } from "@fortawesome/free-regular-svg-icons";
+import { useTranslation } from "react-i18next";
+import { useSignupMutation } from "@/states/api/authApiSlice";
+import { toast } from "react-toastify";
+import { ErrorResponse, useNavigate } from "react-router-dom";
+import { setUser } from "@/states/features/userSlice";
+import Loader from "@/components/Loader";
 
 type RwandanRegistrationFormProps = {
   isOpen: boolean;
@@ -70,24 +70,24 @@ const RwandanRegistrationForm = ({
 
   // SET DEFAULT VALUES
   useEffect(() => {
-    setValue('firstName', userInformation?.foreName);
-    setValue('lastName', userInformation?.surnames);
-    setValue('dateOfBirth', formatDate(userInformation?.dateOfBirth));
-    setValue('gender', userInformation?.gender);
-    setValue('nationality', userInformation?.nationality);
-    setValue('perDocIdentType', 'nid');
-    setValue('persDocIssueDate', formatDate(userInformation?.dateOfBirth));
-    setValue('persDocIssuePlace', 'RW');
-    setValue('province', userInformation?.province);
-    setValue('district', userInformation?.district);
-    setValue('sector', userInformation?.sector);
-    setValue('cell', userInformation?.cell);
-    setValue('village', userInformation?.village);
+    setValue("firstName", userInformation?.foreName);
+    setValue("lastName", userInformation?.surnames);
+    setValue("dateOfBirth", formatDate(userInformation?.dateOfBirth));
+    setValue("gender", userInformation?.gender);
+    setValue("nationality", userInformation?.nationality);
+    setValue("perDocIdentType", "nid");
+    setValue("persDocIssueDate", formatDate(userInformation?.dateOfBirth));
+    setValue("persDocIssuePlace", "RW");
+    setValue("province", userInformation?.province);
+    setValue("district", userInformation?.district);
+    setValue("sector", userInformation?.sector);
+    setValue("cell", userInformation?.cell);
+    setValue("village", userInformation?.village);
   }, [userInformation, setValue]);
 
   useEffect(() => {
     if (!userInformation) {
-      dispatch(setRegistrationStep('selectNationality'));
+      dispatch(setRegistrationStep("selectNationality"));
     }
   }, [dispatch, userInformation]);
 
@@ -107,7 +107,7 @@ const RwandanRegistrationForm = ({
   const onSubmit = (data: FieldValues) => {
     signup({
       ...data,
-      userType: 'LOCAL',
+      userType: "LOCAL",
       personDocNo: userInformation?.documentNumber,
     });
   };
@@ -118,7 +118,7 @@ const RwandanRegistrationForm = ({
       toast.error((signupError as ErrorResponse)?.data?.message);
     } else if (signupIsSuccess) {
       toast.success(
-        'Account created successfully. You will a receive an OTP on your email address.'
+        "Account created successfully. You will a receive an OTP on your email address."
       );
       dispatch(setUser(signupData?.data));
       navigate(`verify`);
@@ -136,12 +136,12 @@ const RwandanRegistrationForm = ({
     <section
       className={`${
         isOpen
-          ? 'flex flex-col gap-5 bg-white w-full ease-in duration-500'
-          : 'h-0 opacity-0 pointer-events-none'
+          ? "flex flex-col gap-5 bg-white w-full ease-in duration-500"
+          : "h-0 opacity-0 pointer-events-none"
       }`}
     >
       <form
-        className="w-full flex flex-col gap-4"
+        className="flex flex-col w-full gap-4"
         onSubmit={handleSubmit(onSubmit)}
       >
         <fieldset className="w-full mx-auto grid grid-cols-2 gap-6 max-[1200px]:w-[75%] max-[1100px]:w-[80%] max-[1000px]:w-[85%] max-lg:w-[90%] max-md:w-[95%] max-sm:w-[80%]">
@@ -149,7 +149,7 @@ const RwandanRegistrationForm = ({
             name="firstName"
             defaultValue={userInformation?.foreName}
             control={control}
-            rules={{ required: 'First name is required' }}
+            rules={{ required: "First name is required" }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col items-start w-full gap-1">
@@ -189,7 +189,7 @@ const RwandanRegistrationForm = ({
           <Controller
             name="dateOfBirth"
             control={control}
-            rules={{ required: 'Select date of birth' }}
+            rules={{ required: "Select date of birth" }}
             render={({ field }) => {
               return (
                 <label className="flex flex-col items-start w-full gap-1">
@@ -206,8 +206,8 @@ const RwandanRegistrationForm = ({
           <Controller
             name="gender"
             control={control}
-            defaultValue={watch('gender') || userInformation?.gender}
-            rules={{ required: 'Select gender' }}
+            defaultValue={watch("gender") || userInformation?.gender}
+            rules={{ required: "Select gender" }}
             render={({ field }) => {
               const gender = userInformation?.gender;
               return (
@@ -216,22 +216,22 @@ const RwandanRegistrationForm = ({
                     Gender<p className="text-red-500">*</p>
                   </p>
                   <menu className="flex items-center gap-4 mt-2">
-                    {gender === 'M' && (
+                    {gender === "M" && (
                       <Input
                         type="radio"
                         label="Male"
-                        checked={gender === 'M'}
+                        checked={gender === "M"}
                         {...field}
-                        value={'M'}
+                        value={"M"}
                       />
                     )}
-                    {gender === 'F' && (
+                    {gender === "F" && (
                       <Input
                         type="radio"
                         label="Female"
                         {...field}
-                        value={'F'}
-                        checked={gender === 'F'}
+                        value={"F"}
+                        checked={gender === "F"}
                       />
                     )}
                   </menu>
@@ -248,7 +248,7 @@ const RwandanRegistrationForm = ({
             name="phoneNumber"
             control={control}
             rules={{
-              required: 'Phone number is required',
+              required: "Phone number is required",
             }}
             render={({ field }) => {
               return (
@@ -278,11 +278,11 @@ const RwandanRegistrationForm = ({
             name="email"
             control={control}
             rules={{
-              required: 'Email address is required',
+              required: "Email address is required",
               validate: (value) => {
                 return (
-                  validateInputs(String(value), 'email') ||
-                  'Invalid email address'
+                  validateInputs(String(value), "email") ||
+                  "Invalid email address"
                 );
               },
             }}
@@ -295,7 +295,7 @@ const RwandanRegistrationForm = ({
                     placeholder="name@domain.com"
                     onChange={async (e: ChangeEvent<HTMLInputElement>) => {
                       field.onChange(e.target.value);
-                      await trigger('email');
+                      await trigger("email");
                     }}
                   />
                   {errors?.email && (
@@ -313,11 +313,12 @@ const RwandanRegistrationForm = ({
             rules={{
               validate: (value) => {
                 if (validatePassword(value).length > 0) {
-                  setPasswordErrors(validatePassword(value));
+                  const newPasswordErrors = validatePassword(value);
+                  setPasswordErrors(newPasswordErrors);
                   if (
-                    !passwordErrors?.find((error) => error?.color === 'red')
+                    !newPasswordErrors?.find((error) => error?.color === "red")
                   ) {
-                    clearErrors('password');
+                    clearErrors("password");
                     setPasswordIsValid(true);
                     return true;
                   } else {
@@ -328,10 +329,10 @@ const RwandanRegistrationForm = ({
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-full mx-auto">
+                <label className="flex flex-col items-start w-full gap-1 mx-auto">
                   <Input
-                    type={showPassword?.password ? 'text' : 'password'}
-                    label={t('password-label')}
+                    type={showPassword?.password ? "text" : "password"}
+                    label={t("password-label")}
                     placeholder="********"
                     suffixIcon={showPassword?.password ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
@@ -344,11 +345,11 @@ const RwandanRegistrationForm = ({
                     {...field}
                     onChange={async (e) => {
                       field.onChange(e);
-                      await trigger('password');
+                      await trigger("password");
                     }}
                   />
                   {(errors.password || passwordIsValid) && (
-                    <menu className="flex flex-col gap-1 w-full">
+                    <menu className="flex flex-col w-full gap-1">
                       <p className="text-[13px] text-red-500 ml-1">
                         {errors?.password?.message &&
                           String(errors?.password?.message)}
@@ -363,7 +364,7 @@ const RwandanRegistrationForm = ({
                               >
                                 <FontAwesomeIcon
                                   icon={
-                                    error?.color === 'red'
+                                    error?.color === "red"
                                       ? faCircle
                                       : faCircleCheck
                                   }
@@ -384,16 +385,16 @@ const RwandanRegistrationForm = ({
             name="confirmPassword"
             control={control}
             rules={{
-              required: `${t('confirm-password-required')}`,
+              required: `${t("confirm-password-required")}`,
               validate: (value) =>
-                value === watch('password') || `${t('password-mismatch')}`,
+                value === watch("password") || `${t("password-mismatch")}`,
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-full mx-auto">
+                <label className="flex flex-col items-start w-full gap-1 mx-auto">
                   <Input
-                    type={showPassword?.confirmPassword ? 'text' : 'password'}
-                    label={t('confirm-password-label')}
+                    type={showPassword?.confirmPassword ? "text" : "password"}
+                    label={t("confirm-password-label")}
                     placeholder="********"
                     suffixIcon={
                       showPassword?.confirmPassword ? faEyeSlash : faEye
@@ -408,7 +409,7 @@ const RwandanRegistrationForm = ({
                     {...field}
                     onChange={async (e) => {
                       field.onChange(e.target.value);
-                      await trigger('confirmPassword');
+                      await trigger("confirmPassword");
                     }}
                   />
                   {errors.confirmPassword && (
@@ -430,16 +431,16 @@ const RwandanRegistrationForm = ({
           continue. You will receive a verification code to your telephone
           number.
         </p>
-        <menu className="flex items-center w-full gap-4 mt-3 justify-between">
+        <menu className="flex items-center justify-between w-full gap-4 mt-3">
           <Button
             value="Back"
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setRegistrationStep('selectNationality'));
+              dispatch(setRegistrationStep("selectNationality"));
             }}
           />
           <Button
-            value={signupIsLoading ? <Loader /> : 'Continue'}
+            value={signupIsLoading ? <Loader /> : "Continue"}
             submit
             primary
             disabled={Object.keys(errors).length > 0}

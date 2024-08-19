@@ -1,0 +1,16 @@
+export enum ApplicationStatus {
+  Approved = "APPROVED",
+  Rejected = "REJECTED",
+  IsAmending = "IS_AMENDING",
+  Submitted = "SUBMITTED",
+  Inprogress = "IN_PROGRESS",
+  Resubmitted = "RESUBMITTED",
+  AmendmentSubmitted = "AMENDMENT_SUBMITTED",
+  Verified = "VERIFIED",
+  Dormant = "DORMANT",
+  Closed = "CLOSED",
+  Active = "ACTIVE",
+  InReview = "IN_REVIEW",
+  Inactive = "INACTIVE",
+  Forcorrection = "FOR_CORRECTION",
+}

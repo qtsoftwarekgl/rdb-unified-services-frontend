@@ -1,34 +1,35 @@
-import UserLayout from '../../../containers/UserLayout';
-import { capitalizeString, formatDate } from '../../../helpers/strings';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../states/store';
+import UserLayout from "../../../containers/UserLayout";
+import { capitalizeString, formatDate } from "../../../helpers/strings";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../states/store";
 import {
   useLazyFetchBusinessesQuery,
   useUpdateBusinessMutation,
-} from '@/states/api/businessRegApiSlice';
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+} from "@/states/api/businessRegApiSlice";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   setBusinessesList,
   setBusinessPage,
   setBusinessSize,
   setBusinessTotalElements,
   setBusinessTotalPages,
-} from '@/states/features/businessSlice';
-import { toast } from 'react-toastify';
-import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
-import Table from '@/components/table/Table';
-import { businessColumns } from '@/constants/business.constants';
-import { ColumnDef, Row } from '@tanstack/react-table';
-import { Business } from '@/types/models/business';
-import CustomPopover from '@/components/inputs/CustomPopover';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "@/states/features/businessSlice";
+import { toast } from "react-toastify";
+import { ErrorResponse, Link, useNavigate } from "react-router-dom";
+import Table from "@/components/table/Table";
+import { businessColumns } from "@/constants/business.constants";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import { Business } from "@/types/models/business";
+import CustomPopover from "@/components/inputs/CustomPopover";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
   faEllipsisVertical,
-} from '@fortawesome/free-solid-svg-icons';
-import Loader from '@/components/Loader';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
+import Loader from "@/components/Loader";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 
 const AmendCompanyDetails = () => {
   // STATE VARIABLES
@@ -36,7 +37,7 @@ const AmendCompanyDetails = () => {
   const { businessesList, page, size, totalElements, totalPages } = useSelector(
     (state: RootState) => state.business
   );
-  const [servicePath, setServicePath] = useState<string>('');
+  const [servicePath, setServicePath] = useState<string>("");
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const AmendCompanyDetails = () => {
     fetchBusinesses({
       page,
       size,
-      applicationStatus: 'APPROVED',
+      applicationStatus: ApplicationStatus.Approved,
     });
   }, [fetchBusinesses, page, size]);
 
@@ -71,7 +72,7 @@ const AmendCompanyDetails = () => {
     } else if (businessesIsError) {
       toast.error(
         (businessesError as ErrorResponse)?.data?.message ||
-          'An error occurred while fetching businesses'
+          "An error occurred while fetching businesses"
       );
     }
   }, [
@@ -99,13 +100,13 @@ const AmendCompanyDetails = () => {
   // HANDLE UPDATE BUSINESS RESPONSE
   useEffect(() => {
     if (updateBusinessIsSuccess) {
-      toast.success('Starting amendment...');
+      toast.success("Starting amendment...");
       navigate(`${servicePath}?businessId=${updateBusinessData?.data?.id}`);
     } else if (updateBusinessIsError) {
-      setServicePath('');
+      setServicePath("");
       toast.error(
         (updateBusinessError as ErrorResponse)?.data?.message ||
-          'An error occurred while updating business'
+          "An error occurred while updating business"
       );
     }
   }, [
@@ -121,8 +122,8 @@ const AmendCompanyDetails = () => {
   const businessAmendmentColumns = [
     ...businessColumns,
     {
-      header: 'Action',
-      accessorKey: 'action',
+      header: "Action",
+      accessorKey: "action",
       cell: ({ row }: Row<Business>) => {
         return (
           <CustomPopover
@@ -135,13 +136,13 @@ const AmendCompanyDetails = () => {
               </menu>
             }
           >
-            <menu className="bg-white flex flex-col gap-3 p-0 rounded-md">
+            <menu className="flex flex-col gap-3 p-0 bg-white rounded-md">
               <Link
                 className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                 onClick={(e) => {
                   e.preventDefault();
                 }}
-                to={'#'}
+                to={"#"}
               >
                 <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                 View details
@@ -153,19 +154,19 @@ const AmendCompanyDetails = () => {
                   setServicePath(row?.original?.service?.path);
                   updateBusiness({
                     businessId: row?.original?.id,
-                    applicationStatus: 'IS_AMENDING',
+                    applicationStatus: ApplicationStatus.IsAmending,
                   });
                 }}
-                to={'#'}
+                to={"#"}
               >
                 <FontAwesomeIcon
                   className="text-primary"
                   icon={faPenToSquare}
-                />{' '}
+                />{" "}
                 {updateBusinessIsLoading ? (
                   <Loader className="text-primary" />
                 ) : (
-                  'Start amendment'
+                  "Start amendment"
                 )}
               </Link>
             </menu>
@@ -177,7 +178,7 @@ const AmendCompanyDetails = () => {
 
   return (
     <UserLayout>
-      <main className="bg-white flex flex-col gap-5 w-full p-6 rounded-md">
+      <main className="flex flex-col w-full gap-5 p-6 bg-white rounded-md">
         {businessesIsFetching ? (
           <figure className="w-full min-h-[40vh] flex items-center justify-center">
             <Loader className="text-primary" />
@@ -197,8 +198,8 @@ const AmendCompanyDetails = () => {
                 dateOfIncorporation: formatDate(
                   business?.createdAt
                 ) as unknown as Date,
-                companyType: capitalizeString(business?.companyType) || 'N/A',
-                assignee: 'RDB Verifier',
+                companyType: capitalizeString(business?.companyType) || "N/A",
+                assignee: "RDB Verifier",
                 companyName: (
                   business?.companyName ||
                   business?.enterpriseName ||
