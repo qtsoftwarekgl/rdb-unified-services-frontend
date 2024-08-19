@@ -68,7 +68,6 @@ interface BeneficialOwnersProps {
 }
 
 const BeneficialOwners: FC<BeneficialOwnersProps> = ({
-  isOpen,
   beneficial_owners = [],
   entryId,
   status,
@@ -322,8 +321,6 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
     },
   ];
 
-  if (!isOpen) return null;
-
   return (
     <section className="flex flex-col w-full gap-5">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -360,7 +357,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
             />
           </menu>
           <ul className={`w-full flex items-start gap-6`}>
-            {watch("type") === "person" && (
+            {watch("type") === "individual" && (
               <Controller
                 name="document_type"
                 rules={{ required: "Select document type" }}
@@ -440,7 +437,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   </label>
                 </menu>
               )}
-              {watch("type") && watch("type") !== "person" && (
+              {watch("type") && watch("type") !== "individual" && (
                 <menu className="flex flex-col w-full gap-6">
                   <Controller
                     control={control}
@@ -501,13 +498,13 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                       control={control}
                       rules={{
                         required:
-                          watch("type") !== "person" &&
+                          watch("type") !== "individual" &&
                           watch("rwandan_company") === "yes"
                             ? "Company code is required"
                             : false,
                         validate: (value) => {
                           if (
-                            watch("type") === "person" ||
+                            watch("type") === "individual" ||
                             watch("rwandan_company") === "no"
                           )
                             return true;
@@ -593,7 +590,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                             />
                             {searchMember?.loading && !errors?.reference_no && (
                               <p className="flex items-center gap-[2px] text-[13px]">
-                                <Loader size={4} /> Validating company code
+                                <Loader className="text-primary" /> Validating
+                                company code
                               </p>
                             )}
                             {errors?.reference_no && (
@@ -609,98 +607,105 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 </menu>
               )}
             </menu>
-            {watch("document_type") === "nid" && watch("type") === "person" && (
-              <Controller
-                control={control}
-                name="documentNumber"
-                rules={{
-                  required: watch("document_type")
-                    ? "Document number is required"
-                    : false,
-                  validate: (value) => {
+            {watch("document_type") === "nid" &&
+              watch("type") === "individual" && (
+                <Controller
+                  control={control}
+                  name="documentNumber"
+                  rules={{
+                    required: watch("document_type")
+                      ? "Document number is required"
+                      : false,
+                    validate: (value) => {
+                      return (
+                        validateInputs(value, "nid") ||
+                        "National ID must be 16 characters long"
+                      );
+                    },
+                  }}
+                  render={({ field }) => {
                     return (
-                      validateInputs(value, "nid") ||
-                      "National ID must be 16 characters long"
-                    );
-                  },
-                }}
-                render={({ field }) => {
-                  return (
-                    <label className="flex flex-col items-start w-full gap-2">
-                      <Input
-                        required
-                        suffixIcon={faSearch}
-                        suffixIconHandler={async (e) => {
-                          e.preventDefault();
-                          if (!field.value) {
-                            setError("documentNumber", {
-                              type: "manual",
-                              message: "Document number is required",
-                            });
-                            return;
-                          }
-                          setSearchMember({
-                            ...searchMember,
-                            loading: true,
-                            error: false,
-                          });
-                          setTimeout(() => {
-                            const randomNumber = Math.floor(Math.random() * 10);
-                            const userDetails = userData[randomNumber];
-
-                            if (field?.value !== String(validNationalID)) {
-                              setSearchMember({
-                                ...searchMember,
-                                data: null,
-                                loading: false,
-                                error: true,
+                      <label className="flex flex-col items-start w-full gap-2">
+                        <Input
+                          required
+                          suffixIcon={faSearch}
+                          suffixIconHandler={async (e) => {
+                            e.preventDefault();
+                            if (!field.value) {
+                              setError("documentNumber", {
+                                type: "manual",
+                                message: "Document number is required",
                               });
-                            } else {
-                              clearErrors();
-                              setSearchMember({
-                                ...searchMember,
-                                data: userDetails,
-                                loading: false,
-                                error: false,
-                              });
-                              setValue("first_name", userDetails?.first_name);
-                              setValue("middle_name", userDetails?.middle_name);
-                              setValue("last_name", userDetails?.last_name);
-                              setValue("gender", userDetails?.data?.gender);
+                              return;
                             }
-                          }, 700);
-                        }}
-                        label="ID Document No"
-                        suffixIconPrimary
-                        placeholder="1 XXXX X XXXXXXX X XX"
-                        onChange={async (e) => {
-                          field.onChange(e);
-                          clearErrors("documentNumber");
-                          await trigger("documentNumber");
-                        }}
-                      />
-                      {searchMember?.loading &&
-                        !errors?.documentNumber &&
-                        !searchMember?.error && (
-                          <span className="flex items-center gap-[2px] text-[13px]">
-                            <Loader size={4} /> Validating document
+                            setSearchMember({
+                              ...searchMember,
+                              loading: true,
+                              error: false,
+                            });
+                            setTimeout(() => {
+                              const randomNumber = Math.floor(
+                                Math.random() * 10
+                              );
+                              const userDetails = userData[randomNumber];
+
+                              if (field?.value !== String(validNationalID)) {
+                                setSearchMember({
+                                  ...searchMember,
+                                  data: null,
+                                  loading: false,
+                                  error: true,
+                                });
+                              } else {
+                                clearErrors();
+                                setSearchMember({
+                                  ...searchMember,
+                                  data: userDetails,
+                                  loading: false,
+                                  error: false,
+                                });
+                                setValue("first_name", userDetails?.first_name);
+                                setValue(
+                                  "middle_name",
+                                  userDetails?.middle_name
+                                );
+                                setValue("last_name", userDetails?.last_name);
+                                setValue("gender", userDetails?.data?.gender);
+                              }
+                            }, 700);
+                          }}
+                          label="ID Document No"
+                          suffixIconPrimary
+                          placeholder="1 XXXX X XXXXXXX X XX"
+                          onChange={async (e) => {
+                            field.onChange(e);
+                            clearErrors("documentNumber");
+                            await trigger("documentNumber");
+                          }}
+                        />
+                        {searchMember?.loading &&
+                          !errors?.documentNumber &&
+                          !searchMember?.error && (
+                            <span className="flex items-center gap-[2px] text-[13px]">
+                              <Loader className="text-primary" /> Validating
+                              document
+                            </span>
+                          )}
+                        {searchMember?.error && !searchMember?.loading && (
+                          <span className="text-red-600 text-[13px]">
+                            Invalid document number
                           </span>
                         )}
-                      {searchMember?.error && !searchMember?.loading && (
-                        <span className="text-red-600 text-[13px]">
-                          Invalid document number
-                        </span>
-                      )}
-                      {errors?.documentNumber && (
-                        <p className="text-red-500 text-[13px]">
-                          {String(errors?.documentNumber?.message)}
-                        </p>
-                      )}
-                    </label>
-                  );
-                }}
-              />
-            )}
+                        {errors?.documentNumber && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.documentNumber?.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+              )}
           </ul>
           <section
             className={`${
@@ -709,7 +714,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 ? "flex"
                 : "hidden"
             } ${
-              watch("type") !== "person" && "hidden"
+              watch("type") !== "individual" && "hidden"
             } flex-wrap gap-4 items-start justify-between w-full`}
           >
             {watch("document_type") === "passport" && (
@@ -719,11 +724,11 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 rules={{
                   required:
                     watch("document_type") === "passport" &&
-                    watch("type") === "person"
+                    watch("type") === "individual"
                       ? "Passport number is required"
                       : false,
                   validate: (value) => {
-                    if (watch("type") !== "person") return true;
+                    if (watch("type") !== "individual") return true;
                     if (watch("document_type") !== "passport") {
                       return true;
                     }
@@ -764,7 +769,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.first_name}
               rules={{
                 required:
-                  watch("type") === "person" ? "First name is required" : false,
+                  watch("type") === "individual"
+                    ? "First name is required"
+                    : false,
               }}
               render={({ field }) => {
                 return (
@@ -828,7 +835,8 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.gender}
               rules={{
                 required:
-                  watch("type") === "person" && watch("document_type") !== "nid"
+                  watch("type") === "individual" &&
+                  watch("document_type") !== "nid"
                     ? "Select gender"
                     : false,
               }}
@@ -881,7 +889,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("type") === "person" &&
+                  watch("type") === "individual" &&
                   watch("document_type") === "passport" &&
                   "Nationality is required",
               }}
@@ -942,7 +950,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("type") === "person" && "Phone number is required",
+                  watch("type") === "individual" && "Phone number is required",
               }}
               render={({ field }) => {
                 return (
@@ -991,7 +999,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 rules={{
                   required:
                     watch("document_type") === "passport" &&
-                    watch("type") === "person"
+                    watch("type") === "individual"
                       ? "Passport is required"
                       : false,
                 }}
@@ -1024,7 +1032,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               />
             </menu>
           </section>
-          {watch("type") === "person" &&
+          {watch("type") === "individual" &&
             (watch("document_type") === "passport" ||
               (watch("document_type") === "nid" && !!searchMember?.data)) && (
               <article className="flex flex-col gap-3">
@@ -1085,7 +1093,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               rules={{
                 required:
                   watch("address") === "no" &&
-                  watch("type") === "person" &&
+                  watch("type") === "individual" &&
                   watch("document_type") === "passport" &&
                   "Nationality is required",
               }}
@@ -1138,7 +1146,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch("address") === "no" && watch("type") === "person"
+                  watch("address") === "no" && watch("type") === "individual"
                     ? "Phone number is required"
                     : false,
               }}
@@ -1168,7 +1176,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
           <section
             className={`${
               (watch("type") &&
-                watch("type") !== "person" &&
+                watch("type") !== "individual" &&
                 watch("rwandan_company") === "no") ||
               (watch("rwandan_company") === "yes" && searchMember?.data)
                 ? "flex"
@@ -1180,7 +1188,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("type") !== "person" &&
+                  watch("type") !== "individual" &&
                   watch("rwandan_company") === "no"
                     ? "Company name is required"
                     : false,
@@ -1226,7 +1234,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("type") !== "person" &&
+                  watch("type") !== "individual" &&
                   watch("rwandan_company") === "no"
                     ? "Select country of incorporation"
                     : false,
@@ -1234,7 +1242,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
-                    {watch("type") !== "person" &&
+                    {watch("type") !== "individual" &&
                     watch("rwandan_company") === "yes" ? (
                       <menu className="flex flex-col gap-2">
                         <p className="flex items-center gap-1 text-[14px]">
@@ -1275,7 +1283,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               control={control}
               rules={{
                 required:
-                  watch("type") !== "person" &&
+                  watch("type") !== "individual" &&
                   watch("rwandan_company") === "no"
                     ? "Registration date is required"
                     : false,
@@ -1291,7 +1299,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               render={({ field }) => {
                 return (
                   <label className="w-[49%] flex flex-col gap-1 items-start">
-                    {watch("type") !== "person" &&
+                    {watch("type") !== "individual" &&
                     watch("rwandan_company") === "yes" ? (
                       <menu className="flex flex-col gap-2">
                         <p className="flex items-center gap-1 text-[14px]">
@@ -1327,9 +1335,9 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.email}
               rules={{
                 required:
-                  watch("type") !== "person" && "Email address is required",
+                  watch("type") !== "individual" && "Email address is required",
                 validate: (value) => {
-                  if (watch("type") !== "person") {
+                  if (watch("type") !== "individual") {
                     return (
                       validateInputs(String(value), "email") ||
                       "Invalid email address"
@@ -1362,14 +1370,14 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
               defaultValue={searchMember?.data?.phone}
               rules={{
                 required:
-                  watch("type") !== "person" &&
+                  watch("type") !== "individual" &&
                   watch("rwandan_company") === "no"
                     ? "Company phone number is required"
                     : false,
                 validate: (value) => {
                   if (
                     watch("rwandan_company") === "yes" &&
-                    watch("type") !== "person"
+                    watch("type") !== "individual"
                   ) {
                     return (
                       validateInputs(value, "tel") || "Invalid phone number"
@@ -1592,7 +1600,7 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                 setTimeout(() => {
                   setIsLoading(false);
                   if (
-                    watch("type") === "person" &&
+                    watch("type") === "individual" &&
                     watch("document_type") === "nid"
                   ) {
                     setShowVerifyPhone(true);
@@ -1680,6 +1688,32 @@ const BeneficialOwners: FC<BeneficialOwnersProps> = ({
                   status: "IN_PROGRESS",
                 })
               );
+            }}
+          />
+        </menu>
+      )}
+      {[
+        "IN_REVIEW",
+        "APPROVED",
+        "PENDING_APPROVAL",
+        "PENDING_REJECTION",
+      ].includes(status) && (
+        <menu className="flex items-center justify-between gap-3">
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep("capital_details"));
+              dispatch(setBusinessActiveTab("capital_information"));
+            }}
+          />
+          <Button
+            value="Next"
+            primary
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setBusinessActiveStep("attachments"));
+              dispatch(setBusinessActiveTab("attachments"));
             }}
           />
         </menu>

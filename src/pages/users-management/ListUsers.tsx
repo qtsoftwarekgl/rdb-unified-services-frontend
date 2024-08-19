@@ -224,14 +224,12 @@ const ListUsers = () => {
               size={size}
               setPage={setPage}
               setSize={setSize}
-              data={usersList
-                ?.filter((user) => user?.firstName !== null)
-                ?.map((user: User, index: number) => {
-                  return {
-                    ...user,
-                    no: index + 1,
-                  };
-                })}
+              data={usersList?.map((user: User, index: number) => {
+                return {
+                  ...user,
+                  no: index + 1,
+                };
+              })}
               columns={userExtendedColumns as ColumnDef<User>[]}
             />
           )}

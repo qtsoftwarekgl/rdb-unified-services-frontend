@@ -1,4 +1,5 @@
 import { NavigationFlow, NavigationFlowMass } from '@/types/models/navigationFlow';
+import { UUID } from 'crypto';
 
 // FIND NAVIGATION FLOW ID BY STEP NAME
 export const findNavigationFlowMassIdByStepName = (
@@ -24,5 +25,17 @@ export const findNavigationFlowByStepName = (
       (navigationFlow) =>
         navigationFlow?.navigationFlowMass?.stepName === stepName
     );
+  return navigationFlow;
+};
+
+// FIND NAVIGATION FLOW BY ID
+export const findNavigationFlowById = (
+  businessNavigationFlowsList?: NavigationFlow[],
+  navigationFlowId?: UUID
+) => {
+  if (!businessNavigationFlowsList) return undefined;
+  const navigationFlow = Object?.values(businessNavigationFlowsList)
+    ?.flat()
+    ?.find((navigationFlow) => navigationFlow?.id === navigationFlowId);
   return navigationFlow;
 };

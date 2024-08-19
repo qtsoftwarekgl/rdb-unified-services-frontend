@@ -31,9 +31,11 @@ import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
-import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople";
+import ListBusinessReviewComments from "../../business-review/ListBusinessReviewComments";
+import { setBusinessAttachments } from "@/states/features/businessSlice";
 import moment from "moment";
 import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople";
 
 interface ForeignCompanyPreviewSubmissionProps {
   businessId: businessId;
@@ -50,6 +52,22 @@ const ForeignCompanyPreviewSubmission = ({
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  const { businessReviewCommentsList } = useSelector(
+    (state: RootState) => state.businessReviewComment
+  );
+
+  // UPDATE NAVIGATION FLOW ON LOAD
+  useEffect(() => {
+    dispatch(
+      completeNavigationFlowThunk({
+        isCompleted: true,
+        navigationFlowId: findNavigationFlowByStepName(
+          businessNavigationFlowsList,
+          "Preview & Submission"
+        )?.id,
+      })
+    );
+  }, [dispatch, businessId]);
 
   // GET BUSINESS DETAILS
   const [
@@ -98,7 +116,13 @@ const ForeignCompanyPreviewSubmission = ({
   // INITIALIZE FETC BUSINESS ATTACHMENTS
   const [
     fetchBusinessAttachments,
-    { data: businessAttachmentsData, isLoading: businessAttachmentsIsLoading },
+    {
+      data: businessAttachmentsData,
+      isLoading: businessAttachmentsIsLoading,
+      error: businessAttachmentsError,
+      isSuccess: businessAttachmentsIsSuccess,
+      isError: businessAttachmentsIsError,
+    },
   ] = useLazyFetchBusinessAttachmentsQuery();
 
   // GET BUSINESS
@@ -178,25 +202,25 @@ const ForeignCompanyPreviewSubmission = ({
     updateBusinessIsSuccess,
   ]);
 
-  // // TABLE COLUMNS
-  // const managementColumns = [
-  //   {
-  //     header: "Name",
-  //     accessorKey: "name",
-  //   },
-  //   {
-  //     header: "Document Number (NID/Passport)",
-  //     accessorKey: "documentNumber",
-  //   },
-  //   {
-  //     header: "Position",
-  //     accessorKey: "position",
-  //   },
-  //   {
-  //     header: "Country",
-  //     accessorKey: "country",
-  //   },
-  // ];
+  useEffect(() => {
+    if (businessAttachmentsIsError) {
+      if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
+        toast.error(
+          "An error occurred while fetching business attachments. Please try again later."
+        );
+      } else {
+        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
+      }
+    } else if (businessAttachmentsIsSuccess) {
+      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
+    }
+  }, [
+    businessAttachmentsData,
+    businessAttachmentsError,
+    businessAttachmentsIsError,
+    businessAttachmentsIsSuccess,
+    dispatch,
+  ]);
 
   return (
     <section className="flex flex-col w-full h-full gap-6">
@@ -220,6 +244,12 @@ const ForeignCompanyPreviewSubmission = ({
           navigationFlowMassList,
           "Company Details"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Company Details"
+          )?.id
+        }
       >
         {businessDetailsData?.data ? (
           Object?.entries(businessDetailsData?.data)?.map(
@@ -275,6 +305,12 @@ const ForeignCompanyPreviewSubmission = ({
           navigationFlowMassList,
           "Company Address"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Company Address"
+          )?.id
+        }
       >
         {businessAddressData?.data &&
           Object?.entries(businessAddressData?.data)?.map(
@@ -300,6 +336,12 @@ const ForeignCompanyPreviewSubmission = ({
           navigationFlowMassList,
           "Business Activity & VAT"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Business Activity & VAT"
+          )?.id
+        }
       >
         {businessActivitiesIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -341,6 +383,12 @@ const ForeignCompanyPreviewSubmission = ({
           navigationFlowMassList,
           "Board of Directors"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Board of Directors"
+          )?.id
+        }
       >
         {boardMemberIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -372,6 +420,26 @@ const ForeignCompanyPreviewSubmission = ({
             businessPeopleList={managementMemberData?.data}
             businessId={businessId}
           />
+        )}
+      </PreviewCard>
+      {/* ATTACHMENTS */}
+      <PreviewCard
+        header="Attachments"
+        navigationFlowMassId={findNavigationFlowMassIdByStepName(
+          navigationFlowMassList,
+          "Attachments"
+        )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Attachments"
+          )?.id
+        }
+        businessId={businessId}
+        applicationStatus={applicationStatus}
+      >
+        {businessAttachmentsData?.length > 0 && (
+          <BusinessPeopleAttachments attachments={businessAttachmentsData} />
         )}
       </PreviewCard>
       {/* EMPLOYMENT INFO */}
@@ -452,64 +520,81 @@ const ForeignCompanyPreviewSubmission = ({
           )
         )}
       </PreviewCard>
-      <menu
-        className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-      >
-        <Button
-          value="Back"
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(
-              createNavigationFlowThunk({
-                businessId,
-                massId: findNavigationFlowMassIdByStepName(
-                  navigationFlowMassList,
-                  "Attachments"
-                ),
-                isActive: true,
-              })
-            );
-          }}
-        />
-        <Button
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch(
-              completeNavigationFlowThunk({
-                isCompleted: true,
-                navigationFlowId: findNavigationFlowByStepName(
-                  businessNavigationFlowsList,
-                  "Preview & Submission"
-                )?.id,
-              })
-            );
-            if (
-              applicationStatus !== ApplicationStatus.IsAmending &&
-              !Object?.values(navigationFlowMassList ?? {})
-                ?.flat()
-                ?.every((navigationStep) => {
-                  return businessNavigationFlowsList?.find(
-                    (businessStep) =>
-                      businessStep?.navigationFlowMass?.stepName ===
-                        navigationStep?.stepName && businessStep?.completed
-                  );
+      {[
+        ApplicationStatus.Inprogress,
+        ApplicationStatus.IsAmending,
+        ApplicationStatus.Forcorrection,
+      ].includes(String(applicationStatus) as ApplicationStatus) ? (
+        <menu
+          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+        >
+          <Button
+            value="Back"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(
+                createNavigationFlowThunk({
+                  businessId,
+                  massId: findNavigationFlowMassIdByStepName(
+                    navigationFlowMassList,
+                    "Attachments"
+                  ),
+                  isActive: true,
                 })
-            ) {
-              toast.error("All steps must be completed before submission");
-              return;
+              );
+            }}
+          />
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              if (
+                applicationStatus !== ApplicationStatus.IsAmending &&
+                !Object?.values(navigationFlowMassList ?? {})
+                  ?.flat()
+                  ?.every((navigationStep) => {
+                    return businessNavigationFlowsList?.find(
+                      (businessStep) =>
+                        businessStep?.navigationFlowMass?.stepName ===
+                          navigationStep?.stepName && businessStep?.completed
+                    );
+                  })
+              ) {
+                toast.error("All steps must be completed before submission");
+                return;
+              }
+              updateBusiness({
+                businessId,
+                applicationStatus:
+                  applicationStatus === ApplicationStatus.Inprogress
+                    ? ApplicationStatus.Submitted
+                    : ApplicationStatus.AmendmentSubmitted,
+              });
+            }}
+            value={updateBusinessIsLoading ? <Loader /> : "Submit"}
+            primary
+          />
+        </menu>
+      ) : (
+        ["ACTION_REQUIRED"].includes(String(applicationStatus)) && (
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              updateBusiness({
+                businessId,
+                applicationStatus: "RESUBMITTED",
+              });
+            }}
+            disabled={
+              businessReviewCommentsList?.filter(
+                (reviewComment) => reviewComment?.status === "UNRESOLVED"
+              ).length > 0
             }
-            updateBusiness({
-              businessId,
-              applicationStatus:
-                applicationStatus === ApplicationStatus.Inprogress
-                  ? ApplicationStatus.Submitted
-                  : ApplicationStatus.AmendmentSubmitted,
-            });
-          }}
-          value={updateBusinessIsLoading ? <Loader /> : "Submit"}
-          primary
-        />
-      </menu>
+            value={updateBusinessIsLoading ? <Loader /> : "Submit again"}
+            primary
+          />
+        )
+      )}
+      <ListBusinessReviewComments />
     </section>
   );
 };

@@ -34,6 +34,7 @@ import {
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
 import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import ListBusinessReviewComments from "../../business-review/ListBusinessReviewComments";
 
 type PreviewSubmissionProps = {
   businessId: businessId;
@@ -50,9 +51,25 @@ const PreviewSubmission = ({
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  const { businessReviewCommentsList } = useSelector(
+    (state: RootState) => state.businessReviewComment
+  );
 
   // NAVIGATION
   const navigate = useNavigate();
+
+  // UPDATE NAVIGATION FLOW ON LOAD
+  useEffect(() => {
+    dispatch(
+      completeNavigationFlowThunk({
+        isCompleted: true,
+        navigationFlowId: findNavigationFlowByStepName(
+          businessNavigationFlowsList,
+          "Preview & Submission"
+        )?.id,
+      })
+    );
+  }, [dispatch, businessId]);
 
   // INITIALIZE FETCHING COMPANY DETAILS QUERY
   const [
@@ -226,6 +243,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Company Details"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Company Details"
+          )?.id
+        }
       >
         {businessDetailsIsLoading ||
         businessAddressIsLoading ||
@@ -296,6 +319,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Company Address"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Company Address"
+          )?.id
+        }
       >
         {businessAddressIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -353,6 +382,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Business Activity & VAT"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Business Activity & VAT"
+          )?.id
+        }
       >
         {businessActivitiesIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -395,6 +430,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Board of Directors"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Board of Directors"
+          )?.id
+        }
       >
         {boardMembersIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -417,6 +458,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Senior Management"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Senior Management"
+          )?.id
+        }
       >
         {executiveManagementIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -439,6 +486,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Employment Info"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Employment Info"
+          )?.id
+        }
       >
         {businessEmploymentInfoIsLoading ? (
           <figure className="flex items-center justify-center w-full h-full">
@@ -538,6 +591,12 @@ const PreviewSubmission = ({
           navigationFlowMassList,
           "Attachments"
         )}
+        navigationFlowId={
+          findNavigationFlowByStepName(
+            businessNavigationFlowsList,
+            "Attachments"
+          )?.id
+        }
       >
         {businessAttachmentsIsFetching ? (
           <figure className="flex items-center gap-3 w-full min-h-[20vh]">
@@ -552,12 +611,11 @@ const PreviewSubmission = ({
           )
         )}
       </PreviewCard>
-
       {[
         ApplicationStatus.Inprogress,
         ApplicationStatus.IsAmending,
         ApplicationStatus.Forcorrection,
-      ].includes(String(applicationStatus) as ApplicationStatus) && (
+      ].includes(String(applicationStatus) as ApplicationStatus) ? (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
         >
@@ -607,6 +665,25 @@ const PreviewSubmission = ({
             primary
           />
         </menu>
+      ) : (
+        ["ACTION_REQUIRED"].includes(String(applicationStatus)) && (
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              updateBusiness({
+                businessId,
+                applicationStatus: "RESUBMITTED",
+              });
+            }}
+            disabled={
+              businessReviewCommentsList?.filter(
+                (reviewComment) => reviewComment?.status === "UNRESOLVED"
+              ).length > 0
+            }
+            value={updateBusinessIsLoading ? <Loader /> : "Submit again"}
+            primary
+          />
+        )
       )}
       {attachmentPreview && (
         <ViewDocument
@@ -614,6 +691,7 @@ const PreviewSubmission = ({
           setDocumentUrl={setAttachmentPreview}
         />
       )}
+      <ListBusinessReviewComments />
     </section>
   );
 };

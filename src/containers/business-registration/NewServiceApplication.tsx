@@ -13,7 +13,7 @@ import {
 } from "@/states/api/businessRegApiSlice";
 import { useLazyGetServiceQuery } from "@/states/api/businessRegApiSlice";
 import {
-  addToBusinessesList,
+  setBusinessesList,
   setBusinessPage,
   setBusinessSize,
   setBusinessTotalElements,
@@ -111,17 +111,7 @@ const NewServiceApplication = () => {
   useEffect(() => {
     fetchBusinesses({
       serviceId: id,
-      applicationStatus: ApplicationStatus.Inprogress,
-      page,
-      size,
-    });
-  }, [fetchBusinesses, id, page, size]);
-
-  // GET APPLICATIONS IS AMENDING
-  useEffect(() => {
-    fetchBusinesses({
-      serviceId: id,
-      applicationStatus: ApplicationStatus.IsAmending,
+      applicationStatus: "IN_PROGRESS,IS_AMENDING,ACTION_REQUIRED",
       page,
       size,
     });
@@ -138,7 +128,7 @@ const NewServiceApplication = () => {
         );
       }
     } else if (businessesIsSuccess) {
-      dispatch(addToBusinessesList(businessesData?.data?.data));
+      dispatch(setBusinessesList(businessesData?.data?.data));
       dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
       dispatch(setBusinessTotalElements(businessesData?.data?.totalElements));
     }
@@ -187,7 +177,7 @@ const NewServiceApplication = () => {
         return (
           <CustomPopover
             trigger={
-              <menu className="flex items-center justify-center">
+              <menu className="flex items-center justify-center cursor-pointer">
                 <FontAwesomeIcon
                   icon={faEllipsisVertical}
                   className="cursor-pointer text-primary"
@@ -259,7 +249,7 @@ const NewServiceApplication = () => {
                   <Loader />
                 </figure>
               ) : (
-                businessesList &&
+                businessesIsSuccess &&
                 businessesList?.length > 0 && (
                   <menu className="flex flex-col gap-2 max-md:w-full">
                     <h1 className="px-2 text-base font-semibold uppercase text-primary">

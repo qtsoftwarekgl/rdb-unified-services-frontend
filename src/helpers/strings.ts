@@ -127,3 +127,8 @@ export const getStatusBgColor = (status: string | undefined) => {
       return 'bg-gray-700';
   }
 };
+
+// REMOVE DUPLICATES FROM ARRAY
+export const removeArrayDuplicates = (array: object[]) => {
+  return [...new Set(array)];
+};

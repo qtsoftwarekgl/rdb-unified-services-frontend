@@ -1,6 +1,5 @@
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../../states/store";
 import { useDispatch, useSelector } from "react-redux";
 import Button from "../inputs/Button";
@@ -11,9 +10,21 @@ import { businessId } from "@/types/models/business";
 import { UUID } from "crypto";
 import { useCreateNavigationFlowMutation } from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
-import { setBusinessNavigationFlowsList } from "@/states/features/navigationFlowSlice";
 import Loader from "../Loader";
 import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { faComments, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  setBusinessNavigationFlowsList,
+  setSelectedNavigationFlow,
+} from "@/states/features/navigationFlowSlice";
+import {
+  fetchBusinessReviewCommentsThunk,
+  setListBusinessReviewCommentsModal,
+} from "@/states/features/businessReviewCommentSlice";
+import { findNavigationFlowById } from "@/helpers/business.helpers";
+import CustomTooltip from "../inputs/CustomTooltip";
+import { removeArrayDuplicates } from "@/helpers/strings";
+import { BusinessReviewComment } from "@/types/models/businessReviewComment";
 
 interface PreviewCardProps {
   header: string;
@@ -21,6 +32,7 @@ interface PreviewCardProps {
   businessId?: businessId;
   applicationStatus?: string;
   navigationFlowMassId?: UUID;
+  navigationFlowId?: UUID;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
@@ -29,10 +41,36 @@ const PreviewCard: FC<PreviewCardProps> = ({
   navigationFlowMassId,
   businessId,
   applicationStatus,
+  navigationFlowId,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
+  const {
+    businessReviewCommentsList,
+    businessReviewCommentsIsFetching,
+    businessReviewCommentsIsSuccess,
+  } = useSelector((state: RootState) => state.businessReviewComment);
+  const { businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
+  const [reviewComments, setReviewComments] = useState<BusinessReviewComment[]>(
+    removeArrayDuplicates(
+      businessReviewCommentsList?.filter(
+        (reviewComment) =>
+          reviewComment?.navigationFlow?.id === navigationFlowId
+      )
+    ) as BusinessReviewComment[]
+  );
+  const [unresolvedReviewComments, setUnresolvedReviewComments] = useState(
+    removeArrayDuplicates(
+      businessReviewCommentsList?.filter(
+        (reviewComment) =>
+          reviewComment?.navigationFlow?.id === navigationFlowId &&
+          reviewComment?.status === "UNRESOLVED"
+      )
+    ) as BusinessReviewComment[]
+  );
 
   // INITIALIZE CREATE BUSINESS NAVIGATION FLOW
   const [
@@ -68,6 +106,43 @@ const PreviewCard: FC<PreviewCardProps> = ({
     resetCreateNavigationFlow,
   ]);
 
+  // FETCH BUSINESS REVIEW COMMENTS
+  useEffect(() => {
+    if (businessId && navigationFlowId) {
+      dispatch(
+        fetchBusinessReviewCommentsThunk({
+          navigationFlowId,
+          businessId,
+        })
+      );
+    }
+  }, [businessId, dispatch, navigationFlowId]);
+
+  // UPDATE STEP COMMENTS
+  useEffect(() => {
+    setReviewComments(
+      removeArrayDuplicates(
+        businessReviewCommentsList?.filter(
+          (reviewComment) =>
+            reviewComment?.navigationFlow?.id === navigationFlowId
+        )
+      ) as BusinessReviewComment[]
+    );
+  }, [businessReviewCommentsList, navigationFlowId]);
+
+  // UPDATE UNRESOLVED COMMENTS
+  useEffect(() => {
+    setUnresolvedReviewComments(
+      removeArrayDuplicates(
+        businessReviewCommentsList?.filter(
+          (reviewComment) =>
+            reviewComment?.navigationFlow?.id === navigationFlowId &&
+            reviewComment?.status === "UNRESOLVED"
+        )
+      ) as BusinessReviewComment[]
+    );
+  }, [businessReviewCommentsList, navigationFlowId]);
+
   return (
     <section
       className={`flex flex-col w-full gap-3 p-4 rounded-md shadow-sm border-primary border-[.3px]`}
@@ -89,45 +164,69 @@ const PreviewCard: FC<PreviewCardProps> = ({
             [
               ApplicationStatus.Inprogress,
               ApplicationStatus.IsAmending,
-              ApplicationStatus.Forcorrection,
-            ].includes(applicationStatus as ApplicationStatus) && (
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (businessId && navigationFlowMassId) {
-                    createNavigationFlow({
-                      isActive: true,
-                      massId: navigationFlowMassId,
-                      businessId,
-                    });
-                  }
-                }}
-                className="text-primary text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-              />
+              "ACTION_REQUIRED",
+            ].includes(String(applicationStatus)) && (
+              <CustomTooltip label="Click to update this step">
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (businessId && navigationFlowMassId) {
+                      createNavigationFlow({
+                        isActive: true,
+                        massId: navigationFlowMassId,
+                        businessId,
+                      });
+                    }
+                  }}
+                  className="text-primary mr-4 text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                />
+              </CustomTooltip>
             )
           )}
-          {false && (
-            <ul className="flex flex-col gap-1 bg-white rounded-sm shadow-md absolute top-8 w-full z-[10000]">
+          {businessReviewCommentsIsFetching ? (
+            <figure className="flex items-center gap-2 text-[12px]">
+              <Loader className="text-primary" />
+              Loading comments
+            </figure>
+          ) : (
+            businessReviewCommentsIsSuccess &&
+            reviewComments?.length > 0 && (
               <Link
                 to={"#"}
                 onClick={(e) => {
                   e.preventDefault();
+                  dispatch(
+                    setSelectedNavigationFlow(
+                      findNavigationFlowById(
+                        businessNavigationFlowsList,
+                        navigationFlowId
+                      )
+                    )
+                  );
+                  dispatch(setListBusinessReviewCommentsModal(true));
                 }}
-                className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
+                className="bg-white text-primary text-[12px] p-1 px-2 rounded-md transition-all ease-in-out duration-300 hover:scale-[1.01]"
               >
-                View
+                <menu className="flex items-center gap-2 text-[13px] relative p-1 rounded-full z-[10000]">
+                  {reviewComments?.filter(
+                    (comment) => comment?.status === "UNRESOLVED"
+                  )?.length > 0 && (
+                    <p
+                      className={`absolute top-[-20px] right-0 text-red-600 font-bold`}
+                    >
+                      {unresolvedReviewComments?.length}
+                    </p>
+                  )}
+                  <CustomTooltip label={`${reviewComments?.length} Comment(s)`}>
+                    <FontAwesomeIcon
+                      className="absolute top-[-5px] right-2"
+                      icon={faComments}
+                    />
+                  </CustomTooltip>
+                </menu>
               </Link>
-              <Link
-                to={"#"}
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-                className="p-1 px-2 text-[13px] hover:bg-primary hover:text-white"
-              >
-                Update
-              </Link>
-            </ul>
+            )
           )}
         </menu>
       </menu>
