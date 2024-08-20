@@ -64,14 +64,15 @@ export interface BeneficialOwner extends PersonDetail {
   proPhoneNumber?: string;
   proFax?: string;
   occupation?: string;
-
+  tinNumber?: number;
   registeredDate?: Date;
   extentOfShare?: number;
   extentOfVoting?: number;
   significantInfluence?: string;
   controlType?: string;
-  OtherControlMeansDesc?: string;
+  otherControlMeansDesc?: string;
 
   beneficialOwnerType?: string;
   seniorManagementPosition?: string;
+  personDetail?: PersonDetail;
 }

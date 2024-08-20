@@ -33,9 +33,13 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { getUserInformationThunk } from '@/states/features/businessPeopleSlice';
 import Loader from '@/components/Loader';
 import { useCreateBeneficialOwnerMutation } from '@/states/api/businessRegApiSlice';
-import { addToBeneficialOwnersList } from '@/states/features/beneficialOwnerSlice';
+import {
+  addToBeneficialOwnersList,
+  fetchBeneficialOwnersThunk,
+} from '@/states/features/beneficialOwnerSlice';
 import { toast } from 'react-toastify';
 import { ErrorResponse } from 'react-router-dom';
+import BeneficialOwnersTable from './BeneficialOwnersTable';
 
 interface BeneficialOwnersProps {
   businessId: businessId;
@@ -54,6 +58,11 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
     userInformationIsSuccess,
     userInformation,
   } = useSelector((state: RootState) => state.businessPeople);
+  const {
+    beneficialOwnersList,
+    beneficialOwnersIsFetching,
+    beneficialOwnersIsSuccess,
+  } = useSelector((state: RootState) => state.beneficialOwner);
   const [scrollSlides, setScrollSlides] = useState(0);
   const [addNewBeneficialOwner, setAddNewBeneficialOwner] = useState(false);
 
@@ -190,6 +199,11 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
     }
   }, [selectedFounderDetailWithShares, setValue]);
 
+  // FETCH EXISTING BENEFICIAL OWNERS
+  useEffect(() => {
+    dispatch(fetchBeneficialOwnersThunk({ businessId }));
+  }, [businessId, dispatch]);
+
   return (
     <section className="w-full flex flex-col gap-4">
       {(selectedFounderDetailWithShares && !founderWithSharesDetailsModal) ||
@@ -203,6 +217,18 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
             }[]
           }
         />
+      )}
+      {beneficialOwnersIsFetching ? (
+        <figure className="w-full flex items-center gap-3 justify-center min-h-[30vh]">
+          <Loader className="text-primary" />
+        </figure>
+      ) : (
+        beneficialOwnersIsSuccess &&
+        beneficialOwnersList.length > 0 &&
+        !addNewBeneficialOwner &&
+        !selectedFounderDetailWithShares && (
+          <BeneficialOwnersTable beneficialOwners={beneficialOwnersList} />
+        )
       )}
       {((selectedFounderDetailWithShares && !founderWithSharesDetailsModal) ||
         addNewBeneficialOwner) && (

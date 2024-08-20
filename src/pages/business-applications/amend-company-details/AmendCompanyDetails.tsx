@@ -37,7 +37,7 @@ const AmendCompanyDetails = () => {
   const { businessesList, page, size, totalElements, totalPages } = useSelector(
     (state: RootState) => state.business
   );
-  const [servicePath, setServicePath] = useState<string>("");
+  const [servicePath, setServicePath] = useState<string | undefined>("");
 
   // NAVIGATION
   const navigate = useNavigate();
@@ -122,9 +122,9 @@ const AmendCompanyDetails = () => {
   const businessAmendmentColumns = [
     ...businessColumns,
     {
-      header: "Action",
-      accessorKey: "action",
-      cell: ({ row }: Row<Business>) => {
+      header: 'Action',
+      accessorKey: 'action',
+      cell: ({ row }: { row: Row<Business> }) => {
         return (
           <CustomPopover
             trigger={
@@ -142,7 +142,7 @@ const AmendCompanyDetails = () => {
                 onClick={(e) => {
                   e.preventDefault();
                 }}
-                to={"#"}
+                to={'#'}
               >
                 <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                 View details
@@ -157,16 +157,16 @@ const AmendCompanyDetails = () => {
                     applicationStatus: ApplicationStatus.IsAmending,
                   });
                 }}
-                to={"#"}
+                to={'#'}
               >
                 <FontAwesomeIcon
                   className="text-primary"
                   icon={faPenToSquare}
-                />{" "}
+                />{' '}
                 {updateBusinessIsLoading ? (
                   <Loader className="text-primary" />
                 ) : (
-                  "Start amendment"
+                  'Start amendment'
                 )}
               </Link>
             </menu>

@@ -905,6 +905,15 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+      
+      // FETCH BENEFICIAL OWNERS
+      fetchBeneficialOwners: builder.query({
+        query: ({ businessId }) => {
+          return {
+            url: `/beneficial-owner/all?businessId=${businessId}`,
+          };
+        },
+      }),
     };
   },
 });
@@ -970,6 +979,7 @@ export const {
   useUpdateBusinessReviewCommentStatusMutation,
   useLazyFetchFoundersWithSharePercentagesQuery,
   useCreateBeneficialOwnerMutation,
+  useLazyFetchBeneficialOwnersQuery
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;
