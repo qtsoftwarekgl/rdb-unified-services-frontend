@@ -920,7 +920,23 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, amendmentType }) => {
           let url = `/amendment${businessId ? `?businessId=${businessId}` : ''}`;
           if (amendmentType) {
-            url += `&amendmentType=${amendmentType}`;
+            url += `&searchKey=${amendmentType}`;
+          }
+          return {
+            url,
+          };
+        },
+      }),
+
+      // FETCH AMENDMENTS
+      fetchBusinessAmendments: builder.query({
+        query: ({ businessId, userId, searchKey }) => {
+          let url = `/back-office/amendments?businessId=${businessId}&page=1&size=100`;
+          if (userId) {
+            url += `&userId=${userId}`;
+          }
+          if (searchKey) {
+            url += `&searchKey=${searchKey}`;
           }
           return {
             url,
@@ -994,6 +1010,7 @@ export const {
   useCreateBeneficialOwnerMutation,
   useLazyFetchBeneficialOwnersQuery,
   useLazyFetchUserBusinessAmendmentsQuery,
+  useLazyFetchBusinessAmendmentsQuery
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

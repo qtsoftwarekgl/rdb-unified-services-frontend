@@ -54,7 +54,8 @@ import CollateralListReview from './pages/collateral-review/CollateralList';
 import CollateralReview from './pages/collateral-review/CollateralReview';
 import ServicesList from './pages/home/ServicesList';
 import NewServiceApplication from './containers/business-registration/NewServiceApplication';
-import UserBusinessAmendments from './pages/user-applications/UserBusinessAmendments';
+import UserBusinessAmendmentsList from './pages/user-applications/UserBusinessAmendmentsList';
+import UserBusinessAmendmentDetails from './pages/user-applications/UserBusinessAmendmentDetails';
 
 const Routes = () => {
   return (
@@ -82,8 +83,12 @@ const Routes = () => {
             element={<UserBusinessApplications />}
           />
           <Route
-            path="/user/business/amendments"
-            element={<UserBusinessAmendments />}
+            path="/user/amendments"
+            element={<UserBusinessAmendmentsList />}
+          />
+          <Route
+            path="/user/amendments/details"
+            element={<UserBusinessAmendmentDetails />}
           />
           <Route path="/company-documents/:id" element={<CompanyDocuments />} />
           <Route path="/company-history/:id" element={<CompanyHistory />} />

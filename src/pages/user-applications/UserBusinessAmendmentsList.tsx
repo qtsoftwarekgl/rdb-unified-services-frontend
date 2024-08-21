@@ -10,11 +10,22 @@ import queryString, { ParsedQuery } from 'query-string';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { ErrorResponse, useLocation } from 'react-router-dom';
+import {
+  ErrorResponse,
+  Link,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import UserBusinessAmendmentsFilter from './UserBusinessAmendmentsFilter';
+import { Row } from '@tanstack/react-table';
+import { BusinessAmendment } from '@/types/models/business';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisVertical, faInfo } from '@fortawesome/free-solid-svg-icons';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 
-const UserBusinessAmendments = () => {
+const UserBusinessAmendmentsList = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { userBusinessAmendmentsList } = useSelector(
@@ -27,6 +38,7 @@ const UserBusinessAmendments = () => {
 
   // NAVIGATION
   const { search } = useLocation();
+  const navigate = useNavigate();
 
   // GET PARAM FROM PATH
   useEffect(() => {
@@ -52,7 +64,7 @@ const UserBusinessAmendments = () => {
         businessId: queryParams.businessId as string,
       });
     }
-  }, [fetchUserBusinessAmendments, queryParams.businessId]);
+  }, [fetchUserBusinessAmendments, navigate, queryParams.businessId]);
 
   // HANDLE FETCH BUSINESS AMENDMENTS
   useEffect(() => {
@@ -73,6 +85,58 @@ const UserBusinessAmendments = () => {
     userBusinessAmendmentsIsError,
     userBusinessAmendmentsError,
   ]);
+
+  // BUSINESS AMENDMENT EXTENDED COLUMNS
+  const businessAmendmentExtendedColumns = [
+    ...businessAmendmentColumns,
+    {
+      header: 'Actions',
+      accessor: 'actions',
+      cell: ({ row }: { row: Row<BusinessAmendment> }) => {
+        return (
+          <CustomPopover
+            trigger={
+              <menu className="items-center justify-center cursor-pointer w-full">
+                <FontAwesomeIcon
+                  className="text-primary"
+                  icon={faEllipsisVertical}
+                />
+              </menu>
+            }
+          >
+            <menu className="w-full flex flex-col gap-2">
+              <Link
+                to={'#'}
+                className="flex items-center gap-2 p-2 py-1 rounded-md text-[13px] hover:bg-background"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(
+                    `details?businessId=${row.original.business?.id}&amendmentType=${row.original.amendmentType}`
+                  );
+                }}
+              >
+                <FontAwesomeIcon
+                  className="p-1 px-[8px] items-center rounded-full bg-primary text-white"
+                  icon={faInfo}
+                />
+                View amendment
+              </Link>
+              <Link
+                to={'#'}
+                className="flex items-center gap-2 p-2 py-1 rounded-md text-[13px] hover:bg-red-700 hover:text-white"
+              >
+                <FontAwesomeIcon
+                  className="p-1 px-[4.1px] rounded-full bg-red-700 text-white"
+                  icon={faCircleXmark}
+                />
+                Withdraw
+              </Link>
+            </menu>
+          </CustomPopover>
+        );
+      },
+    },
+  ];
 
   return (
     <UserLayout>
@@ -100,7 +164,7 @@ const UserBusinessAmendments = () => {
               />
             )}
             <Table
-              columns={businessAmendmentColumns}
+              columns={businessAmendmentExtendedColumns}
               data={userBusinessAmendmentsList}
             />
           </section>
@@ -110,4 +174,4 @@ const UserBusinessAmendments = () => {
   );
 };
 
-export default UserBusinessAmendments;
+export default UserBusinessAmendmentsList;

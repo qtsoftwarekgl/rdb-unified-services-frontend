@@ -46,3 +46,27 @@ export const founderDetailsWithPercentagesColumns = [
       `${row.original.founderDetail?.personDetail?.phoneNumber || ''}`,
   },
 ];
+
+export const founderDetailColumns = [
+  
+  {
+    header: 'Name',
+    accessorKey: 'name',
+  },
+  {
+    header: 'Document Number',
+    accessorKey: 'personDocNo',
+  },
+  {
+    header: 'Type',
+    accessorKey: 'shareHolderType',
+  },
+  {
+    header: 'Number of shares',
+    accessorKey: 'shareQuantity',
+  },
+  {
+    header: 'Total value',
+    accessorKey: 'totalQuantity',
+  },
+];

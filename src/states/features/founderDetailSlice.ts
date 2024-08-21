@@ -17,6 +17,7 @@ const initialState: {
     shareQuantityPercentage: number;
   };
   founderWithSharesDetailsModal: boolean;
+  founderDetailsModal: boolean;
 } = {
   founderDetailsList: [],
   selectedFounderDetail: {} as FounderDetail,
@@ -26,6 +27,7 @@ const initialState: {
   fetchFounderDetailsIsSuccess: false,
   selectedFounderDetailWithShares: undefined,
   founderWithSharesDetailsModal: false,
+  founderDetailsModal: false,
 };
 
 // FETCH FOUNDERS WITH SHARE PERCENTAGES THUNK
@@ -87,6 +89,9 @@ const founderDetailSlice = createSlice({
     setFounderWithSharesDetailsModal: (state, action) => {
       state.founderWithSharesDetailsModal = action.payload;
     },
+    setFounderDetailsModal: (state, action) => {
+      state.founderDetailsModal = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -114,6 +119,7 @@ export const {
   setDeleteFounderModal,
   setSelectedFounderDetailWithShares,
   setFounderWithSharesDetailsModal,
+  setFounderDetailsModal,
 } = founderDetailSlice.actions;
 
 export default founderDetailSlice.reducer;
