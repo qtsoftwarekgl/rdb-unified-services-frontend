@@ -103,7 +103,7 @@ const FounderDetailsWithSharesDetails = () => {
           </p>
           <p>
             Share Quantity Percentage:{' '}
-            {selectedFounderDetailWithShares?.shareQuantityPercentage}%
+            {formatNumbers(selectedFounderDetailWithShares?.shareQuantityPercentage)}%
           </p>
         </menu>
       </section>

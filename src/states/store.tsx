@@ -35,6 +35,7 @@ import navigationFlowSlice from './features/navigationFlowSlice';
 import businessReviewCommentSlice from './features/businessReviewCommentSlice';
 import resolutionAttachmentSlice from './features/resolutionAttachmentSlice';
 import beneficialOwnerSlice from './features/beneficialOwnerSlice';
+import businessAmendmentSlice from './features/businessAmendmentSlice';
 
 export const store = configureStore({
   reducer: {
@@ -75,6 +76,7 @@ export const store = configureStore({
     resolutionAttachment: resolutionAttachmentSlice,
     businessReviewComment: businessReviewCommentSlice,
     beneficialOwner: beneficialOwnerSlice,
+    businessAmendment: businessAmendmentSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(

@@ -43,6 +43,7 @@ import BeneficialOwnersTable from './BeneficialOwnersTable';
 
 interface BeneficialOwnersProps {
   businessId: businessId;
+  applicationStatus?: string;
 }
 
 const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
@@ -104,6 +105,7 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
       businessId,
       dateOfBirth: formatDate(data?.dateOfBirth),
       registeredDate: formatDate(data?.registeredDate),
+      extentOfShare: selectedFounderDetailWithShares?.shareQuantityPercentage
     });
   };
 
@@ -112,6 +114,8 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
     if (createBeneficialOwnerIsSuccess && createBeneficialOwnerData) {
       toast.success('Beneficial owner created successfully');
       dispatch(addToBeneficialOwnersList(createBeneficialOwnerData?.data));
+      setAddNewBeneficialOwner(false);
+      dispatch(setSelectedFounderDetailWithShares(undefined));
     } else if (createBeneficialOwnerIsError && createBeneficialOwnerError) {
       const errorResponse = (createBeneficialOwnerError as ErrorResponse)?.data
         ?.message;
@@ -224,7 +228,7 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
         </figure>
       ) : (
         beneficialOwnersIsSuccess &&
-        beneficialOwnersList.length > 0 &&
+        beneficialOwnersList?.length > 0 &&
         !addNewBeneficialOwner &&
         !selectedFounderDetailWithShares && (
           <BeneficialOwnersTable beneficialOwners={beneficialOwnersList} />

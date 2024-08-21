@@ -905,12 +905,25 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
-      
+
       // FETCH BENEFICIAL OWNERS
       fetchBeneficialOwners: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/beneficial-owner/all?businessId=${businessId}`,
+            url: `/beneficial-owner/all/${businessId}`,
+          };
+        },
+      }),
+
+      // FETCH USER AMENDMENTS
+      fetchUserBusinessAmendments: builder.query({
+        query: ({ businessId, amendmentType }) => {
+          let url = `/amendment${businessId ? `?businessId=${businessId}` : ''}`;
+          if (amendmentType) {
+            url += `&amendmentType=${amendmentType}`;
+          }
+          return {
+            url,
           };
         },
       }),
@@ -979,7 +992,8 @@ export const {
   useUpdateBusinessReviewCommentStatusMutation,
   useLazyFetchFoundersWithSharePercentagesQuery,
   useCreateBeneficialOwnerMutation,
-  useLazyFetchBeneficialOwnersQuery
+  useLazyFetchBeneficialOwnersQuery,
+  useLazyFetchUserBusinessAmendmentsQuery,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

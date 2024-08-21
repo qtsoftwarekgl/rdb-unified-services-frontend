@@ -35,7 +35,7 @@ export const fetchBeneficialOwnersThunk = createAsyncThunk<
           businessId,
         })
       );
-      return response.data.data?.content;
+      return response.data.data?.data;
     } catch (error) {
       toast.error('Failed to load benficial owners. Refresh and try again');
     }

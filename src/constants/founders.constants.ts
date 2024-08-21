@@ -1,3 +1,4 @@
+import { formatNumbers } from '@/helpers/strings';
 import { FounderDetail } from '@/types/models/personDetail';
 import { Row } from '@tanstack/react-table';
 
@@ -30,7 +31,7 @@ export const founderDetailsWithPercentagesColumns = [
         founderDetail: FounderDetail;
         shareQuantityPercentage: number;
       }>;
-    }) => `${row.original?.shareQuantityPercentage || ''}%`,
+    }) => `${formatNumbers(row.original?.shareQuantityPercentage) || ''}%`,
   },
   {
     header: 'Document Number',

@@ -59,7 +59,7 @@ const AmendCompanyDetails = () => {
     fetchBusinesses({
       page,
       size,
-      applicationStatus: ApplicationStatus.Approved,
+      applicationStatus: ApplicationStatus.Active,
     });
   }, [fetchBusinesses, page, size]);
 

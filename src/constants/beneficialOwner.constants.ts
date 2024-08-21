@@ -1,4 +1,4 @@
-import { capitalizeString, formatDate } from '@/helpers/strings';
+import { capitalizeString, formatDate, formatNumbers } from '@/helpers/strings';
 import { BeneficialOwner } from '@/types/models/personDetail';
 import { Row } from '@tanstack/react-table';
 
@@ -31,7 +31,9 @@ export const beneficialOwnerColumns = [
     header: 'Ownership %',
     accessorKey: 'extentOfShare',
     cell: ({ row }: { row: Row<BeneficialOwner> }) =>
-      `${row.original.extentOfShare || '-'}`,
+      row?.original?.extentOfShare
+        ? `${formatNumbers(row?.original?.extentOfShare)}%`
+        : '-',
   },
   {
     header: 'Control type',
