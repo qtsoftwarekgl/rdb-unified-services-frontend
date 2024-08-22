@@ -122,7 +122,7 @@ export const userManagementApiSlice = createApi({
       // FETCH USERS
       fetchUsers: builder.query({
         query: ({ page, size, searchKey, state, userType, isLocked }) => {
-          let url = `/?page=${page}&size=${size}`;
+          let url = `/user?page=${page}&size=${size}`;
           if (searchKey) {
             url += `&searchKey=${searchKey}`;
           }
