@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { jsPDF } from 'jspdf';
+import "jspdf-autotable";
+
 import img1 from '/certificate/rdb-logo.png'; // Adjust the path as necessary
 import img2 from '/certificate/COA.png'; // Adjust the path as necessary
 import signature from '/certificate/signature.png'; // Adjust the path as necessary
 import { getCertificateTitle, getCompanyAddress, getCompanyType } from './utils';
-import { ApplicantDetails, BusinessActivitiesCertificate, Certificate, ShareGroup, ShareHolderDetails } from '@/types/models/certificate';
+import { ApplicantDetails, BusinessActivitiesCertificate, Certificate, ShareGroup } from '@/types/models/certificate';
 
 const PAGE_MARGIN = 20; // Increased margin
 const PAGE_WIDTH = 210; // A4 page width in mm
@@ -17,7 +20,16 @@ const CONTENT_START_X = PAGE_MARGIN + CONTENT_MARGIN + 2; // Starting X position
 const CONTENT_START_Y = PAGE_MARGIN + CONTENT_MARGIN + 10; 
 
 export const generateCertificatePdf = (certificate: Certificate, isFullCertificate:boolean) => {
-  const doc = new jsPDF();
+  const doc: Record<string,any> = new jsPDF();
+  // add page numbers
+
+  doc.page=1; // use this as a counter.
+
+function footer(){ 
+    doc.setFontSize(10);
+    doc.text(170,285, 'Page No: ' + doc.page); //print number bottom right
+    doc.page ++;
+}
   
   // Function to add borders to the page
   const addBorders = () => {
@@ -30,6 +42,7 @@ export const generateCertificatePdf = (certificate: Certificate, isFullCertifica
   };
 
   addBorders();
+  footer();
 
   // ==================== HEADER ====================
   const img1Width = 40;
@@ -95,78 +108,98 @@ export const generateCertificatePdf = (certificate: Certificate, isFullCertifica
   // should have the same alignment style as the previous section
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text("Registered Address", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 100);
+  doc.text("Registered Address", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 95);
 
   doc.setDrawColor(205, 207, 209);
   doc.setLineWidth(0.2);
-  doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 105, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 105);
+  doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 100, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 100);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("Address", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 115);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 115);
+  doc.text("Address", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 110);
+  doc.text(":", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 110);
 
   doc.setFont("helvetica", "normal");
-  doc.text(getCompanyAddress(certificate), PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 125);
+  doc.text(getCompanyAddress(certificate), PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 120);
 
   doc.setFont("helvetica", "bold");
-  doc.text("Email", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN  + INNER_PADDING + 115);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 100, PAGE_MARGIN + INNER_PADDING + 115);
+  doc.text("Email", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN  + INNER_PADDING + 110);
+  doc.text(":", PAGE_MARGIN + INNER_PADDING + 100, PAGE_MARGIN + INNER_PADDING + 110);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.registeredOfficeAddress?.email || "", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 125);
+  doc.text(certificate?.registeredOfficeAddress?.email || "", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 120);
 
   doc.setFont("helvetica", "bold");
-  doc.text("Phone", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 135);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 135);
+  doc.text("Phone", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 130);
+  doc.text(":", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 130);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.registeredOfficeAddress?.phone || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 145);
-
+  doc.text(certificate?.registeredOfficeAddress?.phone || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 140);
 
  // if there is PO Box add it
     if(certificate.registeredOfficeAddress?.poBox){
         doc.setFont("helvetica", "bold");
-        doc.text("PO Box", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 135);
-        doc.text(":", PAGE_MARGIN + INNER_PADDING + 105, PAGE_MARGIN + INNER_PADDING + 135);
+        doc.text("PO Box", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 130);
+        doc.text(":", PAGE_MARGIN + INNER_PADDING + 105, PAGE_MARGIN + INNER_PADDING + 130);
 
         doc.setFont("helvetica", "normal");
         doc.text(certificate.registeredOfficeAddress?.poBox, PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 145);
     }
 
-
   // ================== MANAGEMENT DETAILS ==================
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text("Management Details", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 160);
+  doc.text("Management Details", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 155);
 
   doc.setDrawColor(205, 207, 209);
   doc.setLineWidth(0.2);
-  doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 165, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 165);
+  doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 160, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 160);
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("Managing Director", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 175);
+  doc.text("Managing Director", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 170);
 
   doc.setFont("helvetica", "normal");
-  doc.text("Name", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 185);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 185);
+  doc.text("Name", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 180);
+  doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 180);
 
   const name = certificate?.managingDirector?.name?.replace("null", "") || "";
-  doc.text(name, PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 185);
+  doc.text(name, PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 180);
 
-  doc.text("ID Document :", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 195);
-  doc.text(certificate?.managingDirector?.documentType?.toUpperCase() || "", PAGE_MARGIN + INNER_PADDING + 25, PAGE_MARGIN + INNER_PADDING + 195);
+  doc.text("ID Document :", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 190);
+  doc.text(certificate?.managingDirector?.documentType?.toUpperCase() || "", PAGE_MARGIN + INNER_PADDING + 25, PAGE_MARGIN + INNER_PADDING + 190);
 
-  doc.text("ID Number", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 205);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 205);
-  doc.text(certificate?.managingDirector?.documentId || "", PAGE_MARGIN + INNER_PADDING + 20, PAGE_MARGIN + INNER_PADDING + 205);
+  doc.text("ID Number: ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 200);
+  doc.text(certificate?.managingDirector?.documentId || "", PAGE_MARGIN + INNER_PADDING + 20, PAGE_MARGIN + INNER_PADDING + 200);
 
+  // ======= MAIN BUSINESS ACTIVITY DETAILS =======
+  doc.setFont("helvetica", "bold");
+  doc.text("Main Business Activity", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 215);
 
+  doc.setFont("helvetica", "normal");
+  doc.text("Code", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 225);
+  doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 225);
+  doc.text(certificate.mainBusinessActivityCode || "", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 225);
+
+  // Display Date next to the code
+  doc.text("Date", PAGE_MARGIN + INNER_PADDING + 50, PAGE_MARGIN + INNER_PADDING + 225);
+  doc.text(":", PAGE_MARGIN + INNER_PADDING + 60, PAGE_MARGIN + INNER_PADDING + 225);
+
+  doc.text(certificate?.mainBusinessActivityDate || "", PAGE_MARGIN + INNER_PADDING + 65, PAGE_MARGIN + INNER_PADDING + 225);
+
+  doc.text("Description: ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 235);
+  doc.text(certificate.mainBusinessActivity || "", PAGE_MARGIN + INNER_PADDING + 20, PAGE_MARGIN + INNER_PADDING + 235);
+
+  // doc.text("Date", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 245);
+  // doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 245);
+  // doc.text(certificate?.mainBusinessActivityDate || "", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 245);
+
+// =================== FULL CERTIFICATE ===================
 if (isFullCertificate) {
     // ================== ADD MEMBERS OF THE BOARD ==================
     doc.addPage(); // Add a new page for board members
     addBorders();
+    footer();
   
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
@@ -225,6 +258,7 @@ if (isFullCertificate) {
       if (currentY + 50 > PAGE_HEIGHT - BOTTOM_MARGIN) {
         doc.addPage();
         addBorders();
+        footer();
         doc.setFontSize(12);
   
         // Re-add the header for the new page
@@ -251,19 +285,8 @@ if (isFullCertificate) {
     if (currentY + 60 > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) { // 60 is an estimated height for the table and content
       doc.addPage();
       addBorders();
+      footer();
       currentY = PAGE_MARGIN + INNER_PADDING + 20; // Reset Y position for the new page
-  
-      // Re-add the section title and horizontal line
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "bold");
-      doc.text("Share per Value", PAGE_MARGIN + INNER_PADDING, currentY);
-  
-    //   currentY += 5;
-      doc.setDrawColor(205, 207, 209);
-      doc.setLineWidth(0.2);
-      doc.line(PAGE_MARGIN + INNER_PADDING, currentY, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, currentY);
-  
-      currentY += 10;
     }
   
     const ROW_HEIGHT = 10; // Base height of each row
@@ -286,6 +309,7 @@ if (isFullCertificate) {
         doc.setLineWidth(0.2);
         doc.line(PAGE_MARGIN + INNER_PADDING, y, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, y);
 
+        y += 10;
 
 
       // Draw the table headers
@@ -340,6 +364,7 @@ if (isFullCertificate) {
     if (y + ROW_HEIGHT > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) {
         doc.addPage();
         addBorders();
+        footer();
         startTable();
         y = PAGE_MARGIN + INNER_PADDING + ROW_HEIGHT; // Reset Y position for the new page
     }
@@ -360,28 +385,81 @@ if (isFullCertificate) {
 
 
 
+    // ======== SHARE HOLDER DETAIL FUNCTION =========
+    const addShareholderTable = (doc: Record<string,any>, certificate: Certificate, startY: number) => {
+      const COL_WIDTHS = {
+        no: 10,             
+        name: 35,           
+        passportId: 35,     
+        shareGroup: 25,     
+        numberOfShares: 20, 
+        shareCapital: 20,   
+      };
+    
+      const LEFT_PADDING = PAGE_MARGIN + INNER_PADDING;
+    
+      const tableData = certificate?.shareHoldersDetails?.map((shareholder, index) => [
+        String(index + 1),               
+        shareholder.shareHolderName,     
+        shareholder.documentId || "",    
+        shareholder.shareGroup,          
+        shareholder.numberOfShares,      
+        shareholder.shareCapital,        
+      ]);
+    
+      doc.autoTable({
+        startY: startY,  // Use the passed startY value for positioning
+        margin: { left: LEFT_PADDING },  
+        head: [["No", "Name", "Passport/ID", "Share Group", "Number of Shares", "Share Capital"]],
+        body: tableData,
+        columnStyles: {
+          0: { cellWidth: COL_WIDTHS.no, halign: 'center' },
+          1: { cellWidth: COL_WIDTHS.name, halign: 'left' },  
+          2: { cellWidth: COL_WIDTHS.passportId },
+          3: { cellWidth: COL_WIDTHS.shareGroup, halign: 'center' },
+          4: { cellWidth: COL_WIDTHS.numberOfShares, halign: 'center' },
+          5: { cellWidth: COL_WIDTHS.shareCapital, halign: 'center' },
+        },
+        styles: {
+          fontSize: 9,
+          overflow: 'linebreak',
+          cellPadding: 2,
+        },
+        theme: 'grid',
+        headStyles: {
+          fillColor: false,
+          textColor: [0, 0, 0],
+          fontStyle: 'bold',
+          lineWidth: 0.2,
+        },
+        willDrawCell: function (data:Record<string,any>) {
+          if (data.row.index === 0 && doc.autoTable.previous.finalY + data.row.height > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) {
+            doc.addPage();
+            addBorders();
+            footer();
+          }
+        },
+      });
+    
+      // Update y position after the table
+      return doc.autoTable.previous.finalY + 10;
+    }
+    
+ // ================== SHARE HOLDER DETAILS ==================
+// Add a space before the Shareholder Details table
+y += 20; 
 
-
-
-
-    // ================== SHARE HOLDER DETAILS ==================
-    // Show sharedHolder with their details, no, share holder name, PassportId, share group, number of shares, share capital in a table like that one of share per value
-    // Add a space before the table
-    // certificate.sharedHolderDetails
-     // ================== SHARE HOLDER DETAILS ==================
-    // Add a space before the Shareholder Details table
-    y += 20; 
-
-    // Check if there's enough space on the current page before adding a new page
-    if (y + 60 > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) { // 60 is an estimated height for the table and content
+// Check if there's enough space on the current page before adding a new page
+    if (y + 60 > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) {
         doc.addPage();
         addBorders();
+        footer();
         y = PAGE_MARGIN + INNER_PADDING + 20; // Reset Y position for the new page
 
         // Re-add the section title and horizontal line
         doc.setFontSize(12);
         doc.setFont("helvetica", "bold");
-        doc.text("Shareholder Details", PAGE_MARGIN + INNER_PADDING, y);
+        doc.text("Founding Shareholders Details", PAGE_MARGIN + INNER_PADDING, y);
 
         y += 5;
         doc.setDrawColor(205, 207, 209);
@@ -391,89 +469,56 @@ if (isFullCertificate) {
         y += 10;
     }
 
-    const startShareholderTable = () => {
-        // Add header of the section Shareholder Details
-        // doc.setFontSize(12);
-        // doc.setFont("helvetica", "bold");
-        // doc.text("Shareholder Details", PAGE_MARGIN + INNER_PADDING, y);
+    // Pass the current y position to addShareholderTable
+    y = addShareholderTable(doc, certificate, y);
 
-        // y += 5;
-        // doc.setDrawColor(205, 207, 209);
-        // doc.setLineWidth(0.2);
-        // doc.line(PAGE_MARGIN + INNER_PADDING, y, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, y);
 
-        // Draw the table headers
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "bold");
-
-        doc.rect(PAGE_MARGIN + INNER_PADDING, y, COL_NO_WIDTH, ROW_HEIGHT); // "No" column
-        doc.text("No", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH / 2, y + ROW_HEIGHT / 2 + 2, { align: "center" });
-
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH, y, COL_SHARE_GROUP_WIDTH, ROW_HEIGHT); // "Shareholder Name" column
-        doc.text("Name", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH / 2, y + ROW_HEIGHT / 2 + 2, { align: "center" });
-
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH, y, COL_VALUE_PER_SHARE_WIDTH, ROW_HEIGHT); // "Passport ID" column
-        doc.text("Passport ID", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH / 2, y + ROW_HEIGHT / 2 + 2, { align: "center" });
-
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH, y, COL_NUMBER_OF_SHARES_WIDTH, ROW_HEIGHT); // "Share Group" column
-        doc.text("Share Group", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH + COL_NUMBER_OF_SHARES_WIDTH / 2, y + ROW_HEIGHT / 2 + 2, { align: "center" });
-
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH + COL_NUMBER_OF_SHARES_WIDTH, y, COL_SHARE_CAPITAL_WIDTH, ROW_HEIGHT); // "Number of Shares" column
-        doc.text("No. of Shares", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH + COL_NUMBER_OF_SHARES_WIDTH + COL_SHARE_CAPITAL_WIDTH / 2, y + ROW_HEIGHT / 2 + 2, { align: "center" });
-
-        y += ROW_HEIGHT; // Move y position to the next row
-    };
-
-    const addShareholderRow = (shareholder: ShareHolderDetails, rowIndex: number) => {
-        doc.setFont("helvetica", "normal");
-
-        // Draw "No" cell
-        doc.rect(PAGE_MARGIN + INNER_PADDING, y, COL_NO_WIDTH, ROW_HEIGHT);
-        doc.text(String(rowIndex + 1), PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH / 2, y + ROW_HEIGHT / 2 + 2, { align: "center" });
-
-        // Draw "Shareholder Name" cell
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH, y, COL_SHARE_GROUP_WIDTH, ROW_HEIGHT);
-        doc.text(shareholder?.shareHolderName || "", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + 2, y + ROW_HEIGHT / 2 + 2);
-
-        // Draw "Passport ID" cell
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH, y, COL_VALUE_PER_SHARE_WIDTH, ROW_HEIGHT);
-        doc.text(shareholder?.documentId || "", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + 2, y + ROW_HEIGHT / 2 + 2);
-
-        // Draw "Share Group" cell
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH, y, COL_NUMBER_OF_SHARES_WIDTH, ROW_HEIGHT);
-        doc.text(shareholder?.shareGroup || "", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH + 2, y + ROW_HEIGHT / 2 + 2);
-
-        // Draw "Number of Shares" cell
-        doc.rect(PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH + COL_NUMBER_OF_SHARES_WIDTH, y, COL_SHARE_CAPITAL_WIDTH, ROW_HEIGHT);
-        doc.text(shareholder?.numberOfShares?.toString() || "", PAGE_MARGIN + INNER_PADDING + COL_NO_WIDTH + COL_SHARE_GROUP_WIDTH + COL_VALUE_PER_SHARE_WIDTH + COL_NUMBER_OF_SHARES_WIDTH + 2, y + ROW_HEIGHT / 2 + 2);
-
-        y += ROW_HEIGHT; // Move y position to the next row
-
-        // Check if there is enough space for the next row
-        if (y + ROW_HEIGHT > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) {
-            doc.addPage();
-            addBorders();
-            startShareholderTable();
-            y = PAGE_MARGIN + INNER_PADDING + ROW_HEIGHT; // Reset Y position for the new page
-        }
-    };
-
-    // Initialize the Shareholder Details table
-    startShareholderTable();
-
-    // Add the Shareholder Details to the table
-    console.log("certificate share holders...")
-    certificate?.shareHoldersDetails?.forEach((shareholder, index) => {
-        addShareholderRow(shareholder, index);
-    });
-
-    // Add final adjustments, if needed
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
+// ================== EMPLOYMENT INFORMATION ==================
+    // Add a space before the Employment Information
     y += 10;
-   }
 
-  const addBusinessActivitiesPage = (activities: BusinessActivitiesCertificate[]) => {
+    // Check if there's enough space on the current page before adding a new page
+    if (y + 60 > PAGE_HEIGHT - PAGE_MARGIN - INNER_PADDING) {
+        doc.addPage();
+        addBorders();
+        footer();
+        y = PAGE_MARGIN + INNER_PADDING + 20; // Reset Y position for the new page
+    }
+
+    // Draw the section title and horizontal line outside of the conditional block
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Employment Information", PAGE_MARGIN + INNER_PADDING, y);
+
+    y += 5;
+    doc.setDrawColor(205, 207, 209);
+    doc.setLineWidth(0.2);
+    doc.line(PAGE_MARGIN + INNER_PADDING, y, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, y);
+
+    y += 10;
+
+    // Add the employment information details
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Date of hiring first employee: ", PAGE_MARGIN + INNER_PADDING, y);
+    doc.text(certificate?.firstHiringDate || "", PAGE_MARGIN + INNER_PADDING + 50, y);
+
+    y += 10;
+
+    doc.text("Number of employees on registration date: ", PAGE_MARGIN + INNER_PADDING, y);
+    doc.text(certificate?.numberOfEmployeesOnRegistrationDate || "", PAGE_MARGIN + INNER_PADDING + 70, y);
+
+    y += 10;
+
+    doc.text("Financial year start: ", PAGE_MARGIN + INNER_PADDING, y);
+    doc.text(certificate?.financialStartYear || "", PAGE_MARGIN + INNER_PADDING + 35, y);
+}
+// ================== CLOSE FULL CERTIFICATE ==================
+
+  
+  const addBusinessActivitiesPage = (activities: BusinessActivitiesCertificate[], startY: number) => {
+    let y = startY;
+  
     const ROW_HEIGHT = 10; // Base height of each row
     const COL_NO_WIDTH = 10; // Width of "No" column
     const COL_CODE_WIDTH = 25; // Width of "Code" column
@@ -498,7 +543,7 @@ if (isFullCertificate) {
       y += ROW_HEIGHT; // Move y position to the next row
     };
   
-    const addRow = (activity:BusinessActivitiesCertificate, rowIndex:number) => {
+    const addRow = (activity: BusinessActivitiesCertificate, rowIndex: number) => {
       doc.setFont("helvetica", "normal");
   
       // Split description into lines that fit the column width
@@ -528,28 +573,25 @@ if (isFullCertificate) {
   
     doc.addPage();
     addBorders();
+    footer();
   
-    let y = CONTENT_START_Y + 10; // Adjusted starting Y position
-    
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.text("Business Activities", CONTENT_START_X, CONTENT_START_Y);
-    
+    doc.text("Business Activities", CONTENT_START_X, y);
+  
     doc.setDrawColor(205, 207, 209);
     doc.setLineWidth(0.2);
-    doc.line(CONTENT_START_X, CONTENT_START_Y + 5, PAGE_WIDTH - PAGE_MARGIN - CONTENT_MARGIN - 2, CONTENT_START_Y + 5);
+    doc.line(CONTENT_START_X, y + 5, PAGE_WIDTH - PAGE_MARGIN - CONTENT_MARGIN - 2, y + 5);
   
     y += 10;
     startTable(); // Draw the table headers
   
-    activities.forEach((activity: BusinessActivitiesCertificate, index:number) => {
+    activities.forEach((activity: BusinessActivitiesCertificate, index: number) => {
       if (y + ROW_HEIGHT > PAGE_HEIGHT - CONTENT_MARGIN - PAGE_MARGIN) { // Check if the content fits on the page
         doc.addPage();
         addBorders();
+        footer();
         y = CONTENT_START_Y + 10; // Reset y position
-        // reset table
-        doc.setDrawColor(205, 207, 209)
-        doc.setLineWidth(0.1)
         startTable(); // Redraw the table headers on the new page
       }
   
@@ -557,17 +599,20 @@ if (isFullCertificate) {
     });
   };
 
-   if(certificate?.otherBusinessActivities?.length){
-    console.log(certificate?.otherBusinessActivities);
-    addBusinessActivitiesPage(certificate?.otherBusinessActivities || []);
-   }
+  const y = CONTENT_START_Y; // Starting position for y
+
+  // Call addBusinessActivitiesPage afterward
+  if (certificate?.otherBusinessActivities?.length) {
+    addBusinessActivitiesPage(certificate.otherBusinessActivities, y);
+  }
+
     addSignature(doc, certificate);
     // Add text after table of activities
     return doc.output("bloburl");
     }
 
 
-    const addSignature = (doc: any, certificate: Certificate) => {
+    const addSignature = (doc: Record<string,any>, certificate: Certificate) => {
       const ISSUED_DATE = certificate?.dateOfIssuance;
       const NAME = certificate?.signedBy || "";
       const POSITION = "Management Registrar";
@@ -589,12 +634,7 @@ if (isFullCertificate) {
       doc.setFontSize(10);
       doc.text("Issued date", contentXStart, y + 2);
 
-
-
      // ==============================================================
-
-
-    
       doc.setFont("helvetica", "normal");
       doc.text(ISSUED_DATE, contentXStart, y + 10);
 

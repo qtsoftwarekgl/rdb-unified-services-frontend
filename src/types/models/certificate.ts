@@ -10,6 +10,7 @@ export type Certificate = {
     enterpriseName: string;
     mainBusinessActivityCode: string;
     mainBusinessActivity: string;
+    mainBusinessActivityDate?: string;
     filingDate: string;
     financialStartYear: string;
     serialNumber?: string;
