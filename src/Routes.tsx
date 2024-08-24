@@ -56,6 +56,7 @@ import ServicesList from './pages/home/ServicesList';
 import NewServiceApplication from './containers/business-registration/NewServiceApplication';
 import UserBusinessAmendmentsList from './pages/user-applications/UserBusinessAmendmentsList';
 import UserBusinessAmendmentDetails from './pages/user-applications/UserBusinessAmendmentDetails';
+import BusinessCertificates from './pages/certificates';
 
 const Routes = () => {
   return (
@@ -133,6 +134,7 @@ const Routes = () => {
           <Route path="/company-dormancy" element={<CompanyDormancy />} />
           <Route path="/close-company" element={<CloseCompany />} />
           <Route path="/new-branch" element={<BusinessNewBranch />} />
+          <Route path="/certificates" element={<BusinessCertificates />} />
         </Route>
 
         {/* AUTHENTICATION */}

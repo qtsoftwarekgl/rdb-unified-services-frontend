@@ -820,6 +820,12 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId }) => {
           return {
             url: `/founders-with-shares?businessId=${businessId}`,
+      // GET BUSINESS CERTIFICATE
+      fetchBusinessCertificate: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/all?businessId=${id}&status=ACTIVE`,
+            method: "GET",
           };
         },
       }),
@@ -976,6 +982,37 @@ export const businessRegApiSlice = createApi({
               amendmentStatus,
             },
           };
+        }
+      }),
+      // GET BUSINESS CERTIFICATE by ID
+      fetchBusinessCertificateById: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/${id}`,
+            method: "GET",
+          };
+        },
+      }),
+      // GET FULL BUSINESS CERTIFICATES
+      fetchFullBusinessCertificateById: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/full-info/${id}`,
+            method: "GET",
+          };
+        },
+      }),
+      // REQUEST CERTIFICATE
+      createCertificateRequest: builder.mutation({
+        query: ({ businessId, certificateType, endpoint }) => {
+          return {
+            url: `/certificate/${endpoint}?businessId=${businessId}&businessCertificateType=${certificateType}`,
+            method: "POST",
+          };
+        },
+      }),
+         
+};
         },
       }),
     };
@@ -985,6 +1022,10 @@ export const businessRegApiSlice = createApi({
 export const {
   useLazySearchBusinessesQuery,
   useLazyFetchBusinessesQuery,
+  useLazyFetchBusinessCertificateQuery,
+  useLazyFetchBusinessCertificateByIdQuery,
+  useLazyFetchFullBusinessCertificateByIdQuery,
+  useCreateCertificateRequestMutation,
   useLazyGetBusinessQuery,
   useLazyGetBusinessAddressQuery,
   useCreateBusinessMutation,
