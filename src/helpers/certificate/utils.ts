@@ -1,4 +1,4 @@
-import { ApplicantDetails, Certificate } from '@/types/models/certificate';
+import { Certificate } from '@/types/models/certificate';
 import { ECertificateType } from './enums';
 
 const {
@@ -40,19 +40,19 @@ export  function getCertificateTitle(certificateType: string, isFull: boolean = 
     return "Branch Registration";
 
     case CESSATION_OF_DORMANCY_DOMESTIC:
-    return "Cessation of Dormancy (Domestic)";
+    return "CONFIRMATION OF CESSATION OF DORMANCY OF DOMESTIC";
 
     case CESSATION_OF_DORMANCY_FOREIGN:
-    return "Cessation of Dormancy (Foreign)";
+    return "CONFIRMATION OF CESSATION OF DORMANCY OF FOREIGN";
 
     case DISSOLUTION_DOMESTIC:
-    return "Dissolution (Domestic)";
+    return "CONFIRMATION LETTER OF REMOVAL OF DOMESTIC COMPANY";
 
     case DISSOLUTION_FOREIGN:
-    return "Dissolution (Foreign)";
+    return "CONFIRMATION LETTER OF REMOVAL OF FOREIGN COMPANY";
 
     case DISSOLUTION_ENTERPRISE:
-    return "Dissolution (Enterprise)";
+    return "CONFIRMATION LETTER OF REMOVAL OF ENTERPRISE";
 
     case DOMESTIC_COMPANY_REGISTRATION:
     return isFull ? "FULL CERTIFICATE OF DOMESTIC COMPANY REGISTRATION" : "CERTIFICATE OF DOMESTIC COMPANY REGISTRATION";
@@ -73,13 +73,13 @@ export  function getCertificateTitle(certificateType: string, isFull: boolean = 
     return "Enterprise Registration (Full)";
 
     case CONFIRMATION_OF_DORMANCY_DOMESTIC:
-    return "Confirmation of Dormancy (Domestic)";
+    return "CONFIRMATION OF DORMANCY OF DOMESTIC COMPANY";
 
     case CONFIRMATION_OF_DORMANCY_FOREIGN:
-    return "Confirmation of Dormancy (Foreign)";
+    return "CONFIRMATION OF DORMANCY OF FOREIGN COMPANY";
 
     case CONFIRMATION_OF_DORMANCY_ENTERPRISE:
-    return "Confirmation of Dormancy (Enterprise)";
+    return "CONFIRMATION OF DORMANCY OF ENTERPRISE";
 
     case FOUNDATION_REGISTRATION:
     return "Foundation Registration";
@@ -123,7 +123,7 @@ export function getCompanyType(type: string){
 }
 
 export function getCompanyAddress(certificate: Certificate): string{
-    if(certificate.certificateType.includes("FOREIGN")){
+    if(certificate?.certificateType?.includes("FOREIGN")){
         return certificate?.registeredOfficeAddress?.street+", "+certificate?.registeredOfficeAddress?.countryOfIncorporation || "";
     }
     else{

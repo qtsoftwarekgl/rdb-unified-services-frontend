@@ -5,7 +5,7 @@ import "jspdf-autotable";
 import img1 from '/certificate/rdb-logo.png'; // Adjust the path as necessary
 import img2 from '/certificate/COA.png'; // Adjust the path as necessary
 import signature from '/certificate/signature.png'; // Adjust the path as necessary
-import { getCertificateTitle, getCompanyAddress, getCompanyType } from './utils';
+import { getCertificateTitle, getCompanyAddress, getCompanyType } from '../utils';
 import { ApplicantDetails, BusinessActivitiesCertificate, Certificate, ShareGroup } from '@/types/models/certificate';
 
 const PAGE_MARGIN = 20; // Increased margin
@@ -19,27 +19,26 @@ const CONTENT_MARGIN = 10; // Increased inner margin for more space from edges
 const CONTENT_START_X = PAGE_MARGIN + CONTENT_MARGIN + 2; // Starting X position
 const CONTENT_START_Y = PAGE_MARGIN + CONTENT_MARGIN + 10; 
 
-export const generateCertificatePdf = (certificate: Certificate, isFullCertificate:boolean) => {
+export const generateBusRegistrationCertificatePdf = (certificate: Certificate, isFullCertificate:boolean) => {
   const doc: Record<string,any> = new jsPDF();
-  // add page numbers
-
-  doc.page=1; // use this as a counter.
+    // add page numbers
+    doc.page=1;  // User this as a counter.
 
 function footer(){ 
     doc.setFontSize(10);
     doc.text(170,285, 'Page No: ' + doc.page); //print number bottom right
     doc.page ++;
 }
-  
-  // Function to add borders to the page
-  const addBorders = () => {
+
+// Function to add borders to the page
+const addBorders = () => {
     doc.setDrawColor(40, 89, 133); // Outer border color
     doc.setLineWidth(1.5);
     doc.rect(PAGE_MARGIN, PAGE_MARGIN, CONTENT_WIDTH, CONTENT_HEIGHT);
 
     doc.setLineWidth(0.3); // Inner border color
     doc.rect(PAGE_MARGIN + 2, PAGE_MARGIN + 2, CONTENT_WIDTH - 4, CONTENT_HEIGHT - 4);
-  };
+};
 
   addBorders();
   footer();
@@ -59,7 +58,7 @@ function footer(){
   // ==================== BODY ====================
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
-  doc.text(getCertificateTitle(certificate?.certificateType, isFullCertificate), PAGE_WIDTH / 2, PAGE_MARGIN + INNER_PADDING + 25, { align: "center" });
+  doc.text(getCertificateTitle(certificate?.certificateType as string, isFullCertificate), PAGE_WIDTH / 2, PAGE_MARGIN + INNER_PADDING + 25, { align: "center" });
 
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");

@@ -15,10 +15,14 @@ export type Certificate = {
     financialStartYear: string;
     serialNumber?: string;
     category: string;
-    certificateType: string;
+    certificateType?: string;
+    businessCertificateType?: string;
     status: string;
-    terminationDate: string;
+    terminationDate?: string;
+    dormancyStartDate?: string;
+    dormancyDeclarationDate?: string;
     startOfDormancyDate: string;
+    cessationDate?: string;
     firstHiringDate: string;
     numberOfEmployeesOnRegistrationDate: string;
     branchBusinessAddressCertificate: string;
@@ -28,6 +32,7 @@ export type Certificate = {
     createdAt: string;
     qrcode?: string;
     signedBy?: string;
+    dissolutionDate?: string;
     applicantDetails?: ApplicantDetails[];
     businessOwner?: ApplicantDetails;
     managingDirector?: ApplicantDetails;

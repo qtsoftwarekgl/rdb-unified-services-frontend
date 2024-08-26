@@ -72,6 +72,7 @@ import {
                   <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                   View certificate
                 </Link>
+                {row.original?.businessCertificateType?.includes("REGISTRATION") && 
                 <Link
                   className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                   onClick={(e) => {
@@ -86,6 +87,7 @@ import {
                   <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                   Full certificate
                 </Link>
+                }
                 <Link
                   className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                   onClick={(e) => {

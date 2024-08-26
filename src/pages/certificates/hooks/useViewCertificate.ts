@@ -1,4 +1,6 @@
-import { generateCertificatePdf } from "@/helpers/certificate/generateTemplate";
+import { ECertificateType } from "@/helpers/certificate/enums";
+import { generateBusAmendmentCertificatePdf } from "@/helpers/certificate/templates/busAmendment";
+import { generateBusRegistrationCertificatePdf } from "@/helpers/certificate/templates/busRegistration";
 import { useLazyFetchBusinessCertificateByIdQuery, useLazyFetchFullBusinessCertificateByIdQuery } from "@/states/api/businessRegApiSlice";
 import { Certificate } from "@/types/models/certificate";
 import { useEffect, useState } from "react";
@@ -35,27 +37,50 @@ export default function useViewCertificate(){
 ] = useLazyFetchFullBusinessCertificateByIdQuery();
 
    const loadCertificate = (certificate: Certificate) => {
+      console.log("loading a regular certificate")
       fetchBusinessCertificateById({id: certificate.id});      
    }
 
    const loadFullCertificate = (certificate: Certificate) => {
-      fetchFullBusinessCertificateById({id: certificate.id});
+      console.log("loading full certificate")
+      // fetchFullBusinessCertificateById({id: certificate.id});
    }
 
-   // const url = generateCertificatePdf(certificate);
+   // const url = generateBusRegistrationCertificatePdf(certificate);
    //    setPdfUrl(url);
 
    useEffect(() => {
       if(isSuccessCertificateDetails && isSuccessCertificateDetails){
-         const url = generateCertificatePdf(certificateDetails?.data, false);
+
+         console.log("certificateDetails", certificateDetails);
+
+       if(
+         certificateDetails?.data?.certificateType === ECertificateType.DISSOLUTION_DOMESTIC 
+         || certificateDetails?.data?.certificateType === ECertificateType.DISSOLUTION_FOREIGN
+         || certificateDetails?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_DOMESTIC
+         || certificateDetails?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_FOREIGN
+         || certificateDetails?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_ENTERPRISE
+         || certificateDetails?.data?.certificateType === ECertificateType.CESSATION_OF_DORMANCY_DOMESTIC
+         || certificateDetails?.data?.certificateType === ECertificateType.CESSATION_OF_DORMANCY_FOREIGN
+      
+      ){
+         console.log("====== Printing Dissolution Certificate=====");
+         const url = generateBusAmendmentCertificatePdf(certificateDetails?.data);
          setPdfUrl(url);
+       }
+       else{
+         console.log("====== Printing Registration Certificate=====");
+         const url = generateBusRegistrationCertificatePdf(certificateDetails?.data, false);
+         setPdfUrl(url);
+
       }
+   }
      
    },[certificateDetails, isSuccessCertificateDetails]);
 
    useEffect(() => {
       if(isSuccessFullCertificateDetails && isSuccessFullCertificateDetails){
-         const url = generateCertificatePdf(fullCertificateDetails?.data, true);
+         const url = generateBusRegistrationCertificatePdf(fullCertificateDetails?.data, true);
          setPdfUrl(url);
       }
      
