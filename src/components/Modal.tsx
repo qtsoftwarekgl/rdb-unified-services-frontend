@@ -27,7 +27,7 @@ const JSX_MODAL: FC<ModalProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={`z-[10000] w-full ${className}`}>
+      <DialogContent className={`z-[10000] min-w-fit ${className}`}>
         <DialogHeader>
           <DialogTitle>
             <h1

@@ -1210,3 +1210,7 @@ export const countriesList = [
     code: 'ZW',
   },
 ];
+export const getCountryName = (country?: string) => {
+  if (!country) return 'Rwanda';
+  return countriesList?.find((c) => c?.code === country)?.name;
+};

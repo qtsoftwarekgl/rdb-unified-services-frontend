@@ -1,10 +1,10 @@
 import {
   faBars,
-  faBook,
   faGear,
-  faHouse,
-  faClockRotateLeft,
-  faCircleInfo,
+  faFileLines,
+  faUserTie,
+  faChevronUp,
+  faChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
 import { motion, useAnimation } from 'framer-motion';
 import rdb_logo from '/rdb-logo.png';
@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../states/store';
 import { toggleSidebar } from '../states/features/sidebarSlice';
 import { useEffect, useRef, useState } from 'react';
-import { ReviewComment } from '@/components/applications-review/AddReviewComments';
 
 const UserSidebar = () => {
   const { pathname } = useLocation();
@@ -23,10 +22,7 @@ const UserSidebar = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { isOpen } = useSelector((state: RootState) => state.sidebar);
-  const { applicationReviewComments } = useSelector(
-    (state: RootState) => state.userApplication
-  );
-
+  const [isApplicationsOpen, setIsApplicationsOpen] = useState(false);
   const [screenWidth, setScreenWidth] = useState<number | null>(null);
 
   // GET SCREEN WIDTH
@@ -45,31 +41,18 @@ const UserSidebar = () => {
       icon: faGear,
     },
     {
-      title: 'My Applications',
-      path: '/user-applications',
-      icon: faHouse,
+      title: 'Applications',
+      path: '#',
+      icon: faFileLines,
+      subcategories: [
+        {
+          title: 'Business Applications',
+          path: '/user/business/applications',
+          icon: faUserTie,
+        },
+      ],
     },
   ];
-
-  const companyDetailsSideBar = [
-    {
-      title: 'Company Details',
-      path: `/company-details`,
-      icon: faCircleInfo,
-    },
-    {
-      title: 'Company Documents',
-      path: `/company-documents`,
-      icon: faBook,
-    },
-    {
-      title: 'Company History',
-      path: `/company-history`,
-      icon: faClockRotateLeft,
-    },
-  ];
-
-  const sidebarNav = false ? companyDetailsSideBar : defaultUserSideBar;
 
   // ANIMATION
   const controls = useAnimation();
@@ -130,11 +113,6 @@ const UserSidebar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, screenWidth]);
 
-  // UNRESOLVED COMMENTS
-  const unresolvedComments = applicationReviewComments.filter(
-    (comment: ReviewComment) => !comment.checked
-  ).length;
-
   return (
     <aside className={``} ref={ref}>
       <motion.div
@@ -160,37 +138,63 @@ const UserSidebar = () => {
             icon={faBars}
           />
         </figure>
-        <menu className="flex flex-col w-full h-full gap-2 mt-6">
-          {sidebarNav?.map((nav, index) => {
+        <ul className="flex flex-col w-full h-full gap-2 pt-5">
+          {defaultUserSideBar?.map((nav, index) => {
             const selected = pathname === nav?.path;
             return (
-              <Link
-                to={nav?.path}
-                key={index}
-                className={`flex items-center gap-5 px-4 font-semibold text-sm md:text-[14px] 2xl:text-base ease-in-out duration-200 hover:bg-white text-secondary rounded-md py-3 max-[1200px]:text-[14px] max-[1000px]:text-[13px] ${
-                  selected && 'bg-white !text-primary'
-                } ${isOpen ? 'justify-start' : 'justify-center'}`}
-              >
-                <FontAwesomeIcon
-                  icon={nav?.icon}
-                  className={` text-secondary font-bold ${
-                    selected && '!text-primary'
-                  } ${isOpen ? 'text-[20px]' : 'text-[16px]'}`}
-                />
-
-                <menu className="flex items-center gap-2">
-                  <p className="text-[14px]">{isOpen ? nav?.title : null}</p>
-                  {nav?.path === '/user-applications' &&
-                    unresolvedComments > 0 && (
-                      <p className="text-[13px] bg-red-600 h-[20px] w-[20px] rounded-full text-center flex items-center justify-center text-white">
-                        {unresolvedComments}
-                      </p>
-                    )}
-                </menu>
-              </Link>
+              <li key={index}>
+                <Link
+                  to={nav?.path}
+                  className={`flex items-center gap-5 px-4 font-semibold text-[15px] ease-in-out duration-200 hover:bg-white text-secondary rounded-md py-3 ${
+                    selected && 'bg-white !text-primary'
+                  } ${isOpen ? 'justify-start' : 'justify-center'}`}
+                  onClick={(e) => {
+                    if (nav?.subcategories) {
+                      e.preventDefault();
+                      setIsApplicationsOpen(!isApplicationsOpen);
+                    }
+                  }}
+                >
+                  <FontAwesomeIcon
+                    icon={nav?.icon}
+                    className={`text-secondary font-bold ${
+                      selected && '!text-primary'
+                    } ${isOpen ? 'text-[20px]' : 'text-[16px]'}`}
+                  />
+                  {isOpen ? nav?.title : null}
+                  {nav.subcategories && isOpen && (
+                    <FontAwesomeIcon
+                      icon={isApplicationsOpen ? faChevronUp : faChevronDown}
+                      className="ml-auto"
+                    />
+                  )}
+                </Link>
+                {nav.subcategories && isOpen && isApplicationsOpen && (
+                  <ul className="p-2">
+                    {nav.subcategories.map((sub, subIndex) => (
+                      <li key={subIndex}>
+                        <Link
+                          to={sub.path}
+                          className={`flex items-center gap-5 px-4 font-semibold text-[14px] ease-in-out duration-200 hover:bg-white text-secondary rounded-md py-3 ${
+                            pathname === sub.path && 'bg-white !text-primary'
+                          } ${isOpen ? 'justify-start' : 'justify-center'}`}
+                        >
+                          <FontAwesomeIcon
+                            icon={sub.icon}
+                            className={`text-secondary font-bold ${
+                              pathname === sub.path && '!text-primary'
+                            } ${isOpen ? 'text-[18px]' : 'text-[14px]'}`}
+                          />
+                          {isOpen ? sub.title : null}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
             );
           })}
-        </menu>
+        </ul>
       </motion.div>
     </aside>
   );
