@@ -53,6 +53,7 @@ export type FounderDetail = {
   verificationCodeExpiration?: number;
   verified?: boolean;
   personDetail?: PersonDetail;
+  organization: Organization
 };
 
 export interface BeneficialOwner extends PersonDetail {

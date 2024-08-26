@@ -77,7 +77,7 @@ const FounderDetailsTable = ({
               ...founder,
               name: `${
                 founder?.personDetail?.firstName ||
-                founder?.personDetail?.organization?.organizationName ||
+                founder?.organization?.organizationName ||
                 ''
               } ${founder?.personDetail?.middleName || ''} ${
                 founder?.personDetail?.lastName || ''

@@ -943,6 +943,41 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+      // FETCH AMENDMENT REVIEW COMMENTS
+      fetchAmendmentReviewComments: builder.query({
+        query: ({ amendmentDetailId }) => {
+          return {
+            url: `/review-comments/amendment?amendmentDetailId=${amendmentDetailId}`,
+          };
+        },
+      }),
+
+      // UPDATE AMENDMENT REVIEW COMMENT STATUS
+      updateAmendmentReviewCommentStatus: builder.mutation({
+        query: ({ id, status }) => {
+          return {
+            url: `/review-comments/amendment/${id}/status`,
+            method: 'PATCH',
+            body: {
+              status,
+            },
+          };
+        },
+      }),
+
+      // UPDATE BUSINESS AMENDMENT
+      updateBusinessAmendmentStatus: builder.mutation({
+        query: ({ id, amendmentStatus }) => {
+          return {
+            url: `/amendment/${id}`,
+            method: 'PATCH',
+            body: {
+              amendmentStatus,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -1010,7 +1045,10 @@ export const {
   useCreateBeneficialOwnerMutation,
   useLazyFetchBeneficialOwnersQuery,
   useLazyFetchUserBusinessAmendmentsQuery,
-  useLazyFetchBusinessAmendmentsQuery
+  useLazyFetchBusinessAmendmentsQuery,
+  useLazyFetchAmendmentReviewCommentsQuery,
+  useUpdateAmendmentReviewCommentStatusMutation,
+  useUpdateBusinessAmendmentStatusMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;

@@ -23,7 +23,7 @@ export const businessColumns = [
   },
   {
     id: 'dateOfIncorporation',
-    header: 'Date of Incorporation',
+    header: 'Date Created',
     accessorKey: 'dateOfIncorporation',
     cell: ({ row }: { row: Row<Business> }) =>
       formatDate(row?.original?.dateOfIncorporation) ||

@@ -151,10 +151,19 @@ export const removeArrayDuplicates = (array: object[]) => {
 };
 
 // FIND COUNTRY NAME BY CODE
-export const findCountryNameByCode = (code: string, countries: {
-  name: string;
-  code: string;
-  dial_code: string;
-}[]) => {
+export const findCountryNameByCode = (
+  code: string,
+  countries: {
+    name: string;
+    code: string;
+    dial_code: string;
+  }[]
+) => {
   return countries.find((country) => country?.code === code)?.name;
+};
+
+// FORMAT DATE AND TIME
+export const formatDateTime = (date: string | Date | undefined) => {
+  if (!date) return '';
+  return moment(date).format('YYYY-MM-DD HH:mm:ss');
 };

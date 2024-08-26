@@ -33,6 +33,7 @@ export type Business = {
   address?: Address;
   dateOfIncorporation?: Date;
   service: Service;
+  serviceId?: Service;
 };
 
 export type Details = {
@@ -103,4 +104,5 @@ export interface BusinessAmendment extends AbstractDomain {
   business: Business;
   assignedVerifier?: User;
   assignedApprover?: User;
+  amdApplicationStatusId?: string;
 }
