@@ -69,4 +69,3 @@ export const getBusinessStatusColor = (status: string): string => {
       return '';
   }
 };
-

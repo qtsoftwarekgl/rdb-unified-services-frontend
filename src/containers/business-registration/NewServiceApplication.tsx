@@ -265,13 +265,48 @@ const NewServiceApplication = () => {
             </h3>
           </menu>
           <CustomBreadcrumb navigationLinks={navigationLinks} />
-          <menu className="flex items-center justify-end">
+          <section className="flex flex-col w-full gap-6">
+            <section className="flex flex-col gap-8 max-md:w-full">
+              {businessesIsLoading ? (
+                <figure className="min-h-[40vh] flex items-center justify-center bg-white">
+                  <Loader />
+                </figure>
+              ) : (
+                businessesIsSuccess &&
+                businessesList?.length > 0 && (
+                  <menu className="flex flex-col gap-2 max-md:w-full">
+                    <h1 className="px-2 text-base font-semibold uppercase text-primary">
+                      Applications in progress
+                    </h1>
+                    <Table
+                      setPage={setBusinessPage}
+                      setSize={setBusinessSize}
+                      page={page}
+                      size={size}
+                      totalElements={totalElements}
+                      totalPages={totalPages}
+                      data={businessesList?.map(
+                        (application: Business, index) => {
+                          return {
+                            ...application,
+                            no: index + 1,
+                          };
+                        }
+                      )}
+                      columns={applicationsColumns as ColumnDef<Business>[]}
+                    />
+                  </menu>
+                )
+              )}
+            </section>
+          </section>
+          <menu className="flex items-center justify-center gap-4">
             <Button
               primary
               onClick={(e) => {
                 e.preventDefault();
                 createBusiness({
-                  isForeign: service?.path === "/foreign-company-registration",
+                  isForeign: service?.path === '/foreign-company-registration',
                   serviceId: service?.id,
                 });
               }}
