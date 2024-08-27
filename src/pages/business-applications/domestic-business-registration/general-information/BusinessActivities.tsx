@@ -336,6 +336,7 @@ const BusinessActivities = ({
                     <label className="flex flex-col items-start w-full gap-1">
                       <Select
                         label="Select sector"
+                        searchable
                         required
                         defaultValue={String(businessActivitiesList[0].code)}
                         options={businessActivitiesList?.map((activity) => {

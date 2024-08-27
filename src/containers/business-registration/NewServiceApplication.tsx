@@ -163,12 +163,6 @@ const NewServiceApplication = () => {
   const applicationsColumns = [
     ...businessColumns,
     {
-      header: "Date Added",
-      accessorKey: "createdAt",
-      cell: ({ row }: { row: Row<Business> }) =>
-        formatDate(row.original.createdAt),
-    },
-    {
       header: "Action",
       accessorKey: "actions",
       enableSorting: false,
@@ -251,9 +245,38 @@ const NewServiceApplication = () => {
                 businessesIsSuccess &&
                 businessesList?.length > 0 && (
                   <menu className="flex flex-col gap-2 max-md:w-full">
-                    <h1 className="px-2 text-base font-semibold uppercase text-primary">
-                      Applications in progress
-                    </h1>
+                    <menu className="flex items-center justify-between w-full">
+                      <h1 className="px-2 text-base font-semibold uppercase text-primary">
+                        Applications in progress
+                      </h1>
+                      <menu className="flex items-center justify-center gap-4">
+                        <Button
+                          primary
+                          onClick={(e) => {
+                            e.preventDefault();
+                            createBusiness({
+                              isForeign:
+                                service?.path ===
+                                "/foreign-company-registration",
+                              serviceId: service?.id,
+                            });
+                          }}
+                          value={
+                            !businessIsLoading ? (
+                              <menu className="flex items-center gap-2">
+                                <p className="text-[14px]">Start Application</p>
+                                <FontAwesomeIcon
+                                  className="text-[14px]"
+                                  icon={faArrowRight}
+                                />
+                              </menu>
+                            ) : (
+                              <Loader />
+                            )
+                          }
+                        />
+                      </menu>
+                    </menu>
                     <Table
                       setPage={setBusinessPage}
                       setSize={setBusinessSize}
@@ -276,31 +299,6 @@ const NewServiceApplication = () => {
               )}
             </section>
           </section>
-          <menu className="flex items-center justify-center gap-4">
-            <Button
-              primary
-              onClick={(e) => {
-                e.preventDefault();
-                createBusiness({
-                  isForeign: service?.path === "/foreign-company-registration",
-                  serviceId: service?.id,
-                });
-              }}
-              value={
-                !businessIsLoading ? (
-                  <menu className="flex items-center gap-2">
-                    <p className="text-[14px]">Start Application</p>
-                    <FontAwesomeIcon
-                      className="text-[14px]"
-                      icon={faArrowRight}
-                    />
-                  </menu>
-                ) : (
-                  <Loader />
-                )
-              }
-            />
-          </menu>
         </main>
       )}
       <DeleteBusinessApplication />

@@ -7,7 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UUID } from "crypto";
-import { FC } from "react";
+import { FC, useState, useRef, useEffect } from "react";
+import useDebounce from "@/hooks/useDebounce";
 
 interface SelectProps {
   label?: string | number | undefined;
@@ -20,6 +21,7 @@ interface SelectProps {
   required?: boolean;
   labelClassName?: string | undefined;
   name?: string | undefined;
+  searchable?: boolean;
 }
 
 const Select: FC<SelectProps> = ({
@@ -33,15 +35,38 @@ const Select: FC<SelectProps> = ({
   required = false,
   labelClassName = undefined,
   name = undefined,
+  searchable = false,
 }) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const filteredOptions = searchable
+    ? options.filter((option) =>
+        option.label?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+      )
+    : options;
+
+  const handleValueChange = (selectedValue: string) => {
+    if (onChange) {
+      onChange(selectedValue);
+    }
+    setSearchTerm("");
+  };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [debouncedSearchTerm]);
 
   return (
     <label className={`flex flex-col gap-1 w-full ${labelClassName}`}>
-      <p className={label ? 'flex items-center gap-1 text-[14px]' : 'hidden'}>
-        {label} <span className={required ? `text-red-600` : 'hidden'}>*</span>
+      <p className={label ? "flex items-center gap-1 text-[14px]" : "hidden"}>
+        {label} <span className={required ? `text-red-600` : "hidden"}>*</span>
       </p>
       <SelectComponent
-        onValueChange={onChange}
+        onValueChange={handleValueChange}
         defaultValue={defaultValue}
         value={value}
         name={name}
@@ -57,8 +82,21 @@ const Select: FC<SelectProps> = ({
           />
         </SelectTrigger>
         <SelectContent>
+          {searchable && (
+            <div className="p-2">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+                className="w-full px-2 py-1 border border-gray-300 rounded"
+                ref={inputRef}
+              />
+            </div>
+          )}
           <SelectGroup>
-            {options.map((option, index: number) => {
+            {filteredOptions.map((option, index: number) => {
               return (
                 <SelectItem
                   key={index}
