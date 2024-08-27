@@ -978,6 +978,50 @@ export const businessRegApiSlice = createApi({
           };
         },
       }),
+
+
+      // GET BUSINESS CERTIFICATE
+      fetchBusinessCertificate: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/all?businessId=${id}&status=ACTIVE`,
+            method: "GET",
+          };
+        },
+      }),
+
+      // GET BUSINESS CERTIFICATE by ID
+      fetchBusinessCertificateById: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/${id}`,
+            method: "GET",
+          };
+        },
+      }),
+      // GET FULL BUSINESS CERTIFICATES
+      fetchFullBusinessCertificateById: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/full-info/${id}`,
+            method: "GET",
+          };
+        },
+      }),
+      // REQUEST CERTIFICATE
+      createCertificateRequest: builder.mutation({
+        query: ({ businessId, certificateType, endpoint, reservationId }) => {
+          return businessId ? {
+            url: `/certificate/${endpoint}?businessId=${businessId}&businessCertificateType=${certificateType}`,
+            method: "POST",
+          } :
+          {
+            url: `/certificate/${endpoint}?reservationId=${reservationId}`,
+            method: "POST",
+          }
+          ;
+        },
+      }),
     };
   },
 });
@@ -1049,6 +1093,10 @@ export const {
   useLazyFetchAmendmentReviewCommentsQuery,
   useUpdateAmendmentReviewCommentStatusMutation,
   useUpdateBusinessAmendmentStatusMutation,
+  useLazyFetchBusinessCertificateQuery,
+  useLazyFetchBusinessCertificateByIdQuery,
+  useLazyFetchFullBusinessCertificateByIdQuery,
+  useCreateCertificateRequestMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;
