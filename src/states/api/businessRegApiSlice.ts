@@ -1004,11 +1004,16 @@ export const businessRegApiSlice = createApi({
       }),
       // REQUEST CERTIFICATE
       createCertificateRequest: builder.mutation({
-        query: ({ businessId, certificateType, endpoint }) => {
-          return {
+        query: ({ businessId, certificateType, endpoint, reservationId }) => {
+          return businessId ? {
             url: `/certificate/${endpoint}?businessId=${businessId}&businessCertificateType=${certificateType}`,
             method: "POST",
-          };
+          } :
+          {
+            url: `/certificate/${endpoint}?reservationId=${reservationId}`,
+            method: "POST",
+          }
+          ;
         },
       }),
          

@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from "@/components/inputs/Button";
 import Select from "@/components/inputs/Select";
-import UserLayout from "@/containers/UserLayout";
 import { Controller } from "react-hook-form";
 import useCompanyCertificate from "./hooks/useCompanyCertificate";
 
@@ -9,15 +9,11 @@ interface Props {
     handleContinue: () => void;
 }
 const SelectBusiness = ({handleContinue, handleBack}: Props) => {
-   const {control, businessesList, businessesIsFetching, errors} = useCompanyCertificate();
+   const {control, businessesList, businessesIsFetching, errors, handleSelectBusinessCertificates} = useCompanyCertificate();
       
   return (
-    <UserLayout>
-    <main className="flex flex-col gap-6 p-6 bg-white rounded-md">
+    <main className="flex flex-col gap-6 p-6 px-0">
       <>
-      <h1 className="text-lg font-semibold text-center uppercase text-primary">
-        COMPANY CERTIFICATE
-      </h1>
       <form
         // onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-6 w-[90%] mx-auto"
@@ -47,8 +43,9 @@ const SelectBusiness = ({handleContinue, handleBack}: Props) => {
                   })}
                   {...field}
                   placeholder="Select business"
-                  onChange={(e) => {
+                  onChange={(e: string) => {
                     field.onChange(e);
+                    handleSelectBusinessCertificates(e);
                   }}
                 />
                 {errors?.businessId && (
@@ -83,7 +80,7 @@ const SelectBusiness = ({handleContinue, handleBack}: Props) => {
             />
           </menu>
     </main>
-  </UserLayout>
+  // </UserLayout>
   );
 }
 

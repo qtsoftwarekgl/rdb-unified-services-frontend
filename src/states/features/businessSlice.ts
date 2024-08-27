@@ -99,7 +99,6 @@ export const fetchBusinessesThunk = createAsyncThunk<
           applicationStatus,
         })
       ).unwrap();
-      console.log(applicationStatus);
       return response.data;
     } catch (error) {
       toast.error("An error occurred while fetching businesses");

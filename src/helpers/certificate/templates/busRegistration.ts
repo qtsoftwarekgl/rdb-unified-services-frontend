@@ -4,7 +4,6 @@ import "jspdf-autotable";
 
 import img1 from '/certificate/rdb-logo.png'; // Adjust the path as necessary
 import img2 from '/certificate/COA.png'; // Adjust the path as necessary
-import signature from '/certificate/signature.png'; // Adjust the path as necessary
 import { getCertificateTitle, getCompanyAddress, getCompanyType } from '../utils';
 import { ApplicantDetails, BusinessActivitiesCertificate, Certificate, ShareGroup } from '@/types/models/certificate';
 
@@ -93,7 +92,7 @@ const addBorders = () => {
   doc.text(":", PAGE_MARGIN + INNER_PADDING + 30, PAGE_MARGIN + INNER_PADDING + 70);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate.companyName, PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 80);
+  doc.text(certificate?.companyName ||  certificate?.enterpriseName ||  "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 80);
 
   doc.setFont("helvetica", "bold");
   doc.text("Type", PAGE_MARGIN + INNER_PADDING + 80, PAGE_MARGIN + INNER_PADDING + 70);
@@ -653,7 +652,9 @@ y += 20;
     
       // Signature image (right side)
       const signatureX = contentXEnd - signatureWidth;
-      doc.addImage(signature, 'PNG', signatureX, y, signatureWidth, signatureHeight);
+      if(certificate?.signature){
+      doc.addImage(certificate?.signature || "", 'PNG', signatureX, y, signatureWidth, signatureHeight);
+      }
     
       // Name (below the signature image)
       doc.setFont("helvetica", "bold");

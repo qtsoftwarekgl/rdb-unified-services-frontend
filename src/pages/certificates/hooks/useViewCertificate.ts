@@ -1,10 +1,11 @@
 import { ECertificateType } from "@/helpers/certificate/enums";
 import { generateBusAmendmentCertificatePdf } from "@/helpers/certificate/templates/busAmendment";
 import { generateBusRegistrationCertificatePdf } from "@/helpers/certificate/templates/busRegistration";
-import { useLazyFetchBusinessCertificateByIdQuery, useLazyFetchFullBusinessCertificateByIdQuery } from "@/states/api/businessRegApiSlice";
+import { generateNameReservationCertificatePdf } from "@/helpers/certificate/templates/nameReservation";
+import { useCreateCertificateRequestMutation, useLazyFetchBusinessCertificateByIdQuery, useLazyFetchFullBusinessCertificateByIdQuery } from "@/states/api/businessRegApiSlice";
 import { Certificate } from "@/types/models/certificate";
+import { ReservedName } from "@/types/models/reservedName";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 
 export default function useViewCertificate(){
@@ -12,6 +13,9 @@ export default function useViewCertificate(){
    const [certificate, setCertificate] = useState<Certificate>();
    const [showFullCertificate, setShowFullCertificate] = useState(false);
    const [pdfUrl, setPdfUrl] = useState<string>();
+   const [reservedName, setReservedName] = useState<ReservedName>();
+   const [reservedNameCertificateUrl, setReservedNameCertificateUrl] = useState<string>();
+   const [showReservedName, setShowReservedName] = useState(false);
 
    const [
       fetchBusinessCertificateById,
@@ -36,57 +40,63 @@ export default function useViewCertificate(){
    }
 ] = useLazyFetchFullBusinessCertificateByIdQuery();
 
-   const loadCertificate = (certificate: Certificate) => {
-      console.log("loading a regular certificate")
-      fetchBusinessCertificateById({id: certificate.id});      
+const [
+   createCertificateRequest,
+   {
+     isLoading: isRequesting,
+     data: requestData,
+     isError: requestError,
+     error: requestErrorData,
+     isSuccess: requestSuccess,
+   },
+ ] = useCreateCertificateRequestMutation();
+
+   const loadCertificate = async (certificate: Certificate) => {
+      const response = await fetchBusinessCertificateById({id: certificate.id});
+
+      if(response?.data?.status){
+         if(
+            response?.data?.data?.certificateType === ECertificateType.DISSOLUTION_DOMESTIC 
+            || response?.data?.data?.certificateType === ECertificateType.DISSOLUTION_FOREIGN
+            || response?.data?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_DOMESTIC
+            || response?.data?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_FOREIGN
+            || response?.data?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_ENTERPRISE
+            || response?.data?.data?.certificateType === ECertificateType.CESSATION_OF_DORMANCY_DOMESTIC
+            || response?.data?.data?.certificateType === ECertificateType.CESSATION_OF_DORMANCY_FOREIGN
+         
+         ){
+            const url = generateBusAmendmentCertificatePdf(response?.data?.data);
+            setPdfUrl(url);
+          }
+          else{
+            const url = generateBusRegistrationCertificatePdf(response?.data?.data, false);
+            setPdfUrl(url);
+      } 
    }
+}
 
-   const loadFullCertificate = (certificate: Certificate) => {
-      console.log("loading full certificate")
-      // fetchFullBusinessCertificateById({id: certificate.id});
-   }
-
-   // const url = generateBusRegistrationCertificatePdf(certificate);
-   //    setPdfUrl(url);
-
-   useEffect(() => {
-      if(isSuccessCertificateDetails && isSuccessCertificateDetails){
-
-         console.log("certificateDetails", certificateDetails);
-
-       if(
-         certificateDetails?.data?.certificateType === ECertificateType.DISSOLUTION_DOMESTIC 
-         || certificateDetails?.data?.certificateType === ECertificateType.DISSOLUTION_FOREIGN
-         || certificateDetails?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_DOMESTIC
-         || certificateDetails?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_FOREIGN
-         || certificateDetails?.data?.certificateType === ECertificateType.CONFIRMATION_OF_DORMANCY_ENTERPRISE
-         || certificateDetails?.data?.certificateType === ECertificateType.CESSATION_OF_DORMANCY_DOMESTIC
-         || certificateDetails?.data?.certificateType === ECertificateType.CESSATION_OF_DORMANCY_FOREIGN
-      
-      ){
-         console.log("====== Printing Dissolution Certificate=====");
-         const url = generateBusAmendmentCertificatePdf(certificateDetails?.data);
-         setPdfUrl(url);
-       }
-       else{
-         console.log("====== Printing Registration Certificate=====");
-         const url = generateBusRegistrationCertificatePdf(certificateDetails?.data, false);
-         setPdfUrl(url);
-
-      }
-   }
-     
-   },[certificateDetails, isSuccessCertificateDetails]);
-
-   useEffect(() => {
-      if(isSuccessFullCertificateDetails && isSuccessFullCertificateDetails){
-         const url = generateBusRegistrationCertificatePdf(fullCertificateDetails?.data, true);
+   const loadFullCertificate = async (certificate: Certificate) => {
+      const response = await fetchFullBusinessCertificateById({id: certificate.id});
+      if(response?.data?.status){
+         const url = generateBusRegistrationCertificatePdf(response?.data?.data, true);
          setPdfUrl(url);
       }
-     
-   },[fullCertificateDetails, isSuccessFullCertificateDetails]);
+   }
 
-   console.log("Certificate Details", certificateDetails);
+   const loadReservedNameCertificate = (reservedName: ReservedName) => {
+      createCertificateRequest({
+         businessId: false,
+         endpoint: 'name-reservation',
+         reservationId: reservedName.id,
+      })
+   }
+
+   useEffect(() => {
+     if(requestSuccess && requestData){
+     const url = generateNameReservationCertificatePdf(requestData?.data);
+     setReservedNameCertificateUrl(url);
+     }
+   },[requestSuccess, requestData, requestError, requestErrorData]);
 
    return {
     showCertificate,
@@ -98,6 +108,25 @@ export default function useViewCertificate(){
     certificatePdfUrl: pdfUrl,
     isLoading: isFetchingCertificateDetails,
     showFullCertificate,
-    setShowFullCertificate
+    setShowFullCertificate,
+    reservedName,
+    setReservedName,
+    loadReservedNameCertificate,
+    reservedNameCertificateUrl,
+    showReservedName,
+    setShowReservedName,
+    certificateDetails,
+    fullCertificateDetails,
+    isRequesting,
+    requestSuccess,
+    requestError,
+    requestErrorData,
+    isFetchingFullCertificateDetailsError,
+    isFetchingCertificateDetailsError,
+    fetchError,
+    isFetchingFullCertificateDetails,
+    isSuccessFullCertificateDetails,
+    isSuccessCertificateDetails,
+    fetchFullError
    }
 }

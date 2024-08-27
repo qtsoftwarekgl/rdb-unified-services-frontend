@@ -2,14 +2,11 @@ import {
     faCircleInfo,
     faEllipsisVertical,
     faPlus,
-    faDownload
   } from '@fortawesome/free-solid-svg-icons';
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import Table from '@/components/table/Table';
-  import UserLayout from '@/containers/UserLayout';
   import Button from '@/components/inputs/Button';
   import { useSelector } from 'react-redux';
-  import { RootState } from '@/states/store';
   import { Link } from 'react-router-dom';
   import { ColumnDef, Row } from '@tanstack/react-table';
   import {
@@ -24,6 +21,7 @@ import {
   import useRequestCertificate from './hooks/useRequestCertificate';
   import RequestCertificate from './RequestCertificate';
   import { Certificate } from '@/types/models/certificate';
+import { RootState } from '@/states/store';
   
   interface Props {
     handleBack: () => void;
@@ -39,6 +37,7 @@ import {
     const {showRequestCertificate, setShowRequestCertificate} = useRequestCertificate()
 
     const businessesIsFetching = false;
+
   
     const businessCertificateColumns = [
       ...certificateColumns,
@@ -58,13 +57,13 @@ import {
                 </menu>
               }
             >
-              <menu className="bg-white flex flex-col gap-3 p-0 rounded-md">
+              <menu className="flex flex-col gap-3 p-0 rounded-md">
                 <Link
                   className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                   onClick={(e) => {
                     e.preventDefault();
-                    // setShowFullCertificate(false);
-                    setCertificate(row.original as any);
+                    setShowFullCertificate(false);
+                    setCertificate(row.original as Certificate);
                     setShowCertificate(true)
                   }}
                   to={'#'}
@@ -79,7 +78,7 @@ import {
                     e.preventDefault();
                     setShowFullCertificate(true);
                     // setShowCertificate(false);
-                    setCertificate(row.original as any);
+                    setCertificate(row.original as Certificate);
                     setShowCertificate(true)
                   }}
                   to={'#'}
@@ -88,17 +87,6 @@ import {
                   Full certificate
                 </Link>
                 }
-                <Link
-                  className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                  to={'#'}
-                >
-                  <FontAwesomeIcon className="text-primary" icon={faDownload} />
-                  Download
-                </Link>
-                
               </menu>
             </CustomPopover>
           );
@@ -107,8 +95,9 @@ import {
     ];
   
     return (
-      <UserLayout>
-        <section className="flex flex-col w-full gap-6 p-8 bg-white rounded-md">
+      // <UserLayout>
+      <>
+        <section className="flex flex-col w-full gap-6 p-8 px-16">
           <menu className="flex items-center justify-between w-full gap-3">
             <h1 className="pl-2 text-lg font-semibold uppercase w-fit text-primary">
               Certificates
@@ -161,7 +150,8 @@ import {
         </section>
         <ViewCertificate showFullCertificate={showFullCertificate} showCertificate={showCertificate} setShowCertificate={setShowCertificate} certificate={certificate as Certificate} />
         <RequestCertificate showRequestCertificate={showRequestCertificate} setShowRequestCertificate={setShowRequestCertificate} />
-      </UserLayout>
+      {/* // </UserLayout> */}
+      </>
     );
   };
   

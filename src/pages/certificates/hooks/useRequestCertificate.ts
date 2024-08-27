@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -96,7 +97,6 @@ export default function useRequestCertificate() {
   ] = useCreateCertificateRequestMutation();
 
   const onSubmit = (data: FormData) => {
-    console.log(data);
     // Handle form submission
     createCertificateRequest({
       businessId: certificatesCompany?.id,
@@ -113,7 +113,7 @@ export default function useRequestCertificate() {
     }
     else if(requestError){
       // Handle request error
-      toast.error(requestErrorData?.data?.message || "An error occurred while generating certificate");
+      toast.error((requestErrorData as Record<string,any>)?.data?.message || "An error occurred while generating certificate");
     }
   }
   , [requestSuccess, requestError, requestErrorData, requestData, reset]);

@@ -24,6 +24,7 @@ export type Certificate = {
     startOfDormancyDate: string;
     cessationDate?: string;
     firstHiringDate: string;
+    reservationExpirationDate?: string;
     numberOfEmployeesOnRegistrationDate: string;
     branchBusinessAddressCertificate: string;
     businessId: string;
@@ -33,6 +34,7 @@ export type Certificate = {
     qrcode?: string;
     signedBy?: string;
     dissolutionDate?: string;
+    signature?: string;
     applicantDetails?: ApplicantDetails[];
     businessOwner?: ApplicantDetails;
     managingDirector?: ApplicantDetails;

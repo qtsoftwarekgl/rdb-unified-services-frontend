@@ -8,15 +8,20 @@ interface Props {
     showFullCertificate: boolean;
     setShowCertificate: (show: boolean) => void;
     certificate: Certificate;
+
 }
 const ViewCertificate = ({showCertificate, showFullCertificate, setShowCertificate, certificate}: Props) => {
     const {loadCertificate, loadFullCertificate, certificatePdfUrl} = useViewCertificate();
     useEffect(() => {
         if(showCertificate){
-            if(showFullCertificate) return loadFullCertificate(certificate);
-            loadCertificate(certificate);
+            if(showFullCertificate){
+                loadFullCertificate(certificate)
+            }
+            else{
+                loadCertificate(certificate);
+            }
         }
-    }, [certificate]);
+    }, [certificate, showCertificate, showFullCertificate]);
     return (
         <Modal 
          isOpen={showCertificate}

@@ -10,25 +10,21 @@ import { useNavigate } from "react-router-dom";
 export default function useCompanyCertificate(){
     const navigate = useNavigate();
     const [slideIndex, setSlideIndex] = useState(0);
-    // const { page, size, totalElements, totalPages } = useSelector(
-    //     (state: RootState) => state.business
-    //   );
 
     const {
         handleSubmit,
         control,
         formState: { errors },
         watch,
-        getValues
+        setValue
       } = useForm();
+
       const {
         businessesList,
         businessesIsFetching,
       } = useSelector((state: RootState) => state.business);
 
     const dispatch: AppDispatch = useDispatch();
-
-    const {businessId} = getValues();
 
     const handleBack = () => {
         if(slideIndex === 0)
@@ -62,34 +58,24 @@ export default function useCompanyCertificate(){
         }
     ] = useLazyFetchBusinessCertificateQuery();
 
-    useEffect(() => {
-        if(!businessId) return;
+
+
+      const handleSelectBusinessCertificates = (businessId: string) => {
+        setValue("businessId", businessId);
         fetchBusinessCertificates({
           id: businessId
         });
 
-        // filter from businessList where id === businessId and dispatch it to store by setCertificatesCompany
         const business = businessesList.find((business) => business.id === businessId);  
         dispatch(setCertificatesCompany(business));
+      }
 
-      }, [businessId]);
-
-      console.log("BusinessId:  "+businessId)
-      console.log(watch("businessId"));
-      console.log(getValues());
-
+      
       useEffect(() => {
         if(certificateListsIsSuccess){
             dispatch(setBusinessCertificates(certificateListsData?.data?.data));
         }
-      },[certificateListsData]);
-
-      console.log(certificateListsData);
-      console.log(certificateListsIsFetching);
-        console.log(certificateListsIsSuccess);
-        console.log(certificateListsIsError);
-        console.log(fetchError);
-
+      },[certificateListsData, certificateListsIsSuccess]);
 
 
        const businessCertificates : Certificate[] = certificateListsData;
@@ -99,6 +85,7 @@ export default function useCompanyCertificate(){
             navigate,
             handleSubmit,
             control,
+            setValue,
             errors,
             watch,
             businessesList,
@@ -107,6 +94,9 @@ export default function useCompanyCertificate(){
             handleBack,
             handleContinue,
             businessCertificates,
-            
+            handleSelectBusinessCertificates,
+            certificateListsIsError,
+            certificateListsIsFetching,
+            fetchError
         }
 }

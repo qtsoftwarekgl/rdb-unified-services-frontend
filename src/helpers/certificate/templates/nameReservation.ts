@@ -4,7 +4,7 @@ import "jspdf-autotable";
 
 import img1 from '/certificate/rdb-logo.png'; // Adjust the path as necessary
 import img2 from '/certificate/COA.png'; // Adjust the path as necessary
-import { getCertificateTitle, getCompanyAddress } from '../utils';
+import { getCertificateTitle } from '../utils';
 import {Certificate } from '@/types/models/certificate';
 
 const PAGE_MARGIN = 20; // Increased margin
@@ -16,7 +16,7 @@ const INNER_PADDING = 10; // Additional padding inside the border
 
 const CONTENT_MARGIN = 10; // Increased inner margin for more space from edges
 
-export const generateBusAmendmentCertificatePdf = (certificate: Certificate) => {
+export const generateNameReservationCertificatePdf = (certificate: Certificate) => {
   const doc: Record<string,any> = new jsPDF();
   // add page numbers
 
@@ -57,14 +57,12 @@ function footer(){
   doc.setFontSize(14);
   doc.setFont("helvetica", "bold");
   doc.text(getCertificateTitle(certificate?.certificateType as string, false), PAGE_WIDTH / 2, PAGE_MARGIN + INNER_PADDING + 25, { align: "center" });
-  if(certificate?.certificateType?.includes('CESSATION')){
-    doc.text("COMPANY", PAGE_WIDTH / 2, PAGE_MARGIN + INNER_PADDING + 30, { align: "center" });
-  }
+  
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(128, 128, 128);
-  const lowYPosition = certificate?.certificateType?.includes('CESSATION') ? 36 : 30;
-  doc.text("Article 23 of Law N° 007/2021 of 05/02/2021 governing companies", PAGE_WIDTH / 2, PAGE_MARGIN + INNER_PADDING + lowYPosition, { align: "center" });
+  // const lowYPosition = certificate?.certificateType?.includes('CESSATION') ? 36 : 30;
+  doc.text("Article 23 of Law N° 007/2021 of 05/02/2021 governing companies", PAGE_WIDTH / 2, PAGE_MARGIN + INNER_PADDING + 35, { align: "center" });
 
   // Horizontal line
   doc.setLineWidth(0.5);
@@ -76,146 +74,61 @@ function footer(){
   // ================== BUSINESS INFORMATION ==================
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
-  doc.text("Company Name", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 50);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 30, PAGE_MARGIN + INNER_PADDING + 50);
+  doc.text("Registration date : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 50);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.companyName || certificate?.enterpriseName || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 60);
+  doc.text(certificate?.registrationDate as string, PAGE_MARGIN + INNER_PADDING + 35, PAGE_MARGIN + INNER_PADDING + 50);
 
   doc.setFont("helvetica", "bold");
-  doc.text("Category", PAGE_MARGIN + INNER_PADDING + 80, PAGE_MARGIN + INNER_PADDING + 50);
-  doc.text(":", PAGE_MARGIN + INNER_PADDING + 98, PAGE_MARGIN + INNER_PADDING + 50);
+  doc.text("Company name : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 60);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.category || "", PAGE_MARGIN + INNER_PADDING + 80, PAGE_MARGIN + INNER_PADDING + 60);
+  doc.text(certificate?.companyName || certificate?.enterpriseName || "", PAGE_MARGIN + INNER_PADDING + 34, PAGE_MARGIN + INNER_PADDING + 60);
 
+  
   doc.setFont("helvetica", "bold");
-  if(certificate?.certificateType?.includes('DISSOLUTION')){
-    doc.text("Dissolution Date", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 70);
-    doc.text(":", PAGE_MARGIN + INNER_PADDING + 30, PAGE_MARGIN + INNER_PADDING + 70);
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(certificate?.dissolutionDate, PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 80);
-  }
-  else if(certificate?.certificateType?.includes('CESSATION')){
-    doc.text("Cessation Date", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 70);
-    doc.text(":", PAGE_MARGIN + INNER_PADDING + 30, PAGE_MARGIN + INNER_PADDING + 70);
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(certificate?.cessationDate, PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 80);
-  }
-  else if(certificate?.certificateType?.includes('DORMANCY')){
-    doc.text("Date of shareholder resolution", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 70);
-    doc.text("to declare dormancy : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 75);
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(certificate?.dormancyDeclarationDate || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 80);
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Start of Dormancy Date : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 90);
-    
-    doc.setFont("helvetica", "normal");
-    doc.text(certificate?.startOfDormancyDate || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 100);
-  }
-
-  doc.setFont("helvetica", "bold");
-  doc.text("Filing Date : ", PAGE_MARGIN + INNER_PADDING + 80, PAGE_MARGIN + INNER_PADDING + 70);
+  doc.text("Reservation expiration date : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 70);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.filingDate|| "", PAGE_MARGIN + INNER_PADDING + 80, PAGE_MARGIN + INNER_PADDING + 80);
-
-  // ================== BUSINESS ADDRESS ==================
-
-doc.setFontSize(11);
-doc.setFont("helvetica", "bold");
-doc.text("Registered Address", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 100);
-
-doc.setDrawColor(205, 207, 209);
-doc.setLineWidth(0.2);
-doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 105, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 105);
-
-doc.setFontSize(10);
-doc.setFont("helvetica", "bold");
-doc.text("Address : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 110);
-
-doc.setFont("helvetica", "normal");
-doc.text(getCompanyAddress(certificate), PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 115);
-
-doc.setFont("helvetica", "bold");
-doc.text("Email : ", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 110);
-
-doc.setFont("helvetica", "normal");
-doc.text(certificate?.registeredOfficeAddress?.email || "", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 115);
-
-doc.setFont("helvetica", "bold");
-doc.text("Phone : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 125);
-
-doc.setFont("helvetica", "normal");
-doc.text(certificate?.registeredOfficeAddress?.phone || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 130);
-
-// if there is PO Box add it
-if (certificate?.registeredOfficeAddress?.poBox) {
-    doc.setFont("helvetica", "bold");
-    doc.text("PO Box : ", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 120);
-
-    doc.setFont("helvetica", "normal");
-    doc.text(certificate.registeredOfficeAddress?.poBox, PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 125);
-}
+  doc.text(certificate?.reservationExpirationDate|| "", PAGE_MARGIN + INNER_PADDING + 55, PAGE_MARGIN + INNER_PADDING + 70);
 
 
   // ================== MANAGEMENT DETAILS ==================
   doc.setFontSize(11);
   doc.setFont("helvetica", "bold");
-  doc.text("Applicant", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 140);
+  doc.text("Business Owner", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 85);
 
   doc.setDrawColor(205, 207, 209);
   doc.setLineWidth(0.2);
-  doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 145, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 145);
+  doc.line(PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 90, PAGE_WIDTH - PAGE_MARGIN - INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 90);
 
-  // // Add position 
+  
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("Position: ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 155);
-
-  // // Position name is Managing Director
-  doc.setFont("helvetica", "normal");
-  doc.text("Managing Director", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 160);
-
-  doc.setFont("helvetica", "bold");
-  doc.text("Name : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 170);
+  doc.text("Name : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 100);
 
   doc.setFont("helvetica", "normal");
   const name = certificate?.managingDirector?.name?.replace("null", "") || "";
-  doc.text(name, PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 175);
+  doc.text(name, PAGE_MARGIN + INNER_PADDING + 18, PAGE_MARGIN + INNER_PADDING + 100);
 
-
-  // doc.setFont("helvetica", "bold");
-  // doc.text("ID Document :", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 165);
-  
-  // doc.setFont("helvetica", "normal");
-  // doc.text(certificate?.managingDirector?.documentType?.toUpperCase() || "", PAGE_MARGIN + INNER_PADDING + 25, PAGE_MARGIN + INNER_PADDING + 165);
 
   doc.setFont("helvetica", "bold");
-  doc.text("ID Number: ", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 155);
+  doc.text("ID document  :", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 110);
   
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.managingDirector?.documentId || "", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 160);
+  doc.text(certificate?.managingDirector?.documentId?.toUpperCase() || "", PAGE_MARGIN + INNER_PADDING + 30, PAGE_MARGIN + INNER_PADDING + 110);
 
-
-  // Address 
   doc.setFont("helvetica", "bold");
-  doc.text("Address: ", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 170);
-
+  doc.text("Address : ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 120);
+  
   doc.setFont("helvetica", "normal");
-  doc.text(certificate?.managingDirector?.address || "", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 175);
-
-
+  doc.text(certificate?.managingDirector?.address || "Kigali, Rwanda", PAGE_MARGIN + INNER_PADDING + 20, PAGE_MARGIN + INNER_PADDING + 120);
 
  
     addSignature(doc, certificate);
     // Add text after table of activities
     return doc.output("bloburl");
-    }
+  };
 
 
     const addSignature = (doc: Record<string,any>, certificate: Certificate) => {
@@ -261,7 +174,7 @@ if (certificate?.registeredOfficeAddress?.poBox) {
       // Signature image (right side)
       const signatureX = contentXEnd - signatureWidth;
       if(certificate?.signature){
-       doc.addImage(certificate?.signature, 'PNG', signatureX, y, signatureWidth, signatureHeight);
+      doc.addImage(certificate?.signature, 'PNG', signatureX, y, signatureWidth, signatureHeight);
       }
     
       // Name (below the signature image)

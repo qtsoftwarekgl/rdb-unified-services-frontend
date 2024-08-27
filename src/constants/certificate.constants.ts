@@ -1,9 +1,6 @@
 import { capitalizeString, formatDate } from '@/helpers/strings';
 import { Certificate } from '@/types/models/certificate';
 import { Row } from '@tanstack/react-table';
-import { access } from 'fs';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 export const certificateColumns = [
   {
@@ -36,18 +33,7 @@ export const certificateColumns = [
     accessorKey: 'certificateStatus',
     cell: ({ row }: { row: Row<Certificate> }) =>
       capitalizeString(row?.original?.status),
-  },
-  {
-    id: 'download',
-    header: 'Download',
-    accessorKey: 'download',
-    cell: ({ row }: { row: Row<Certificate> }) => (
-      <FontAwesomeIcon 
-      icon={faDownload} 
-      className="text-primary hover:text-secondary transition-colors duration-300 cursor-pointer" 
-    />
-    ),
-  },
+  }
 ];
 
 

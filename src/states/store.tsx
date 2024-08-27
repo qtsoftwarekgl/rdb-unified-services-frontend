@@ -36,6 +36,8 @@ import businessReviewCommentSlice from './features/businessReviewCommentSlice';
 import resolutionAttachmentSlice from './features/resolutionAttachmentSlice';
 import beneficialOwnerSlice from './features/beneficialOwnerSlice';
 import businessAmendmentSlice from './features/businessAmendmentSlice';
+import certificateSlice  from './features/certificateSlice';
+import nameReservationApiSlice from './api/nameReservationApiSlice';
 
 export const store = configureStore({
   reducer: {
@@ -45,6 +47,7 @@ export const store = configureStore({
     [userManagementApiSlice.reducerPath]: userManagementApiSlice.reducer,
     [businessExternalServiceApiSlice.reducerPath]:
       businessExternalServiceApiSlice.reducer,
+    [nameReservationApiSlice.reducerPath]: nameReservationApiSlice.reducer,
     user: userSlice,
     auth: authSlice,
     businessRegistration: businessRegistrationSlice,
@@ -77,6 +80,7 @@ export const store = configureStore({
     businessReviewComment: businessReviewCommentSlice,
     beneficialOwner: beneficialOwnerSlice,
     businessAmendment: businessAmendmentSlice,
+    certificate: certificateSlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(
@@ -84,7 +88,8 @@ export const store = configureStore({
       foreignRegApiSlice.middleware,
       authApiSlice.middleware,
       userManagementApiSlice.middleware,
-      businessExternalServiceApiSlice.middleware
+      businessExternalServiceApiSlice.middleware,
+      nameReservationApiSlice.middleware
     );
   },
 });

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../types/navigationTypes";
 
 export const nameReservationSlice = createSlice({
@@ -72,6 +72,11 @@ export const nameReservationSlice = createSlice({
     reservedNames:
       JSON.parse(String(localStorage.getItem("reservedNames"))) || [],
     selectReservedNameModal: false,
+    page: 1,
+    size: 100,
+    totalElements: 0,
+    totalPages: 1,
+    currentPage: 1,
   },
 
   reducers: {
@@ -228,7 +233,11 @@ export const nameReservationSlice = createSlice({
       localStorage.removeItem("name_reservation");
     },
     setReservedNames: (state, action) => {
-      state.reservedNames = [action.payload, ...state.reservedNames];
+      // state.reservedNames = [action.payload.data, ...state.reservedNames];
+      state.reservedNames = action.payload.data;
+      state.totalElements = action.payload.totalElements;
+      state.totalPages = action.payload.totalPages;
+      state.currentPage = action.payload.currentPage;
       localStorage.setItem(
         "reservedNames",
         JSON.stringify(state.reservedNames)

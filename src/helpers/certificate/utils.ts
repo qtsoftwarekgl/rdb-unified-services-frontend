@@ -91,7 +91,7 @@ export  function getCertificateTitle(certificateType: string, isFull: boolean = 
     return "Memorandum of Association";
 
     case NAME_RESERVATION:
-    return "Name Reservation";
+    return "CERTIFICATE OF NAME RESERVATION";
 
     case PARTNERSHIP_REGISTRATION:
     return "Partnership Registration";
