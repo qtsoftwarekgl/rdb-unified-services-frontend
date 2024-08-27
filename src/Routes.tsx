@@ -25,7 +25,7 @@ import SuperAdminProfile from './pages/profiles/SuperAdminProfile';
 import RegistrationVerify from './pages/user-registration/RegistrationVerify';
 import RegistrationSuccess from './pages/user-registration/RegistrationSuccess';
 import UserCompanyDetails from './pages/user-company-details/CompanyDetails';
-import UserApplications from './pages/user-applications/UserApplications';
+import UserBusinessApplications from './pages/user-applications/UserBusinessApplications';
 import CompanyDocuments from './pages/user-company-details/CompanyDocuments';
 import CompanyHistory from './pages/user-company-details/CompanyHistory';
 import EnterpriseRegistration from './pages/business-applications/enterprise-registration/EnterpriseRegistration';
@@ -54,6 +54,9 @@ import CollateralListReview from './pages/collateral-review/CollateralList';
 import CollateralReview from './pages/collateral-review/CollateralReview';
 import ServicesList from './pages/home/ServicesList';
 import NewServiceApplication from './containers/business-registration/NewServiceApplication';
+import UserBusinessAmendmentsList from './pages/user-applications/UserBusinessAmendmentsList';
+import UserBusinessAmendmentDetails from './pages/user-applications/UserBusinessAmendmentDetails';
+import BusinessCertificates from './pages/certificates';
 
 const Routes = () => {
   return (
@@ -76,7 +79,18 @@ const Routes = () => {
           {/* USER PROFILE */}
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/company-details/:id" element={<UserCompanyDetails />} />
-          <Route path="/user-applications" element={<UserApplications />} />
+          <Route
+            path="/user/business/applications"
+            element={<UserBusinessApplications />}
+          />
+          <Route
+            path="/user/amendments"
+            element={<UserBusinessAmendmentsList />}
+          />
+          <Route
+            path="/user/amendments/details"
+            element={<UserBusinessAmendmentDetails />}
+          />
           <Route path="/company-documents/:id" element={<CompanyDocuments />} />
           <Route path="/company-history/:id" element={<CompanyHistory />} />
 
@@ -120,6 +134,7 @@ const Routes = () => {
           <Route path="/company-dormancy" element={<CompanyDormancy />} />
           <Route path="/close-company" element={<CloseCompany />} />
           <Route path="/new-branch" element={<BusinessNewBranch />} />
+          <Route path="/certificates" element={<BusinessCertificates />} />
         </Route>
 
         {/* AUTHENTICATION */}

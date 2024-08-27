@@ -1,4 +1,3 @@
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 import Loader from "@/components/Loader";
 import Button from "@/components/inputs/Button";
 import CustomPopover from "@/components/inputs/CustomPopover";

@@ -450,7 +450,7 @@ const ExecutiveManagement = ({
                 control={control}
                 render={({ field }) => {
                   let options = [
-                    { value: "nid", label: "National ID", disabled: true },
+                    { value: "nid", label: "National ID" },
                     {
                       label: "Passport",
                       value: "passport",

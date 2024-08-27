@@ -12,6 +12,7 @@ import { AppDispatch } from "../store";
 import { toast } from "react-toastify";
 import { UUID } from "crypto";
 import { setResolutionAttachment } from "./resolutionAttachmentSlice";
+import { Certificate } from "@/types/models/certificate";
 
 const initialState: {
   businessesList: Business[];
@@ -38,6 +39,8 @@ const initialState: {
   uploadAmendmentAttachmentIsSuccess: boolean;
   updateBusinessIsSuccess: boolean;
   updateBusinessIsLoading: boolean;
+  businessCertificates: Certificate[];
+  certificatesCompany: Business;
 } = {
   businessesList: [],
   business: {} as Business,
@@ -60,6 +63,8 @@ const initialState: {
   uploadAmendmentAttachmentIsSuccess: false,
   updateBusinessIsSuccess: false,
   updateBusinessIsLoading: false,
+  businessCertificates: [],
+  certificatesCompany: {} as Business
 };
 
 // FETCH BUSINESSES
@@ -80,16 +85,9 @@ export const fetchBusinessesThunk = createAsyncThunk<
       size,
       serviceId,
       applicationStatus,
-    }: {
-      page: number;
-      size: number;
-      serviceId?: string;
-      applicationStatus?: string;
     },
     {
       dispatch,
-    }: {
-      dispatch: AppDispatch;
     }
   ) => {
     try {
@@ -254,6 +252,12 @@ export const businessSlice = createSlice({
     setUploadAmendmentAttachmentIsSuccess: (state, action) => {
       state.uploadAmendmentAttachmentIsSuccess = action.payload;
     },
+    setBusinessCertificates: (state, action) => {
+      state.businessCertificates = action.payload;
+    },
+    setCertificatesCompany: (state, action) => {
+      state.certificatesCompany = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBusinessesThunk.pending, (state) => {
@@ -336,4 +340,6 @@ export const {
   removeFromBusinessesList,
   setUploadAmendmentAttachmentIsLoading,
   setUploadAmendmentAttachmentIsSuccess,
+  setBusinessCertificates,
+  setCertificatesCompany
 } = businessSlice.actions;

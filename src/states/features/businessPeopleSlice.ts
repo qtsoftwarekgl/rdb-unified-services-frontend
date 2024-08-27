@@ -1,7 +1,10 @@
 import { PersonAttachment } from '@/types/models/attachment';
 import { PersonDetail } from '@/types/models/personDetail';
 import { UserInformation } from '@/types/models/userInformation';
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import businessExternalServiceApiSlice from '../api/businessExternalServiceApiSlice';
+import { AppDispatch } from '../store';
+import { toast } from 'react-toastify';
 
 const initialState: {
   businessPeopleList: PersonDetail[];
@@ -11,6 +14,8 @@ const initialState: {
   businessPersonDetailsModal: boolean;
   businessPerson?: PersonDetail;
   deleteBusinessPersonModal: boolean;
+  userInformationIsFetching: boolean;
+  userInformationIsSuccess: boolean;
 } = {
   businessPeopleList: [],
   selectedBusinessPerson: undefined,
@@ -19,7 +24,28 @@ const initialState: {
   businessPersonDetailsModal: false,
   businessPerson: undefined,
   deleteBusinessPersonModal: false,
+  userInformationIsFetching: false,
+  userInformationIsSuccess: false,
 };
+
+// GET USER INFORMATION THUNK
+export const getUserInformationThunk = createAsyncThunk<UserInformation, {
+  documentNumber: string}, { dispatch: AppDispatch }
+  >(
+  'businessPeople/getUserInformation',
+  async ({ documentNumber }, { dispatch }) => {
+    try {
+      const response = await dispatch(
+        businessExternalServiceApiSlice.endpoints.getUserInformation.initiate({
+          documentNumber,
+        })
+      );
+      return response.data?.data;
+    } catch (error) {
+      toast.error('Failed to get user information. Refresh and try again');
+    }
+  }
+);
 
 export const businessPeopleSlice = createSlice({
   name: 'businessPeople',
@@ -65,6 +91,21 @@ export const businessPeopleSlice = createSlice({
     setDeleteBusinessPersonModal: (state, action) => {
       state.deleteBusinessPersonModal = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getUserInformationThunk.fulfilled, (state, action) => {
+      state.userInformation = action.payload;
+      state.userInformationIsFetching = false;
+      state.userInformationIsSuccess = true;
+    });
+    builder.addCase(getUserInformationThunk.pending, (state) => {
+      state.userInformationIsFetching = true;
+      state.userInformationIsSuccess = false;
+    });
+    builder.addCase(getUserInformationThunk.rejected, (state) => {
+      state.userInformationIsFetching = false;
+      state.userInformationIsSuccess = false;
+    });
   },
 });
 

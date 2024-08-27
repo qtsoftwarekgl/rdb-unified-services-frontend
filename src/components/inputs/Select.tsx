@@ -12,7 +12,7 @@ import useDebounce from "@/hooks/useDebounce";
 
 interface SelectProps {
   label?: string | number | undefined;
-  options?: Array<{ label: string | undefined; value: string | UUID }>;
+  options?: Array<{ label: string | undefined; value: string | UUID, disabled?: boolean }>;
   defaultValue?: string | undefined;
   placeholder?: string;
   className?: string;
@@ -77,7 +77,7 @@ const Select: FC<SelectProps> = ({
           <SelectValue
             className="!text-[10px]"
             placeholder={
-              <p className="text-[14px] text-gray-500">{placeholder}</p>
+              <p className="text-[13px] text-gray-500">{placeholder}</p>
             }
           />
         </SelectTrigger>
@@ -101,6 +101,7 @@ const Select: FC<SelectProps> = ({
                 <SelectItem
                   key={index}
                   value={option.value}
+                  disabled={option?.disabled}
                   className="cursor-pointer text-[13px] py-1"
                 >
                   <p className="text-[13px] py-[3px]">{option.label}</p>

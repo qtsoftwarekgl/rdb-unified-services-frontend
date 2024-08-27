@@ -206,7 +206,19 @@ const PreviewSubmission = ({
         })
       );
     }
-  }, [businessId]);
+  }, [
+    businessId,
+    businessNavigationFlowsList,
+    dispatch,
+    fetchBoardMembers,
+    fetchBusinessActivities,
+    fetchBusinessAddress,
+    fetchBusinessAttachments,
+    fetchBusinessDetails,
+    fetchBusinessEmploymentInfo,
+    fetchExecutiveManagement,
+    fetchShareholders,
+  ]);
 
   // TABLE COLUMNS
   const founderDetailsColumns = [
@@ -565,7 +577,7 @@ const PreviewSubmission = ({
                 ...founder,
                 name: `${
                   founder?.personDetail?.firstName ||
-                  founder?.organization?.organizationName ||
+                  founder?.personDetail?.organization?.organizationName ||
                   ""
                 } ${founder?.personDetail?.middleName || ""} ${
                   founder?.personDetail?.lastName || ""
@@ -574,7 +586,7 @@ const PreviewSubmission = ({
                 personDocNo: founder?.personDetail?.personDocNo || "-",
                 phoneNumber:
                   founder?.personDetail?.phoneNumber ||
-                  founder?.organization?.phone ||
+                  founder?.personDetail?.organization?.phone ||
                   "-",
               };
             })}
@@ -639,21 +651,6 @@ const PreviewSubmission = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
-              if (
-                applicationStatus !== ApplicationStatus.IsAmending &&
-                !Object?.values(navigationFlowMassList ?? {})
-                  ?.flat()
-                  ?.every((navigationStep) => {
-                    return businessNavigationFlowsList?.find(
-                      (businessStep) =>
-                        businessStep?.navigationFlowMass?.stepName ===
-                          navigationStep?.stepName && businessStep?.completed
-                    );
-                  })
-              ) {
-                toast.error("All steps must be completed before submission");
-                return;
-              }
               updateBusiness({
                 businessId,
                 applicationStatus:

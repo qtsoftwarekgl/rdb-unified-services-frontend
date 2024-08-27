@@ -28,7 +28,7 @@ import CustomPopover from '@/components/inputs/CustomPopover';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { businessColumns } from '@/constants/business.constants';
 
-const UserApplications = () => {
+const UserBusinessApplications = () => {
   // STATE VARIABLES
   const dispatch = useDispatch();
   const { businessesList, page, size, totalElements, totalPages } = useSelector(
@@ -109,19 +109,26 @@ const UserApplications = () => {
                 <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                 View details
               </Link>
-              <Link
-                className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
-                onClick={(e) => {
-                  e.preventDefault();
-                }}
-                to={'#'}
-              >
-                <FontAwesomeIcon
-                  className="text-primary"
-                  icon={faPenToSquare}
-                />{' '}
-                Start amendment
-              </Link>
+              {['AMENDMENT_SUBMITTED'].includes(
+                row?.original?.applicationStatus
+              ) && (
+                <Link
+                  className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(
+                      `/user/amendments?businessId=${row?.original?.id}`
+                    );
+                  }}
+                  to={'#'}
+                >
+                  <FontAwesomeIcon
+                    className="text-primary"
+                    icon={faPenToSquare}
+                  />{' '}
+                  View amendments
+                </Link>
+              )}
             </menu>
           </CustomPopover>
         );
@@ -160,22 +167,25 @@ const UserApplications = () => {
             setPage={setBusinessPage}
             setSize={setBusinessSize}
             columns={userApplicationsColumns as ColumnDef<Business>[]}
-            data={businessesList?.map((business, index) => {
-              return {
-                ...business,
-                no: index + 1,
-                dateOfIncorporation: formatDate(
-                  business?.createdAt
-                ) as unknown as Date,
-                companyType: capitalizeString(business?.companyType) || 'N/A',
-                assignee: 'RDB Verifier',
-                companyName: (
-                  business?.companyName ||
-                  business?.enterpriseName ||
-                  business?.enterpriseBusinessName
-                )?.toUpperCase(),
-              };
-            })}
+            data={businessesList
+              ?.slice()
+              ?.sort((a, b) => Number(b?.updatedAt) - Number(a?.updatedAt))
+              ?.map((business, index) => {
+                return {
+                  ...business,
+                  no: index + 1,
+                  dateOfIncorporation: formatDate(
+                    business?.createdAt
+                  ) as unknown as Date,
+                  companyType: capitalizeString(business?.companyType) || 'N/A',
+                  assignee: 'RDB Verifier',
+                  companyName: (
+                    business?.companyName ||
+                    business?.enterpriseName ||
+                    business?.enterpriseBusinessName
+                  )?.toUpperCase(),
+                };
+              })}
           />
         )}
       </section>
@@ -183,4 +193,4 @@ const UserApplications = () => {
   );
 };
 
-export default UserApplications;
+export default UserBusinessApplications;

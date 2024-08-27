@@ -548,21 +548,6 @@ const ForeignCompanyPreviewSubmission = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
-              if (
-                applicationStatus !== ApplicationStatus.IsAmending &&
-                !Object?.values(navigationFlowMassList ?? {})
-                  ?.flat()
-                  ?.every((navigationStep) => {
-                    return businessNavigationFlowsList?.find(
-                      (businessStep) =>
-                        businessStep?.navigationFlowMass?.stepName ===
-                          navigationStep?.stepName && businessStep?.completed
-                    );
-                  })
-              ) {
-                toast.error("All steps must be completed before submission");
-                return;
-              }
               updateBusiness({
                 businessId,
                 applicationStatus:
