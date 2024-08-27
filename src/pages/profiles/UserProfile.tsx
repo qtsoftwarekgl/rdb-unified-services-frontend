@@ -3,7 +3,6 @@ import UserLayout from "../../containers/UserLayout";
 import { AppDispatch, RootState } from "../../states/store";
 import RegisteredBusinessesTable from "./RegisteredBusinessesTable";
 import NotificationPreference from "./NotificationPreference";
-import Divider from "../../components/Divider";
 import { useLazyGetUserQuery } from "@/states/api/userManagementApiSlice";
 import { useEffect } from "react";
 import { ErrorResponse } from "react-router-dom";
@@ -61,7 +60,7 @@ const UserProfile = () => {
                 {userProfile?.firstName} {userProfile?.lastName || ""}
               </h1>
               <p className="text-base font-light text-gray-500">
-                {user?.email}
+                {userProfile?.email}
               </p>
             </div>
           </div>
@@ -104,6 +103,12 @@ const UserProfile = () => {
                 </div>
               </div>
               <div className="flex flex-col gap-4">
+                <div className="flex text-base font-semibold">
+                  <h1 className="w-1/2 text-secondary">Phone</h1>
+                  <p className="w-1/2 text-gray-300">
+                    {userProfile?.phoneNumber || ""}
+                  </p>
+                </div>
                 <div className="flex text-base font-semibold">
                   <h1 className="w-1/2 text-secondary">Gender</h1>
                   <p className="w-1/2 text-gray-300">

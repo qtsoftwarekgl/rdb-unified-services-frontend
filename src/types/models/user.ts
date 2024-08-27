@@ -1,12 +1,19 @@
-import { AbstractDomain } from '.';
+import { AbstractDomain } from ".";
 
-export interface User extends AbstractDomain {
-  fullName?: string;
-  state: string,
+export type Profile = {
   firstName: string;
   lastName: string;
   username: string;
   email: string;
+  id: string;
+  phoneNumber: string;
+  personDocNo: string;
+};
+
+export interface User extends AbstractDomain {
+  fullName?: string;
+  state: string;
+  profile: Profile;
   nationality: string;
   personIdentType: string;
   personDocNo: string;

@@ -144,7 +144,7 @@ export const userManagementApiSlice = createApi({
       getUser: builder.query({
         query: ({ id }) => {
           return {
-            url: `/${id}`,
+            url: `/user/${id}`,
           };
         },
       }),

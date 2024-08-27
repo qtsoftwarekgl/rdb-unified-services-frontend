@@ -456,12 +456,12 @@ const PreviewSubmission = ({
         header="Executive Management"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Senior Management"
+          "Executive Management"
         )}
         navigationFlowId={
           findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            "Senior Management"
+            "Executive Management"
           )?.id
         }
       >
@@ -498,7 +498,8 @@ const PreviewSubmission = ({
             <Loader />
           </figure>
         ) : (
-          businessEmploymentInfoIsSuccess && (
+          businessEmploymentInfoIsSuccess &&
+          businessEmploymentInfoData?.data && (
             <menu className="flex flex-col gap-2">
               <p>
                 Working Start Time:{" "}
@@ -553,7 +554,7 @@ const PreviewSubmission = ({
           header="Shareholders"
           navigationFlowMassId={findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            "Employment Info"
+            "Shareholders"
           )}
         >
           <Table

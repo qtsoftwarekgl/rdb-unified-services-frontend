@@ -285,6 +285,7 @@ const BusinessActivities = ({
               return (
                 <label className="flex flex-col items-start w-full gap-1">
                   <Select
+                    searchable
                     label="Select sector"
                     required
                     defaultValue={String(businessActivitiesList[0]?.code)}

@@ -71,6 +71,7 @@ export const EnterpriseDetails = ({
     formState: { errors },
     watch,
     clearErrors,
+    setValue,
     setError,
   } = useForm();
 
@@ -80,6 +81,17 @@ export const EnterpriseDetails = ({
       getBusinessDetails({ id: businessId });
     }
   }, [getBusinessDetails, businessId]);
+
+  useEffect(() => {
+    if (businessDetails && Object.keys(businessDetails).length > 0) {
+      if (businessDetails.enterpriseName !== null)
+        setValue("enterpriseName", businessDetails.enterpriseName);
+      setValue(
+        "enterpriseBusinessName",
+        businessDetails.enterpriseBusinessName
+      );
+    }
+  }, [businessDetails, setValue]);
 
   // HANDLE GET BUSINESS DETAILS RESPONSE
   useEffect(() => {
@@ -161,7 +173,7 @@ export const EnterpriseDetails = ({
     createBusinessDetails({
       businessId,
       enterpriseName: data?.enterpriseName,
-      enterpriseBusinessName: data?.enterpriseBusinessName,
+      enterpriseBusinessName: data?.enterpriseBusinessName || null,
     });
   };
 
@@ -222,9 +234,10 @@ export const EnterpriseDetails = ({
                 rules={{
                   required: "Enterprise name is required",
                 }}
-                defaultValue={
-                  user?.username || `${user?.firstName} ${user?.lastName || ""}`
+                defaultValue={`${user?.profile?.firstName} ${
+                  user?.profile?.lastName || ""
                 }
+                `}
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col items-start w-1/2 gap-1">
@@ -257,7 +270,7 @@ export const EnterpriseDetails = ({
                             companyName: field?.value,
                           });
                         }}
-                        label={`Business Name`}
+                        label={`Business Name (Optional)`}
                         readOnly={false}
                         {...field}
                         onChange={(e) => {
