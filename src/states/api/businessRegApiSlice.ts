@@ -820,12 +820,6 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId }) => {
           return {
             url: `/founders-with-shares?businessId=${businessId}`,
-      // GET BUSINESS CERTIFICATE
-      fetchBusinessCertificate: builder.query({
-        query: ({ id }) => {
-          return {
-            url: `/certificate/getCertificate/all?businessId=${id}&status=ACTIVE`,
-            method: "GET",
           };
         },
       }),
@@ -982,8 +976,20 @@ export const businessRegApiSlice = createApi({
               amendmentStatus,
             },
           };
-        }
+        },
       }),
+
+
+      // GET BUSINESS CERTIFICATE
+      fetchBusinessCertificate: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/certificate/getCertificate/all?businessId=${id}&status=ACTIVE`,
+            method: "GET",
+          };
+        },
+      }),
+
       // GET BUSINESS CERTIFICATE by ID
       fetchBusinessCertificateById: builder.query({
         query: ({ id }) => {
@@ -1016,10 +1022,6 @@ export const businessRegApiSlice = createApi({
           ;
         },
       }),
-         
-};
-        },
-      }),
     };
   },
 });
@@ -1027,10 +1029,6 @@ export const businessRegApiSlice = createApi({
 export const {
   useLazySearchBusinessesQuery,
   useLazyFetchBusinessesQuery,
-  useLazyFetchBusinessCertificateQuery,
-  useLazyFetchBusinessCertificateByIdQuery,
-  useLazyFetchFullBusinessCertificateByIdQuery,
-  useCreateCertificateRequestMutation,
   useLazyGetBusinessQuery,
   useLazyGetBusinessAddressQuery,
   useCreateBusinessMutation,
@@ -1095,6 +1093,10 @@ export const {
   useLazyFetchAmendmentReviewCommentsQuery,
   useUpdateAmendmentReviewCommentStatusMutation,
   useUpdateBusinessAmendmentStatusMutation,
+  useLazyFetchBusinessCertificateQuery,
+  useLazyFetchBusinessCertificateByIdQuery,
+  useLazyFetchFullBusinessCertificateByIdQuery,
+  useCreateCertificateRequestMutation,
 } = businessRegApiSlice;
 
 export default businessRegApiSlice;
