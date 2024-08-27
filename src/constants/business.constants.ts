@@ -22,12 +22,12 @@ export const businessColumns = [
       capitalizeString(row.original.companyType),
   },
   {
-    id: "dateOfIncorporation",
-    header: "Submission Date",
-    accessorKey: "dateOfIncorporation",
+    id: 'updatedAt',
+    header: 'Last Updated',
+    accessorKey: 'updatedAt',
     cell: ({ row }: { row: Row<Business> }) =>
-      formatDate(row?.original?.dateOfIncorporation) ||
-      formatDate(row?.original?.createdAt),
+      formatDate(row?.original?.updatedAt) ||
+      formatDate(row?.original?.updatedAt),
   },
 ];
 
