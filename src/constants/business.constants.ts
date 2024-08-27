@@ -29,21 +29,6 @@ export const businessColumns = [
       formatDate(row?.original?.dateOfIncorporation) ||
       formatDate(row?.original?.createdAt),
   },
-  {
-    id: "applicationStatus",
-    header: "Application status",
-    accessorKey: "applicationStatus",
-    cell: ({ row }: { row: Row<Business> }) =>
-      capitalizeString(row?.original?.applicationStatus),
-    filterFn: (row: Row<unknown>, id: string, value: string) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    id: "assignee",
-    header: "Assigned To",
-    accessorKey: "assignee",
-  },
 ];
 
 export const attachmentColumns = [

@@ -145,7 +145,7 @@ const UserBusinessAmendmentsList = () => {
           <figure className="w-full flex items-center justify-center min-h-[40vh]">
             <Loader className="text-primary" />
           </figure>
-        ) : (
+        ) : userBusinessAmendmentsIsSuccess && (
           <section className="w-full flex flex-col gap-5">
             <TableToolbar
               filterHandler={(e) => {

@@ -11,7 +11,7 @@ import { faFlag } from '@fortawesome/free-regular-svg-icons';
 import {
   faAdd,
   faCircleInfo,
-  faEllipsisVertical,
+  faEllipsis,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef, Row } from '@tanstack/react-table';
@@ -71,14 +71,14 @@ const FounderDetailsWithShares = ({
             trigger={
               <menu className="w-full flex items-center gap-2 justify-center cursor-pointer">
                 <FontAwesomeIcon
-                  className="text-primary"
-                  icon={faEllipsisVertical}
+                  className="text-primary p-1 px-3 rounded-md bg-slate-200 hover:bg-slate-300"
+                  icon={faEllipsis}
                 />
               </menu>
             }
           >
             <Link
-              className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+              className="w-full flex items-center gap-2 text-[13px] text-center p-2 px-3 rounded-sm hover:bg-gray-100"
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setSelectedFounderDetailWithShares(row?.original));
@@ -90,7 +90,7 @@ const FounderDetailsWithShares = ({
               View details
             </Link>
             <Link
-              className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
+              className="w-full flex items-center gap-2 text-[13px] text-center p-2 px-3 rounded-sm hover:bg-gray-100"
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setSelectedFounderDetailWithShares(row?.original));
@@ -99,6 +99,17 @@ const FounderDetailsWithShares = ({
             >
               <FontAwesomeIcon className="text-primary" icon={faFlag} /> Report
               as beneficial owner
+            </Link>
+            <Link
+              className="w-full flex items-center gap-2 text-[13px] text-center p-2 px-3 rounded-sm hover:bg-gray-100"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(setSelectedFounderDetailWithShares(row?.original));
+              }}
+              to={'#'}
+            >
+              <FontAwesomeIcon className="text-primary" icon={faFlag} />
+              Add principal shares' owner
             </Link>
           </CustomPopover>
         );
@@ -121,7 +132,7 @@ const FounderDetailsWithShares = ({
           value={
             <menu className="flex items-center gap-2 text-[11px]">
               <FontAwesomeIcon className="text-[14px]" icon={faAdd} />
-              <p className="text-[14px]">Report new</p>
+              <p className="text-[14px]">Add new</p>
             </menu>
           }
         />

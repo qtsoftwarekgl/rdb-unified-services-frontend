@@ -69,7 +69,7 @@ const PreviewSubmission = ({
         )?.id,
       })
     );
-  }, [dispatch, businessId]);
+  }, [dispatch]);
 
   // INITIALIZE FETCHING COMPANY DETAILS QUERY
   const [
@@ -139,7 +139,6 @@ const PreviewSubmission = ({
   const [
     updateBusiness,
     {
-      data: updateBusinessData,
       error: updateBusinessError,
       isLoading: updateBusinessIsLoading,
       isSuccess: updateBusinessIsSuccess,
@@ -167,7 +166,6 @@ const PreviewSubmission = ({
   }, [
     dispatch,
     navigate,
-    updateBusinessData,
     updateBusinessError,
     updateBusinessIsError,
     updateBusinessIsSuccess,
@@ -194,17 +192,6 @@ const PreviewSubmission = ({
       fetchExecutiveManagement({ businessId, route: "management" });
       fetchShareholders({ businessId });
       fetchBusinessAttachments({ businessId });
-
-      // Complete preview tab
-      dispatch(
-        completeNavigationFlowThunk({
-          isCompleted: true,
-          navigationFlowId: findNavigationFlowByStepName(
-            businessNavigationFlowsList,
-            "Preview & Submission"
-          )?.id,
-        })
-      );
     }
   }, [
     businessId,
@@ -616,12 +603,10 @@ const PreviewSubmission = ({
             <Loader className="text-primary" />
             Fetching business attachments...
           </figure>
-        ) : (
-          businessAttachmentsData?.data?.length > 0 && (
+        ) : businessAttachmentsData?.data?.length > 0 &&  (
             <BusinessPeopleAttachments
               attachments={businessAttachmentsData?.data}
             />
-          )
         )}
       </PreviewCard>
       {[
@@ -668,6 +653,20 @@ const PreviewSubmission = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
+              if (
+                !Object?.values(navigationFlowMassList ?? {})
+                  ?.flat()
+                  ?.every((navigationStep) => {
+                    return businessNavigationFlowsList?.find(
+                      (businessStep) =>
+                        businessStep?.navigationFlowMass?.stepName ===
+                          navigationStep?.stepName && businessStep?.completed
+                    );
+                  })
+              ) {
+                toast.error("All steps must be completed before submission");
+                return;
+              }
               updateBusiness({
                 businessId,
                 applicationStatus: "RESUBMITTED",

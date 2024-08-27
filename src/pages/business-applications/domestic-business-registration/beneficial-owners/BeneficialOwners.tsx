@@ -40,6 +40,14 @@ import {
 import { toast } from 'react-toastify';
 import { ErrorResponse } from 'react-router-dom';
 import BeneficialOwnersTable from './BeneficialOwnersTable';
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from '@/states/features/navigationFlowSlice';
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from '@/helpers/business.helpers';
 
 interface BeneficialOwnersProps {
   businessId: businessId;
@@ -66,6 +74,9 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
   } = useSelector((state: RootState) => state.beneficialOwner);
   const [scrollSlides, setScrollSlides] = useState(0);
   const [addNewBeneficialOwner, setAddNewBeneficialOwner] = useState(false);
+  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
+    (state: RootState) => state.navigationFlow
+  );
 
   // REACT HOOK FORM
   const {
@@ -105,7 +116,7 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
       businessId,
       dateOfBirth: formatDate(data?.dateOfBirth),
       registeredDate: formatDate(data?.registeredDate),
-      extentOfShare: selectedFounderDetailWithShares?.shareQuantityPercentage
+      extentOfShare: selectedFounderDetailWithShares?.shareQuantityPercentage,
     });
   };
 
@@ -231,7 +242,9 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
         beneficialOwnersList?.length > 0 &&
         !addNewBeneficialOwner &&
         !selectedFounderDetailWithShares && (
-          <BeneficialOwnersTable beneficialOwners={beneficialOwnersList} />
+          <>
+            <BeneficialOwnersTable beneficialOwners={beneficialOwnersList} />
+          </>
         )
       )}
       {((selectedFounderDetailWithShares && !founderWithSharesDetailsModal) ||
@@ -1078,6 +1091,53 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
             )}
           </menu>
         </form>
+      )}
+      {!addNewBeneficialOwner && !selectedFounderDetailWithShares && (
+        <menu className="w-full flex items-center gap-3 justify-between">
+          <Button
+            value={'Back'}
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(
+                createNavigationFlowThunk({
+                  businessId,
+                  massId: findNavigationFlowMassIdByStepName(
+                    navigationFlowMassList,
+                    'Employment Info'
+                  ),
+                  isActive: true,
+                })
+              );
+            }}
+          />
+          <Button
+            value={'Save & Continue'}
+            primary
+            disabled={beneficialOwnersList?.length <= 0}
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(
+                completeNavigationFlowThunk({
+                  isCompleted: true,
+                  navigationFlowId: findNavigationFlowByStepName(
+                    businessNavigationFlowsList,
+                    'Beneficial Owners'
+                  )?.id,
+                })
+              );
+              dispatch(
+                createNavigationFlowThunk({
+                  businessId,
+                  massId: findNavigationFlowMassIdByStepName(
+                    navigationFlowMassList,
+                    'Attachments'
+                  ),
+                  isActive: true,
+                })
+              );
+            }}
+          />
+        </menu>
       )}
     </section>
   );

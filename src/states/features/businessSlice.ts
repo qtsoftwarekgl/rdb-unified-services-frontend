@@ -146,6 +146,7 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
       );
       return response.data;
     } catch (error) {
+      console.log(error)
       toast.error("An error occurred while uploading attachment");
       throw error;
     }

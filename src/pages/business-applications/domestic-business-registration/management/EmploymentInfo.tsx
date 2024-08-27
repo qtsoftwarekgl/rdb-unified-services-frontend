@@ -4,10 +4,6 @@ import Input from "../../../../components/inputs/Input";
 import Button from "../../../../components/inputs/Button";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../../../states/features/businessRegistrationSlice";
 import Loader from "../../../../components/Loader";
 import { ErrorResponse, Link } from "react-router-dom";
 import ViewDocument from "@/pages/user-company-details/ViewDocument";
@@ -99,15 +95,14 @@ const EmploymentInfo = ({
   useEffect(() => {
     if (createEmploymentInfoIsError) {
       if ((createEmploymentInfoError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred. Please try again later");
+        toast.error('An error occurred. Please try again later');
       } else {
         toast.error(
           (createEmploymentInfoError as ErrorResponse)?.data?.message
         );
       }
     } else if (createEmploymentInfoIsSuccess) {
-      toast.success("Employment info saved successfully");
-      // Upload resolution attachment
+      toast.success('Employment info saved successfully');
       if (applicationStatus === ApplicationStatus.IsAmending) {
         if (file && businessId)
           dispatch(
@@ -126,7 +121,7 @@ const EmploymentInfo = ({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            "Employment Info"
+            'Employment Info'
           )?.id,
         })
       );
@@ -135,18 +130,25 @@ const EmploymentInfo = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            "Attachments"
+            'Beneficial Owners'
           ),
           isActive: true,
         })
       );
     }
   }, [
+    applicationStatus,
+    attachmentType,
     businessId,
+    businessNavigationFlowsList,
+    createEmploymentInfoData,
     createEmploymentInfoError,
     createEmploymentInfoIsError,
     createEmploymentInfoIsSuccess,
     dispatch,
+    file,
+    fileName,
+    navigationFlowMassList,
   ]);
 
   return (

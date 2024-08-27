@@ -1,5 +1,5 @@
-import { useLocation } from "react-router-dom";
-import Button from "../components/inputs/Button";
+import { useLocation } from 'react-router-dom';
+import Button from '../components/inputs/Button';
 import success_logo from '/success_logo.jpeg';
 
 const BusinessRegisterSuccess = () => {
@@ -14,7 +14,7 @@ const BusinessRegisterSuccess = () => {
       <Button
         primary
         value="OK"
-        route={redirectUrl ? redirectUrl : "/services"}
+        route={redirectUrl ? redirectUrl : '/services'}
         className="w-40"
       />
     </section>

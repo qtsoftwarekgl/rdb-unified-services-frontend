@@ -297,7 +297,7 @@ const CompanyAttachments = ({
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      "Employment Info"
+                      "Beneficial Owners"
                     ),
                     isActive: true,
                   })
