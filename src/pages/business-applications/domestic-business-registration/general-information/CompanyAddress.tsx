@@ -6,7 +6,6 @@ import Button from "../../../../components/inputs/Button";
 import validateInputs from "../../../../helpers/validations";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { setBusinessActiveStep } from "../../../../states/features/businessRegistrationSlice";
 import { businessId } from "@/types/models/business";
 import {
   setBusinessAddress,
@@ -345,7 +344,7 @@ const CompanyAddress = ({
     if (createCompanyAddressIsError) {
       if ((createCompanyAddressError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while creating or updating company address"
+          'An error occurred while creating or updating company address'
         );
       } else {
         toast.error(
@@ -353,7 +352,7 @@ const CompanyAddress = ({
         );
       }
     } else if (createCompanyAddressIsSuccess) {
-      toast.success("Company address created or updated successfully");
+      toast.success('Company address created or updated successfully');
       if (applicationStatus === ApplicationStatus.IsAmending) {
         // upload resolution attachment
         if (file && businessId)
@@ -372,7 +371,7 @@ const CompanyAddress = ({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            "Company Address"
+            'Company Address'
           )?.id,
         })
       );
@@ -381,18 +380,25 @@ const CompanyAddress = ({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            "Business Activity & VAT"
+            'Business Activity & VAT'
           ),
           isActive: true,
         })
       );
     }
   }, [
+    applicationStatus,
+    attachmentType,
     businessId,
+    businessNavigationFlowsList,
+    createCompanyAddressData?.data?.amendmentId,
     createCompanyAddressError,
     createCompanyAddressIsError,
     createCompanyAddressIsSuccess,
     dispatch,
+    file,
+    fileName,
+    navigationFlowMassList,
   ]);
 
   return (

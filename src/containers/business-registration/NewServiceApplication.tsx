@@ -295,8 +295,7 @@ const NewServiceApplication = () => {
                   <Loader />
                 </figure>
               ) : (
-                businessesIsSuccess &&
-                businessesList?.length > 0 && (
+                businessesIsSuccess && (
                   <menu className="flex flex-col gap-2 max-md:w-full">
                     <menu className="flex items-center justify-between w-full gap-3 my-2">
                       <h1 className="text-base font-semibold uppercase text-primary">

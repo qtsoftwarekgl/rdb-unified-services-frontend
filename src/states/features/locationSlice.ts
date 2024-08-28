@@ -88,7 +88,7 @@ export const fetchSectorsThunk = createAsyncThunk<Sector[], number>(
       const response = await dispatch(
         businessRegApiSlice.endpoints.fetchSectors.initiate({ districtId })
       ).unwrap();
-      return response.data?.data;
+      return response.data;
     } catch (error) {
       toast.error('An error occurred while fetching sectors');
     }
@@ -185,8 +185,10 @@ export const locationSlice = createSlice({
     },
     setSelectedDistrict: (state, action) => {
       if (action.payload instanceof Object) {
+        console.log(action.payload)
         state.selectedDistrict = action.payload;
       } else {
+        console.log(action.payload)
         state.selectedDistrict = state.districtsList.find(
           (district) => district.id === Number(action.payload)
         );
