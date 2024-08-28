@@ -6,7 +6,7 @@ import Button from "../../../../components/inputs/Button";
 import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
 import ViewDocument from "../../../user-company-details/ViewDocument";
-import { Address, BusinessActivity, businessId } from "@/types/models/business";
+import { Address, Business, BusinessActivity, businessId } from "@/types/models/business";
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyFetchBusinessAddressQuery,
@@ -265,6 +265,17 @@ const PreviewSubmission = ({
               {businessDetailsData?.data ? (
                 Object?.entries(businessDetailsData?.data)?.map(
                   ([key, value], index: number) => {
+                    if (['amendedInformation'].includes(key)) {
+                      const originalValue = businessDetailsData?.data;
+                      return (
+                        <article className="w-full flex flex-col gap-2 my-4">
+                          <h3 className="uppercase text-primary text-lg font-medium">
+                            Amended information
+                          </h3>
+                          {renderCompanyDetails(value as Business, originalValue as Business)}
+                        </article>
+                      );
+                    }
                     if (
                       value === null ||
                       [
@@ -692,5 +703,70 @@ const PreviewSubmission = ({
     </section>
   );
 };
+
+function renderCompanyDetails(
+  displayValue: Business,
+  comparisonValue?: Business
+) {
+  return (
+    <menu>
+      <ul className="flex flex-col gap-3">
+        {Object.entries(displayValue)?.map(([key, value]) => {
+          const comparisonValueForKey = comparisonValue?.[key];
+          if (
+            [
+              'assignedVerifier',
+              'assignedApprover',
+              'serviceId',
+              'state',
+              'version',
+              'createdAt',
+              'lastModifiedDate',
+              'entityId',
+              'id',
+              'applicationReferenceId',
+              'updatedAt',
+              'createdDate',
+              'isForeign',
+              'applicationStatus',
+            ].includes(key) ||
+            value === null
+          )
+            return null;
+          if (typeof value === 'boolean') {
+            return (
+              <li key={key} className="flex items-center gap-2">
+                <p>{capitalizeString(key)}:</p>
+                <p
+                  className={`font-medium ${
+                    comparisonValue &&
+                    comparisonValueForKey !== value &&
+                    'bg-green-700 text-white p-1 px-2 rounded-md text-[13px]'
+                  }`}
+                >
+                  {value ? 'Yes' : 'No'}
+                </p>
+              </li>
+            );
+          }
+          return (
+            <li key={key} className="flex items-center gap-2">
+              <p>{capitalizeString(key)}:</p>
+              <p
+                className={`font-medium ${
+                  comparisonValue &&
+                  comparisonValueForKey !== value &&
+                  'bg-green-700 text-white p-1 px-2 rounded-md text-[13px]'
+                }`}
+              >
+                {capitalizeString(value as string)}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </menu>
+  );
+}
 
 export default PreviewSubmission;

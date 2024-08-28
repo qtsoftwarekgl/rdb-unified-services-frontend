@@ -41,6 +41,9 @@ const initialState: {
   updateBusinessIsLoading: boolean;
   businessCertificates: Certificate[];
   certificatesCompany: Business;
+  getBusinessIsFetching: boolean;
+  getBusinessIsSuccess: boolean;
+  getBusinessIsError: boolean;
 } = {
   businessesList: [],
   business: {} as Business,
@@ -64,7 +67,10 @@ const initialState: {
   updateBusinessIsSuccess: false,
   updateBusinessIsLoading: false,
   businessCertificates: [],
-  certificatesCompany: {} as Business
+  certificatesCompany: {} as Business,
+  getBusinessIsError: false,
+  getBusinessIsFetching: false,
+  getBusinessIsSuccess: false,
 };
 
 // FETCH BUSINESSES
@@ -175,6 +181,25 @@ export const updateBusinessThunk = createAsyncThunk<
     }
   }
 );
+
+// FETCH BUSINESS THUNK
+export const getchBusinessThunk = createAsyncThunk<
+  Business,
+  UUID,
+  { dispatch: AppDispatch }
+>('business/getchBusiness', async (id, { dispatch }) => {
+  try {
+    const response = await dispatch(
+      businessRegApiSlice.endpoints.getBusiness.initiate({
+        id,
+      })
+    ).unwrap();
+    return response.data;
+  } catch (error) {
+    toast.error('An error occurred while fetching business');
+    throw error;
+  }
+});
 
 export const businessSlice = createSlice({
   name: "business",
@@ -312,6 +337,28 @@ export const businessSlice = createSlice({
     builder.addCase(updateBusinessThunk.pending, (state) => {
       state.updateBusinessIsSuccess = false;
       state.updateBusinessIsLoading = true;
+    });
+    builder.addCase(getchBusinessThunk.fulfilled, (state, action) => {
+      state.business = action.payload;
+      state.businessesList = state.businessesList.map((business) => {
+        if (business.id === action.payload.id) {
+          return action.payload;
+        }
+        return business;
+      });
+      state.getBusinessIsFetching = false;
+      state.getBusinessIsSuccess = true;
+      state.getBusinessIsError = false;
+    });
+    builder.addCase(getchBusinessThunk.rejected, (state) => {
+      state.getBusinessIsFetching = false;
+      state.getBusinessIsSuccess = false;
+      state.getBusinessIsError = true;
+    });
+    builder.addCase(getchBusinessThunk.pending, (state) => {
+      state.getBusinessIsFetching = true;
+      state.getBusinessIsSuccess = false;
+      state.getBusinessIsError = false;
     });
   },
 });

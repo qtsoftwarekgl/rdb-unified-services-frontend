@@ -9,7 +9,7 @@ import UserLayout from '../../containers/UserLayout';
 import Button from '../../components/inputs/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../states/store';
-import { capitalizeString, formatDate } from '../../helpers/strings';
+import { capitalizeString } from '../../helpers/strings';
 import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
@@ -109,7 +109,7 @@ const UserBusinessApplications = () => {
             trigger={
               <menu className="flex items-center justify-center w-full gap-2 text-[12px] cursor-pointer">
                 <FontAwesomeIcon
-                  className="text-primary text-md transition-all duration-300 hover:scale-[.98] bg-slate-200 hover:bg-slate-300 rounded-md p-1 px-2"
+                  className="text-primary text-md transition-all duration-300 hover:scale-[.98] bg-slate-200 hover:bg-slate-300 rounded-md p-1 px-4"
                   icon={faEllipsisH}
                 />
               </menu>
@@ -191,11 +191,7 @@ const UserBusinessApplications = () => {
                 return {
                   ...business,
                   no: index + 1,
-                  dateOfIncorporation: formatDate(
-                    business?.createdAt
-                  ) as unknown as Date,
                   companyType: capitalizeString(business?.companyType) || 'N/A',
-                  assignee: 'RDB Verifier',
                   companyName: (
                     business?.companyName ||
                     business?.enterpriseName ||

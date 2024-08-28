@@ -48,7 +48,7 @@ const CustomBreadcrumb = ({ navigationLinks }: CustomBreadcrumbProps) => {
           <menu key={index} className="flex items-center gap-2">
             {index > 0 && <BreadcrumbSeparator />}
             <BreadcrumbItem>
-              <Link to={link.route} className="text-[14px]">
+              <Link to={link.route} className="text-[14px] hover:text-slate-700 transition-all ease-in-out duration-200 hover:scale-[1.01]">
                 {link.label}
               </Link>
             </BreadcrumbItem>

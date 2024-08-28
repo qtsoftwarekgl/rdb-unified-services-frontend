@@ -59,4 +59,15 @@ export const beneficialOwnerControlMeans = [
 
 export const beneficialOwnerControlType = ["DIRECT", "INDIRECT"];
 
-export const beneficialOwnerTypes = ["REGULAR_MANAGEMENT", "SENIOR_MANAGEMENT"];
+export const beneficialOwnerTypes = ['REGULAR_MANAGEMENT', 'SENIOR_MANAGEMENT'];
+
+export const businessLineColumns = [
+  {
+    header: 'Code',
+    accessorKey: 'code',
+  },
+  {
+    header: 'Description',
+    accessorKey: 'description',
+  },
+];

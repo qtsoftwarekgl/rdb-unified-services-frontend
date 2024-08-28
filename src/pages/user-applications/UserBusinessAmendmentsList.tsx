@@ -24,6 +24,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisVertical, faInfo } from '@fortawesome/free-solid-svg-icons';
 import CustomPopover from '@/components/inputs/CustomPopover';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
+import CustomBreadcrumb from '@/components/navigation/CustomBreadcrumb';
+import { getchBusinessThunk } from '@/states/features/businessSlice';
+import { UUID } from 'crypto';
 
 const UserBusinessAmendmentsList = () => {
   // STATE VARIABLES
@@ -35,6 +38,12 @@ const UserBusinessAmendmentsList = () => {
     {}
   );
   const [showCustomFilter, setShowCustomFilter] = useState<boolean>(false);
+  const {
+    business,
+    getBusinessIsFetching,
+    getBusinessIsError,
+    getBusinessIsSuccess,
+  } = useSelector((state: RootState) => state.business);
 
   // NAVIGATION
   const { search } = useLocation();
@@ -85,6 +94,13 @@ const UserBusinessAmendmentsList = () => {
     userBusinessAmendmentsIsError,
     userBusinessAmendmentsError,
   ]);
+
+  // GET BUSINESS THUNK
+  useEffect(() => {
+    if (queryParams?.businessId) {
+      dispatch(getchBusinessThunk(queryParams.businessId as UUID));
+    }
+  }, [dispatch, queryParams.businessId]);
 
   // BUSINESS AMENDMENT EXTENDED COLUMNS
   const businessAmendmentExtendedColumns = [
@@ -138,36 +154,75 @@ const UserBusinessAmendmentsList = () => {
     },
   ];
 
+  // HANDLE GET BUSINESS RESPONSE
+  useEffect(() => {
+    if (getBusinessIsError) {
+      navigate(`/user/business/applications`);
+    }
+  }, [getBusinessIsError, navigate]);
+
+  // NAVIGATION LINKS
+  const navigationLinks = [
+    {
+      label: 'Business Applications',
+      route: '/user/business/applications',
+    },
+    {
+      label: getBusinessIsFetching
+        ? '...'
+        : `${
+            business?.companyName ||
+            business?.branchName ||
+            business?.enterpriseBusinessName ||
+            business?.enterpriseName
+          }`,
+      route: `/user/amendments?businessId=${
+        getBusinessIsSuccess ? business?.id : queryParams?.businessId
+      }`,
+    },
+    {
+      label: getBusinessIsFetching ? '...' : `Amendments`,
+      route: `/user/amendments?businessId=${
+        getBusinessIsSuccess ? business?.id : queryParams?.businessId
+      }`,
+    },
+  ];
+
   return (
     <UserLayout>
       <main className="w-full flex flex-col gap-4 bg-white p-6 rounded-md min-h-[85vh]">
-        {userBusinessAmendmentsIsFetching ? (
+        {userBusinessAmendmentsIsFetching || getBusinessIsFetching ? (
           <figure className="w-full flex items-center justify-center min-h-[40vh]">
             <Loader className="text-primary" />
           </figure>
-        ) : userBusinessAmendmentsIsSuccess && (
-          <section className="w-full flex flex-col gap-5">
-            <TableToolbar
-              filterHandler={(e) => {
-                e.preventDefault();
-                setShowCustomFilter(!showCustomFilter);
-              }}
-            />
-            {showCustomFilter && (
-              <UserBusinessAmendmentsFilter
-                onSelectAmendmentStatuses={(statuses) => {
-                  console.log(statuses);
-                }}
-                onSelectAmendmentType={(amendmentType) => {
-                  console.log(amendmentType);
+        ) : (
+          userBusinessAmendmentsIsSuccess && (
+            <section className="w-full flex flex-col gap-5 p-1">
+              <figure className="p-[6px]">
+                <CustomBreadcrumb navigationLinks={navigationLinks} />
+              </figure>
+              <TableToolbar
+                filterHandler={(e) => {
+                  e.preventDefault();
+                  setShowCustomFilter(!showCustomFilter);
                 }}
               />
-            )}
-            <Table
-              columns={businessAmendmentExtendedColumns}
-              data={userBusinessAmendmentsList}
-            />
-          </section>
+              {showCustomFilter && (
+                <UserBusinessAmendmentsFilter
+                  onSelectAmendmentStatuses={(statuses) => {
+                    console.log(statuses);
+                  }}
+                  onSelectAmendmentType={(amendmentType) => {
+                    console.log(amendmentType);
+                  }}
+                />
+              )}
+              <Table
+                columns={businessAmendmentExtendedColumns}
+                data={userBusinessAmendmentsList}
+              />
+            </section>
+          )
         )}
       </main>
     </UserLayout>
