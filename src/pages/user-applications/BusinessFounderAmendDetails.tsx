@@ -88,7 +88,7 @@ const BusinessFounderAmendmentdetails = () => {
           />
         </menu>
       )}
-      {selectedTab === 'proposed-changes' && (
+      {selectedTab === 'Submitted-changes' && (
         <menu className="w-full flex flex-col gap-3">
           <Table
             columns={founderDetailExtendedColumns as ColumnDef<PersonDetail>[]}

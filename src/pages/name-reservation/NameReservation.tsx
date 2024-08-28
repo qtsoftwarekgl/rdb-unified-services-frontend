@@ -1,65 +1,67 @@
-import { useDispatch, useSelector } from 'react-redux';
 import UserLayout from '../../containers/UserLayout';
-import ProgressNavigation from '../business-applications/ProgressNavigation';
-import { RootState } from '../../states/store';
-import {
-  setNameReservationActiveTab,
-  setNameReservationActiveStep,
-} from '../../states/features/nameReservationSlice';
-import Tab from '../business-applications/NavigationTab';
-import { TabType } from '../../types/navigationTypes';
 import OwnerDetails from './OwnerDetails';
 import NameReservationSearch from './NameReservationSearch';
 import NameReservationSuccess from './NameReservationSuccess';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { capitalizeString } from '@/helpers/strings';
 
 const NameReservation = () => {
-  const {
-    name_reservation_tabs,
-    name_reservation_active_tab,
-    name_reservation_active_step,
-  } = useSelector((state: RootState) => state.nameReservation);
-
-  // STATE VARIABLES
-  const dispatch = useDispatch();
+  const [navigationTabs] = useState([
+    {
+      name: 'owner_details',
+      active: true,
+      steps: 1,
+    },
+    {
+      name: 'name_reservation',
+      active: false,
+      steps: 2,
+    },
+    {
+      name: 'success',
+      active: false,
+      steps: 3,
+    },
+  ]);
+  const [activeTab, setActiveTab] = useState(navigationTabs[0]);
 
   return (
     <UserLayout>
-      <main className="flex flex-col gap-6 py-6">
-        <ProgressNavigation
-          tabs={name_reservation_tabs}
-          setActiveTab={setNameReservationActiveTab}
-        />
+      <main className="w-full p-6 rounded-md bg-white flex flex-col gap-5">
+        <nav className="w-full flex items-center gap-3 my-4">
+          {navigationTabs?.map((navigationTab, index) => {
+            const isActive = navigationTab?.name === activeTab?.name;
+            return (
+              <Link
+                to={'#'}
+                key={index}
+                className={`${
+                  isActive && 'bg-primary text-white'
+                } w-full flex items-center justify-center rounded-md text-center py-2`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTab(navigationTab);
+                }}
+              >
+                {capitalizeString(navigationTab?.name)}
+              </Link>
+            );
+          })}
+        </nav>
+        <menu className="flex items-center w-full gap-5 my-5">
+          {/* OWNER DETAILS */}
+          <OwnerDetails isOpen={activeTab?.name === 'owner_details'} />
+
+          {/* NAME RESERVATION */}
+          <NameReservationSearch
+            isOpen={activeTab?.name === 'name_reservation'}
+          />
+
+          {/* NAME RESERVATION SUCCESS */}
+          {activeTab?.name === 'success' && <NameReservationSuccess />}
+        </menu>
       </main>
-      <menu className="flex items-center w-full gap-5">
-        {name_reservation_tabs?.map((tab: TabType, index: number) => {
-          return (
-            <Tab
-              isOpen={tab?.active}
-              steps={tab?.steps}
-              key={`${String(index)}`}
-              setActiveStep={setNameReservationActiveStep}
-              active_tab={name_reservation_active_tab}
-            >
-              {/* OWNER DETAILS */}
-              <OwnerDetails
-                isOpen={name_reservation_active_step?.name === 'owner_details'}
-              />
-
-              {/* NAME RESERVATION */}
-              <NameReservationSearch
-                isOpen={
-                  name_reservation_active_step?.name === 'name_reservation'
-                }
-              />
-
-              {/* NAME RESERVATION SUCCESS */}
-              {name_reservation_active_step?.name === 'success' && (
-                <NameReservationSuccess />
-              )}
-            </Tab>
-          );
-        })}
-      </menu>
     </UserLayout>
   );
 };

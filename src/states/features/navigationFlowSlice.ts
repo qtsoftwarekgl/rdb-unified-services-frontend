@@ -13,11 +13,17 @@ const initialState: {
   businessNavigationFlowsList: NavigationFlow[];
   businessNavigationFlowIsLoading: boolean;
   selectedBusinessNavigationFlow?: NavigationFlow;
+  completeNavigationFlowIsLoading: boolean;
+  completeNavigationFlowIsError: boolean;
+  completeNavigationFlowIsSuccess: boolean;
 } = {
   navigationFlowMassList: undefined,
   businessNavigationFlowsList: [],
   businessNavigationFlowIsLoading: false,
   selectedBusinessNavigationFlow: undefined,
+  completeNavigationFlowIsLoading: false,
+  completeNavigationFlowIsError: false,
+  completeNavigationFlowIsSuccess: false,
 };
 
 export const createNavigationFlowThunk = createAsyncThunk<
@@ -85,12 +91,17 @@ const navigationFlowSlice = createSlice({
         state.businessNavigationFlowIsLoading = false;
       })
       .addCase(completeNavigationFlowThunk.pending, (state) => {
+        state.completeNavigationFlowIsLoading = true;
+        state.completeNavigationFlowIsSuccess = false;
+        state.completeNavigationFlowIsError = false;
         state.businessNavigationFlowIsLoading = true;
       })
       .addCase(
         completeNavigationFlowThunk.fulfilled,
         (state, action: PayloadAction<NavigationFlow>) => {
           state.businessNavigationFlowIsLoading = false;
+          state.completeNavigationFlowIsSuccess = true;
+          state.completeNavigationFlowIsError = false;
           state.businessNavigationFlowsList = state.businessNavigationFlowsList.map(
             (navigationFlow) =>
               navigationFlow.id === action.payload.id
@@ -101,6 +112,9 @@ const navigationFlowSlice = createSlice({
       )
       .addCase(completeNavigationFlowThunk.rejected, (state) => {
         state.businessNavigationFlowIsLoading = false;
+        state.completeNavigationFlowIsError = true;
+        state.completeNavigationFlowIsSuccess = false;
+        state.completeNavigationFlowIsLoading = false;
       });
   },
 });

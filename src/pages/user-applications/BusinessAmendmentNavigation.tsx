@@ -21,8 +21,8 @@ const BusinessAmendmentNavigation = ({
       slug: 'current-details',
     },
     {
-      label: 'Proposed changes',
-      slug: 'proposed-changes',
+      label: 'Submitted changes',
+      slug: 'Submitted-changes',
     },
     {
       label: 'Process history',

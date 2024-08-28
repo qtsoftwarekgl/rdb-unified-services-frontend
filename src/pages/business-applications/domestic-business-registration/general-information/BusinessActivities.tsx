@@ -147,14 +147,7 @@ const BusinessActivities = ({
         );
       }
     }
-  }, [
-    businessActivitiesData,
-    businessActivitiesError,
-    businessActivitiesIsError,
-    businessActivitiesIsSuccess,
-    dispatch,
-    selectedMainBusinessLine,
-  ]);
+  }, [businessActivitiesData, businessActivitiesError, businessActivitiesIsError, businessActivitiesIsSuccess, dispatch, reset]);
 
   // INITIALIZE FETCH BUSINESS ACTIVITY SECTOR QUERY
   const [
@@ -305,13 +298,7 @@ const BusinessActivities = ({
         })
       );
     }
-  }, [
-    businessId,
-    createBusinessActivitiesError,
-    createBusinessActivitiesIsError,
-    createBusinessActivitiesIsSuccess,
-    dispatch,
-  ]);
+  }, [attachmentType, businessId, businessNavigationFlowsList, createBusinessActivitiesData?.data?.amendmentId, createBusinessActivitiesError, createBusinessActivitiesIsError, createBusinessActivitiesIsSuccess, dispatch, file, fileName, navigationFlowMassList]);
 
   return (
     <section className="flex flex-col w-full gap-5">

@@ -95,6 +95,7 @@ export type Service = {
 
 export interface BusinessAmendment extends AbstractDomain {
   amendmentType: string;
+  amdApplicationRefId: string;
   oldValue: Business;
   newValue: Business;
   entityId: UUID;
