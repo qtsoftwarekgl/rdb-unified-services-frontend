@@ -1,6 +1,7 @@
 import { ECertificateType } from "@/helpers/certificate/enums";
 import { generateBusAmendmentCertificatePdf } from "@/helpers/certificate/templates/busAmendment";
-import { generateBusRegistrationCertificatePdf } from "@/helpers/certificate/templates/busRegistration";
+import { generateBusRegistrationDomesticCertificatePdf } from "@/helpers/certificate/templates/busRegistrationDomestic";
+import { generateBusRegistrationForeignCertificatePdf } from "@/helpers/certificate/templates/busRegistrationForeign";
 import { generateNameReservationCertificatePdf } from "@/helpers/certificate/templates/nameReservation";
 import { useCreateCertificateRequestMutation, useLazyFetchBusinessCertificateByIdQuery, useLazyFetchFullBusinessCertificateByIdQuery } from "@/states/api/businessRegApiSlice";
 import { Certificate } from "@/types/models/certificate";
@@ -68,8 +69,12 @@ const [
             const url = generateBusAmendmentCertificatePdf(response?.data?.data);
             setPdfUrl(url);
           }
+          else if(response?.data?.data?.certificateType === ECertificateType.FOREIGN_COMPANY_REGISTRATION){
+            const url = generateBusRegistrationForeignCertificatePdf(response?.data?.data, false);
+            setPdfUrl(url);
+          }
           else{
-            const url = generateBusRegistrationCertificatePdf(response?.data?.data, false);
+            const url = generateBusRegistrationDomesticCertificatePdf(response?.data?.data, false);
             setPdfUrl(url);
       } 
    }
@@ -78,8 +83,14 @@ const [
    const loadFullCertificate = async (certificate: Certificate) => {
       const response = await fetchFullBusinessCertificateById({id: certificate.id});
       if(response?.data?.status){
-         const url = generateBusRegistrationCertificatePdf(response?.data?.data, true);
+         if(response?.data?.data?.certificateType === ECertificateType.FOREIGN_COMPANY_REGISTRATION){
+            const url = generateBusRegistrationForeignCertificatePdf(response?.data?.data, true);
+            setPdfUrl(url);
+         }
+         else{
+         const url = generateBusRegistrationDomesticCertificatePdf(response?.data?.data, true);
          setPdfUrl(url);
+         }
       }
    }
 

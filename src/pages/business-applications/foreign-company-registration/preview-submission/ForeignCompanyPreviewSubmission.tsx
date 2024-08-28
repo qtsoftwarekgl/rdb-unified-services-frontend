@@ -458,7 +458,7 @@ const ForeignCompanyPreviewSubmission = ({
           </figure>
         ) : (
           employmentInfoIsSuccess &&
-          employmentInfoData?.data(
+          employmentInfoData?.data && (
             <menu className="flex flex-col gap-2">
               <p>
                 Working Start Time: {employmentInfoData?.data?.workingStartTime}

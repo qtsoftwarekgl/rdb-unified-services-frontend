@@ -153,7 +153,7 @@ export const userManagementApiSlice = createApi({
       assignRoles: builder.mutation({
         query: ({ userId, roleIds }) => {
           return {
-            url: `/assign-role`,
+            url: `/user/assign-role`,
             method: "PATCH",
             body: {
               userId,
