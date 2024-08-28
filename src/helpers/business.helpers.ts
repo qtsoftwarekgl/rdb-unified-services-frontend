@@ -54,8 +54,8 @@ export const getBusinessStatusColor = (status: string): string => {
       return 'bg-green-700';
     case 'REJECTED':
       return 'bg-red-700';
-    case 'RESUBMITTED':
-      return 'bg-yellow-700';
+    case 'IN_PROGRESS':
+      return 'bg-slate-600';
     case 'ACTION_REQUIRED':
       return 'bg-yellow-700';
     case 'AMENDMENT_SUBMITTED':
@@ -63,6 +63,7 @@ export const getBusinessStatusColor = (status: string): string => {
       return 'bg-yellow-700';
     case 'IN_REVIEW':
       return 'bg-blue-700';
+    case 'RESUBMITTED':
     case 'PENDING_DECISION':
       return 'bg-blue-700';
     default:
