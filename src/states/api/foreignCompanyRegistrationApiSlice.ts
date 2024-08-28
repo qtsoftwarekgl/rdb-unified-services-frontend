@@ -86,6 +86,7 @@ export const foreignCompanyRegistrationApiSlice = createApi({
         businessId,
         phoneNumber,
         position,
+        roleCategory,
         firstName,
         middleName,
         lastName,
@@ -114,6 +115,7 @@ export const foreignCompanyRegistrationApiSlice = createApi({
         body: {
           phoneNumber,
           position,
+          roleCategory,
           firstName,
           middleName,
           lastName,

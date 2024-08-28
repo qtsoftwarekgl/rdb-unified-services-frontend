@@ -210,6 +210,7 @@ const BoardOfDirectors = ({
       dispatch(addBoardMember(boardPersonData?.data?.data));
       reset({
         position: "",
+        roleCategory: "",
         personIdentType: "",
         documentNumber: "",
         personDocNo: "",
@@ -315,6 +316,8 @@ const BoardOfDirectors = ({
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset className="flex flex-col w-full gap-5">
           <menu className="flex flex-col w-full gap-4">
+            <div className="flex justify-between gap-4">
+            <div className="flex flex-col w-[50%]">            
             <h3 className="font-medium uppercase text-md">Add members</h3>
             <Controller
               name="position"
@@ -322,7 +325,7 @@ const BoardOfDirectors = ({
               control={control}
               render={({ field }) => {
                 return (
-                  <label className="flex flex-col gap-1 w-[49%]">
+                  <label className="flex flex-col gap-1 w-full">
                     <Select
                       label="Select position"
                       required
@@ -355,6 +358,49 @@ const BoardOfDirectors = ({
                 );
               }}
             />
+            </div>
+
+            <div className="flex flex-col w-[50%] mt-6">            
+            <Controller
+              name="roleCategory"
+              rules={{ required: "Select member's position" }}
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col gap-1 w-full">
+                    <Select
+                      label="Select category"
+                      required
+                      placeholder="Select category"
+                      options={[
+                        {
+                          value: "Executive",
+                          label: "Executive",
+                        },
+                        {
+                          value: "Non-Executive",
+                          label: "Non Executive",
+                        },
+                        {
+                          value: "Independent",
+                          label: "Independent",
+                        }
+                      ]}
+                      {...field}
+                    />
+                    {errors?.roleCategory && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.roleCategory?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            </div>
+            </div>
+
+
             <ul
               className={`${
                 watch("position") ? "flex" : "hidden"
@@ -385,6 +431,7 @@ const BoardOfDirectors = ({
                           field.onChange(e);
                           reset({
                             position: watch("position"),
+                            roleCategory: watch("roleCategory"),
                             personIdentType: e,
                           });
                         }}

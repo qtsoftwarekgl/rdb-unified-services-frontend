@@ -179,9 +179,8 @@ const BusinessPersonDetails = () => {
           </p>
           <p className="text-[14px]">Email: {businessPerson?.email}</p>
           <p className="text-[14px]">
-            Role:{' '}
-            {capitalizeString(businessPerson?.personRole?.roleDescription) ||
-              capitalizeString(businessPerson?.roleDescription)}
+            Role: {" "}
+            {capitalizeString(businessPerson?.personRole?.roleDescription) + (businessPerson?.personRole?.roleCategory ? ` - ${businessPerson?.personRole?.roleCategory}` : "")}
           </p>
         </menu>
       )}
