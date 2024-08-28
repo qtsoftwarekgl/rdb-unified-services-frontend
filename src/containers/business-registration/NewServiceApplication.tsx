@@ -265,6 +265,31 @@ const NewServiceApplication = () => {
             </h3>
           </menu>
           <CustomBreadcrumb navigationLinks={navigationLinks} />
+          <menu className="flex items-center justify-end">
+            <Button
+              primary
+              onClick={(e) => {
+                e.preventDefault();
+                createBusiness({
+                  isForeign: service?.path === "/foreign-company-registration",
+                  serviceId: service?.id,
+                });
+              }}
+              value={
+                !businessIsLoading ? (
+                  <menu className="flex items-center gap-2">
+                    <p className="text-[14px]">Start Application</p>
+                    <FontAwesomeIcon
+                      className="text-[14px]"
+                      icon={faArrowRight}
+                    />
+                  </menu>
+                ) : (
+                  <Loader />
+                )
+              }
+            />
+          </menu>
           <section className="flex flex-col w-full gap-6">
             <section className="flex flex-col gap-8 max-md:w-full">
               {businessesIsLoading ? (
@@ -279,33 +304,6 @@ const NewServiceApplication = () => {
                       <h1 className="px-2 text-base font-semibold uppercase text-primary">
                         Applications in progress
                       </h1>
-                      <menu className="flex items-center justify-center gap-4">
-                        <Button
-                          primary
-                          onClick={(e) => {
-                            e.preventDefault();
-                            createBusiness({
-                              isForeign:
-                                service?.path ===
-                                "/foreign-company-registration",
-                              serviceId: service?.id,
-                            });
-                          }}
-                          value={
-                            !businessIsLoading ? (
-                              <menu className="flex items-center gap-2">
-                                <p className="text-[14px]">Start Application</p>
-                                <FontAwesomeIcon
-                                  className="text-[14px]"
-                                  icon={faArrowRight}
-                                />
-                              </menu>
-                            ) : (
-                              <Loader />
-                            )
-                          }
-                        />
-                      </menu>
                     </menu>
                     <Table
                       setPage={setBusinessPage}
