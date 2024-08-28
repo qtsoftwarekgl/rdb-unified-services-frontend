@@ -97,13 +97,15 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    createBeneficialOwner({
-      ...data,
-      businessId,
-      dateOfBirth: formatDate(data?.dateOfBirth),
-      registeredDate: formatDate(data?.registeredDate),
-      extentOfShare: selectedFounderDetailWithShares?.shareQuantityPercentage,
-    });
+    if (data?.founderId) {
+      createBeneficialOwner({
+        ...data,
+        businessId,
+        dateOfBirth: formatDate(data?.dateOfBirth),
+        registeredDate: formatDate(data?.registeredDate),
+        extentOfShare: selectedFounderDetailWithShares?.shareQuantityPercentage,
+      });
+    }
   };
 
   // HANDLE CREATE BENEFICIAL OWNER RESPONSE
