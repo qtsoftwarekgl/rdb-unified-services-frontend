@@ -229,11 +229,36 @@ const NewServiceApplication = () => {
         </figure>
       )}
       {serviceIsSuccess && (
-        <main className="flex min-h-[40vh] flex-col w-full gap-8 px-8 py-6 bg-white rounded-md shadow-sm">
+        <main className="flex min-h-[40vh] flex-col w-full  px-8 py-6 bg-white rounded-md shadow-sm">
           <menu className="flex items-center justify-between w-full h-full gap-6 p-6 m-auto rounded-lg max-md:flex-col ">
             <h3 className="w-full font-bold text-center uppercase">
               {capitalizeString(service?.name)}
             </h3>
+          </menu>
+          <menu className="flex items-center justify-end">
+            <Button
+              primary
+              onClick={(e) => {
+                e.preventDefault();
+                createBusiness({
+                  isForeign: service?.path === "/foreign-company-registration",
+                  serviceId: service?.id,
+                });
+              }}
+              value={
+                !businessIsLoading ? (
+                  <menu className="flex items-center gap-2">
+                    <p className="text-[14px]">Start Application</p>
+                    <FontAwesomeIcon
+                      className="text-[14px]"
+                      icon={faArrowRight}
+                    />
+                  </menu>
+                ) : (
+                  <Loader />
+                )
+              }
+            />
           </menu>
           <section className="flex flex-col w-full gap-6">
             <section className="flex flex-col gap-8 max-md:w-full">
@@ -249,33 +274,6 @@ const NewServiceApplication = () => {
                       <h1 className="px-2 text-base font-semibold uppercase text-primary">
                         Applications in progress
                       </h1>
-                      <menu className="flex items-center justify-center gap-4">
-                        <Button
-                          primary
-                          onClick={(e) => {
-                            e.preventDefault();
-                            createBusiness({
-                              isForeign:
-                                service?.path ===
-                                "/foreign-company-registration",
-                              serviceId: service?.id,
-                            });
-                          }}
-                          value={
-                            !businessIsLoading ? (
-                              <menu className="flex items-center gap-2">
-                                <p className="text-[14px]">Start Application</p>
-                                <FontAwesomeIcon
-                                  className="text-[14px]"
-                                  icon={faArrowRight}
-                                />
-                              </menu>
-                            ) : (
-                              <Loader />
-                            )
-                          }
-                        />
-                      </menu>
                     </menu>
                     <Table
                       setPage={setBusinessPage}
