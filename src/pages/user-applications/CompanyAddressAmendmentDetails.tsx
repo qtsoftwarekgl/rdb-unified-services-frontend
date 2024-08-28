@@ -60,7 +60,7 @@ const CompanyAddressAmendmentDetails = () => {
       </section>
       <section className="w-full flex flex-col gap-4">
         <h2 className="uppercase text-primary text-lg font-semibold">
-          Proposed changes
+          Submitted changes
         </h2>
         <menu className="grid grid-cols-2 gap-5 w-full">
           {Object.entries(selectedBusinessAmendment?.newValue ?? {})?.map(

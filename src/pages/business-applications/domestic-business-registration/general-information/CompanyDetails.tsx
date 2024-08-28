@@ -66,9 +66,12 @@ const CompanyDetails = ({
     (state: RootState) => state.business
   );
   const [companyTypesOptions, setBusinessTypesOptions] = useState(companyTypes);
-  const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
-    (state: RootState) => state.navigationFlow
-  );
+  const {
+    navigationFlowMassList,
+    businessNavigationFlowsList,
+    completeNavigationFlowIsLoading,
+    completeNavigationFlowIsSuccess,
+  } = useSelector((state: RootState) => state.navigationFlow);
   const [formDisabled, setFormDisabled] = useState(false);
   const { file, fileName, attachmentType } = useSelector(
     (state: RootState) => state.resolutionAttachment
@@ -203,14 +206,14 @@ const CompanyDetails = ({
   useEffect(() => {
     if (createCompanyDetailsIsError) {
       if ((createCompanyDetailsError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while creating company details");
+        toast.error('An error occurred while creating company details');
       } else {
         toast.error(
           (createCompanyDetailsError as ErrorResponse)?.data?.message
         );
       }
     } else if (createCompanyDetailsIsSuccess) {
-      toast.success("Company details created or updated successfully");
+      toast.success('Company details created or updated successfully');
       if (applicationStatus === ApplicationStatus.IsAmending) {
         // upload resolution attachment
         if (file && businessId)
@@ -229,10 +232,28 @@ const CompanyDetails = ({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            "Company Details"
+            'Company Details'
           )?.id,
         })
       );
+    }
+  }, [
+    businessId,
+    createCompanyDetailsError,
+    createCompanyDetailsIsError,
+    createCompanyDetailsIsSuccess,
+    dispatch,
+    businessNavigationFlowsList,
+    applicationStatus,
+    file,
+    fileName,
+    attachmentType,
+    createCompanyDetailsData?.data?.amendmentId,
+  ]);
+
+  // HANDLE COMPLETE NAVIGATION FLOW RESPONSE
+  useEffect(() => {
+    if (completeNavigationFlowIsSuccess) {
       dispatch(
         createNavigationFlowThunk({
           businessId,
@@ -244,13 +265,7 @@ const CompanyDetails = ({
         })
       );
     }
-  }, [
-    businessId,
-    createCompanyDetailsError,
-    createCompanyDetailsIsError,
-    createCompanyDetailsIsSuccess,
-    dispatch,
-  ]);
+  }, [businessId, completeNavigationFlowIsSuccess, dispatch, navigationFlowMassList])
 
   useEffect(() => {
     if (businessDetails && Object.keys(businessDetails).length > 0) {
@@ -282,7 +297,7 @@ const CompanyDetails = ({
             <Controller
               name="companyName"
               control={control}
-              rules={{ required: "Company name is required" }}
+              rules={{ required: 'Company name is required' }}
               defaultValue={businessDetails?.companyName}
               render={({ field }) => {
                 return (
@@ -295,10 +310,10 @@ const CompanyDetails = ({
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
-                        setError("companyName", {
-                          type: "manual",
+                        setError('companyName', {
+                          type: 'manual',
                           message:
-                            "Check if company name is available before proceeding",
+                            'Check if company name is available before proceeding',
                         });
                       }}
                       suffixIconHandler={(e) => {
@@ -306,7 +321,7 @@ const CompanyDetails = ({
                         if (!field?.value || field?.value?.length < 3) {
                           return;
                         }
-                        clearErrors("companyName");
+                        clearErrors('companyName');
                         searchBusinessNameAvailability({
                           companyName: field?.value,
                         });
@@ -325,7 +340,7 @@ const CompanyDetails = ({
                         !errors?.companyName && (
                           <section className="flex flex-col gap-1">
                             <p className="text-[11px] text-red-600">
-                              The given name has a similarity of up to{" "}
+                              The given name has a similarity of up to{' '}
                               {convertDecimalToPercentage(
                                 nameAvailabilitiesList[0]?.similarity
                               )}
@@ -333,7 +348,7 @@ const CompanyDetails = ({
                               to avoid conflicts.
                             </p>
                             <Link
-                              to={"#"}
+                              to={'#'}
                               className="text-[11px] underline text-primary"
                               onClick={(e) => {
                                 e.preventDefault();
@@ -364,7 +379,7 @@ const CompanyDetails = ({
             <Controller
               control={control}
               name="companyCategory"
-              rules={{ required: "Select company category" }}
+              rules={{ required: 'Select company category' }}
               defaultValue={businessDetails?.companyCategory}
               render={({ field }) => {
                 return (
@@ -399,9 +414,9 @@ const CompanyDetails = ({
             <Controller
               control={control}
               name="companyType"
-              rules={{ required: "Select company type" }}
+              rules={{ required: 'Select company type' }}
               defaultValue={
-                watch("companyType") || businessDetails?.companyType
+                watch('companyType') || businessDetails?.companyType
               }
               render={({ field }) => {
                 return (
@@ -434,7 +449,7 @@ const CompanyDetails = ({
             <Controller
               control={control}
               name="position"
-              rules={{ required: "Select your position" }}
+              rules={{ required: 'Select your position' }}
               defaultValue={businessDetails?.position}
               render={({ field }) => {
                 return (
@@ -470,12 +485,12 @@ const CompanyDetails = ({
             <Controller
               control={control}
               name="hasArticlesOfAssociation"
-              rules={{ required: "Select one of the choices provided" }}
+              rules={{ required: 'Select one of the choices provided' }}
               render={({ field }) => {
                 return (
                   <ul className="flex items-center gap-6">
                     <RadioGroup
-                      value={watch("hasArticlesOfAssociation")}
+                      value={watch('hasArticlesOfAssociation')}
                       onValueChange={field.onChange}
                       className="flex items-center gap-6"
                     >
@@ -509,7 +524,12 @@ const CompanyDetails = ({
             <Button
               primary
               value={
-                createCompanyDetailsIsLoading ? <Loader /> : "Save & Continue"
+                createCompanyDetailsIsLoading ||
+                completeNavigationFlowIsLoading ? (
+                  <Loader />
+                ) : (
+                  'Save & Continue'
+                )
               }
               disabled={Object.keys(errors).length > 0 || formDisabled}
               submit
@@ -517,7 +537,7 @@ const CompanyDetails = ({
           </menu>
         </fieldset>
       </form>
-      <SimilarBusinessNames businessName={watch("companyName")} />
+      <SimilarBusinessNames businessName={watch('companyName')} />
     </section>
   );
 };

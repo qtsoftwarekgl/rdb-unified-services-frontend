@@ -25,7 +25,7 @@ import CustomPopover from "@/components/inputs/CustomPopover";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleInfo,
-  faEllipsisVertical,
+  faEllipsisH,
 } from "@fortawesome/free-solid-svg-icons";
 import Loader from "@/components/Loader";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
@@ -130,8 +130,8 @@ const AmendCompanyDetails = () => {
             trigger={
               <menu className="flex items-center justify-center w-full gap-2 text-[12px] cursor-pointer">
                 <FontAwesomeIcon
-                  className="text-primary text-md p-0 transition-all duration-300 hover:scale-[.98]"
-                  icon={faEllipsisVertical}
+                  className="text-primary mx-auto text-md rounded-md transition-all duration-300 hover:scale-[.98] bg-slate-200 hover:bg-slate-300 p-1 px-2"
+                  icon={faEllipsisH}
                 />
               </menu>
             }

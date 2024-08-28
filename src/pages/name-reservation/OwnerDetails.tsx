@@ -107,8 +107,8 @@ const OwnerDetails = ({ isOpen }: Props) => {
   if (!isOpen) return null;
 
   return (
-    <section className="flex flex-col gap-6">
-      <menu className="flex flex-col gap-4">
+    <section className="flex flex-col gap-6 w-[40%] mx-auto">
+      <menu className="flex flex-col gap-4 w-full">
         <p>
           I am reserving for: <span className="text-red-600">*</span>
         </p>

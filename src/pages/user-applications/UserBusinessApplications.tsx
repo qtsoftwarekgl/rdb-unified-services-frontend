@@ -1,6 +1,6 @@
 import {
   faCircleInfo,
-  faEllipsisVertical,
+  faEllipsisH,
   faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,7 +9,7 @@ import UserLayout from '../../containers/UserLayout';
 import Button from '../../components/inputs/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../states/store';
-import { capitalizeString, formatDate } from '../../helpers/strings';
+import { capitalizeString } from '../../helpers/strings';
 import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
@@ -27,6 +27,7 @@ import { Business } from '@/types/models/business';
 import CustomPopover from '@/components/inputs/CustomPopover';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { businessColumns } from '@/constants/business.constants';
+import { getBusinessStatusColor } from '@/helpers/business.helpers';
 
 const UserBusinessApplications = () => {
   // STATE VARIABLES
@@ -83,6 +84,22 @@ const UserBusinessApplications = () => {
   const userApplicationsColumns = [
     ...businessColumns,
     {
+      header: 'Status',
+      accessorKey: 'applicationStatus',
+      cell: ({ row }: { row: Row<Business> }) => (
+        <p
+          className={`${getBusinessStatusColor(
+            row?.original?.applicationStatus
+          )} text-white p-1 px-2 rounded-md text-[13px] text-center`}
+        >
+          {capitalizeString(row?.original?.applicationStatus)}
+        </p>
+      ),
+      filterFn: (row: Row<unknown>, id: string, value: string) => {
+        return value.includes(row.getValue(id));
+      },
+    },
+    {
       id: 'action',
       header: 'Action',
       accessorKey: 'action',
@@ -92,8 +109,8 @@ const UserBusinessApplications = () => {
             trigger={
               <menu className="flex items-center justify-center w-full gap-2 text-[12px] cursor-pointer">
                 <FontAwesomeIcon
-                  className="text-primary text-md p-0 transition-all duration-300 hover:scale-[.98]"
-                  icon={faEllipsisVertical}
+                  className="text-primary text-md transition-all duration-300 hover:scale-[.98] bg-slate-200 hover:bg-slate-300 rounded-md p-1 px-4"
+                  icon={faEllipsisH}
                 />
               </menu>
             }
@@ -174,11 +191,7 @@ const UserBusinessApplications = () => {
                 return {
                   ...business,
                   no: index + 1,
-                  dateOfIncorporation: formatDate(
-                    business?.createdAt
-                  ) as unknown as Date,
                   companyType: capitalizeString(business?.companyType) || 'N/A',
-                  assignee: 'RDB Verifier',
                   companyName: (
                     business?.companyName ||
                     business?.enterpriseName ||

@@ -22,27 +22,12 @@ export const businessColumns = [
       capitalizeString(row.original.companyType),
   },
   {
-    id: "dateOfIncorporation",
-    header: "Submission Date",
-    accessorKey: "dateOfIncorporation",
+    id: 'updatedAt',
+    header: 'Last Updated',
+    accessorKey: 'updatedAt',
     cell: ({ row }: { row: Row<Business> }) =>
-      formatDate(row?.original?.dateOfIncorporation) ||
-      formatDate(row?.original?.createdAt),
-  },
-  {
-    id: "applicationStatus",
-    header: "Application status",
-    accessorKey: "applicationStatus",
-    cell: ({ row }: { row: Row<Business> }) =>
-      capitalizeString(row?.original?.applicationStatus),
-    filterFn: (row: Row<unknown>, id: string, value: string) => {
-      return value.includes(row.getValue(id));
-    },
-  },
-  {
-    id: "assignee",
-    header: "Assigned To",
-    accessorKey: "assignee",
+      formatDate(row?.original?.updatedAt) ||
+      formatDate(row?.original?.updatedAt),
   },
 ];
 
@@ -74,4 +59,15 @@ export const beneficialOwnerControlMeans = [
 
 export const beneficialOwnerControlType = ["DIRECT", "INDIRECT"];
 
-export const beneficialOwnerTypes = ["REGULAR_MANAGEMENT", "SENIOR_MANAGEMENT"];
+export const beneficialOwnerTypes = ['REGULAR_MANAGEMENT', 'SENIOR_MANAGEMENT'];
+
+export const businessLineColumns = [
+  {
+    header: 'Code',
+    accessorKey: 'code',
+  },
+  {
+    header: 'Description',
+    accessorKey: 'description',
+  },
+];

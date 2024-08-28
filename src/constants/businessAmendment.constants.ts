@@ -5,16 +5,10 @@ import moment from 'moment';
 
 export const businessAmendmentColumns = [
   {
-    header: 'Application Reference',
-    accessorKey: 'applicationReferenceId',
+    header: 'Amendment Reference',
+    accessorKey: 'amdApplicationRefId',
     cell: ({ row }: { row: Row<BusinessAmendment> }) =>
-      `${row?.original?.business?.applicationReferenceId}`,
-  },
-  {
-    header: 'Application Status',
-    accessorKey: 'applicationStatus',
-    cell: ({ row }: { row: Row<BusinessAmendment> }) =>
-      `${capitalizeString(row?.original?.business?.applicationStatus)}`,
+      `${row?.original?.amdApplicationRefId}`,
   },
   {
     header: 'Business Name',
