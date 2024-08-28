@@ -63,6 +63,8 @@ export const foreignCompanyRegistrationApiSlice = createApi({
         zipCode,
         email,
         phoneNumber,
+        placeOfIncorporationDto,
+        villageId,
       }) => {
         return {
           url: `/address?businessId=${businessId}`,
@@ -74,6 +76,8 @@ export const foreignCompanyRegistrationApiSlice = createApi({
             zipCode,
             email,
             phoneNumber,
+            placeOfIncorporationDto,
+            villageId,
           },
         };
       },
