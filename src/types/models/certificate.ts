@@ -8,6 +8,7 @@ export type Certificate = {
     registrationDate?: string;
     companyName: string;
     enterpriseName: string;
+    businessName?: string;
     mainBusinessActivityCode: string;
     mainBusinessActivity: string;
     mainBusinessActivityDate?: string;
@@ -39,6 +40,7 @@ export type Certificate = {
     businessOwner?: ApplicantDetails;
     managingDirector?: ApplicantDetails;
     registeredOfficeAddress: RegisteredOfficeAddress;
+    headOfficeAddress?: RegisteredOfficeAddress;
     placeOfIncorporation?: RegisteredOfficeAddress;
     otherBusinessActivities?: BusinessActivitiesCertificate[];
     businessOwners?: ApplicantDetails[];
@@ -75,6 +77,7 @@ export type ApplicantDetails = {
     phoneNumber?: string;
     certificateId?: string;
     roleName?: string;
+    email?: string;
 }
 
 export type CertificateBusinessShares = {

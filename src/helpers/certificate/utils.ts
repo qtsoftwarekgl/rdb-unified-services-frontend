@@ -67,7 +67,7 @@ export  function getCertificateTitle(certificateType: string, isFull: boolean = 
     return "FULL CERTIFICATE OF FOREIGN COMPANY REGISTRATION";
 
     case ENTERPRISE_REGISTRATION:
-    return "Enterprise Registration";
+    return isFull ? "FULL CERTIFICATE OF ENTERPRISE REGISTRATION" : "CERTIFICATE OF ENTERPRISE REGISTRATION";
 
     case ENTERPRISE_REGISTRATION_FULL:
     return "Enterprise Registration (Full)";
@@ -122,11 +122,30 @@ export function getCompanyType(type: string){
     }
 }
 
-export function getCompanyAddress(certificate: Certificate): string{
-    if(certificate?.certificateType?.includes("FOREIGN")){
-        return certificate?.registeredOfficeAddress?.street+", "+certificate?.registeredOfficeAddress?.countryOfIncorporation || "";
+
+export function getCompanyAddress(certificate: Certificate): string {
+    if (!certificate) return "";
+
+    const addressParts: string[] = [];
+    const headOffice = certificate.headOfficeAddress;
+    const regOffice = certificate.registeredOfficeAddress;
+
+    if (certificate.certificateType?.includes("FOREIGN")) {
+        if (regOffice?.street) addressParts.push(regOffice.street);
+        if (regOffice?.countryOfIncorporation) addressParts.push(regOffice.countryOfIncorporation);
+    } else if (certificate.certificateType?.includes("ENTERPRISE")) {
+        if (headOffice?.sector) addressParts.push(headOffice.sector);
+        if (headOffice?.district) addressParts.push(headOffice.district);
+        if (headOffice?.provinceOrCity) addressParts.push(headOffice.provinceOrCity);
+        else if (headOffice?.street) addressParts.push(headOffice.street);
+        if (headOffice?.countryOfIncorporation) addressParts.push(headOffice.countryOfIncorporation);
+    } else {
+        if (regOffice?.sector) addressParts.push(regOffice.sector);
+        if (regOffice?.district) addressParts.push(regOffice.district);
+        if (regOffice?.provinceOrCity) addressParts.push(regOffice.provinceOrCity);
+        if (regOffice?.countryOfIncorporation) addressParts.push(regOffice.countryOfIncorporation);
     }
-    else{
-        return `${certificate?.registeredOfficeAddress?.sector}, ${certificate?.registeredOfficeAddress?.district}, ${certificate?.registeredOfficeAddress?.provinceOrCity || ""}, ${certificate?.registeredOfficeAddress?.countryOfIncorporation || ""}`;
-    }
+
+    return addressParts.join(", ");
 }
+
