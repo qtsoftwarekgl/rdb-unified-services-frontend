@@ -85,17 +85,7 @@ export const fetchBusinessesThunk = createAsyncThunk<
   { dispatch: AppDispatch }
 >(
   "business/fetchBusinesses",
-  async (
-    {
-      page,
-      size,
-      serviceId,
-      applicationStatus,
-    },
-    {
-      dispatch,
-    }
-  ) => {
+  async ({ page, size, serviceId, applicationStatus }, { dispatch }) => {
     try {
       const response = await dispatch(
         businessRegApiSlice.endpoints.fetchBusinesses.initiate({
@@ -152,7 +142,6 @@ export const uploadAmendmentAttachmentThunk = createAsyncThunk<
       );
       return response.data;
     } catch (error) {
-      console.log(error)
       toast.error("An error occurred while uploading attachment");
       throw error;
     }
@@ -187,7 +176,7 @@ export const getchBusinessThunk = createAsyncThunk<
   Business,
   UUID,
   { dispatch: AppDispatch }
->('business/getchBusiness', async (id, { dispatch }) => {
+>("business/getchBusiness", async (id, { dispatch }) => {
   try {
     const response = await dispatch(
       businessRegApiSlice.endpoints.getBusiness.initiate({
@@ -196,7 +185,7 @@ export const getchBusinessThunk = createAsyncThunk<
     ).unwrap();
     return response.data;
   } catch (error) {
-    toast.error('An error occurred while fetching business');
+    toast.error("An error occurred while fetching business");
     throw error;
   }
 });
@@ -283,7 +272,7 @@ export const businessSlice = createSlice({
     },
     setCertificatesCompany: (state, action) => {
       state.certificatesCompany = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBusinessesThunk.pending, (state) => {
@@ -329,7 +318,7 @@ export const businessSlice = createSlice({
         }
         return business;
       });
-    })
+    });
     builder.addCase(updateBusinessThunk.rejected, (state) => {
       state.updateBusinessIsSuccess = false;
       state.updateBusinessIsLoading = false;
@@ -389,5 +378,5 @@ export const {
   setUploadAmendmentAttachmentIsLoading,
   setUploadAmendmentAttachmentIsSuccess,
   setBusinessCertificates,
-  setCertificatesCompany
+  setCertificatesCompany,
 } = businessSlice.actions;

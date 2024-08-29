@@ -46,7 +46,6 @@ import {
   setSelectedSector,
   setVillagesList,
 } from "@/states/features/locationSlice";
-import { set } from "store";
 
 interface CompanyAddressProps {
   businessId: businessId;
@@ -66,7 +65,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     reset,
     trigger,
     setValue,
-    getValues,
   } = useForm();
 
   // STATE VARIABLES
@@ -426,7 +424,6 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
     if (businessAddress && Object.keys(businessAddress).length > 0) {
       // use reset function
       reset({
-        countryOfIncorporation: businessAddress?.countryOfIncorporation,
         zipCode: businessAddress?.zipCode,
         email: businessAddress?.email,
         phoneNumber: businessAddress?.phoneNumber,
@@ -812,7 +809,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
               />
             </menu>
           </menu>
-          <h1 className="text-lg">Place of Incorporation</h1>
+          <h1 className="text-lg">Principal Place of Incorporation</h1>
           <menu className="flex flex-col gap-6 p-4 border rounded-md">
             <menu className="flex items-start w-full gap-6">
               <Controller
@@ -959,7 +956,7 @@ const CompanyAddress: FC<CompanyAddressProps> = ({
                             {countriesList?.map((country) => {
                               return (
                                 <option
-                                  key={country?.dial_code}
+                                  key={country?.dial_code + country?.name}
                                   value={country?.dial_code}
                                 >
                                   {`${country?.code} ${country?.dial_code}`}

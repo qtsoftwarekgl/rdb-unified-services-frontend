@@ -11,7 +11,12 @@ import { capitalizeString } from "../../../../helpers/strings";
 import Button from "../../../../components/inputs/Button";
 import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
-import { BusinessActivity, businessId } from "@/types/models/business";
+import {
+  Address,
+  Business,
+  BusinessActivity,
+  businessId,
+} from "@/types/models/business";
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyGetBusinessAddressQuery,
@@ -36,15 +41,19 @@ import { setBusinessAttachments } from "@/states/features/businessSlice";
 import moment from "moment";
 import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople";
+import { PersonDetail } from "@/types/models/personDetail";
+import { renderCompanyDetails } from "../../domestic-business-registration/preview-submission/BusinessPreviewSubmission";
 
 interface ForeignCompanyPreviewSubmissionProps {
   businessId: businessId;
   applicationStatus: string;
+  noActions?: boolean;
 }
 
 const ForeignCompanyPreviewSubmission = ({
   businessId,
   applicationStatus,
+  noActions = false,
 }: ForeignCompanyPreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -237,6 +246,7 @@ const ForeignCompanyPreviewSubmission = ({
           </figure>
         ))}
       <PreviewCard
+        action={noActions}
         header="Company Details"
         businessId={businessId}
         applicationStatus={applicationStatus}
@@ -252,52 +262,71 @@ const ForeignCompanyPreviewSubmission = ({
         }
       >
         {businessDetailsData?.data ? (
-          Object?.entries(businessDetailsData?.data)?.map(
-            ([key, value], index: number) => {
-              if (
-                value === null ||
-                [
-                  "createdAt",
-                  "updatedAt",
-                  "isForeign",
-                  "id",
-                  "applicationStatus",
-                ].includes(key)
+          <menu className="flex flex-col gap-2">
+            {businessDetailsData?.data ? (
+              Object?.entries(businessDetailsData?.data)?.map(
+                ([key, value], index: number) => {
+                  if (["amendedInformation"].includes(key) && value) {
+                    const originalValue = businessDetailsData?.data;
+                    return (
+                      <article className="flex flex-col w-full gap-2 my-4">
+                        <h3 className="text-lg font-medium uppercase text-primary">
+                          Amended information
+                        </h3>
+                        {renderCompanyDetails(
+                          value as Business,
+                          originalValue as Business
+                        )}
+                      </article>
+                    );
+                  }
+                  if (
+                    value === null ||
+                    [
+                      "createdAt",
+                      "updatedAt",
+                      "isForeign",
+                      "id",
+                      "applicationStatus",
+                    ].includes(key)
+                  )
+                    return null;
+                  if (key === "service")
+                    return (
+                      <p>
+                        {capitalizeString(key)}:{" "}
+                        {capitalizeString(
+                          String(
+                            (
+                              value as {
+                                name: string;
+                              }
+                            )?.name
+                          )
+                        )}
+                      </p>
+                    );
+                  return (
+                    <li key={index}>
+                      <p className="flex text-[14px] items-center gap-2">
+                        {capitalizeString(key)}:{" "}
+                        {capitalizeString(String(value))}
+                      </p>
+                    </li>
+                  );
+                }
               )
-                return null;
-              if (key === "service")
-                return (
-                  <p>
-                    {capitalizeString(key)}:{" "}
-                    <strong>
-                      {capitalizeString(
-                        String(
-                          (
-                            value as {
-                              name: string;
-                            }
-                          )?.name
-                        )
-                      )}
-                    </strong>
-                  </p>
-                );
-              return (
-                <li key={index}>
-                  <p className="flex text-[14px] items-center gap-2">
-                    {capitalizeString(key)}:{" "}
-                    <strong>{capitalizeString(String(value))}</strong>
-                  </p>
-                </li>
-              );
-            }
-          )
+            ) : (
+              <p>No data</p>
+            )}
+          </menu>
         ) : (
           <p>No data</p>
         )}
       </PreviewCard>
       {/* COMPANY ADDRESS */}
       <PreviewCard
+        action={noActions}
         header="Company Address"
         businessId={businessId}
         applicationStatus={applicationStatus}
@@ -315,12 +344,57 @@ const ForeignCompanyPreviewSubmission = ({
         {businessAddressData?.data &&
           Object?.entries(businessAddressData?.data)?.map(
             ([key, value], index: number) => {
-              if (key === "id" || key === "location" || value === null)
-                return null;
+              if (key === "id" || value === null) return null;
+              if (key === "location")
+                return (
+                  <ul key={index} className="flex flex-col gap-2">
+                    {Object?.entries(value as Address)?.map(
+                      ([key, value], index: number) => {
+                        if (key === "id" || value === null) return null;
+                        return (
+                          <li key={index}>
+                            <p className="flex text-[14px] items-center gap-2">
+                              {capitalizeString(key)}:{" "}
+                              {capitalizeString(String(value))}
+                            </p>
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                );
+              if (key === "placeOfIncorporation")
+                return (
+                  <ul key={index} className="flex flex-col gap-2">
+                    <h1 className="font-semibold text-primary">
+                      Place of Incorporation
+                    </h1>
+                    {Object?.entries(value as Address)?.map(
+                      ([key, value], index: number) => {
+                        if (
+                          ["id", "createdAt", "updatedAt", "version"].includes(
+                            key
+                          ) ||
+                          value === null
+                        )
+                          return null;
+                        return (
+                          <li key={index}>
+                            <p className="flex text-[14px] items-center gap-2">
+                              {capitalizeString(key)}:{" "}
+                              <strong>{capitalizeString(String(value))}</strong>
+                            </p>
+                          </li>
+                        );
+                      }
+                    )}
+                  </ul>
+                );
               return (
                 <li key={index}>
                   <p className="flex text-[14px] items-center gap-2">
-                    {capitalizeString(key)}: {capitalizeString(String(value))}
+                    {capitalizeString(key)}:{" "}
+                    <strong>{capitalizeString(String(value))}</strong>
                   </p>
                 </li>
               );
@@ -329,6 +403,7 @@ const ForeignCompanyPreviewSubmission = ({
       </PreviewCard>
       {/* BUSINESS ACTIVITIES & VAT */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
@@ -376,6 +451,7 @@ const ForeignCompanyPreviewSubmission = ({
       </PreviewCard>
       {/* BOARD OF DIRECTORS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Board of Directors"
@@ -403,12 +479,13 @@ const ForeignCompanyPreviewSubmission = ({
       </PreviewCard>
       {/*  EXECUTIVE MANAGEMENT */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Executive Management"
         navigationFlowMassId={findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          "Senior Management"
+          "Executive Management"
         )}
       >
         {managementMemberIsLoading ? (
@@ -422,28 +499,10 @@ const ForeignCompanyPreviewSubmission = ({
           />
         )}
       </PreviewCard>
-      {/* ATTACHMENTS */}
-      <PreviewCard
-        header="Attachments"
-        navigationFlowMassId={findNavigationFlowMassIdByStepName(
-          navigationFlowMassList,
-          "Attachments"
-        )}
-        navigationFlowId={
-          findNavigationFlowByStepName(
-            businessNavigationFlowsList,
-            "Attachments"
-          )?.id
-        }
-        businessId={businessId}
-        applicationStatus={applicationStatus}
-      >
-        {businessAttachmentsData?.length > 0 && (
-          <BusinessPeopleAttachments attachments={businessAttachmentsData} />
-        )}
-      </PreviewCard>
+
       {/* EMPLOYMENT INFO */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Employment Information"
@@ -500,6 +559,7 @@ const ForeignCompanyPreviewSubmission = ({
       </PreviewCard>
       {/* ATTACHMENTS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         header="Attachments"
         businessId={businessId}
@@ -521,7 +581,8 @@ const ForeignCompanyPreviewSubmission = ({
           )
         )}
       </PreviewCard>
-      {[
+      {!noActions &&
+      [
         ApplicationStatus.Inprogress,
         ApplicationStatus.IsAmending,
         ApplicationStatus.Forcorrection,
@@ -548,6 +609,17 @@ const ForeignCompanyPreviewSubmission = ({
           <Button
             onClick={(e) => {
               e.preventDefault();
+              if (
+                managementMemberData.data.find(
+                  (manager: PersonDetail) =>
+                    manager.roleDescription === "authorizedRepresentative"
+                ) === undefined
+              ) {
+                toast.info(
+                  "Please add an authorized representative in the executive management section"
+                );
+                return false;
+              }
               updateBusiness({
                 businessId,
                 applicationStatus:

@@ -33,11 +33,13 @@ import { ApplicationStatus } from "@/Enums/ApplicationStatus";
 type EnterprisePreviewSubmissionProps = {
   businessId: businessId;
   applicationStatus?: string;
+  noActions?: boolean;
 };
 
 const EnterprisePreviewSubmission = ({
   businessId,
   applicationStatus,
+  noActions = false,
 }: EnterprisePreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch = useDispatch();
@@ -142,6 +144,7 @@ const EnterprisePreviewSubmission = ({
     <section className="flex flex-col gap-6">
       {/* ENTERPRISE DETAILS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Enterprise Details"
@@ -197,6 +200,7 @@ const EnterprisePreviewSubmission = ({
       </PreviewCard>
       {/* COMPANY ADDRESS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Enterprise Address"
@@ -250,6 +254,7 @@ const EnterprisePreviewSubmission = ({
 
       {/* BUSINESS ACTIVITIES & VAT */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
@@ -290,70 +295,71 @@ const EnterprisePreviewSubmission = ({
         )}
       </PreviewCard>
 
-      {[
-        ApplicationStatus.IsAmending,
-        ApplicationStatus.Inprogress,
-        ApplicationStatus.Forcorrection,
-      ].includes(String(applicationStatus) as ApplicationStatus) && (
-        <menu
-          className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
-        >
-          <Button
-            value="Back"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(
-                createNavigationFlowThunk({
+      {!noActions &&
+        [
+          ApplicationStatus.IsAmending,
+          ApplicationStatus.Inprogress,
+          ApplicationStatus.Forcorrection,
+        ].includes(String(applicationStatus) as ApplicationStatus) && (
+          <menu
+            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+          >
+            <Button
+              value="Back"
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(
+                  createNavigationFlowThunk({
+                    businessId,
+                    massId: findNavigationFlowMassIdByStepName(
+                      navigationFlowMassList,
+                      "Attachments"
+                    ),
+                    isActive: true,
+                  }) as unknown as UnknownAction
+                );
+              }}
+            />
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(
+                  completeNavigationFlowThunk({
+                    isCompleted: true,
+                    navigationFlowId: findNavigationFlowByStepName(
+                      businessNavigationFlowsList,
+                      "Preview & Submission"
+                    )?.id,
+                  }) as unknown as UnknownAction
+                );
+                if (
+                  applicationStatus !== ApplicationStatus.IsAmending &&
+                  !Object?.values(navigationFlowMassList ?? {})
+                    ?.flat()
+                    ?.every((navigationStep) => {
+                      return businessNavigationFlowsList?.find(
+                        (businessStep) =>
+                          businessStep?.navigationFlowMass?.stepName ===
+                            navigationStep?.stepName && businessStep?.completed
+                      );
+                    })
+                ) {
+                  toast.error("All steps must be completed before submission");
+                  return;
+                }
+                updateBusiness({
                   businessId,
-                  massId: findNavigationFlowMassIdByStepName(
-                    navigationFlowMassList,
-                    "Attachments"
-                  ),
-                  isActive: true,
-                }) as unknown as UnknownAction
-              );
-            }}
-          />
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(
-                completeNavigationFlowThunk({
-                  isCompleted: true,
-                  navigationFlowId: findNavigationFlowByStepName(
-                    businessNavigationFlowsList,
-                    "Preview & Submission"
-                  )?.id,
-                }) as unknown as UnknownAction
-              );
-              if (
-                applicationStatus !== ApplicationStatus.IsAmending &&
-                !Object?.values(navigationFlowMassList ?? {})
-                  ?.flat()
-                  ?.every((navigationStep) => {
-                    return businessNavigationFlowsList?.find(
-                      (businessStep) =>
-                        businessStep?.navigationFlowMass?.stepName ===
-                          navigationStep?.stepName && businessStep?.completed
-                    );
-                  })
-              ) {
-                toast.error("All steps must be completed before submission");
-                return;
-              }
-              updateBusiness({
-                businessId,
-                applicationStatus:
-                  applicationStatus === ApplicationStatus.Inprogress
-                    ? ApplicationStatus.Submitted
-                    : ApplicationStatus.AmendmentSubmitted,
-              });
-            }}
-            value={updateBusinessIsLoading ? <Loader /> : "Submit"}
-            primary
-          />
-        </menu>
-      )}
+                  applicationStatus:
+                    applicationStatus === ApplicationStatus.Inprogress
+                      ? ApplicationStatus.Submitted
+                      : ApplicationStatus.AmendmentSubmitted,
+                });
+              }}
+              value={updateBusinessIsLoading ? <Loader /> : "Submit"}
+              primary
+            />
+          </menu>
+        )}
     </section>
   );
 };

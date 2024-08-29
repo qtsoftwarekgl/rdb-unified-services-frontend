@@ -6,7 +6,12 @@ import Button from "../../../../components/inputs/Button";
 import { ErrorResponse, useNavigate } from "react-router-dom";
 import Loader from "../../../../components/Loader";
 import ViewDocument from "../../../user-company-details/ViewDocument";
-import { Address, Business, BusinessActivity, businessId } from "@/types/models/business";
+import {
+  Address,
+  Business,
+  BusinessActivity,
+  businessId,
+} from "@/types/models/business";
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyFetchBusinessAddressQuery,
@@ -39,11 +44,13 @@ import ListBusinessReviewComments from "../../business-review/ListBusinessReview
 type PreviewSubmissionProps = {
   businessId: businessId;
   applicationStatus?: string;
+  noActions?: boolean;
 };
 
 const PreviewSubmission = ({
   applicationStatus,
   businessId,
+  noActions = false,
 }: PreviewSubmissionProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -235,6 +242,7 @@ const PreviewSubmission = ({
     <section className="flex flex-col w-full h-full gap-6 overflow-y-scroll">
       {/* COMPANY DETAILS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Details"
@@ -265,14 +273,17 @@ const PreviewSubmission = ({
               {businessDetailsData?.data ? (
                 Object?.entries(businessDetailsData?.data)?.map(
                   ([key, value], index: number) => {
-                    if (['amendedInformation'].includes(key)) {
+                    if (["amendedInformation"].includes(key) && value) {
                       const originalValue = businessDetailsData?.data;
                       return (
-                        <article className="w-full flex flex-col gap-2 my-4">
-                          <h3 className="uppercase text-primary text-lg font-medium">
+                        <article className="flex flex-col w-full gap-2 my-4">
+                          <h3 className="text-lg font-medium uppercase text-primary">
                             Amended information
                           </h3>
-                          {renderCompanyDetails(value as Business, originalValue as Business)}
+                          {renderCompanyDetails(
+                            value as Business,
+                            originalValue as Business
+                          )}
                         </article>
                       );
                     }
@@ -322,6 +333,7 @@ const PreviewSubmission = ({
 
       {/* COMPANY ADDRESS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Company Address"
@@ -385,6 +397,7 @@ const PreviewSubmission = ({
 
       {/* BUSINESS ACTIVITIES & VAT */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Business Activities & VAT"
@@ -433,6 +446,7 @@ const PreviewSubmission = ({
 
       {/*  BOARD OF DIRECTORS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Board of Directors"
@@ -461,6 +475,7 @@ const PreviewSubmission = ({
 
       {/*  EXECUTIVE MANAGEMENT */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Executive Management"
@@ -489,6 +504,7 @@ const PreviewSubmission = ({
 
       {/* EMPLOYMENT INFO */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         businessId={businessId}
         header="Employment Information"
@@ -559,6 +575,7 @@ const PreviewSubmission = ({
         </figure>
       ) : (
         <PreviewCard
+          action={noActions}
           applicationStatus={applicationStatus}
           businessId={businessId}
           header="Shareholders"
@@ -595,6 +612,7 @@ const PreviewSubmission = ({
 
       {/* ATTACHMENTS */}
       <PreviewCard
+        action={noActions}
         applicationStatus={applicationStatus}
         header="Attachments"
         businessId={businessId}
@@ -614,13 +632,16 @@ const PreviewSubmission = ({
             <Loader className="text-primary" />
             Fetching business attachments...
           </figure>
-        ) : businessAttachmentsData?.data?.length > 0 &&  (
+        ) : (
+          businessAttachmentsData?.data?.length > 0 && (
             <BusinessPeopleAttachments
               attachments={businessAttachmentsData?.data}
             />
+          )
         )}
       </PreviewCard>
-      {[
+      {!noActions &&
+      [
         ApplicationStatus.Inprogress,
         ApplicationStatus.IsAmending,
         ApplicationStatus.Forcorrection,
@@ -704,7 +725,7 @@ const PreviewSubmission = ({
   );
 };
 
-function renderCompanyDetails(
+export function renderCompanyDetails(
   displayValue: Business,
   comparisonValue?: Business
 ) {
@@ -715,25 +736,25 @@ function renderCompanyDetails(
           const comparisonValueForKey = comparisonValue?.[key];
           if (
             [
-              'assignedVerifier',
-              'assignedApprover',
-              'serviceId',
-              'state',
-              'version',
-              'createdAt',
-              'lastModifiedDate',
-              'entityId',
-              'id',
-              'applicationReferenceId',
-              'updatedAt',
-              'createdDate',
-              'isForeign',
-              'applicationStatus',
+              "assignedVerifier",
+              "assignedApprover",
+              "serviceId",
+              "state",
+              "version",
+              "createdAt",
+              "lastModifiedDate",
+              "entityId",
+              "id",
+              "applicationReferenceId",
+              "updatedAt",
+              "createdDate",
+              "isForeign",
+              "applicationStatus",
             ].includes(key) ||
             value === null
           )
             return null;
-          if (typeof value === 'boolean') {
+          if (typeof value === "boolean") {
             return (
               <li key={key} className="flex items-center gap-2">
                 <p>{capitalizeString(key)}:</p>
@@ -741,10 +762,10 @@ function renderCompanyDetails(
                   className={`font-medium ${
                     comparisonValue &&
                     comparisonValueForKey !== value &&
-                    'bg-green-700 text-white p-1 px-2 rounded-md text-[13px]'
+                    "bg-green-700 text-white p-1 px-2 rounded-md text-[13px]"
                   }`}
                 >
-                  {value ? 'Yes' : 'No'}
+                  {value ? "Yes" : "No"}
                 </p>
               </li>
             );
@@ -756,7 +777,7 @@ function renderCompanyDetails(
                 className={`font-medium ${
                   comparisonValue &&
                   comparisonValueForKey !== value &&
-                  'bg-green-700 text-white p-1 px-2 rounded-md text-[13px]'
+                  "bg-green-700 text-white p-1 px-2 rounded-md text-[13px]"
                 }`}
               >
                 {capitalizeString(value as string)}
