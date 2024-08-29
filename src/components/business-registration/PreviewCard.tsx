@@ -33,6 +33,7 @@ interface PreviewCardProps {
   applicationStatus?: string;
   navigationFlowMassId?: UUID;
   navigationFlowId?: UUID;
+  action?: boolean;
 }
 
 const PreviewCard: FC<PreviewCardProps> = ({
@@ -42,6 +43,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
   businessId,
   applicationStatus,
   navigationFlowId,
+  action = false,
 }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -87,7 +89,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
 
   // HANDLE CREATE BUSINESS NAVIGATION FLOW RESPONSE
   useEffect(() => {
-    if (createNavigationFlowIsError) {
+    if (!action && createNavigationFlowIsError) {
       const errorResponse =
         (createNavigationFlowError as ErrorResponse)?.data?.message ||
         "An error occurred while creating business navigation flow. Refresh and try again";
@@ -108,7 +110,7 @@ const PreviewCard: FC<PreviewCardProps> = ({
 
   // FETCH BUSINESS REVIEW COMMENTS
   useEffect(() => {
-    if (businessId && navigationFlowId) {
+    if (!action && businessId && navigationFlowId) {
       dispatch(
         fetchBusinessReviewCommentsThunk({
           navigationFlowId,
@@ -148,87 +150,93 @@ const PreviewCard: FC<PreviewCardProps> = ({
       className={`flex flex-col w-full gap-3 p-4 rounded-md shadow-sm border-primary border-[.3px]`}
     >
       <menu className="flex items-center justify-between w-full gap-3">
-        <Link
-          to={"#"}
-          onClick={(e) => {
-            e.preventDefault();
-          }}
-          className="text-lg font-semibold uppercase text-primary"
-        >
-          {header}
-        </Link>
-        <menu className="relative flex items-center gap-4">
-          {createNavigationFlowIsLoading ? (
-            <Loader className="text-primary" />
-          ) : (
-            [
-              ApplicationStatus.Inprogress,
-              ApplicationStatus.IsAmending,
-              "ACTION_REQUIRED",
-            ].includes(String(applicationStatus)) && (
-              <CustomTooltip label="Click to update this step">
-                <FontAwesomeIcon
-                  icon={faPenToSquare}
+        {
+          <Link
+            to={"#"}
+            onClick={(e) => {
+              e.preventDefault();
+            }}
+            className="text-lg font-semibold uppercase text-primary"
+          >
+            {header}
+          </Link>
+        }
+        {!action && (
+          <menu className="relative flex items-center gap-4">
+            {createNavigationFlowIsLoading ? (
+              <Loader className="text-primary" />
+            ) : (
+              [
+                ApplicationStatus.Inprogress,
+                ApplicationStatus.IsAmending,
+                "ACTION_REQUIRED",
+              ].includes(String(applicationStatus)) && (
+                <CustomTooltip label="Click to update this step">
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (businessId && navigationFlowMassId) {
+                        createNavigationFlow({
+                          isActive: true,
+                          massId: navigationFlowMassId,
+                          businessId,
+                        });
+                      }
+                    }}
+                    className="text-primary mr-4 text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
+                  />
+                </CustomTooltip>
+              )
+            )}
+            {businessReviewCommentsIsFetching ? (
+              <figure className="flex items-center gap-2 text-[12px]">
+                <Loader className="text-primary" />
+                Loading comments
+              </figure>
+            ) : (
+              businessReviewCommentsIsSuccess &&
+              reviewComments?.length > 0 && (
+                <Link
+                  to={"#"}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (businessId && navigationFlowMassId) {
-                      createNavigationFlow({
-                        isActive: true,
-                        massId: navigationFlowMassId,
-                        businessId,
-                      });
-                    }
-                  }}
-                  className="text-primary mr-4 text-[18px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                />
-              </CustomTooltip>
-            )
-          )}
-          {businessReviewCommentsIsFetching ? (
-            <figure className="flex items-center gap-2 text-[12px]">
-              <Loader className="text-primary" />
-              Loading comments
-            </figure>
-          ) : (
-            businessReviewCommentsIsSuccess &&
-            reviewComments?.length > 0 && (
-              <Link
-                to={"#"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(
-                    setSelectedNavigationFlow(
-                      findNavigationFlowById(
-                        businessNavigationFlowsList,
-                        navigationFlowId
+                    dispatch(
+                      setSelectedNavigationFlow(
+                        findNavigationFlowById(
+                          businessNavigationFlowsList,
+                          navigationFlowId
+                        )
                       )
-                    )
-                  );
-                  dispatch(setListBusinessReviewCommentsModal(true));
-                }}
-                className="bg-white text-primary text-[12px] p-1 px-2 rounded-md transition-all ease-in-out duration-300 hover:scale-[1.01]"
-              >
-                <menu className="flex items-center gap-2 text-[13px] relative p-1 rounded-full z-[10000]">
-                  {reviewComments?.filter(
-                    (comment) => comment?.status === "UNRESOLVED"
-                  )?.length > 0 && (
-                    <p
-                      className={`absolute top-[-20px] right-0 text-red-600 font-bold`}
+                    );
+                    dispatch(setListBusinessReviewCommentsModal(true));
+                  }}
+                  className="bg-white text-primary text-[12px] p-1 px-2 rounded-md transition-all ease-in-out duration-300 hover:scale-[1.01]"
+                >
+                  <menu className="flex items-center gap-2 text-[13px] relative p-1 rounded-full z-[10000]">
+                    {reviewComments?.filter(
+                      (comment) => comment?.status === "UNRESOLVED"
+                    )?.length > 0 && (
+                      <p
+                        className={`absolute top-[-20px] right-0 text-red-600 font-bold`}
+                      >
+                        {unresolvedReviewComments?.length}
+                      </p>
+                    )}
+                    <CustomTooltip
+                      label={`${reviewComments?.length} Comment(s)`}
                     >
-                      {unresolvedReviewComments?.length}
-                    </p>
-                  )}
-                  <CustomTooltip label={`${reviewComments?.length} Comment(s)`}>
-                    <FontAwesomeIcon
-                      className="absolute top-[-5px] right-2"
-                      icon={faComments}
-                    />
-                  </CustomTooltip>
-                </menu>
-              </Link>
-            )
-          )}
-        </menu>
+                      <FontAwesomeIcon
+                        className="absolute top-[-5px] right-2"
+                        icon={faComments}
+                      />
+                    </CustomTooltip>
+                  </menu>
+                </Link>
+              )
+            )}
+          </menu>
+        )}
       </menu>
       <section className="flex flex-col w-full gap-3 my-2">{children}</section>
       {RDBAdminEmailPattern.test(String(user?.email)) && (

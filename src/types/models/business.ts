@@ -1,6 +1,6 @@
-import { UUID } from 'crypto';
-import { AbstractDomain } from '.';
-import { User } from './user';
+import { UUID } from "crypto";
+import { AbstractDomain } from ".";
+import { User } from "./user";
 
 export type Business = {
   id: UUID;
@@ -67,6 +67,16 @@ export type Address = {
     sector: string;
     cell: string;
     village: string;
+  };
+  placeOfIncorporation?: {
+    country: string;
+    incorporationName: string;
+    email: string;
+    phoneNumber: string;
+    address1: string;
+    address2?: string;
+    poBox?: string;
+    fax?: string;
   };
 };
 

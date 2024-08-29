@@ -8,6 +8,10 @@ import { setResolutionAttachment } from "@/states/features/resolutionAttachmentS
 import { useSelector } from "react-redux";
 import { RootState } from "@/states/store";
 import { useDispatch } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRemove, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "../ui/tooltip";
+import CustomTooltip from "../inputs/CustomTooltip";
 
 interface Props {
   control: Control<FieldValues, any>;
@@ -26,7 +30,7 @@ const ResolutionAttachment = ({ control, errors }: Props) => {
       <h3 className=" text-[14px] font-normal flex items-center gap-1">
         Amendment Resolution <span className="text-red-600">*</span>
       </h3>
-      <menu className="flex gap-4">
+      <menu className="flex items-center gap-4">
         <Controller
           name="attachment"
           rules={{ required: "Resolution is required" }}
@@ -71,8 +75,26 @@ const ResolutionAttachment = ({ control, errors }: Props) => {
             />
           </menu>
         )}
+        {file && (
+          <CustomTooltip label={"Replace attachment"}>
+            <FontAwesomeIcon
+              icon={faRemove}
+              className="text-red-600 cursor-pointer"
+              onClick={() => {
+                dispatch(
+                  setResolutionAttachment({
+                    file: null,
+                    fileName: "",
+                    attachmentType: "",
+                  })
+                );
+                setPreviewAttachmentUrl("");
+              }}
+            />
+          </CustomTooltip>
+        )}
       </menu>
-      {previewAttachmentUrl && (
+      {file && previewAttachmentUrl && (
         <ViewDocument
           documentUrl={previewAttachmentUrl}
           setDocumentUrl={setPreviewAttachmentUrl}

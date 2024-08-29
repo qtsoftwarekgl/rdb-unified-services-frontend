@@ -1,19 +1,13 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import Input from "../../../../components/inputs/Input";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Loader from "../../../../components/Loader";
 import Select from "../../../../components/inputs/Select";
-import {
-  companyCategories,
-  companyPositions,
-  companyTypes,
-  privateCompanyTypes,
-} from "../../../../constants/businessRegistration";
+import { companyPositions } from "../../../../constants/businessRegistration";
 import Button from "../../../../components/inputs/Button";
 import { AppDispatch, RootState } from "../../../../states/store";
 import { useDispatch, useSelector } from "react-redux";
-import { RDBAdminEmailPattern } from "../../../../constants/Users";
 import {
   useLazyGetBusinessDetailsQuery,
   useLazySearchBusinessNameAvailabilityQuery,
@@ -61,9 +55,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
 
-  const { user } = useSelector((state: RootState) => state.user);
-  const isFormDisabled = RDBAdminEmailPattern.test(String(user?.email));
-  const [companyTypesOptions, setBusinessTypesOptions] = useState(companyTypes);
   const { businessDetails, nameAvailabilitiesList } = useSelector(
     (state: RootState) => state.business
   );
@@ -164,16 +155,6 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     },
   ] = useCreateOrUpdateCompanyDetailsMutation();
 
-  // SET BUSINESS CATEGORY OPTIONS
-  useEffect(() => {
-    if (watch("companyCategory") === "PUBLIC") {
-      setBusinessTypesOptions(companyTypes);
-    } else if (watch("companyCategory") === "PRIVATE") {
-      setBusinessTypesOptions(privateCompanyTypes);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("companyCategory"), businessDetails?.companyCategory]);
-
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
     createOrUpdateCompanyDetailsMutation({
@@ -262,10 +243,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
         </figure>
       )}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <fieldset
-          className="flex flex-col w-full gap-6"
-          disabled={isFormDisabled}
-        >
+        <fieldset className="flex flex-col w-full gap-6">
           <menu className="flex items-start w-full gap-6">
             <Controller
               name="companyName"
@@ -358,74 +336,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                 );
               }}
             />
-            <Controller
-              control={control}
-              name="companyCategory"
-              defaultValue={businessDetails?.companyCategory}
-              rules={{ required: "Select company category" }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      label="Company category"
-                      required
-                      placeholder="Select company category"
-                      options={companyCategories?.map((category) => {
-                        return {
-                          ...category,
-                          value: category?.value,
-                          label: category?.label,
-                        };
-                      })}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e);
-                      }}
-                    />
-                    {errors?.companyCategory && (
-                      <p className="text-xs text-red-500">
-                        {String(errors?.companyCategory?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
           </menu>
           <menu className="flex items-start w-full gap-6">
-            <Controller
-              control={control}
-              name="companyType"
-              rules={{ required: "Select company type" }}
-              defaultValue={businessDetails?.companyType}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      label="Company type"
-                      required
-                      placeholder="Select company type"
-                      options={companyTypesOptions?.map((type) => {
-                        return {
-                          ...type,
-                          value: type?.value,
-                          label: type?.label,
-                        };
-                      })}
-                      {...field}
-                      onChange={async (e) => {
-                        field.onChange(e);
-                      }}
-                    />
-                    {errors?.companyType && (
-                      <p className="text-xs text-red-500">
-                        {String(errors?.companyType?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
             <Controller
               control={control}
               name="position"
@@ -507,7 +419,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           <menu
             className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
-            <Button disabled={isFormDisabled} value="Back" route="/services" />
+            <Button value="Back" route="/services" />
             <Button
               primary
               value={
