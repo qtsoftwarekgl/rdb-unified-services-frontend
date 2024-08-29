@@ -5,4 +5,5 @@ export interface PersonRole {
   id: UUID;
   roleName?: string;
   roleDescription?: string;
+  roleCategory?: string;
 }

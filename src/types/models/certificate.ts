@@ -39,6 +39,7 @@ export type Certificate = {
     businessOwner?: ApplicantDetails;
     managingDirector?: ApplicantDetails;
     registeredOfficeAddress: RegisteredOfficeAddress;
+    placeOfIncorporation?: RegisteredOfficeAddress;
     otherBusinessActivities?: BusinessActivitiesCertificate[];
     businessOwners?: ApplicantDetails[];
     membersOfBoard?: ApplicantDetails[];
@@ -46,6 +47,7 @@ export type Certificate = {
     certificateBusinessShareholders?: CertificateBusinessShareHolder[];
     shareGroups?: ShareGroup[];
     shareHoldersDetails?: ShareHolderDetails[];
+    authorizedAgent?: ApplicantDetails;
 }
 
 export type BusinessActivitiesCertificate = {

@@ -18,7 +18,7 @@ const CONTENT_MARGIN = 10; // Increased inner margin for more space from edges
 const CONTENT_START_X = PAGE_MARGIN + CONTENT_MARGIN + 2; // Starting X position
 const CONTENT_START_Y = PAGE_MARGIN + CONTENT_MARGIN + 10; 
 
-export const generateBusRegistrationCertificatePdf = (certificate: Certificate, isFullCertificate:boolean) => {
+export const generateBusRegistrationDomesticCertificatePdf = (certificate: Certificate, isFullCertificate:boolean) => {
   const doc: Record<string,any> = new jsPDF();
     // add page numbers
     doc.page=1;  // User this as a counter.
@@ -78,7 +78,7 @@ const addBorders = () => {
   doc.text(":", PAGE_MARGIN + INNER_PADDING + 30, PAGE_MARGIN + INNER_PADDING + 50);
 
   doc.setFont("helvetica", "normal");
-  doc.text(certificate.registrationDate as string, PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 60);
+  doc.text(certificate?.registrationDate || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 60);
 
   doc.setFont("helvetica", "bold");
   doc.text("Category", PAGE_MARGIN + INNER_PADDING + 80, PAGE_MARGIN + INNER_PADDING + 50);
@@ -135,13 +135,13 @@ const addBorders = () => {
   doc.text(certificate?.registeredOfficeAddress?.phone || "", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 140);
 
  // if there is PO Box add it
-    if(certificate.registeredOfficeAddress?.poBox){
+    if(certificate?.registeredOfficeAddress?.poBox){
         doc.setFont("helvetica", "bold");
         doc.text("PO Box", PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 130);
         doc.text(":", PAGE_MARGIN + INNER_PADDING + 105, PAGE_MARGIN + INNER_PADDING + 130);
 
         doc.setFont("helvetica", "normal");
-        doc.text(certificate.registeredOfficeAddress?.poBox, PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 145);
+        doc.text(certificate?.registeredOfficeAddress?.poBox, PAGE_MARGIN + INNER_PADDING + 90, PAGE_MARGIN + INNER_PADDING + 140);
     }
 
   // ================== MANAGEMENT DETAILS ==================
@@ -177,7 +177,7 @@ const addBorders = () => {
   doc.setFont("helvetica", "normal");
   doc.text("Code", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 225);
   doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 225);
-  doc.text(certificate.mainBusinessActivityCode || "", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 225);
+  doc.text(certificate?.mainBusinessActivityCode || "", PAGE_MARGIN + INNER_PADDING + 15, PAGE_MARGIN + INNER_PADDING + 225);
 
   // Display Date next to the code
   doc.text("Date", PAGE_MARGIN + INNER_PADDING + 50, PAGE_MARGIN + INNER_PADDING + 225);
@@ -186,7 +186,7 @@ const addBorders = () => {
   doc.text(certificate?.mainBusinessActivityDate || "", PAGE_MARGIN + INNER_PADDING + 65, PAGE_MARGIN + INNER_PADDING + 225);
 
   doc.text("Description: ", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 235);
-  doc.text(certificate.mainBusinessActivity || "", PAGE_MARGIN + INNER_PADDING + 20, PAGE_MARGIN + INNER_PADDING + 235);
+  doc.text(certificate?.mainBusinessActivity || "", PAGE_MARGIN + INNER_PADDING + 20, PAGE_MARGIN + INNER_PADDING + 235);
 
   // doc.text("Date", PAGE_MARGIN + INNER_PADDING, PAGE_MARGIN + INNER_PADDING + 245);
   // doc.text(":", PAGE_MARGIN + INNER_PADDING + 10, PAGE_MARGIN + INNER_PADDING + 245);
@@ -601,7 +601,7 @@ y += 20;
 
   // Call addBusinessActivitiesPage afterward
   if (certificate?.otherBusinessActivities?.length) {
-    addBusinessActivitiesPage(certificate.otherBusinessActivities, y);
+    addBusinessActivitiesPage(certificate?.otherBusinessActivities, y);
   }
 
     addSignature(doc, certificate);

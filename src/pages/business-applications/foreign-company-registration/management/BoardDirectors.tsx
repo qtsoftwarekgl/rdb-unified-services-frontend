@@ -178,6 +178,7 @@ const BoardDirectors = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
+    console.log(data);
     createBoardMember({
       ...data,
       personDocNo: data?.personDocNo || data?.documentNumber,
@@ -395,6 +396,8 @@ const BoardDirectors = ({
           disabled={isFormDisabled}
         >
           <menu className="flex flex-col w-full gap-4">
+            <div className="w-full flex justify-between gap-4">
+            <div className="w-[50%]">
             <h3 className="font-medium uppercase text-md">Add members</h3>
             <Controller
               name="position"
@@ -404,7 +407,7 @@ const BoardDirectors = ({
               control={control}
               render={({ field }) => {
                 return (
-                  <label className="flex flex-col gap-1 w-[49%]">
+                  <label className="flex flex-col gap-1 w-full">
                     <Select
                       {...field}
                       label="Select position"
@@ -433,6 +436,48 @@ const BoardDirectors = ({
                 );
               }}
             />
+            </div>
+
+            <div className="flex flex-col w-[50%] mt-6">            
+            <Controller
+              name="roleCategory"
+              rules={{ required: "Select member's position" }}
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col gap-1 w-full">
+                    <Select
+                      label="Select category"
+                      required
+                      placeholder="Select category"
+                      options={[
+                        {
+                          value: "Executive",
+                          label: "Executive",
+                        },
+                        {
+                          value: "Non-Executive",
+                          label: "Non Executive",
+                        },
+                        {
+                          value: "Independent",
+                          label: "Independent",
+                        }
+                      ]}
+                      {...field}
+                    />
+                    {errors?.roleCategory && (
+                      <p className="text-red-500 text-[13px]">
+                        {String(errors?.roleCategory?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+            </div>
+
+            </div>
             <ul
               className={`${
                 watch("position") ? "flex" : "hidden"

@@ -58,13 +58,13 @@ export  function getCertificateTitle(certificateType: string, isFull: boolean = 
     return isFull ? "FULL CERTIFICATE OF DOMESTIC COMPANY REGISTRATION" : "CERTIFICATE OF DOMESTIC COMPANY REGISTRATION";
 
     case FOREIGN_COMPANY_REGISTRATION:
-    return "Foreign Company Registration";
+    return isFull ? "FULL CERTIFICATE OF FOREIGN COMPANY REGISTRATION" : "CERTIFICATE OF FOREIGN COMPANY REGISTRATION";
 
     case DOMESTIC_COMPANY_REGISTRATION_FULL:
     return "Domestic Company Registration (Full)";
 
     case FOREIGN_COMPANY_REGISTRATION_FULL:
-    return "Foreign Company Registration (Full)";
+    return "FULL CERTIFICATE OF FOREIGN COMPANY REGISTRATION";
 
     case ENTERPRISE_REGISTRATION:
     return "Enterprise Registration";
