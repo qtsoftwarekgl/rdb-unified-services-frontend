@@ -74,13 +74,10 @@ const [
             const url = generateBusRegistrationForeignCertificatePdf(response?.data?.data, false);
             setPdfUrl(url);
           }
-<<<<<<< HEAD
           else if(response?.data?.data?.certificateType === ECertificateType.ENTERPRISE_REGISTRATION){
             const url = generateBusRegistrationEnterpriseCertificatePdf(response?.data?.data, false);
             setPdfUrl(url);
           }
-=======
->>>>>>> e94368b (Fix foreign certificate)
           else{
             const url = generateBusRegistrationDomesticCertificatePdf(response?.data?.data, false);
             setPdfUrl(url);
@@ -95,13 +92,10 @@ const [
             const url = generateBusRegistrationForeignCertificatePdf(response?.data?.data, true);
             setPdfUrl(url);
          }
-<<<<<<< HEAD
          if(response?.data?.data?.certificateType === ECertificateType.ENTERPRISE_REGISTRATION){
             const url = generateBusRegistrationEnterpriseCertificatePdf(response?.data?.data, true);
             setPdfUrl(url);
          }
-=======
->>>>>>> e94368b (Fix foreign certificate)
          else{
          const url = generateBusRegistrationDomesticCertificatePdf(response?.data?.data, true);
          setPdfUrl(url);
