@@ -10,12 +10,9 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import FounderDetailsWithShares from '../capital-information/FounderDetailsWithSharesTable';
 import { FounderDetail } from '@/types/models/personDetail';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
-import Input from '@/components/inputs/Input';
+import { FieldValues, useForm } from 'react-hook-form';
 import Button from '@/components/inputs/Button';
-import {
-  formatDate,
-} from '@/helpers/strings';
+import { formatDate } from '@/helpers/strings';
 import Loader from '@/components/Loader';
 import { useCreateBeneficialOwnerMutation } from '@/states/api/businessRegApiSlice';
 import {
@@ -67,7 +64,6 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
 
   // REACT HOOK FORM
   const {
-    control,
     formState: { errors },
     handleSubmit,
     watch,
@@ -175,7 +171,7 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
             <menu
               className={`${
                 scrollSlides === 0 ? 'w-full' : 'w-0 h-0 invisible'
-              } flex flex-col gap-4 justify-between`}
+              } flex flex-col gap-8 justify-between`}
             >
               <BeneficialOwnerTinOwnership />
             </menu>
@@ -193,38 +189,12 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
                 scrollSlides === 2 ? 'w-full' : 'w-0 h-0 invisible'
               } flex flex-col gap-4 justify-between`}
             >
-              <BeneficialOwnerResidentialAddress personIdentType={watch('personIdentType')} />
-              <Controller
-                name="hasProAddress"
-                control={control}
-                rules={{ required: 'Select an option to continue' }}
-                render={({ field }) => {
-                  return (
-                    <label className="w-full flex flex-col gap-1 my-5">
-                      <p className="mb-2">
-                        Does the person have a professional address?
-                      </p>
-                      <ul className="flex items-center gap-5">
-                        <Input
-                          type="radio"
-                          label="Yes"
-                          {...field}
-                          value="yes"
-                        />
-                        <Input type="radio" label="No" {...field} value="no" />
-                      </ul>
-                      {errors?.hasProAddress && (
-                        <span className="text-red-500 text-[12px]">
-                          {String(errors?.hasProAddress?.message)}
-                        </span>
-                      )}
-                    </label>
-                  );
-                }}
+              <BeneficialOwnerResidentialAddress
+                personIdentType={watch('personIdentType')}
               />
-              {watch('hasProAddress') === 'yes' && (
-                <BeneficialOwnerProfessionalAddress personIdentType={watch('personIdentType')} />
-              )}
+                <BeneficialOwnerProfessionalAddress
+                  personIdentType={watch('personIdentType')}
+                />
             </menu>
             {/* BENEFICIAL OWNER INFORMATION */}
             <menu

@@ -4,19 +4,56 @@ import TextArea from '@/components/inputs/TextArea';
 import {
   beneficialOwnerControlMeans,
   beneficialOwnerControlType,
-  beneficialOwnerTypes,
 } from '@/constants/business.constants';
 import { capitalizeString } from '@/helpers/strings';
+import { RootState } from '@/states/store';
 import moment from 'moment';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 
 const BeneficialOwnershipInformation = () => {
+  // STATE VARIABLES
+  const { selectedFounderDetailWithShares } = useSelector(
+    (state: RootState) => state.founderDetail
+  );
+  const { selectedBeneficialOwner } = useSelector(
+    (state: RootState) => state.beneficialOwner
+  );
+
   // REACT HOOK FORM
   const {
     control,
     watch,
     formState: { errors },
+    setValue,
   } = useForm();
+  const { beneficialOwnerType, controlType, significantInfluence } = watch();
+
+  // SET DEFAULT VALUES
+  useEffect(() => {
+    if (selectedFounderDetailWithShares) {
+      setValue(
+        'extentOfShare',
+        selectedFounderDetailWithShares.shareQuantityPercentage
+      );
+      setValue(
+        'extentOfVoting',
+        selectedFounderDetailWithShares.shareQuantityPercentage
+      );
+    }
+    if (selectedBeneficialOwner) {
+      setValue(
+        'beneficialOwnerType',
+        selectedBeneficialOwner?.beneficialOwnerType
+      );
+      setValue('controlType', selectedBeneficialOwner.controlType);
+      setValue(
+        'significantInfluence',
+        selectedBeneficialOwner.significantInfluence
+      );
+    }
+  }, [selectedBeneficialOwner, selectedFounderDetailWithShares, setValue]);
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -45,27 +82,6 @@ const BeneficialOwnershipInformation = () => {
           }}
         />
         <Controller
-          name="beneficialOwnerType"
-          control={control}
-          defaultValue={'REGULAR_MANAGEMENT'}
-          rules={{ required: 'Select beneficial owner type' }}
-          render={({ field }) => {
-            return (
-              <Select
-                label="Beneficial Owner Type"
-                required
-                options={beneficialOwnerTypes?.map((ownerType) => {
-                  return {
-                    label: capitalizeString(ownerType),
-                    value: ownerType,
-                  };
-                })}
-                {...field}
-              />
-            );
-          }}
-        />
-        <Controller
           name="controlType"
           control={control}
           rules={{ required: 'Control type is required' }}
@@ -80,6 +96,9 @@ const BeneficialOwnershipInformation = () => {
                     return {
                       label: capitalizeString(controlType),
                       value: controlType,
+                      disabled: selectedBeneficialOwner?.controlType
+                        ? controlType !== selectedBeneficialOwner?.controlType
+                        : false,
                     };
                   })}
                 />
@@ -92,39 +111,41 @@ const BeneficialOwnershipInformation = () => {
             );
           }}
         />
-        <Controller
-          name="significantInfluence"
-          control={control}
-          rules={{ required: 'Control means is required' }}
-          render={({ field }) => {
-            return (
-              <label className="w-full flex flex-col gap-1">
-                <Select
-                  {...field}
-                  label={'Control Means'}
-                  required
-                  options={beneficialOwnerControlMeans?.map((controlMean) => {
-                    return {
-                      label: capitalizeString(controlMean),
-                      value: controlMean,
-                    };
-                  })}
-                />
-                {errors?.significantInfluence && (
-                  <span className="text-red-500 text-[12px]">
-                    {String(errors?.significantInfluence?.message)}
-                  </span>
-                )}
-              </label>
-            );
-          }}
-        />
+        {selectedBeneficialOwner?.significantInfluence === 'OTHER' && (
+          <Controller
+            name="significantInfluence"
+            control={control}
+            rules={{ required: 'Control means is required' }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Select
+                    {...field}
+                    label={'Control Means'}
+                    required
+                    options={beneficialOwnerControlMeans?.map((controlMean) => {
+                      return {
+                        label: capitalizeString(controlMean),
+                        value: controlMean,
+                      };
+                    })}
+                  />
+                  {errors?.significantInfluence && (
+                    <span className="text-red-500 text-[12px]">
+                      {String(errors?.significantInfluence?.message)}
+                    </span>
+                  )}
+                </label>
+              );
+            }}
+          />
+        )}
         <Controller
           name="extentOfShare"
           control={control}
           rules={{
             required:
-              watch('controlType') === 'DIRECT'
+              controlType === 'DIRECT' || selectedFounderDetailWithShares
                 ? 'Extent of shares is required'
                 : false,
           }}
@@ -133,9 +154,13 @@ const BeneficialOwnershipInformation = () => {
               <label className="w-full flex flex-col gap-1">
                 <Input
                   label={`Extent of shares ${
-                    watch('controlType') !== 'DIRECT' && '(optional)'
+                    controlType !== 'DIRECT' && '(optional)'
                   }`}
-                  required={watch('controlType') === 'DIRECT'}
+                  required={
+                    controlType === 'DIRECT' ||
+                    !!selectedFounderDetailWithShares
+                  }
+                  readOnly={!!selectedFounderDetailWithShares}
                   type="number"
                   placeholder="Extent of shares"
                   {...field}
@@ -158,6 +183,11 @@ const BeneficialOwnershipInformation = () => {
                 <Input
                   label="Extent of voting rights"
                   type="number"
+                  required={
+                    controlType === 'DIRECT' ||
+                    !!selectedFounderDetailWithShares
+                  }
+                  readOnly={!!selectedFounderDetailWithShares}
                   placeholder="Extent of voting rights"
                   {...field}
                 />
@@ -165,7 +195,7 @@ const BeneficialOwnershipInformation = () => {
             );
           }}
         />
-        {watch('beneficialOwnerType') === 'SENIOR_MANAGEMENT' && (
+        {beneficialOwnerType === 'SENIOR_MANAGEMENT' && (
           <Controller
             name="seniorManagementPosition"
             rules={{
@@ -191,7 +221,7 @@ const BeneficialOwnershipInformation = () => {
             }}
           />
         )}
-        {watch('significantInfluence') === 'OTHERS' && (
+        {significantInfluence === 'OTHERS' && (
           <Controller
             name="OtherControlMeansDesc"
             control={control}
@@ -217,6 +247,10 @@ const BeneficialOwnershipInformation = () => {
           />
         )}
       </fieldset>
+      <menu className='w-full flex flex-col gap-4'>
+        <h3 className='font-medium text-lg'>Attachments</h3>
+        <fieldset className='grid grid-cols-2 gap-5'></fieldset>
+      </menu>
     </section>
   );
 };

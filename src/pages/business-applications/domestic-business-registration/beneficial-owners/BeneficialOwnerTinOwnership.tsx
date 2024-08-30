@@ -21,7 +21,7 @@ const BeneficialOwnerTinOwnership = () => {
             return (
               <label className="w-full flex flex-col gap-1">
                 <p className="mb-2 w-full">
-                  Does the person have a Tax Identification Number?
+                  Does the person have an individual Tax Identification Number (TIN)?
                 </p>
                 <ul className="flex items-center gap-5">
                   <Input type="radio" label="Yes" {...field} value="yes" />
