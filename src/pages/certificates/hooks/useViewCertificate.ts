@@ -1,6 +1,7 @@
 import { ECertificateType } from "@/helpers/certificate/enums";
 import { generateBusAmendmentCertificatePdf } from "@/helpers/certificate/templates/busAmendment";
 import { generateBusRegistrationDomesticCertificatePdf } from "@/helpers/certificate/templates/busRegistrationDomestic";
+import { generateBusRegistrationEnterpriseCertificatePdf } from "@/helpers/certificate/templates/busRegistrationEnterprise";
 import { generateBusRegistrationForeignCertificatePdf } from "@/helpers/certificate/templates/busRegistrationForeign";
 import { generateNameReservationCertificatePdf } from "@/helpers/certificate/templates/nameReservation";
 import { useCreateCertificateRequestMutation, useLazyFetchBusinessCertificateByIdQuery, useLazyFetchFullBusinessCertificateByIdQuery } from "@/states/api/businessRegApiSlice";
@@ -73,6 +74,10 @@ const [
             const url = generateBusRegistrationForeignCertificatePdf(response?.data?.data, false);
             setPdfUrl(url);
           }
+          else if(response?.data?.data?.certificateType === ECertificateType.ENTERPRISE_REGISTRATION){
+            const url = generateBusRegistrationEnterpriseCertificatePdf(response?.data?.data, false);
+            setPdfUrl(url);
+          }
           else{
             const url = generateBusRegistrationDomesticCertificatePdf(response?.data?.data, false);
             setPdfUrl(url);
@@ -85,6 +90,10 @@ const [
       if(response?.data?.status){
          if(response?.data?.data?.certificateType === ECertificateType.FOREIGN_COMPANY_REGISTRATION){
             const url = generateBusRegistrationForeignCertificatePdf(response?.data?.data, true);
+            setPdfUrl(url);
+         }
+         if(response?.data?.data?.certificateType === ECertificateType.ENTERPRISE_REGISTRATION){
+            const url = generateBusRegistrationEnterpriseCertificatePdf(response?.data?.data, true);
             setPdfUrl(url);
          }
          else{
