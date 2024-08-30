@@ -37,7 +37,7 @@ const UserSidebar = () => {
   const defaultUserSideBar = [
     {
       title: 'My Profile',
-      path: '/user-profile',
+      path: '/user/profile',
       icon: faGear,
     },
     {

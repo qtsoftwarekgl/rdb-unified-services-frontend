@@ -78,7 +78,7 @@ const Routes = () => {
         <Route path="/" element={<LandingPage />} />
         <Route element={<AuthenticatedRoutes />}>
           {/* USER PROFILE */}
-          <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/user/profile" element={<UserProfile />} />
           <Route path="/company-details/:id" element={<UserCompanyDetails />} />
           <Route
             path="/user/business/applications"
@@ -89,7 +89,7 @@ const Routes = () => {
             element={<UserBusinessAmendmentsList />}
           />
           <Route
-            path="/user/business-details"
+            path="/user/business/:id/details"
             element={<UserApplicationDetails />}
           />
           <Route

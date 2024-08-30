@@ -2,32 +2,33 @@ import {
   faCircleInfo,
   faEllipsisH,
   faPlus,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Table from "../../components/table/Table";
-import UserLayout from "../../containers/UserLayout";
-import Button from "../../components/inputs/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../states/store";
-import { capitalizeString } from "../../helpers/strings";
-import { ErrorResponse, Link, useNavigate } from "react-router-dom";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import { useLazyFetchBusinessesQuery } from "@/states/api/businessRegApiSlice";
-import { useEffect } from "react";
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Table from '../../components/table/Table';
+import UserLayout from '../../containers/UserLayout';
+import Button from '../../components/inputs/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../states/store';
+import { capitalizeString } from '../../helpers/strings';
+import { ErrorResponse, Link, useNavigate } from 'react-router-dom';
+import { ColumnDef, Row } from '@tanstack/react-table';
+import { useLazyFetchBusinessesQuery } from '@/states/api/businessRegApiSlice';
+import { useEffect } from 'react';
 import {
   setBusinessesList,
   setBusinessPage,
   setBusinessSize,
   setBusinessTotalElements,
   setBusinessTotalPages,
-} from "@/states/features/businessSlice";
-import { toast } from "react-toastify";
-import Loader from "@/components/Loader";
-import { Business } from "@/types/models/business";
-import CustomPopover from "@/components/inputs/CustomPopover";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { businessColumns } from "@/constants/business.constants";
-import { getBusinessStatusColor } from "@/helpers/business.helpers";
+} from '@/states/features/businessSlice';
+import { toast } from 'react-toastify';
+import Loader from '@/components/Loader';
+import { Business } from '@/types/models/business';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { businessColumns } from '@/constants/business.constants';
+import { getBusinessStatusColor } from '@/helpers/business.helpers';
+import CustomBreadcrumb from '@/components/navigation/CustomBreadcrumb';
 
 const UserBusinessApplications = () => {
   // STATE VARIABLES
@@ -68,7 +69,7 @@ const UserBusinessApplications = () => {
     } else if (businessesIsError) {
       toast.error(
         (businessesError as ErrorResponse)?.data?.message ||
-          "An error occurred while fetching businesses"
+          'An error occurred while fetching businesses'
       );
     }
   }, [
@@ -84,8 +85,8 @@ const UserBusinessApplications = () => {
   const userApplicationsColumns = [
     ...businessColumns,
     {
-      header: "Status",
-      accessorKey: "applicationStatus",
+      header: 'Status',
+      accessorKey: 'applicationStatus',
       cell: ({ row }: { row: Row<Business> }) => (
         <p
           className={`${getBusinessStatusColor(
@@ -100,9 +101,9 @@ const UserBusinessApplications = () => {
       },
     },
     {
-      id: "action",
-      header: "Action",
-      accessorKey: "action",
+      id: 'action',
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }: { row: Row<Business> }) => {
         return (
           <CustomPopover
@@ -120,16 +121,14 @@ const UserBusinessApplications = () => {
                 className="w-full flex items-center gap-2 text-[13px] text-center p-1 px-2 rounded-sm hover:bg-gray-100"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate(
-                    `/user/business-details?businessId=${row?.original?.id}`
-                  );
+                  navigate(`/user/business/${row?.original?.id}/details`);
                 }}
-                to={"#"}
+                to={'#'}
               >
                 <FontAwesomeIcon className="text-primary" icon={faCircleInfo} />
                 View details
               </Link>
-              {["AMENDMENT_SUBMITTED"].includes(
+              {['AMENDMENT_SUBMITTED'].includes(
                 row?.original?.applicationStatus
               ) && (
                 <Link
@@ -140,12 +139,12 @@ const UserBusinessApplications = () => {
                       `/user/amendments?businessId=${row?.original?.id}`
                     );
                   }}
-                  to={"#"}
+                  to={'#'}
                 >
                   <FontAwesomeIcon
                     className="text-primary"
                     icon={faPenToSquare}
-                  />{" "}
+                  />{' '}
                   View amendments
                 </Link>
               )}
@@ -156,11 +155,22 @@ const UserBusinessApplications = () => {
     },
   ];
 
+  const navigationLinks = [
+    {
+      label: 'User Profile',
+      route: '/user/profile',
+    },
+    {
+      label: 'Business Applications',
+      route: '/user/business/applications',
+    },
+  ];
+
   return (
     <UserLayout>
       <section className="flex flex-col w-full gap-6 p-8 bg-white rounded-md">
         <menu className="flex items-center justify-between w-full gap-3">
-          <h1 className="pl-2 text-lg font-semibold uppercase w-fit text-primary">
+          <h1 className="text-lg font-semibold uppercase w-fit text-primary">
             My Applications List
           </h1>
           <Button
@@ -174,6 +184,7 @@ const UserBusinessApplications = () => {
             }
           />
         </menu>
+        <CustomBreadcrumb navigationLinks={navigationLinks} />
         {businessesIsFetching ? (
           <figure className="w-full flex justify-center min-h-[30vh]">
             <Loader className="text-primary" />
@@ -194,7 +205,7 @@ const UserBusinessApplications = () => {
                 return {
                   ...business,
                   no: index + 1,
-                  companyType: capitalizeString(business?.companyType) || "N/A",
+                  companyType: capitalizeString(business?.companyType) || 'N/A',
                   companyName: (
                     business?.companyName ||
                     business?.enterpriseName ||
