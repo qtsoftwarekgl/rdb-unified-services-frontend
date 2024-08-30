@@ -1,18 +1,18 @@
-import Loader from '@/components/Loader';
-import Button from '@/components/inputs/Button';
-import CustomPopover from '@/components/inputs/CustomPopover';
-import CustomBreadcrumb from '@/components/navigation/CustomBreadcrumb';
-import Table from '@/components/table/Table';
-import { businessColumns } from '@/constants/business.constants';
-import UserLayout from '@/containers/UserLayout';
-import { getBusinessStatusColor } from '@/helpers/business.helpers';
-import { capitalizeString } from '@/helpers/strings';
-import DeleteBusinessApplication from '@/pages/business-applications/containers/DeleteBusinessApplication';
+import Loader from "@/components/Loader";
+import Button from "@/components/inputs/Button";
+import CustomPopover from "@/components/inputs/CustomPopover";
+import CustomBreadcrumb from "@/components/navigation/CustomBreadcrumb";
+import Table from "@/components/table/Table";
+import { businessColumns } from "@/constants/business.constants";
+import UserLayout from "@/containers/UserLayout";
+import { getBusinessStatusColor } from "@/helpers/business.helpers";
+import { capitalizeString } from "@/helpers/strings";
+import DeleteBusinessApplication from "@/pages/business-applications/containers/DeleteBusinessApplication";
 import {
   useCreateBusinessMutation,
   useLazyFetchBusinessesQuery,
-} from '@/states/api/businessRegApiSlice';
-import { useLazyGetServiceQuery } from '@/states/api/businessRegApiSlice';
+} from "@/states/api/businessRegApiSlice";
+import { useLazyGetServiceQuery } from "@/states/api/businessRegApiSlice";
 import {
   setBusinessesList,
   setBusinessPage,
@@ -21,23 +21,23 @@ import {
   setBusinessTotalPages,
   setDeleteBusinessModal,
   setSelectedBusiness,
-} from '@/states/features/businessSlice';
-import { setService } from '@/states/features/serviceSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { Business } from '@/types/models/business';
+} from "@/states/features/businessSlice";
+import { setService } from "@/states/features/serviceSlice";
+import { AppDispatch, RootState } from "@/states/store";
+import { Business } from "@/types/models/business";
 import {
   faArrowRight,
   faEllipsisH,
   faPlus,
   faTrash,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ColumnDef, Row } from '@tanstack/react-table';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { ErrorResponse, useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ColumnDef, Row } from "@tanstack/react-table";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { ErrorResponse, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const NewServiceApplication = () => {
   // STATE VARIABLES
@@ -81,7 +81,7 @@ const NewServiceApplication = () => {
   useEffect(() => {
     if (businessIsError) {
       if ((businessError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred, please try again later');
+        toast.error("An error occurred, please try again later");
       } else {
         toast.error((businessError as ErrorResponse)?.data?.message);
       }
@@ -113,7 +113,7 @@ const NewServiceApplication = () => {
   useEffect(() => {
     fetchBusinesses({
       serviceId: id,
-      applicationStatus: 'IN_PROGRESS,IS_AMENDING,ACTION_REQUIRED',
+      applicationStatus: "IN_PROGRESS,IS_AMENDING,ACTION_REQUIRED",
       page,
       size,
     });
@@ -123,7 +123,7 @@ const NewServiceApplication = () => {
   useEffect(() => {
     if (businessesIsError) {
       if ((businessesError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred, please try again later');
+        toast.error("An error occurred, please try again later");
       } else {
         toast.error(
           capitalizeString((businessesError as ErrorResponse)?.data?.message)
@@ -153,7 +153,7 @@ const NewServiceApplication = () => {
   useEffect(() => {
     if (serviceIsError) {
       if ((serviceError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred, please try again later');
+        toast.error("An error occurred, please try again later");
       } else {
         toast.error((serviceError as ErrorResponse)?.data?.message);
       }
@@ -166,8 +166,8 @@ const NewServiceApplication = () => {
   const applicationsColumns = [
     ...businessColumns,
     {
-      header: 'Application Status',
-      accessorKey: 'applicationStatus',
+      header: "Application Status",
+      accessorKey: "applicationStatus",
       cell: ({ row }: { row: Row<Business> }) => {
         return (
           <p
@@ -181,8 +181,8 @@ const NewServiceApplication = () => {
       },
     },
     {
-      header: 'Action',
-      accessorKey: 'actions',
+      header: "Action",
+      accessorKey: "actions",
       enableSorting: false,
       cell: ({ row }: { row: Row<Business> }) => {
         return (
@@ -191,7 +191,7 @@ const NewServiceApplication = () => {
               <menu className="flex items-center justify-center cursor-pointer">
                 <FontAwesomeIcon
                   icon={faEllipsisH}
-                  className="cursor-pointer text-primary p-1 px-4 rounded-md bg-slate-200 hover:bg-slate-300 transition-all duration-300"
+                  className="p-1 px-4 transition-all duration-300 rounded-md cursor-pointer text-primary bg-slate-200 hover:bg-slate-300"
                 />
               </menu>
             }
@@ -242,8 +242,8 @@ const NewServiceApplication = () => {
   // NAVIGATION LINKS
   const navigationLinks = [
     {
-      label: 'Services',
-      route: '/services',
+      label: "Services",
+      route: "/services",
     },
     {
       label: `${capitalizeString(service?.name)}`,
@@ -265,8 +265,28 @@ const NewServiceApplication = () => {
               {capitalizeString(service?.name)}
             </h3>
           </menu>
-          <menu className="my-3">
+          <menu className="flex items-center justify-between w-full my-3">
             <CustomBreadcrumb navigationLinks={navigationLinks} />
+            <Button
+              primary
+              onClick={(e) => {
+                e.preventDefault();
+                createBusiness({
+                  isForeign: service?.path === "/foreign-company-registration",
+                  serviceId: service?.id,
+                });
+              }}
+              value={
+                !businessIsLoading ? (
+                  <menu className="flex items-center gap-2">
+                    <FontAwesomeIcon className="text-[14px]" icon={faPlus} />
+                    <p className="text-[14px]">Start new application</p>
+                  </menu>
+                ) : (
+                  <Loader />
+                )
+              }
+            />
           </menu>
           <section className="flex flex-col w-full gap-6">
             <section className="flex flex-col gap-8 max-md:w-full">
@@ -278,36 +298,10 @@ const NewServiceApplication = () => {
                 businessesIsSuccess &&
                 businessesList?.length > 0 && (
                   <menu className="flex flex-col gap-2 max-md:w-full">
-                    <menu className="w-full flex items-center gap-3 justify-between my-2">
+                    <menu className="flex items-center justify-between w-full gap-3 my-2">
                       <h1 className="text-base font-semibold uppercase text-primary">
                         Applications in progress
                       </h1>
-                      <Button
-                        primary
-                        onClick={(e) => {
-                          e.preventDefault();
-                          createBusiness({
-                            isForeign:
-                              service?.path === '/foreign-company-registration',
-                            serviceId: service?.id,
-                          });
-                        }}
-                        value={
-                          !businessIsLoading ? (
-                            <menu className="flex items-center gap-2">
-                              <FontAwesomeIcon
-                                className="text-[14px]"
-                                icon={faPlus}
-                              />
-                              <p className="text-[14px]">
-                                Start new application
-                              </p>
-                            </menu>
-                          ) : (
-                            <Loader />
-                          )
-                        }
-                      />
                     </menu>
                     <Table
                       setPage={setBusinessPage}
