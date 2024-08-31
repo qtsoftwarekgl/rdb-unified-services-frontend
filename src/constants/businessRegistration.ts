@@ -198,8 +198,8 @@ export const companyPositions = [
     value: "ceo",
   },
   {
-    label: "Chair of Board",
-    value: "chairOfBoard",
+    label: "Chairperson",
+    value: "chairperson",
   },
   {
     label: "Power of Attorney",

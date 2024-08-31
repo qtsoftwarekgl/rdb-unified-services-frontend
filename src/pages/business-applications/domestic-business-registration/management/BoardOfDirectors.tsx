@@ -249,6 +249,7 @@ const BoardOfDirectors = ({
         position: watch("position"),
         personIdentType: "nid",
         documentNumber: watch("documentNumber"),
+        roleCategory: watch("roleCategory"),
         firstName: userInformation?.foreName,
         lastName: userInformation?.surnames,
         gender: userInformation?.gender,
@@ -317,89 +318,88 @@ const BoardOfDirectors = ({
         <fieldset className="flex flex-col w-full gap-5">
           <menu className="flex flex-col w-full gap-4">
             <div className="flex justify-between gap-4">
-            <div className="flex flex-col w-[50%]">            
-            <h3 className="font-medium uppercase text-md">Add members</h3>
-            <Controller
-              name="position"
-              rules={{ required: "Select member's position" }}
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col gap-1 w-full">
-                    <Select
-                      label="Select position"
-                      required
-                      placeholder="Select position"
-                      options={[
-                        {
-                          value: "chairman",
-                          label: "Chairman",
-                        },
-                        {
-                          value: "member",
-                          label: "Member",
-                        },
-                      ]}
-                      {...field}
-                      onChange={(e) => {
-                        clearErrors(["personIdentType", "personDocNo"]);
-                        reset({
-                          position: e,
-                        });
-                        field.onChange(e);
-                      }}
-                    />
-                    {errors?.position && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.position?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            </div>
+              <div className="flex flex-col w-[50%]">
+                <h3 className="font-medium uppercase text-md">Add members</h3>
+                <Controller
+                  name="position"
+                  rules={{ required: "Select member's position" }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col w-full gap-1">
+                        <Select
+                          label="Select position"
+                          required
+                          placeholder="Select position"
+                          options={[
+                            {
+                              value: "chairperson",
+                              label: "Chairperson",
+                            },
+                            {
+                              value: "member",
+                              label: "Member",
+                            },
+                          ]}
+                          {...field}
+                          onChange={(e) => {
+                            clearErrors(["personIdentType", "personDocNo"]);
+                            reset({
+                              position: e,
+                            });
+                            field.onChange(e);
+                          }}
+                        />
+                        {errors?.position && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.position?.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+              </div>
 
-            <div className="flex flex-col w-[50%] mt-6">            
-            <Controller
-              name="roleCategory"
-              rules={{ required: "Select member's position" }}
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col gap-1 w-full">
-                    <Select
-                      label="Select category"
-                      required
-                      placeholder="Select category"
-                      options={[
-                        {
-                          value: "Executive",
-                          label: "Executive",
-                        },
-                        {
-                          value: "Non-Executive",
-                          label: "Non Executive",
-                        },
-                        {
-                          value: "Independent",
-                          label: "Independent",
-                        }
-                      ]}
-                      {...field}
-                    />
-                    {errors?.roleCategory && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.roleCategory?.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
+              <div className="flex flex-col w-[50%] mt-6">
+                <Controller
+                  name="roleCategory"
+                  rules={{ required: "Select member's position" }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col w-full gap-1">
+                        <Select
+                          label="Select category"
+                          required
+                          placeholder="Select category"
+                          options={[
+                            {
+                              value: "Executive",
+                              label: "Executive",
+                            },
+                            {
+                              value: "Non-Executive",
+                              label: "Non Executive",
+                            },
+                            {
+                              value: "Independent",
+                              label: "Independent",
+                            },
+                          ]}
+                          {...field}
+                        />
+                        {errors?.roleCategory && (
+                          <p className="text-red-500 text-[13px]">
+                            {String(errors?.roleCategory?.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+              </div>
             </div>
-            </div>
-
 
             <ul
               className={`${

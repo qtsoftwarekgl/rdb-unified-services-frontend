@@ -22,8 +22,14 @@ import BusinessPeopleAttachments from "../../domestic-business-registration/Busi
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { BusinessAttachment } from "@/types/models/attachment";
-import { completeNavigationFlowThunk, createNavigationFlowThunk } from "@/states/features/navigationFlowSlice";
-import { findNavigationFlowByStepName, findNavigationFlowMassIdByStepName } from "@/helpers/business.helpers";
+import {
+  completeNavigationFlowThunk,
+  createNavigationFlowThunk,
+} from "@/states/features/navigationFlowSlice";
+import {
+  findNavigationFlowByStepName,
+  findNavigationFlowMassIdByStepName,
+} from "@/helpers/business.helpers";
 
 interface CompanyAttachmentsProps {
   businessId: businessId;
@@ -40,7 +46,7 @@ const attachmentFields = [
   {
     name: "resolution",
     label: "Resolution attachment",
-    required: true,
+    required: false,
     attachmentType: "Resolution Attachment",
   },
   {
@@ -57,7 +63,10 @@ const attachmentFields = [
   },
 ];
 
-const CompanyAttachments = ({ businessId, applicationStatus }: CompanyAttachmentsProps) => {
+const CompanyAttachments = ({
+  businessId,
+  applicationStatus,
+}: CompanyAttachmentsProps) => {
   // REACT HOOK FORM
   const {
     control,
@@ -103,7 +112,7 @@ const CompanyAttachments = ({ businessId, applicationStatus }: CompanyAttachment
     uploadBusinessAttachmentIsSuccess,
   ]);
 
-  const isFormDisabled = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
+  const isFormDisabled = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
   const { businessDetails } = useSelector((state: RootState) => state.business);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
@@ -198,7 +207,7 @@ const CompanyAttachments = ({ businessId, applicationStatus }: CompanyAttachment
         isCompleted: true,
         navigationFlowId: findNavigationFlowByStepName(
           businessNavigationFlowsList,
-          'Attachments'
+          "Attachments"
         )?.id,
       })
     );
@@ -207,7 +216,7 @@ const CompanyAttachments = ({ businessId, applicationStatus }: CompanyAttachment
         businessId,
         massId: findNavigationFlowMassIdByStepName(
           navigationFlowMassList,
-          'Preview & Submission'
+          "Preview & Submission"
         ),
         isActive: true,
       })
@@ -370,7 +379,7 @@ const CompanyAttachments = ({ businessId, applicationStatus }: CompanyAttachment
                     businessId,
                     massId: findNavigationFlowMassIdByStepName(
                       navigationFlowMassList,
-                      'Employment Info'
+                      "Employment Info"
                     ),
                     isActive: true,
                   })
