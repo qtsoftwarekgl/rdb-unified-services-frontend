@@ -20,6 +20,9 @@ const BeneficialOwnerPersonalInformation = () => {
   const { selectedFounderDetailWithShares } = useSelector(
     (state: RootState) => state.founderDetail
   );
+  const { selectedBeneficialOwner } = useSelector(
+    (state: RootState) => state.beneficialOwner
+  );
   const {
     userInformationIsFetching,
     userInformationIsSuccess,
@@ -122,6 +125,7 @@ const BeneficialOwnerPersonalInformation = () => {
                       value: option?.value,
                       disabled:
                         selectedFounderDetailWithShares &&
+                        selectedBeneficialOwner?.controlType === 'DIRECT' &&
                         selectedFounderDetailWithShares?.founderDetail?.personDetail?.personIdentType?.toUpperCase() !==
                           option?.value
                           ? true
@@ -149,10 +153,18 @@ const BeneficialOwnerPersonalInformation = () => {
                 <Input
                   label="Identification Number"
                   required
-                  readOnly={selectedFounderDetailWithShares ? true : false}
+                  readOnly={
+                    selectedFounderDetailWithShares &&
+                    selectedBeneficialOwner?.controlType === 'DIRECT'
+                      ? true
+                      : false
+                  }
                   suffixIcon={
                     watch('personIdentType') === 'NID' &&
-                    !selectedFounderDetailWithShares
+                    !(
+                      selectedFounderDetailWithShares &&
+                      selectedBeneficialOwner?.controlType === 'DIRECT'
+                    )
                       ? faSearch
                       : undefined
                   }
@@ -195,7 +207,9 @@ const BeneficialOwnerPersonalInformation = () => {
                   label="First Name"
                   required
                   readOnly={
-                    userInformation || selectedFounderDetailWithShares
+                    userInformation ||
+                    (selectedFounderDetailWithShares &&
+                      selectedBeneficialOwner?.controlType === 'DIRECT')
                       ? true
                       : false
                   }
@@ -222,7 +236,9 @@ const BeneficialOwnerPersonalInformation = () => {
                   label="Last Name"
                   required
                   readOnly={
-                    userInformation || selectedFounderDetailWithShares
+                    userInformation ||
+                    (selectedFounderDetailWithShares &&
+                      selectedBeneficialOwner?.controlType === 'DIRECT')
                       ? true
                       : false
                   }
@@ -246,9 +262,6 @@ const BeneficialOwnerPersonalInformation = () => {
                   required
                   readOnly={userInformation ? true : false}
                   toDate={moment().subtract(18, 'years').toDate()}
-                  defaultValue={moment()
-                    .subtract(18, 'years')
-                    .format('YYYY-MM-DD')}
                   type="date"
                   {...field}
                 />
@@ -276,7 +289,9 @@ const BeneficialOwnerPersonalInformation = () => {
                       label: capitalizeString(gender?.label),
                       value: gender?.value,
                       disabled:
-                        userInformation || selectedFounderDetailWithShares
+                        userInformation ||
+                        (selectedFounderDetailWithShares &&
+                          selectedBeneficialOwner?.controlType === 'DIRECT')
                           ? (
                               userInformation ||
                               selectedFounderDetailWithShares?.founderDetail
@@ -309,7 +324,9 @@ const BeneficialOwnerPersonalInformation = () => {
                       label: country?.name,
                       value: country?.code,
                       disabled:
-                        userInformation || selectedFounderDetailWithShares
+                        userInformation ||
+                        (selectedFounderDetailWithShares &&
+                          selectedBeneficialOwner?.controlType === 'DIRECT')
                           ? (
                               userInformation ||
                               selectedFounderDetailWithShares?.founderDetail
@@ -350,7 +367,9 @@ const BeneficialOwnerPersonalInformation = () => {
                       label: country?.name,
                       value: country?.code,
                       disabled:
-                        userInformation || selectedFounderDetailWithShares
+                        userInformation ||
+                        (selectedFounderDetailWithShares &&
+                          selectedBeneficialOwner?.controlType === 'DIRECT')
                           ? (
                               userInformation ||
                               selectedFounderDetailWithShares?.founderDetail
@@ -415,7 +434,12 @@ const BeneficialOwnerPersonalInformation = () => {
                   <Input
                     label="Phone Number"
                     placeholder="Phone Number"
-                    readOnly={selectedFounderDetailWithShares ? true : false}
+                    readOnly={
+                      selectedFounderDetailWithShares &&
+                      selectedBeneficialOwner?.controlType === 'DIRECT'
+                        ? true
+                        : false
+                    }
                     type="tel"
                     {...field}
                   />

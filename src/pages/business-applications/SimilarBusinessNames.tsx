@@ -21,7 +21,7 @@ const SimilarBusinessNames = ({ businessName }: { businessName: string }) => {
     },
     {
       header: 'Business Name',
-      accessorKey: 'companyName',
+      accessorKey: 'name',
     },
     {
       header: 'Similarity',
@@ -48,19 +48,17 @@ const SimilarBusinessNames = ({ businessName }: { businessName: string }) => {
           showFilter={false}
           showPagination={false}
           data={nameAvailabilitiesList?.map(
-            (
-              nameAvailability: {
-                companyName: string;
-                similarity: string | number;
-              },
-              index: number
-            ) => {
+            (nameAvailability, index: number) => {
               return {
                 no: index + 1,
-                companyName: nameAvailability.companyName,
+                name: nameAvailability.name,
                 similarity: `${convertDecimalToPercentage(
                   nameAvailability.similarity
                 )}%`,
+                status:
+                  nameAvailability?.status === 'Business'
+                    ? 'Active'
+                    : 'Reserved',
               };
             }
           )}

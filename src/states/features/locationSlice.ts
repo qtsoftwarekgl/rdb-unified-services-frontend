@@ -185,7 +185,6 @@ export const locationSlice = createSlice({
     },
     setSelectedDistrict: (state, action) => {
       if (action.payload instanceof Object) {
-        console.log(action.payload);
         state.selectedDistrict = action.payload;
       } else {
         state.selectedDistrict = state.districtsList.find(
