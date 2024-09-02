@@ -1,45 +1,45 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../../../../components/Loader";
-import Select from "../../../../components/inputs/Select";
+import { useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import Loader from '../../../../components/Loader';
+import Select from '../../../../components/inputs/Select';
 import {
   companyCategories,
   companyPositions,
   companyTypes,
   privateCompanyTypes,
-} from "../../../../constants/businessRegistration";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { businessId } from "@/types/models/business";
-import { toast } from "react-toastify";
-import { ErrorResponse, Link } from "react-router-dom";
+} from '../../../../constants/businessRegistration';
+import Button from '../../../../components/inputs/Button';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { businessId } from '@/types/models/business';
+import { toast } from 'react-toastify';
+import { ErrorResponse, Link } from 'react-router-dom';
 import {
   setBusinessDetails,
   setNameAvailabilitiesList,
   setSimilarBusinessNamesModal,
   uploadAmendmentAttachmentThunk,
-} from "@/states/features/businessSlice";
+} from '@/states/features/businessSlice';
 import {
   useCreateBusinessDetailsMutation,
   useLazyGetBusinessDetailsQuery,
   useLazySearchBusinessNameAvailabilityQuery,
-} from "@/states/api/businessRegApiSlice";
-import { convertDecimalToPercentage } from "@/helpers/strings";
-import SimilarBusinessNames from "../../SimilarBusinessNames";
+} from '@/states/api/businessRegApiSlice';
+import { convertDecimalToPercentage } from '@/helpers/strings';
+import SimilarBusinessNames from '../../SimilarBusinessNames';
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+} from '@/states/features/navigationFlowSlice';
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ApplicationStatus } from "@/enums/ApplicationStatus";
+} from '@/helpers/business.helpers';
+import ResolutionAttachment from '@/components/resolution-attachment/ResolutionAttachment';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ApplicationStatus } from '@/enums/ApplicationStatus';
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -70,7 +70,6 @@ const CompanyDetails = ({
     navigationFlowMassList,
     businessNavigationFlowsList,
     completeNavigationFlowIsLoading,
-    completeNavigationFlowIsSuccess,
   } = useSelector((state: RootState) => state.navigationFlow);
   const [formDisabled, setFormDisabled] = useState(false);
   const { file, fileName, attachmentType } = useSelector(
@@ -79,7 +78,7 @@ const CompanyDetails = ({
 
   // DISABLE FORM
   useEffect(() => {
-    if (["IN_REVIEW"].includes(String(applicationStatus))) {
+    if (['IN_REVIEW'].includes(String(applicationStatus))) {
       setFormDisabled(true);
     }
   }, [applicationStatus]);
@@ -107,7 +106,7 @@ const CompanyDetails = ({
   useEffect(() => {
     if (businessDetailsIsError) {
       if ((businessDetailsError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred while fetching business data");
+        toast.error('An error occurred while fetching business data');
       } else {
         toast.error((businessDetailsError as ErrorResponse)?.data?.message);
       }
@@ -140,7 +139,7 @@ const CompanyDetails = ({
     if (searchBusinessNameIsError) {
       if ((searchBusinessNameError as ErrorResponse)?.status === 500) {
         toast.error(
-          "An error occurred while searching for business name availability"
+          'An error occurred while searching for business name availability'
         );
       } else {
         toast.error((searchBusinessNameError as ErrorResponse)?.data?.message);
@@ -152,9 +151,9 @@ const CompanyDetails = ({
             availability?.similarity === 1.0
         ) !== undefined
       ) {
-        setError("companyName", {
-          type: "manual",
-          message: "Company name already exists",
+        setError('companyName', {
+          type: 'manual',
+          message: 'Company name already exists',
         });
       }
       dispatch(setNameAvailabilitiesList(searchBusinessNameData?.data));
@@ -182,13 +181,13 @@ const CompanyDetails = ({
 
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
-    if (watch("companyCategory") === "PUBLIC") {
+    if (watch('companyCategory') === 'PUBLIC') {
       setBusinessTypesOptions(companyTypes);
-    } else if (watch("companyCategory") === "PRIVATE") {
+    } else if (watch('companyCategory') === 'PRIVATE') {
       setBusinessTypesOptions(privateCompanyTypes);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("companyCategory"), businessDetails?.companyCategory]);
+  }, [watch('companyCategory'), businessDetails?.companyCategory]);
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -196,7 +195,7 @@ const CompanyDetails = ({
       businessId,
       companyName: data.companyName,
       position: data.position,
-      hasArticlesOfAssociation: data.hasArticlesOfAssociation === "yes",
+      hasArticlesOfAssociation: data.hasArticlesOfAssociation === 'yes',
       companyType: data.companyType,
       companyCategory: data.companyCategory,
     });
@@ -213,7 +212,6 @@ const CompanyDetails = ({
         );
       }
     } else if (createCompanyDetailsIsSuccess) {
-      toast.success('Company details created or updated successfully');
       if (applicationStatus === ApplicationStatus.IsAmending) {
         // upload resolution attachment
         if (file && businessId)
@@ -236,6 +234,16 @@ const CompanyDetails = ({
           )?.id,
         })
       );
+      dispatch(
+        createNavigationFlowThunk({
+          businessId,
+          massId: findNavigationFlowMassIdByStepName(
+            navigationFlowMassList,
+            'Company Address'
+          ),
+          isActive: true,
+        })
+      );
     }
   }, [
     businessId,
@@ -249,24 +257,8 @@ const CompanyDetails = ({
     fileName,
     attachmentType,
     createCompanyDetailsData?.data?.amendmentId,
+    navigationFlowMassList,
   ]);
-
-  // HANDLE COMPLETE NAVIGATION FLOW RESPONSE
-  useEffect(() => {
-    if (completeNavigationFlowIsSuccess) {
-      dispatch(
-        createNavigationFlowThunk({
-          businessId,
-          massId: findNavigationFlowMassIdByStepName(
-            navigationFlowMassList,
-            "Company Address"
-          ),
-          isActive: true,
-        })
-      );
-    }
-  }, [businessId, completeNavigationFlowIsSuccess, dispatch, navigationFlowMassList])
-
   useEffect(() => {
     if (businessDetails && Object.keys(businessDetails).length > 0) {
       reset({
@@ -275,8 +267,8 @@ const CompanyDetails = ({
         companyType: businessDetails?.companyType,
         position: businessDetails?.position,
         hasArticlesOfAssociation: businessDetails?.hasArticlesOfAssociation
-          ? "yes"
-          : "no",
+          ? 'yes'
+          : 'no',
       });
     }
   }, [businessDetails, reset]);

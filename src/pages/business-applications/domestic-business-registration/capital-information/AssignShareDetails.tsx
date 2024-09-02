@@ -1,23 +1,22 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from "react";
-import Modal from "../../../../components/Modal";
-import { FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../states/store";
-import Button from "../../../../components/inputs/Button";
-import Loader from "../../../../components/Loader";
-import { capitalizeString } from "../../../../helpers/strings";
-import { businessId } from "@/types/models/business";
-import { setAssignSharesModal } from "@/states/features/founderDetailSlice";
-import { ShareDetail } from "@/types/models/shareDetail";
-import { useAssignSharesMutation } from "@/states/api/businessRegApiSlice";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
-import { setShareDetailsList } from "@/states/features/shareDetailSlice";
-import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
-import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
-import { ApplicationStatus } from "@/enums/ApplicationStatus";
+import { useEffect, useMemo } from 'react';
+import Modal from '../../../../components/Modal';
+import { FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../../states/store';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
+import { capitalizeString } from '../../../../helpers/strings';
+import { businessId } from '@/types/models/business';
+import { setAssignSharesModal } from '@/states/features/founderDetailSlice';
+import { ShareDetail } from '@/types/models/shareDetail';
+import { useAssignSharesMutation } from '@/states/api/businessRegApiSlice';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { setShareDetailsList } from '@/states/features/shareDetailSlice';
+import ResolutionAttachment from '@/components/resolution-attachment/ResolutionAttachment';
+import { uploadAmendmentAttachmentThunk } from '@/states/features/businessSlice';
+import { ApplicationStatus } from '@/enums/ApplicationStatus';
 
 type AssignShareDetailsProps = {
   businessId: businessId;
@@ -40,6 +39,19 @@ const AssignShareDetails = ({
     reset,
   } = useForm();
 
+  const {
+    ordinaryShareQuantity,
+    preferenceShareQuantity,
+    nonVotingShareQuantity,
+    redeemableShareQuantity,
+    irredeemableShareQuantity,
+    ordinaryShareAmount,
+    preferenceShareAmount,
+    nonVotingShareAmount,
+    redeemableShareAmount,
+    irredeemableShareAmount,
+  } = watch();
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { selectedFounderDetail, assignSharesModal } = useSelector(
@@ -48,7 +60,7 @@ const AssignShareDetails = ({
   const { shareDetailsList } = useSelector(
     (state: RootState) => state.shareDetail
   );
-  const disableForm = ["IN_REVIEW"].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW'].includes(applicationStatus);
 
   // Resolution attachment
   const { file, fileName, attachmentType } = useSelector(
@@ -69,44 +81,49 @@ const AssignShareDetails = ({
 
   // TABLE HEADERS
   const tableHeaders = [
-    "Share type",
-    "Number of shares",
-    "Per Value",
-    "Total Value",
+    'Share type',
+    'Number of shares',
+    'Per Value',
+    'Total Value',
   ];
 
   // TABLE ROWS
-  const tableRows = [
-    { name: "ordinaryShare", label: "Ordinary Share" },
-    { name: "preferenceShare", label: "Preference Share" },
-    { name: "nonVotingShare", label: "Non-voting Share" },
-    { name: "redeemableShare", label: "Redeemable Share" },
-    { name: "irredeemableShare", label: "Irredeemable Share" },
-  ];
+  const tableRows = useMemo(
+    () => [
+      { name: 'ordinaryShare', label: 'Ordinary Share' },
+      { name: 'preferenceShare', label: 'Preference Share' },
+      { name: 'nonVotingShare', label: 'Non-voting Share' },
+      { name: 'redeemableShare', label: 'Redeemable Share' },
+      { name: 'irredeemableShare', label: 'Irredeemable Share' },
+    ],
+    []
+  );
 
   // UPDATE TOTAL QUANTITY AND AMOUNT
   useEffect(() => {
     const totalQuantity = tableRows?.reduce((acc, row) => {
       return acc + (Number(watch(`${row?.name}Quantity`)) || 0);
     }, 0);
-    setValue("totalQuantity", totalQuantity);
+    setValue('totalQuantity', totalQuantity);
 
     const totalAmount = tableRows?.reduce((acc, row) => {
       return acc + (Number(watch(`${row?.name}Amount`)) || 0);
     }, 0);
-    setValue("totalAmount", totalAmount);
+    setValue('totalAmount', totalAmount);
   }, [
     setValue,
-    watch("ordinaryShareQuantity"),
-    watch("preferenceShareQuantity"),
-    watch("nonVotingShareQuantity"),
-    watch("redeemableShareQuantity"),
-    watch("irredeemableShareQuantity"),
-    watch("ordinaryShareAmount"),
-    watch("preferenceShareAmount"),
-    watch("nonVotingShareAmount"),
-    watch("redeemableShareAmount"),
-    watch("irredeemableShareAmount"),
+    ordinaryShareQuantity,
+    preferenceShareQuantity,
+    nonVotingShareQuantity,
+    redeemableShareQuantity,
+    irredeemableShareQuantity,
+    ordinaryShareAmount,
+    preferenceShareAmount,
+    nonVotingShareAmount,
+    redeemableShareAmount,
+    irredeemableShareAmount,
+    tableRows,
+    watch,
   ]);
 
   // HANDLE FORM SUBMIT
@@ -134,7 +151,7 @@ const AssignShareDetails = ({
   useEffect(() => {
     if (assignSharesIsError) {
       if ((assignSharesError as ErrorResponse)?.status === 500) {
-        toast.error("Failed to assign shares. Please try again later.");
+        toast.error('Failed to assign shares. Please try again later.');
       } else {
         toast.error((assignSharesError as ErrorResponse)?.data?.message);
       }
@@ -155,25 +172,61 @@ const AssignShareDetails = ({
 
       window.location.reload();
     }
-  }, [assignSharesIsSuccess]);
+  }, [
+    assignSharesData?.data,
+    assignSharesError,
+    assignSharesIsError,
+    assignSharesIsSuccess,
+    attachmentType,
+    businessId,
+    dispatch,
+    file,
+    fileName,
+  ]);
+
+  // SET DEFAULT VALUES
+  useEffect(() => {
+    if (
+      selectedFounderDetail &&
+      (selectedFounderDetail?.founderShareDetails?.length ?? 0) > 0
+    ) {
+      tableRows?.forEach((row) => {
+        const shareDetail = selectedFounderDetail?.founderShareDetails?.find(
+          (share: ShareDetail) => share?.shareTypeCD === row?.label
+        );
+        setValue(`${row.name}Quantity`, shareDetail?.shareQuantity || 0);
+        setValue(`${row.name}Amount`, shareDetail?.totalValue || 0);
+        setValue(
+          `${row.name}RemainingShares`,
+          shareDetail?.remainingShares || 0
+        );
+      });
+    } else {
+      tableRows?.forEach((row) => {
+        setValue(`${row.name}Quantity`, '');
+        setValue(`${row.name}Amount`, '');
+        setValue(`${row.name}RemainingShares`, '');
+      });
+    }
+  }, [selectedFounderDetail, setValue, shareDetailsList, tableRows]);
 
   return (
     <Modal
       isOpen={assignSharesModal}
       onClose={() => {
         reset({
-          ordinaryShareQuantity: "",
-          preferenceShareQuantity: "",
-          nonVotingShareQuantity: "",
-          redeemableShareQuantity: "",
-          irredeemableShareQuantity: "",
-          totalQuantity: "",
-          ordinaryShareAmount: "",
-          preferenceShareAmount: "",
-          nonVotingShareAmount: "",
-          redeemableShareAmount: "",
-          irredeemableShareAmount: "",
-          totalAmount: "",
+          ordinaryShareQuantity: '',
+          preferenceShareQuantity: '',
+          nonVotingShareQuantity: '',
+          redeemableShareQuantity: '',
+          irredeemableShareQuantity: '',
+          totalQuantity: '',
+          ordinaryShareAmount: '',
+          preferenceShareAmount: '',
+          nonVotingShareAmount: '',
+          redeemableShareAmount: '',
+          irredeemableShareAmount: '',
+          totalAmount: '',
         });
         dispatch(setAssignSharesModal(false));
       }}
@@ -181,7 +234,7 @@ const AssignShareDetails = ({
         selectedFounderDetail?.personDetail?.firstName ||
         selectedFounderDetail?.personDetail?.organization?.organizationName
       }`}
-      className='min-w-[60vw]'
+      className="min-w-[60vw]"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset disabled={disableForm} className="flex flex-col gap-4">
@@ -206,17 +259,23 @@ const AssignShareDetails = ({
                   (share: ShareDetail) => share?.shareTypeCD === row?.label
                 );
 
+                const existingShareQuantity =
+                  selectedFounderDetail?.founderShareDetails?.find(
+                    (share) => share?.shareTypeCD === row?.label
+                  )?.shareQuantity;
+
                 return (
                   <tr key={index} className="flex flex-row w-full gap-3">
                     <menu className="flex flex-col w-full gap-1">
                       <h4 className="w-full text-[15px]">{row?.label}</h4>
-                      <p className={`${disableForm && "hidden"} text-[12px]`}>
+                      <p className={`${disableForm && 'hidden'} text-[12px]`}>
                         Total: {rowShare?.shareQuantity || 0}
                       </p>
-                      <p className={`${disableForm && "hidden"} text-[12px]`}>
-                        Remaining:{" "}
+                      <p className={`${disableForm && 'hidden'} text-[12px]`}>
+                        Remaining:{' '}
                         {Number(rowShare?.remainingShares) -
-                          (watch(`${row?.name}Quantity`) || 0)}
+                          (watch(`${row?.name}Quantity`) || 0) +
+                          Number(existingShareQuantity ?? 0)}
                       </p>
                     </menu>
                     <td className="flex flex-col w-full gap-1">
@@ -232,7 +291,7 @@ const AssignShareDetails = ({
                           setValue(`${row.name}Quantity`, e.target.value);
                           if (remainingShares < 0) {
                             setError(`shareNo${index}`, {
-                              type: "manual",
+                              type: 'manual',
                               message: `You are assigning more ${
                                 row?.label && capitalizeString(row?.name)
                               }s that your company currently have.`,
@@ -277,11 +336,11 @@ const AssignShareDetails = ({
               <tr className="flex flex-row items-center justify-between w-full gap-3 p-3">
                 <h2 className="w-full font-semibold uppercase">Total</h2>
                 <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch("totalQuantity")} />
+                  <Input required readOnly value={watch('totalQuantity')} />
                 </td>
                 <span className="w-full" />
                 <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch("totalAmount")} />
+                  <Input required readOnly value={watch('totalAmount')} />
                 </td>
               </tr>
             </tfoot>
@@ -293,7 +352,7 @@ const AssignShareDetails = ({
             }
             <menu
               className={`${
-                Object.keys(errors)?.length > 0 ? "flex" : "hidden"
+                Object.keys(errors)?.length > 0 ? 'flex' : 'hidden'
               } flex-col gap-4`}
             >
               {Object.values(errors)?.map((error) => {
@@ -308,10 +367,10 @@ const AssignShareDetails = ({
           <menu className="flex items-center justify-between w-full gap-3">
             {!errors?.totalPerValue && (
               <Button
-                value={assignSharesIsLoading ? <Loader /> : "Complete"}
+                value={assignSharesIsLoading ? <Loader /> : 'Complete'}
                 submit
                 primary
-                className={`!w-[70%] mx-auto ${disableForm ? "hidden" : ""}`}
+                className={`!w-[70%] mx-auto ${disableForm ? 'hidden' : ''}`}
                 disabled={false || Object.keys(errors)?.length > 0}
               />
             )}

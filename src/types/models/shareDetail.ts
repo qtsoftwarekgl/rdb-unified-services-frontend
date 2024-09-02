@@ -1,4 +1,5 @@
 import { UUID } from "crypto";
+import { FounderDetail } from "./personDetail";
 
 export type ShareDetail = {
   id: UUID;
@@ -13,4 +14,6 @@ export type ShareDetail = {
   showSequence: number;
   remainingShares?: number;
   applicationReferenceId?: UUID;
+  totalValue?: number;
+  founderShareDetails: FounderDetail[];
 };

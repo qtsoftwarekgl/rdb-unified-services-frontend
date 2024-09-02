@@ -79,12 +79,15 @@ const Combobox = ({
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem
-                    key={option.value}
+                    key={option.label}
                     disabled={option?.disabled}
                     className="flex items-center gap-2"
-                    value={option.value}
+                    value={option.label}
                     onSelect={(currentValue) => {
-                      onChange?.(currentValue);
+                      const selectedOption = options.find(
+                        (option) => option.label === currentValue
+                      );
+                      onChange?.(selectedOption?.value || '');
                       setOpen(false);
                     }}
                   >

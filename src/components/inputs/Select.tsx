@@ -82,19 +82,6 @@ const Select: FC<SelectProps> = ({
           />
         </SelectTrigger>
         <SelectContent>
-          {searchable && (
-            <div className="p-2">
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.stopPropagation()}
-                className="w-full px-2 py-1 border border-gray-300 rounded"
-                ref={inputRef}
-              />
-            </div>
-          )}
           <SelectGroup>
             {filteredOptions.map((option, index: number) => {
               return (

@@ -2,6 +2,7 @@ import Combobox from '@/components/inputs/Combobox';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
 import { beneficialOwnerOccupations } from '@/constants/beneficialOwner.constants';
+import { countriesList } from '@/constants/countries';
 import validateInputs from '@/helpers/validations';
 import {
   useLazyFetchCellsQuery,
@@ -24,13 +25,7 @@ import { useDispatch } from 'react-redux';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-interface BeneficialOwnerProfessionalAddressProps {
-  personIdentType?: string;
-}
-
-const BeneficialOwnerProfessionalAddress = ({
-  personIdentType = 'NID',
-}: BeneficialOwnerProfessionalAddressProps) => {
+const BeneficialOwnerProfessionalAddress = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const [selectedProvince, setSelectedProvince] = useState<number | undefined>(
@@ -55,7 +50,10 @@ const BeneficialOwnerProfessionalAddress = ({
   const {
     control,
     formState: { errors },
+    watch
   } = useForm();
+
+  const { proCountry } = watch();
 
   // INITIALIZE FETCH PROVINCES QUERY
   const [
@@ -230,297 +228,360 @@ const BeneficialOwnerProfessionalAddress = ({
 
   return (
     <section className="w-full flex flex-col gap-4">
-      {personIdentType === 'NID' && (
-        <menu className="w-full flex flex-col gap-6">
-          <h3 className="text-center uppercase text-primary text-lg font-medium">
-            Professional address
-          </h3>
-          <fieldset className="w-full grid grid-cols-2 gap-5">
-            <Controller
-              name="provinceId"
-              control={control}
-              rules={{
-                required: 'Select province of residence',
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      {...field}
-                      required
-                      placeholder={
-                        provincesIsFetching ? '...' : 'Select province'
-                      }
-                      label="Province"
-                      options={provincesList?.map((province: Province) => {
-                        return {
-                          ...province,
-                          label: province.name,
-                          value: String(province.id),
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSelectedProvince(Number(e));
-                        setSelectedDistrict(undefined);
-                        setSelectedSector(undefined);
-                        setSelectedCell(undefined);
-                        setVillagesList([]);
-                        setCellsList([]);
-                        setSectorsList([]);
-                        setDistrictsList([]);
-                      }}
-                    />
-                    {errors?.provinceId && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.provinceId.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="districtId"
-              control={control}
-              rules={{
-                required: 'Select district of residence',
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      required
-                      placeholder={
-                        districtsIsFetching ? '...' : 'Select district'
-                      }
-                      label="District"
-                      options={districtsList?.map((district: District) => {
-                        return {
-                          label: district.name,
-                          value: String(district.id),
-                        };
-                      })}
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSelectedDistrict(Number(e));
-                        setSelectedSector(undefined);
-                        setSelectedCell(undefined);
-                        setVillagesList([]);
-                        setCellsList([]);
-                        setSectorsList([]);
-                      }}
-                    />
-                    {errors?.districtId && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.districtId.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="sectorId"
-              control={control}
-              rules={{
-                required: 'Select sector of residence',
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      {...field}
-                      required
-                      placeholder={sectorsIsFetching ? '...' : 'Select sector'}
-                      label="Sector"
-                      options={sectorsList?.map((sector: Sector) => {
-                        return {
-                          label: sector.name,
-                          value: String(sector.id),
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSelectedSector(Number(e));
-                        setSelectedCell(undefined);
-                        setVillagesList([]);
-                        setCellsList([]);
-                      }}
-                    />
-                    {errors?.sectorId && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.sectorId.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="cellId"
-              control={control}
-              rules={{
-                required: 'Select cell of residence',
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      {...field}
-                      placeholder={cellsIsFetching ? '...' : 'Select cell'}
-                      required
-                      label="Cell"
-                      options={cellsList?.map((cell) => {
-                        return {
-                          label: cell.name,
-                          value: String(cell.id),
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        setSelectedCell(Number(e));
-                        setVillagesList([]);
-                      }}
-                    />
-                    {errors?.cellId && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.cellId.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="villageId"
-              control={control}
-              rules={{
-                required: 'Select village of residence',
-              }}
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Select
-                      placeholder={
-                        villagesIsFetching ? '...' : 'Select village'
-                      }
-                      {...field}
-                      required
-                      label="Village"
-                      options={villagesList?.map((village) => {
-                        return {
-                          label: village.name,
-                          value: String(village.id),
-                        };
-                      })}
-                      onChange={(e) => {
-                        field.onChange(e);
-                      }}
-                    />
-                    {errors?.villageId && (
-                      <p className="text-red-500 text-[13px]">
-                        {String(errors?.villageId.message)}
-                      </p>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              control={control}
-              name="proStreetNumber"
-              render={({ field }) => {
-                return (
-                  <label className="flex flex-col w-full gap-1">
-                    <Input
-                      label="Street number"
-                      placeholder="Street number"
-                      {...field}
-                    />
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="proEmail"
-              control={control}
-              rules={{
-                validate: (value) => {
-                  if (!value) return true;
+      <menu className="w-full flex flex-col gap-6">
+        <h3 className="text-center uppercase text-primary text-lg font-medium">
+          Professional address
+        </h3>
+        <fieldset className="w-full grid grid-cols-2 gap-5">
+          <Controller
+            name="proCountry"
+            control={control}
+            rules={{ required: 'Select the country of profession' }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Select
+                    {...field}
+                    label={'Country'}
+                    placeholder="Select country"
+                    options={countriesList?.map((country) => {
+                      return {
+                        label: country.name,
+                        value: country.code,
+                      };
+                    })}
+                  />
+                </label>
+              );
+            }}
+          />
+          {proCountry === 'RW' && (
+            <>
+              <Controller
+                name="provinceId"
+                control={control}
+                rules={{
+                  required: 'Select province of residence',
+                }}
+                render={({ field }) => {
                   return (
-                    validateInputs(value, 'email') ||
-                    'Invalid professional email address'
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        {...field}
+                        required
+                        placeholder={
+                          provincesIsFetching ? '...' : 'Select province'
+                        }
+                        label="Province"
+                        options={provincesList?.map((province: Province) => {
+                          return {
+                            ...province,
+                            label: province.name,
+                            value: String(province.id),
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setSelectedProvince(Number(e));
+                          setSelectedDistrict(undefined);
+                          setSelectedSector(undefined);
+                          setSelectedCell(undefined);
+                          setVillagesList([]);
+                          setCellsList([]);
+                          setSectorsList([]);
+                          setDistrictsList([]);
+                        }}
+                      />
+                      {errors?.provinceId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.provinceId.message)}
+                        </p>
+                      )}
+                    </label>
                   );
-                },
-              }}
-              render={({ field }) => {
+                }}
+              />
+              <Controller
+                name="districtId"
+                control={control}
+                rules={{
+                  required: 'Select district of residence',
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        required
+                        placeholder={
+                          districtsIsFetching ? '...' : 'Select district'
+                        }
+                        label="District"
+                        options={districtsList?.map((district: District) => {
+                          return {
+                            label: district.name,
+                            value: String(district.id),
+                          };
+                        })}
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setSelectedDistrict(Number(e));
+                          setSelectedSector(undefined);
+                          setSelectedCell(undefined);
+                          setVillagesList([]);
+                          setCellsList([]);
+                          setSectorsList([]);
+                        }}
+                      />
+                      {errors?.districtId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.districtId.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                name="sectorId"
+                control={control}
+                rules={{
+                  required: 'Select sector of residence',
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        {...field}
+                        required
+                        placeholder={
+                          sectorsIsFetching ? '...' : 'Select sector'
+                        }
+                        label="Sector"
+                        options={sectorsList?.map((sector: Sector) => {
+                          return {
+                            label: sector.name,
+                            value: String(sector.id),
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setSelectedSector(Number(e));
+                          setSelectedCell(undefined);
+                          setVillagesList([]);
+                          setCellsList([]);
+                        }}
+                      />
+                      {errors?.sectorId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.sectorId.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                name="cellId"
+                control={control}
+                rules={{
+                  required: 'Select cell of residence',
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        {...field}
+                        placeholder={cellsIsFetching ? '...' : 'Select cell'}
+                        required
+                        label="Cell"
+                        options={cellsList?.map((cell) => {
+                          return {
+                            label: cell.name,
+                            value: String(cell.id),
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setSelectedCell(Number(e));
+                          setVillagesList([]);
+                        }}
+                      />
+                      {errors?.cellId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.cellId.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                name="villageId"
+                control={control}
+                rules={{
+                  required: 'Select village of residence',
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Select
+                        placeholder={
+                          villagesIsFetching ? '...' : 'Select village'
+                        }
+                        {...field}
+                        required
+                        label="Village"
+                        options={villagesList?.map((village) => {
+                          return {
+                            label: village.name,
+                            value: String(village.id),
+                          };
+                        })}
+                        onChange={(e) => {
+                          field.onChange(e);
+                        }}
+                      />
+                      {errors?.villageId && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.villageId.message)}
+                        </p>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+              <Controller
+                control={control}
+                name="proStreetNumber"
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col w-full gap-1">
+                      <Input
+                        label="Street number"
+                        placeholder="Street number"
+                        {...field}
+                      />
+                    </label>
+                  );
+                }}
+              />
+            </>
+          )}
+          <Controller
+            name="proEmail"
+            control={control}
+            rules={{
+              validate: (value) => {
+                if (!value) return true;
                 return (
-                  <label className="w-full flex flex-col gap-1">
-                    <Input
-                      label="Email"
-                      placeholder="Email"
-                      required
-                      {...field}
-                    />
-                    {errors?.email && (
-                      <span className="text-red-500 text-[12px]">
-                        {String(errors?.email?.message)}
-                      </span>
-                    )}
-                  </label>
+                  validateInputs(value, 'email') ||
+                  'Invalid professional email address'
                 );
-              }}
-            />
-            <Controller
-              name="proPhoneNumber"
-              control={control}
-              rules={{ required: 'Professional phone number is required' }}
-              render={({ field }) => {
-                return (
-                  <label className="w-full flex flex-col gap-1">
-                    <Input
-                      label="Phone Number"
-                      placeholder="Phone Number"
-                      type="tel"
-                      required
-                      {...field}
-                    />
-                    {errors?.phoneNumber && (
-                      <span className="text-red-500 text-[12px]">
-                        {String(errors?.phoneNumber?.message)}
-                      </span>
-                    )}
-                  </label>
-                );
-              }}
-            />
-            <Controller
-              name="occupation"
-              control={control}
-              render={({ field }) => {
-                return (
-                  <label className="w-full flex flex-col gap-1">
-                    <Combobox
-                      label="Occupation"
-                      required
-                      options={beneficialOwnerOccupations?.map((occupation) => {
-                        return {
-                          label: occupation,
-                          value: occupation,
-                        };
-                      })}
-                      placeholder="Select occupation"
-                      {...field}
-                    />
-                  </label>
-                );
-              }}
-            />
-          </fieldset>
-        </menu>
-      )}
+              },
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Input
+                    label="Email"
+                    placeholder="Email"
+                    required
+                    {...field}
+                  />
+                  {errors?.email && (
+                    <span className="text-red-500 text-[12px]">
+                      {String(errors?.email?.message)}
+                    </span>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="proPhoneNumber"
+            control={control}
+            rules={{ required: 'Professional phone number is required' }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Input
+                    label="Phone Number"
+                    placeholder="Phone Number"
+                    type="tel"
+                    required
+                    {...field}
+                  />
+                  {errors?.phoneNumber && (
+                    <span className="text-red-500 text-[12px]">
+                      {String(errors?.phoneNumber?.message)}
+                    </span>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="occupation"
+            control={control}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Combobox
+                    label="Occupation"
+                    required
+                    options={beneficialOwnerOccupations?.map((occupation) => {
+                      return {
+                        label: occupation,
+                        value: occupation,
+                      };
+                    })}
+                    placeholder="Select occupation"
+                    {...field}
+                  />
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="proStreetNumber"
+            control={control}
+            rules={{
+              required:
+                proCountry && proCountry !== 'RW'
+                  ? 'Add professional street number'
+                  : false,
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Input
+                    label="Street number"
+                    placeholder="Street number"
+                    required={proCountry && proCountry !== 'RW'}
+                    {...field}
+                  />
+                </label>
+              );
+            }}
+          />
+          <Controller
+            name="proPoBox"
+            control={control}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Input
+                    label="P.O. Box (optional)"
+                    placeholder="P.O. Box"
+                    {...field}
+                  />
+                </label>
+              );
+            }}
+          />
+        </fieldset>
+      </menu>
       <Controller
         name="occupationAttachment"
         control={control}

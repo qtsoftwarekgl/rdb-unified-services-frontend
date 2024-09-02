@@ -38,14 +38,14 @@ const FounderDetailsWithShares = ({
     setFounderDetailsWithPercentagesList,
   ] = useState(
     founderDetailsList?.filter(
-      (founderDetail) => founderDetail?.shareQuantityPercentage >= 80
+      (founderDetail) => founderDetail?.shareQuantityPercentage >= 25
     )
   );
 
   useEffect(() => {
     setFounderDetailsWithPercentagesList(
       founderDetailsList?.filter(
-        (founderDetail) => founderDetail?.shareQuantityPercentage >= 80
+        (founderDetail) => founderDetail?.shareQuantityPercentage >= 25
       )
     );
   }, [founderDetailsList]);

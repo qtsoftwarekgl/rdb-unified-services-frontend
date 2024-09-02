@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 interface ModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ const JSX_MODAL: FC<ModalProps> = ({
               {heading}
             </h1>
           </DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         {children}
       </DialogContent>
