@@ -48,6 +48,7 @@ import { uploadAmendmentAttachmentThunk } from '@/states/features/businessSlice'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ApplicationStatus } from '@/enums/ApplicationStatus';
 import Combobox from '@/components/inputs/Combobox';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
 
 type BusinessActivityProps = {
   businessId: businessId;
@@ -136,17 +137,6 @@ const BusinessActivities = ({
           ? 'yes'
           : 'no',
       });
-      if (selectedMainBusinessLine === undefined) {
-        dispatch(
-          setSelectedMainBusinessLine(
-            businessActivitiesData?.data?.businessLine?.find(
-              (activity: BusinessActivity) =>
-                activity.description ===
-                businessActivitiesData?.data?.mainBusinessActivity
-            )
-          )
-        );
-      }
     }
   }, [
     businessActivitiesData,
@@ -156,6 +146,20 @@ const BusinessActivities = ({
     dispatch,
     reset,
   ]);
+
+  useEffect(() => {
+    if (businessActivitiesIsSuccess && selectedMainBusinessLine === undefined) {
+      dispatch(
+        setSelectedMainBusinessLine(
+          businessActivitiesData?.data?.businessLine?.find(
+            (activity: BusinessActivity) =>
+              activity.description ===
+              businessActivitiesData?.data?.mainBusinessActivity
+          )
+        )
+      );
+    }
+  }, [businessActivitiesData?.data?.businessLine, businessActivitiesData?.data?.mainBusinessActivity, businessActivitiesIsSuccess, dispatch, selectedBusinessActivity, selectedMainBusinessLine]);
 
   // INITIALIZE FETCH BUSINESS ACTIVITY SECTOR QUERY
   const [
@@ -273,7 +277,6 @@ const BusinessActivities = ({
         );
       }
     } else if (createBusinessActivitiesIsSuccess) {
-      toast.success('Business activities have been successfully created');
       // Upload resolution attachment
       if (file && businessId)
         dispatch(
@@ -385,45 +388,80 @@ const BusinessActivities = ({
                       <ul className="w-full gap-2 flex flex-col p-4 rounded-md bg-background h-[35vh] overflow-y-scroll">
                         {!businessLinesIsLoading &&
                           businessLinesList.map(
-                            (businessLine: BusinessActivity) => {
+                            (businessLine: BusinessActivity, index: number) => {
                               const isSelected =
                                 selectedBusinessLinesList?.find(
                                   (activity: BusinessActivity) =>
                                     activity.code == businessLine.code
                                 );
+                              const activityNotAllowed =
+                                businessLine?.status === 'INACTIVE';
+                              const activityRequiresLicense =
+                                businessLine?.status === 'LICENSE_REQUIRED';
                               return (
-                                <li
-                                  key={businessLine.code}
-                                  className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
+                                <CustomTooltip
+                                  key={index}
+                                  label={
+                                    activityNotAllowed
+                                      ? 'This activity is not allowed'
+                                      : activityRequiresLicense
+                                      ? 'This activity requires to attach a license document'
+                                      : undefined
+                                  }
+                                  labelClassName={
+                                    activityNotAllowed ||
+                                    activityRequiresLicense
+                                      ? 'bg-black'
+                                      : '!bg-background'
+                                  }
                                 >
-                                  <p className="text-start text-[13px] max-w-[85%]">
-                                    {businessLine?.code} -{' '}
-                                    {businessLine?.description}
-                                  </p>
-                                  <Link
-                                    to={'#'}
-                                    className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      if (isSelected) return;
-                                      dispatch(
-                                        addSelectedBusinessLine(businessLine)
-                                      );
-                                    }}
+                                  <li
+                                    key={businessLine.code}
+                                    className="flex items-center justify-between w-full gap-3 p-2 rounded-md hover:shadow-xs hover:bg-gray-50"
                                   >
-                                    {isSelected ? (
-                                      <FontAwesomeIcon icon={faCircleCheck} />
-                                    ) : (
-                                      <menu className="w-fit flex items-center gap-2 text-[13px]">
-                                        <FontAwesomeIcon
-                                          className="text-[12px]"
-                                          icon={faPlus}
-                                        />
-                                        Add to list
-                                      </menu>
-                                    )}
-                                  </Link>
-                                </li>
+                                    <p
+                                      className={`text-start text-[13px] max-w-[85%] flex items-center gap-2 ${
+                                        activityNotAllowed
+                                          ? 'text-slate-500'
+                                          : 'text-black'
+                                      }`}
+                                    >
+                                      {businessLine?.code} -{' '}
+                                      {businessLine?.description}{' '}
+                                      {activityRequiresLicense && (
+                                        <p className="text-slate-500 text-[12px]">
+                                          (License required)
+                                        </p>
+                                      )}
+                                    </p>
+
+                                    <Link
+                                      to={'#'}
+                                      className="text-[12px] flex items-center text-primary gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        if (isSelected) return;
+                                        dispatch(
+                                          addSelectedBusinessLine(businessLine)
+                                        );
+                                      }}
+                                    >
+                                      {isSelected ? (
+                                        <FontAwesomeIcon icon={faCircleCheck} />
+                                      ) : (
+                                        !activityNotAllowed && (
+                                          <menu className="w-fit flex items-center gap-2 text-[13px]">
+                                            <FontAwesomeIcon
+                                              className="text-[12px]"
+                                              icon={faPlus}
+                                            />
+                                            Add to list
+                                          </menu>
+                                        )
+                                      )}
+                                    </Link>
+                                  </li>
+                                </CustomTooltip>
                               );
                             }
                           )}
@@ -439,6 +477,9 @@ const BusinessActivities = ({
                             const isMainBusinessLine =
                               selectedMainBusinessLine?.code ==
                               businessLine.code;
+
+                            const activityRequiresLicense =
+                              businessLine?.status === 'LICENSE_REQUIRED';
                             return (
                               <li
                                 key={index}
@@ -455,22 +496,30 @@ const BusinessActivities = ({
                                     )}
                                   </p>
                                 </menu>
-                                <Link
-                                  to={'#'}
-                                  className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    dispatch(
-                                      removeSelectedBusinessLine(businessLine)
-                                    );
-                                  }}
-                                >
-                                  <FontAwesomeIcon
-                                    className="text-[12px]"
-                                    icon={faMinus}
-                                  />
-                                  Remove from list
-                                </Link>
+                                <ul className="flex items-center gap-2">
+                                  {activityRequiresLicense && (
+                                    <Input
+                                      type="file"
+                                      placeholder="Add attachment (required)"
+                                    />
+                                  )}
+                                  <Link
+                                    to={'#'}
+                                    className="text-[12px] flex items-center text-red-600 gap-2 p-1 rounded-md hover:bg-primary hover:text-white roundedm-md cursor-pointer"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      dispatch(
+                                        removeSelectedBusinessLine(businessLine)
+                                      );
+                                    }}
+                                  >
+                                    <FontAwesomeIcon
+                                      className="text-[12px]"
+                                      icon={faMinus}
+                                    />
+                                    Remove from list
+                                  </Link>
+                                </ul>
                               </li>
                             );
                           }

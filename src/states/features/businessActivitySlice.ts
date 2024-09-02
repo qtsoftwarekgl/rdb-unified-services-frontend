@@ -3,17 +3,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: {
   businessActivitiesList: BusinessActivity[];
-  selectedBusinessActivity: BusinessActivity;
+  selectedBusinessActivity?: BusinessActivity;
   selectedBusinessLinesList: BusinessActivity[];
   businessLinesList: BusinessActivity[];
-  selectedMainBusinessLine: BusinessActivity;
+  selectedMainBusinessLine?: BusinessActivity;
   vatRegistred: boolean;
 } = {
   businessActivitiesList: [],
-  selectedBusinessActivity: {} as BusinessActivity,
+  selectedBusinessActivity: undefined,
   selectedBusinessLinesList: [],
   businessLinesList: [],
-  selectedMainBusinessLine: {} as BusinessActivity,
+  selectedMainBusinessLine: undefined,
   vatRegistred: false,
 };
 

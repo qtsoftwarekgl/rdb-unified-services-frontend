@@ -66,7 +66,6 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
   const {
     formState: { errors },
     handleSubmit,
-    watch,
     reset,
   } = useForm();
 
@@ -189,12 +188,8 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
                 scrollSlides === 2 ? 'w-full' : 'w-0 h-0 invisible'
               } flex flex-col gap-4 justify-between`}
             >
-              <BeneficialOwnerResidentialAddress
-                personIdentType={watch('personIdentType')}
-              />
-                <BeneficialOwnerProfessionalAddress
-                  personIdentType={watch('personIdentType')}
-                />
+              <BeneficialOwnerResidentialAddress />
+              <BeneficialOwnerProfessionalAddress />
             </menu>
             {/* BENEFICIAL OWNER INFORMATION */}
             <menu

@@ -25,7 +25,7 @@ import {
   setFounderDetailsList,
   setSelectedFounderDetail,
 } from '@/states/features/founderDetailSlice';
-import { setShareDetailsList } from '@/states/features/shareDetailSlice';
+import { setConfirmUnassignedSharesModal, setShareDetailsList } from '@/states/features/shareDetailSlice';
 import Table from '@/components/table/Table';
 import { FounderDetail } from '@/types/models/personDetail';
 import { capitalizeString } from '@/helpers/strings';
@@ -42,6 +42,7 @@ import CustomPopover from '@/components/inputs/CustomPopover';
 import CustomTooltip from '@/components/inputs/CustomTooltip';
 import DeleteBusinessFounder from './DeleteBusinessFounder';
 import { ApplicationStatus } from '@/enums/ApplicationStatus';
+import ConfirmUnAssignedShares from './ConfirmUnAssignedShares';
 
 interface CapitalDetailsProps {
   businessId: businessId;
@@ -386,6 +387,15 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 (founder) => !founder?.shareQuantity
               );
 
+              const unassignedShares = shareDetailsList?.find(
+                (share) => share?.remainingShares
+              );
+
+              if (unassignedShares) {
+                dispatch(setConfirmUnassignedSharesModal(true));
+                return;
+              }
+
               if (unassignedFounder) {
                 toast.error(
                   'Please assign shares to all shareholders before proceeding',
@@ -419,6 +429,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         </menu>
       )}
       <DeleteBusinessFounder />
+      <ConfirmUnAssignedShares businessId={businessId} />
     </section>
   );
 };
