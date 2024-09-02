@@ -39,7 +39,7 @@ import {
 import ListBusinessReviewComments from "../../business-review/ListBusinessReviewComments";
 import { setBusinessAttachments } from "@/states/features/businessSlice";
 import moment from "moment";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople";
 import { PersonDetail } from "@/types/models/personDetail";
 import { renderCompanyDetails } from "../../domestic-business-registration/preview-submission/BusinessPreviewSubmission";

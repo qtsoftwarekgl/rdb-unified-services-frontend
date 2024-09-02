@@ -42,7 +42,7 @@ import {
 } from "@/helpers/business.helpers";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 type BoardOfDirectorsProps = {
   businessId: businessId;

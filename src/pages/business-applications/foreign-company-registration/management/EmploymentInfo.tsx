@@ -30,7 +30,7 @@ import {
 } from "@/helpers/business.helpers";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 interface EmploymentInfoProps {
   businessId: businessId;

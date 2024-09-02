@@ -24,7 +24,7 @@ import {
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 type EmploymentInfoProps = {
   businessId: businessId;

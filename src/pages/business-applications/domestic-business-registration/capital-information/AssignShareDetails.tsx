@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { setShareDetailsList } from "@/states/features/shareDetailSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 type AssignShareDetailsProps = {
   businessId: businessId;

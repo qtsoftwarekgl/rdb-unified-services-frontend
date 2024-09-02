@@ -1,26 +1,28 @@
+import Combobox from '@/components/inputs/Combobox';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
+import { beneficialOwnerOccupations } from '@/constants/beneficialOwner.constants';
 import validateInputs from '@/helpers/validations';
 import {
-  fetchCellsThunk,
-  fetchDistrictsThunk,
-  fetchProvincesThunk,
-  fetchSectorsThunk,
-  fetchVillagesThunk,
-  setCellsList,
-  setDistrictsList,
-  setSectorsList,
-  setSelectedCell,
-  setSelectedDistrict,
-  setSelectedProvince,
-  setSelectedSector,
-  setVillagesList,
-} from '@/states/features/locationSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { useEffect } from 'react';
+  useLazyFetchCellsQuery,
+  useLazyFetchDistrictsQuery,
+  useLazyFetchProvincesQuery,
+  useLazyFetchSectorsQuery,
+  useLazyFetchVillagesQuery,
+} from '@/states/api/businessRegApiSlice';
+import { AppDispatch } from '@/states/store';
+import {
+  Cell,
+  District,
+  Province,
+  Sector,
+  Village,
+} from '@/types/locationTypes';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface BeneficialOwnerProfessionalAddressProps {
   personIdentType?: string;
@@ -31,22 +33,23 @@ const BeneficialOwnerProfessionalAddress = ({
 }: BeneficialOwnerProfessionalAddressProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const {
-    provincesList,
-    districtsList,
-    sectorsList,
-    cellsList,
-    villagesList,
-    fetchProvincesIsLoading,
-    fetchDistrictsIsLoading,
-    fetchSectorsIsLoading,
-    fetchCellsIsLoading,
-    fetchVillagesIsLoading,
-    selectedProvince,
-    selectedDistrict,
-    selectedSector,
-    selectedCell,
-  } = useSelector((state: RootState) => state.location);
+  const [selectedProvince, setSelectedProvince] = useState<number | undefined>(
+    undefined
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState<number | undefined>(
+    undefined
+  );
+  const [selectedSector, setSelectedSector] = useState<number | undefined>(
+    undefined
+  );
+  const [selectedCell, setSelectedCell] = useState<number | undefined>(
+    undefined
+  );
+  const [villagesList, setVillagesList] = useState<Village[]>([]);
+  const [cellsList, setCellsList] = useState<Cell[]>([]);
+  const [sectorsList, setSectorsList] = useState<Sector[]>([]);
+  const [districtsList, setDistrictsList] = useState<District[]>([]);
+  const [provincesList, setProvincesList] = useState<Province[]>([]);
 
   // REACT HOOK FORM
   const {
@@ -54,38 +57,176 @@ const BeneficialOwnerProfessionalAddress = ({
     formState: { errors },
   } = useForm();
 
-  // FETCH PROVINCES THUNK
-  useEffect(() => {
-    dispatch(fetchProvincesThunk());
-  }, [dispatch]);
+  // INITIALIZE FETCH PROVINCES QUERY
+  const [
+    fetchProvinces,
+    {
+      data: provincesData,
+      error: provincesError,
+      isFetching: provincesIsFetching,
+      isError: provincesIsError,
+      isSuccess: provincesIsSuccess,
+    },
+  ] = useLazyFetchProvincesQuery();
 
-  // FETCH DISTRICTS THUNK
+  // FETCH PROVINCES
+  useEffect(() => {
+    fetchProvinces({});
+  }, [fetchProvinces]);
+
+  // HANDLE PROVINCES RESPONSE
+  useEffect(() => {
+    if (provincesIsError) {
+      const errorResponse =
+        (provincesError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching provinces';
+      toast.error(errorResponse);
+    } else if (provincesIsSuccess) {
+      setProvincesList(provincesData?.data || []);
+    }
+  }, [
+    dispatch,
+    provincesData?.data,
+    provincesError,
+    provincesIsError,
+    provincesIsSuccess,
+  ]);
+
+  // INITIALIZE FETCH DISTRICTS QUERY
+  const [
+    fetchDistricts,
+    {
+      isFetching: districtsIsFetching,
+      error: districtsError,
+      isError: districtsIsError,
+      isSuccess: districtsIsSuccess,
+      data: districtsData,
+    },
+  ] = useLazyFetchDistrictsQuery();
+
+  // FETCH DISTRICTS
   useEffect(() => {
     if (selectedProvince) {
-      dispatch(fetchDistrictsThunk(selectedProvince?.id));
+      fetchDistricts({ provinceId: Number(selectedProvince) });
     }
-  }, [dispatch, selectedProvince]);
+  }, [fetchDistricts, selectedProvince]);
 
-  // FETCH SECTORS THUNK
+  // HANDLE DISTRICTS RESPONSE
+  useEffect(() => {
+    if (districtsIsError) {
+      const errorResponse =
+        (districtsError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching districts';
+      toast.error(errorResponse);
+    } else if (districtsIsSuccess) {
+      setDistrictsList(districtsData?.data || []);
+    }
+  }, [
+    dispatch,
+    districtsData?.data,
+    districtsError,
+    districtsIsError,
+    districtsIsSuccess,
+  ]);
+
+  // INITIALIZE FETCH SECTORS QUERY
+  const [
+    fetchSectors,
+    {
+      isFetching: sectorsIsFetching,
+      error: sectorsError,
+      isSuccess: sectorsIsSuccess,
+      isError: sectorsIsError,
+      data: sectorsData,
+    },
+  ] = useLazyFetchSectorsQuery();
+
+  // FETCH SECTORS
   useEffect(() => {
     if (selectedDistrict) {
-      dispatch(fetchSectorsThunk(selectedDistrict?.id));
+      fetchSectors({ districtId: Number(selectedDistrict) });
     }
-  }, [dispatch, selectedDistrict]);
+  }, [dispatch, fetchSectors, selectedDistrict]);
 
-  // FETCH CELLS THUNK
+  // HANDLE SECTORS RESPONSE
+  useEffect(() => {
+    if (sectorsIsError) {
+      const errorResponse =
+        (sectorsError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching sectors';
+      toast.error(errorResponse);
+    } else if (sectorsIsSuccess) {
+      setSectorsList(sectorsData?.data || []);
+    }
+  }, [
+    dispatch,
+    sectorsData?.data,
+    sectorsError,
+    sectorsIsError,
+    sectorsIsSuccess,
+  ]);
+
+  // INITIALIZE FETCH CELLS QUERY
+  const [
+    fetchCells,
+    {
+      isFetching: cellsIsFetching,
+      error: cellsError,
+      isSuccess: cellsIsSuccess,
+      isError: cellsIsError,
+      data: cellsData,
+    },
+  ] = useLazyFetchCellsQuery();
+
+  // FETCH CELLS
   useEffect(() => {
     if (selectedSector) {
-      dispatch(fetchCellsThunk(selectedSector?.id));
+      fetchCells({ sectorId: Number(selectedSector) });
     }
-  }, [dispatch, selectedSector]);
+  }, [fetchCells, selectedSector]);
 
-  // FETCH VILLAGES THUNK
+  // HANDLE CELLS RESPONSE
+  useEffect(() => {
+    if (cellsIsError) {
+      const errorResponse =
+        (cellsError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching cells';
+      toast.error(errorResponse);
+    } else if (cellsIsSuccess) {
+      setCellsList(cellsData?.data || []);
+    }
+  }, [cellsData?.data, cellsError, cellsIsError, cellsIsSuccess]);
+
+  // INITIALIZE FETCH VILLAGES QUERY
+  const [
+    fetchVillages,
+    {
+      isFetching: villagesIsFetching,
+      error: villagesError,
+      isSuccess: villagesIsSuccess,
+      isError: villagesIsError,
+      data: villagesData,
+    },
+  ] = useLazyFetchVillagesQuery();
+
+  // FETCH VILLAGES
   useEffect(() => {
     if (selectedCell) {
-      dispatch(fetchVillagesThunk(selectedCell?.id));
+      fetchVillages({ cellId: Number(selectedCell) });
     }
-  }, [dispatch, selectedCell]);
+  }, [fetchVillages, selectedCell]);
+
+  // HANDLE VILLAGES RESPONSE
+  useEffect(() => {
+    if (villagesIsError) {
+      const errorResponse =
+        (villagesError as ErrorResponse)?.data?.message ||
+        'An error occurred while fetching villages';
+      toast.error(errorResponse);
+    } else if (villagesIsSuccess) {
+      setVillagesList(villagesData?.data || []);
+    }
+  }, [villagesData?.data, villagesError, villagesIsError, villagesIsSuccess]);
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -96,10 +237,10 @@ const BeneficialOwnerProfessionalAddress = ({
           </h3>
           <fieldset className="w-full grid grid-cols-2 gap-5">
             <Controller
-              name="proProvinceId"
+              name="provinceId"
               control={control}
               rules={{
-                required: 'Select professional province',
+                required: 'Select province of residence',
               }}
               render={({ field }) => {
                 return (
@@ -108,10 +249,10 @@ const BeneficialOwnerProfessionalAddress = ({
                       {...field}
                       required
                       placeholder={
-                        fetchProvincesIsLoading ? '...' : 'Select province'
+                        provincesIsFetching ? '...' : 'Select province'
                       }
                       label="Province"
-                      options={provincesList?.map((province) => {
+                      options={provincesList?.map((province: Province) => {
                         return {
                           ...province,
                           label: province.name,
@@ -120,14 +261,14 @@ const BeneficialOwnerProfessionalAddress = ({
                       })}
                       onChange={(e) => {
                         field.onChange(e);
-                        dispatch(setSelectedProvince(e));
-                        dispatch(setSelectedDistrict(undefined));
-                        dispatch(setSelectedSector(undefined));
-                        dispatch(setSelectedCell(undefined));
-                        dispatch(setVillagesList([]));
-                        dispatch(setCellsList([]));
-                        dispatch(setSectorsList([]));
-                        dispatch(setDistrictsList([]));
+                        setSelectedProvince(Number(e));
+                        setSelectedDistrict(undefined);
+                        setSelectedSector(undefined);
+                        setSelectedCell(undefined);
+                        setVillagesList([]);
+                        setCellsList([]);
+                        setSectorsList([]);
+                        setDistrictsList([]);
                       }}
                     />
                     {errors?.provinceId && (
@@ -140,10 +281,10 @@ const BeneficialOwnerProfessionalAddress = ({
               }}
             />
             <Controller
-              name="proDistrictId"
+              name="districtId"
               control={control}
               rules={{
-                required: 'Select professional district',
+                required: 'Select district of residence',
               }}
               render={({ field }) => {
                 return (
@@ -151,10 +292,10 @@ const BeneficialOwnerProfessionalAddress = ({
                     <Select
                       required
                       placeholder={
-                        fetchDistrictsIsLoading ? '...' : 'Select district'
+                        districtsIsFetching ? '...' : 'Select district'
                       }
                       label="District"
-                      options={districtsList?.map((district) => {
+                      options={districtsList?.map((district: District) => {
                         return {
                           label: district.name,
                           value: String(district.id),
@@ -163,12 +304,12 @@ const BeneficialOwnerProfessionalAddress = ({
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
-                        dispatch(setSelectedDistrict(e));
-                        dispatch(setSelectedSector(undefined));
-                        dispatch(setSelectedCell(undefined));
-                        dispatch(setVillagesList([]));
-                        dispatch(setCellsList([]));
-                        dispatch(setSectorsList([]));
+                        setSelectedDistrict(Number(e));
+                        setSelectedSector(undefined);
+                        setSelectedCell(undefined);
+                        setVillagesList([]);
+                        setCellsList([]);
+                        setSectorsList([]);
                       }}
                     />
                     {errors?.districtId && (
@@ -181,10 +322,10 @@ const BeneficialOwnerProfessionalAddress = ({
               }}
             />
             <Controller
-              name="proSectorId"
+              name="sectorId"
               control={control}
               rules={{
-                required: 'Select professional sector',
+                required: 'Select sector of residence',
               }}
               render={({ field }) => {
                 return (
@@ -192,11 +333,9 @@ const BeneficialOwnerProfessionalAddress = ({
                     <Select
                       {...field}
                       required
-                      placeholder={
-                        fetchSectorsIsLoading ? '...' : 'Select sector'
-                      }
+                      placeholder={sectorsIsFetching ? '...' : 'Select sector'}
                       label="Sector"
-                      options={sectorsList?.map((sector) => {
+                      options={sectorsList?.map((sector: Sector) => {
                         return {
                           label: sector.name,
                           value: String(sector.id),
@@ -204,10 +343,10 @@ const BeneficialOwnerProfessionalAddress = ({
                       })}
                       onChange={(e) => {
                         field.onChange(e);
-                        dispatch(setSelectedSector(e));
-                        dispatch(setSelectedCell(undefined));
-                        dispatch(setVillagesList([]));
-                        dispatch(setCellsList([]));
+                        setSelectedSector(Number(e));
+                        setSelectedCell(undefined);
+                        setVillagesList([]);
+                        setCellsList([]);
                       }}
                     />
                     {errors?.sectorId && (
@@ -220,17 +359,17 @@ const BeneficialOwnerProfessionalAddress = ({
               }}
             />
             <Controller
-              name="proCellId"
+              name="cellId"
               control={control}
               rules={{
-                required: 'Select professional cell',
+                required: 'Select cell of residence',
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       {...field}
-                      placeholder={fetchCellsIsLoading ? '...' : 'Select cell'}
+                      placeholder={cellsIsFetching ? '...' : 'Select cell'}
                       required
                       label="Cell"
                       options={cellsList?.map((cell) => {
@@ -241,8 +380,8 @@ const BeneficialOwnerProfessionalAddress = ({
                       })}
                       onChange={(e) => {
                         field.onChange(e);
-                        dispatch(setSelectedCell(e));
-                        dispatch(setVillagesList([]));
+                        setSelectedCell(Number(e));
+                        setVillagesList([]);
                       }}
                     />
                     {errors?.cellId && (
@@ -255,17 +394,17 @@ const BeneficialOwnerProfessionalAddress = ({
               }}
             />
             <Controller
-              name="proVillageId"
+              name="villageId"
               control={control}
               rules={{
-                required: 'Select professional village',
+                required: 'Select village of residence',
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Select
                       placeholder={
-                        fetchVillagesIsLoading ? '...' : 'Select village'
+                        villagesIsFetching ? '...' : 'Select village'
                       }
                       {...field}
                       required
@@ -311,7 +450,8 @@ const BeneficialOwnerProfessionalAddress = ({
                 validate: (value) => {
                   if (!value) return true;
                   return (
-                    validateInputs(value, 'email') || 'Invalid professional email address'
+                    validateInputs(value, 'email') ||
+                    'Invalid professional email address'
                   );
                 },
               }}
@@ -356,9 +496,51 @@ const BeneficialOwnerProfessionalAddress = ({
                 );
               }}
             />
+            <Controller
+              name="occupation"
+              control={control}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-1">
+                    <Combobox
+                      label="Occupation"
+                      required
+                      options={beneficialOwnerOccupations?.map((occupation) => {
+                        return {
+                          label: occupation,
+                          value: occupation,
+                        };
+                      })}
+                      placeholder="Select occupation"
+                      {...field}
+                    />
+                  </label>
+                );
+              }}
+            />
           </fieldset>
         </menu>
       )}
+      <Controller
+        name="occupationAttachment"
+        control={control}
+        rules={{ required: 'Proof of occupation is required' }}
+        render={({ field }) => {
+          return (
+            <label className="w-full flex flex-col gap-2">
+              <p className="text-[15px]">
+                Proof of occupation <span className="text-red-500">*</span>
+              </p>
+              <Input
+                label="Upload proof of occupation"
+                type="file"
+                required
+                {...field}
+              />
+            </label>
+          );
+        }}
+      />
     </section>
   );
 };

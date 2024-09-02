@@ -28,7 +28,12 @@ const BeneficialOwnershipInformation = () => {
     formState: { errors },
     setValue,
   } = useForm();
-  const { beneficialOwnerType, controlType, significantInfluence } = watch();
+  const {
+    beneficialOwnerType,
+    controlType,
+    significantInfluence,
+    extentOfShare,
+  } = watch();
 
   // SET DEFAULT VALUES
   useEffect(() => {
@@ -247,9 +252,114 @@ const BeneficialOwnershipInformation = () => {
           />
         )}
       </fieldset>
-      <menu className='w-full flex flex-col gap-4'>
-        <h3 className='font-medium text-lg'>Attachments</h3>
-        <fieldset className='grid grid-cols-2 gap-5'></fieldset>
+      <menu className="w-full flex flex-col gap-4 my-2">
+        <h3 className="font-medium text-lg">Attachments</h3>
+        <fieldset className="grid grid-cols-2 gap-5">
+          {beneficialOwnerType === 'SENIOR_MANAGEMENT' && (
+            <Controller
+              name="seniorManagementAttachment"
+              control={control}
+              rules={{ required: 'Identity card is required' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-2">
+                    <p>
+                      Proof of management position{' '}
+                      <span className="text-red-600">*</span>
+                    </p>
+                    <Input
+                      required
+                      label="Identity Card"
+                      type="file"
+                      {...field}
+                    />
+                    {errors?.seniorManagementAttachment && (
+                      <span className="text-red-500 text-[12px]">
+                        {String(errors?.seniorManagementAttachment?.message)}
+                      </span>
+                    )}
+                  </label>
+                );
+              }}
+            />
+          )}
+          {controlType !== 'DIRECT' &&
+            !selectedFounderDetailWithShares &&
+            extentOfShare && (
+              <Controller
+                name="extentOfShareAttachment"
+                control={control}
+                rules={{ required: 'Shareholder attachment is required' }}
+                render={({ field }) => {
+                  return (
+                    <label className="w-full flex flex-col gap-2">
+                      <p>
+                        Proof of shares <span className="text-red-600">*</span>
+                      </p>
+                      <Input
+                        required
+                        label="Shareholder Attachment"
+                        type="file"
+                        {...field}
+                      />
+                      {errors?.extentOfShareAttachment && (
+                        <span className="text-red-500 text-[12px]">
+                          {String(errors?.extentOfShareAttachment?.message)}
+                        </span>
+                      )}
+                    </label>
+                  );
+                }}
+              />
+            )}
+          {selectedBeneficialOwner?.significantInfluence === 'OTHER' && (
+            <Controller
+              name="significantInfluenceAttachment"
+              control={control}
+              rules={{ required: 'Control means attachment is required' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-full flex flex-col gap-2">
+                    <p>
+                      Proof of control means{' '}
+                      <span className="text-red-600">*</span>
+                    </p>
+                    <Input
+                      required
+                      label="Control Means Attachment"
+                      type="file"
+                      {...field}
+                    />
+                    {errors?.significantInfluenceAttachment && (
+                      <span className="text-red-500 text-[12px]">
+                        {String(
+                          errors?.significantInfluenceAttachment?.message
+                        )}
+                      </span>
+                    )}
+                  </label>
+                );
+              }}
+            />
+          )}
+          <Controller
+            name="otherAttachments"
+            control={control}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-2">
+                  <p>Other Attachments</p>
+                  <Input
+                    label="Other Attachments"
+                    type="file"
+                    multiple
+                    {...field}
+                  />
+                </label>
+              );
+            }}
+          />
+        </fieldset>
       </menu>
     </section>
   );

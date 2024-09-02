@@ -185,10 +185,9 @@ export const locationSlice = createSlice({
     },
     setSelectedDistrict: (state, action) => {
       if (action.payload instanceof Object) {
-        console.log(action.payload)
+        console.log(action.payload);
         state.selectedDistrict = action.payload;
       } else {
-        console.log(action.payload)
         state.selectedDistrict = state.districtsList.find(
           (district) => district.id === Number(action.payload)
         );
@@ -232,44 +231,44 @@ export const locationSlice = createSlice({
     });
     builder.addCase(fetchProvincesThunk.rejected, (state) => {
       state.fetchProvincesIsLoading = false;
-    })
+    });
     builder.addCase(fetchDistrictsThunk.fulfilled, (state, action) => {
       state.fetchDistrictsIsLoading = false;
       state.districtsList = action.payload;
-    })
+    });
     builder.addCase(fetchDistrictsThunk.pending, (state) => {
       state.fetchDistrictsIsLoading = true;
-    })
+    });
     builder.addCase(fetchDistrictsThunk.rejected, (state) => {
       state.fetchDistrictsIsLoading = false;
-    })
+    });
     builder.addCase(fetchSectorsThunk.fulfilled, (state, action) => {
       state.fetchSectorsIsLoading = false;
       state.sectorsList = action.payload;
-    })
+    });
     builder.addCase(fetchSectorsThunk.pending, (state) => {
       state.fetchSectorsIsLoading = true;
-    })
+    });
     builder.addCase(fetchSectorsThunk.rejected, (state) => {
       state.fetchSectorsIsLoading = false;
-    })
+    });
     builder.addCase(fetchCellsThunk.fulfilled, (state, action) => {
       state.fetchCellsIsLoading = false;
       state.cellsList = action.payload;
-    })
+    });
     builder.addCase(fetchCellsThunk.rejected, (state) => {
       state.fetchCellsIsLoading = false;
-    })
+    });
     builder.addCase(fetchCellsThunk.pending, (state) => {
       state.fetchCellsIsLoading = true;
-    })
+    });
     builder.addCase(fetchVillagesThunk.fulfilled, (state, action) => {
       state.fetchVillagesIsLoading = false;
       state.villagesList = action.payload;
-    })
+    });
     builder.addCase(fetchVillagesThunk.rejected, (state) => {
       state.fetchVillagesIsLoading = false;
-    })
+    });
     builder.addCase(fetchVillagesThunk.pending, (state) => {
       state.searchVillageIsError = false;
       state.searchVillageIsFetching = true;
@@ -284,7 +283,7 @@ export const locationSlice = createSlice({
       state.searchVillageIsFetching = false;
       state.searchVillageIsError = true;
     });
-  }
+  },
 });
 
 export const {

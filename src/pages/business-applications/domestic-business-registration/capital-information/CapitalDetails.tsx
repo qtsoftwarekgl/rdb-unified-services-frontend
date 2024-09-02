@@ -41,7 +41,7 @@ import {
 import CustomPopover from "@/components/inputs/CustomPopover";
 import CustomTooltip from "@/components/inputs/CustomTooltip";
 import DeleteBusinessFounder from "./DeleteBusinessFounder";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 interface CapitalDetailsProps {
   businessId: businessId;

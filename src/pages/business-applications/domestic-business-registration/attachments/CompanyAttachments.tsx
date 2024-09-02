@@ -29,7 +29,7 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 type CompanyAttachmentsProps = {
   businessId: businessId;

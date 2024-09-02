@@ -38,7 +38,7 @@ import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 import ListBusinessReviewComments from "../../business-review/ListBusinessReviewComments";
 
 type PreviewSubmissionProps = {

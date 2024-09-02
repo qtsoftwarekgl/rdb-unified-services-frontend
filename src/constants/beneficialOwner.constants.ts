@@ -50,7 +50,6 @@ export const beneficialOwnerColumns = [
 ];
 
 export const beneficialOwnerOccupations = [
-  "Occupation",
   "Actors",
   "Actuaries",
   "Acupuncturists",
