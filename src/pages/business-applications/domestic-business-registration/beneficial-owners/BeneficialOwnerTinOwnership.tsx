@@ -1,17 +1,56 @@
+import Button from '@/components/inputs/Button';
 import Input from '@/components/inputs/Input';
+import {
+  setActiveBeneficialOwnerNavigationStep,
+  setCompleteBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
+  setSelectedBeneficialOwner,
+} from '@/states/features/beneficialOwnerSlice';
+import { setSelectedFounderDetailWithShares } from '@/states/features/founderDetailSlice';
+import { AppDispatch, RootState } from '@/states/store';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-const BeneficialOwnerTinOwnership = () => {
+interface BeneficialOwnerTinOwnershipProps {
+  setAddNewBeneficialOwner: (value: boolean) => void;
+}
+
+const BeneficialOwnerTinOwnership = ({
+  setAddNewBeneficialOwner,
+}: BeneficialOwnerTinOwnershipProps) => {
+  // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
+  const { newBeneficialOwner } = useSelector(
+    (state: RootState) => state.beneficialOwner
+  );
+
   // REACT HOOK FORM
   const {
     control,
     watch,
     formState: { errors },
+    handleSubmit,
   } = useForm();
 
+  const { hasTin, tinRwandan } = watch();
+
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    dispatch(setNewBeneficialOwner({
+      ...newBeneficialOwner,
+      tinNumber: data?.tinNumber,
+    }));
+    dispatch(setCompleteBeneficialOwnerNavigationStep('tin_ownership'));
+    dispatch(setActiveBeneficialOwnerNavigationStep('personal_information'));
+  };
+
   return (
-    <section className="w-full flex flex-col gap-4">
+    <form
+      className="w-full flex flex-col gap-4 h-fit"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <fieldset className="w-full grid grid-cols-2 gap-5 justify-between">
         <Controller
           name="hasTin"
@@ -21,7 +60,8 @@ const BeneficialOwnerTinOwnership = () => {
             return (
               <label className="w-full flex flex-col gap-1">
                 <p className="mb-2 w-full">
-                  Does the person have an individual Tax Identification Number (TIN)?
+                  Does the person have an individual Tax Identification Number
+                  (TIN)?
                 </p>
                 <ul className="flex items-center gap-5">
                   <Input type="radio" label="Yes" {...field} value="yes" />
@@ -36,7 +76,7 @@ const BeneficialOwnerTinOwnership = () => {
             );
           }}
         />
-        {watch('hasTin') === 'yes' && (
+        {hasTin === 'yes' && (
           <Controller
             name="tinRwandan"
             control={control}
@@ -61,25 +101,30 @@ const BeneficialOwnerTinOwnership = () => {
             }}
           />
         )}
-        {watch('hasTin') === 'yes' && watch('tinRwandan') && (
+        {hasTin === 'yes' && tinRwandan && (
           <Controller
             name="tinNumber"
             control={control}
-            rules={{ required: 'TIN value is required' }}
+            rules={{
+              required: 'TIN value is required',
+              validate: (value) => {
+                if (value?.length !== 9) {
+                  return 'TIN number must be 9 characters long';
+                }
+              },
+            }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
                   <Input
                     label="TIN Number"
                     required
-                    suffixIcon={
-                      watch('tinRwandan') === 'yes' ? faSearch : undefined
-                    }
+                    suffixIcon={tinRwandan === 'yes' ? faSearch : undefined}
                     suffixIconPrimary
                     placeholder="Enter TIN number"
                     {...field}
                   />
-                  {watch('tinRwandan') === 'yes' && (
+                  {tinRwandan === 'yes' && (
                     <span className="text-[12px] text-gray-500">
                       Enter TIN number and click search to fetch details
                     </span>
@@ -95,7 +140,24 @@ const BeneficialOwnerTinOwnership = () => {
           />
         )}
       </fieldset>
-    </section>
+      <menu className="w-full flex iteme-center gap-3 justify-between my-2">
+        <Button
+          value={'Cancel'}
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(setSelectedBeneficialOwner(undefined));
+            dispatch(setSelectedFounderDetailWithShares(undefined));
+            setAddNewBeneficialOwner(false);
+          }}
+        />
+        <Button
+          value={'Next'}
+          submit
+          primary
+          disabled={Object.keys(errors)?.length > 0}
+        />
+      </menu>
+    </form>
   );
 };
 

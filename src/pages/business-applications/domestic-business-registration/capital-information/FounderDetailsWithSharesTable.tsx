@@ -16,7 +16,10 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FounderDetailsWithSharesDetails from './FounderDetailsWithSharesDetails';
 import CustomTooltip from '@/components/inputs/CustomTooltip';
-import { setSelectedBeneficialOwner } from '@/states/features/beneficialOwnerSlice';
+import {
+  setActiveBeneficialOwnerNavigationStep,
+  setSelectedBeneficialOwner,
+} from '@/states/features/beneficialOwnerSlice';
 import { Button } from '@/components/ui/button';
 
 interface FounderDetailsWithPercentagesProps {
@@ -38,14 +41,14 @@ const FounderDetailsWithShares = ({
     setFounderDetailsWithPercentagesList,
   ] = useState(
     founderDetailsList?.filter(
-      (founderDetail) => founderDetail?.shareQuantityPercentage >= 25
+      (founderDetail) => founderDetail?.shareQuantityPercentage >= 98
     )
   );
 
   useEffect(() => {
     setFounderDetailsWithPercentagesList(
       founderDetailsList?.filter(
-        (founderDetail) => founderDetail?.shareQuantityPercentage >= 25
+        (founderDetail) => founderDetail?.shareQuantityPercentage >= 98
       )
     );
   }, [founderDetailsList]);
@@ -100,6 +103,9 @@ const FounderDetailsWithShares = ({
                     beneficialOwnerType: 'REGULAR_MANAGEMENT',
                   })
                 );
+                dispatch(
+                  setActiveBeneficialOwnerNavigationStep('tin_ownership')
+                );
               }}
               to={'#'}
             >
@@ -124,6 +130,9 @@ const FounderDetailsWithShares = ({
                     controlType: 'INDIRECT',
                     beneficialOwnerType: 'REGULAR_MANAGEMENT',
                   })
+                );
+                dispatch(
+                  setActiveBeneficialOwnerNavigationStep('tin_ownership')
                 );
               }}
               to={'#'}
@@ -183,6 +192,9 @@ const FounderDetailsWithShares = ({
                       beneficialOwnerType: 'SENIOR_MANAGEMENT',
                     })
                   );
+                  dispatch(
+                    setActiveBeneficialOwnerNavigationStep('tin_ownership')
+                  );
                   setAddNewBeneficialOwner && setAddNewBeneficialOwner(true);
                 }}
               >
@@ -200,6 +212,9 @@ const FounderDetailsWithShares = ({
                       beneficialOwnerType: 'REGULAR_MANAGEMENT',
                       significantInfluence: 'OTHER',
                     })
+                  );
+                  dispatch(
+                    setActiveBeneficialOwnerNavigationStep('tin_ownership')
                   );
                   setAddNewBeneficialOwner && setAddNewBeneficialOwner(true);
                 }}

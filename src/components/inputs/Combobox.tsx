@@ -54,7 +54,7 @@ const Combobox = ({
         {label} <span className={required ? `text-red-600` : 'hidden'}>*</span>
       </p>
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild className='w-full'>
           <Button
             variant="outline"
             role="combobox"
@@ -71,7 +71,7 @@ const Combobox = ({
             <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0">
+        <PopoverContent className="!w-full p-0">
           <Command>
             <CommandInput placeholder="Search option..." className="h-9" />
             <CommandList>

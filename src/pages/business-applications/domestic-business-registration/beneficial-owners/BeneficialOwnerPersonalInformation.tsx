@@ -1,16 +1,22 @@
+import Button from '@/components/inputs/Button';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
 import Loader from '@/components/Loader';
 import { countriesList } from '@/constants/countries';
 import { genderOptions } from '@/constants/inputs.constants';
-import { capitalizeString, maskPhoneDigits } from '@/helpers/strings';
+import { capitalizeString, formatDate, maskPhoneDigits } from '@/helpers/strings';
 import validateInputs from '@/helpers/validations';
+import {
+  setActiveBeneficialOwnerNavigationStep,
+  setCompleteBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
+} from '@/states/features/beneficialOwnerSlice';
 import { getUserInformationThunk } from '@/states/features/businessPeopleSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
@@ -20,7 +26,7 @@ const BeneficialOwnerPersonalInformation = () => {
   const { selectedFounderDetailWithShares } = useSelector(
     (state: RootState) => state.founderDetail
   );
-  const { selectedBeneficialOwner } = useSelector(
+  const { selectedBeneficialOwner, newBeneficialOwner } = useSelector(
     (state: RootState) => state.beneficialOwner
   );
   const {
@@ -35,7 +41,10 @@ const BeneficialOwnerPersonalInformation = () => {
     watch,
     setValue,
     formState: { errors },
+    handleSubmit,
   } = useForm();
+
+  const { personIdentType } = watch();
 
   // SET USER INFORMATION VALUES
   useEffect(() => {
@@ -100,10 +109,26 @@ const BeneficialOwnerPersonalInformation = () => {
       'extentOfShare',
       selectedFounderDetailWithShares?.shareQuantityPercentage
     );
-  }, [selectedFounderDetailWithShares, setValue]);
+  }, [selectedFounderDetailWithShares, setValue, watch]);
+
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    dispatch(
+      setNewBeneficialOwner({
+        ...newBeneficialOwner,
+        ...data,
+        dateOfBirth: formatDate(data?.dateOfBirth),
+      })
+    );
+    dispatch(setCompleteBeneficialOwnerNavigationStep('personal_information'));
+    dispatch(setActiveBeneficialOwnerNavigationStep('residential_address'));
+  };
 
   return (
-    <section className="w-full flex flex-col gap-4">
+    <form
+      className="w-full flex flex-col gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <fieldset className="grid grid-cols-2 gap-5 justify-between">
         <Controller
           name="personIdentType"
@@ -160,7 +185,7 @@ const BeneficialOwnerPersonalInformation = () => {
                       : false
                   }
                   suffixIcon={
-                    watch('personIdentType') === 'NID' &&
+                    personIdentType === 'NID' &&
                     !(
                       selectedFounderDetailWithShares &&
                       selectedBeneficialOwner?.controlType === 'DIRECT'
@@ -260,8 +285,8 @@ const BeneficialOwnerPersonalInformation = () => {
                 <Input
                   label="Date of Birth"
                   required
+                  toDate={moment().toDate()}
                   readOnly={userInformation ? true : false}
-                  toDate={moment().subtract(18, 'years').toDate()}
                   type="date"
                   {...field}
                 />
@@ -454,7 +479,17 @@ const BeneficialOwnerPersonalInformation = () => {
           }}
         />
       </fieldset>
-    </section>
+      <menu className="w-full flex items-center gap-3 justify-between">
+        <Button
+          value={'Cancel'}
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(setActiveBeneficialOwnerNavigationStep('tin_ownership'));
+          }}
+        />
+        <Button value={'Next'} primary submit />
+      </menu>
+    </form>
   );
 };
 

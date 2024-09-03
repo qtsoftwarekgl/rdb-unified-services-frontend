@@ -1,8 +1,13 @@
+import Button from '@/components/inputs/Button';
 import Combobox from '@/components/inputs/Combobox';
+import CustomPopover from '@/components/inputs/CustomPopover';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
+import Table from '@/components/table/Table';
 import { beneficialOwnerOccupations } from '@/constants/beneficialOwner.constants';
+import { attachmentColumns } from '@/constants/business.constants';
 import { countriesList } from '@/constants/countries';
+import ConfirmActionModal from '@/containers/modals/ConfirmActionModal';
 import validateInputs from '@/helpers/validations';
 import {
   useLazyFetchCellsQuery,
@@ -11,7 +16,8 @@ import {
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
 } from '@/states/api/businessRegApiSlice';
-import { AppDispatch } from '@/states/store';
+import { setActiveBeneficialOwnerNavigationStep, setCompleteBeneficialOwnerNavigationStep, setNewBeneficialOwner } from '@/states/features/beneficialOwnerSlice';
+import { AppDispatch, RootState } from '@/states/store';
 import {
   Cell,
   District,
@@ -19,15 +25,21 @@ import {
   Sector,
   Village,
 } from '@/types/locationTypes';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisH, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { ErrorResponse } from 'react-router-dom';
+import { ErrorResponse, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const BeneficialOwnerProfessionalAddress = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const { newBeneficialOwner } = useSelector((state: RootState) => state.beneficialOwner);
   const [selectedProvince, setSelectedProvince] = useState<number | undefined>(
     undefined
   );
@@ -45,13 +57,21 @@ const BeneficialOwnerProfessionalAddress = () => {
   const [sectorsList, setSectorsList] = useState<Sector[]>([]);
   const [districtsList, setDistrictsList] = useState<District[]>([]);
   const [provincesList, setProvincesList] = useState<Province[]>([]);
+  const [occupationAttachments, setOccupationAttachments] = useState<File[]>(
+    []
+  );
+  const [confirmDeleteAttachment, setConfirmDeleteAttachment] = useState(false);
 
   // REACT HOOK FORM
   const {
     control,
     formState: { errors },
-    watch
+    watch,
+    handleSubmit,
+    clearErrors,
   } = useForm();
+
+  const { occupation } = watch();
 
   const { proCountry } = watch();
 
@@ -226,9 +246,84 @@ const BeneficialOwnerProfessionalAddress = () => {
     }
   }, [villagesData?.data, villagesError, villagesIsError, villagesIsSuccess]);
 
+  // ATTACHMENT EXTENDED COLUMNS
+  const attachmentExtendedColumns = [
+    ...attachmentColumns,
+    {
+      header: 'Actions',
+      accessorKey: 'actions',
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          fileName: string;
+          attachmentType: string;
+          size: number;
+        }>;
+      }) => {
+        return (
+          <CustomPopover
+            trigger={
+              <FontAwesomeIcon
+                icon={faEllipsisH}
+                className="p-1 px-3 rounded-md bg-slate-200 hover:bg-slate-300 cursor-pointer"
+              />
+            }
+          >
+            <menu className="w-full flex flex-col gap-1">
+              <Link
+                to={'#'}
+                className="flex items-center hover:bg-background p-[5px] px-2 rounded-md gap-2 text-[13px]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log(row.original);
+                }}
+              >
+                <FontAwesomeIcon
+                  className="text-[13px] rounded-full p-[6px] bg-primary text-white cursor-pointer"
+                  icon={faEye}
+                />{' '}
+                Preview{' '}
+              </Link>
+              <Link
+                to={'#'}
+                className="flex items-center hover:bg-background p-[5px] px-2 rounded-md gap-2 text-[13px]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setConfirmDeleteAttachment(true);
+                }}
+              >
+                <FontAwesomeIcon
+                  className="text-[13px] rounded-full p-[6px] bg-red-600 text-white cursor-pointer"
+                  icon={faTrash}
+                />
+                Delete
+              </Link>
+            </menu>
+          </CustomPopover>
+        );
+      },
+    },
+  ];
+
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    dispatch(
+      setNewBeneficialOwner({
+        ...newBeneficialOwner,
+        ...data,
+      })
+    );
+    dispatch(setCompleteBeneficialOwnerNavigationStep('professional_address'));
+    dispatch(setActiveBeneficialOwnerNavigationStep('ownership_information'));
+  };
+
   return (
-    <section className="w-full flex flex-col gap-4">
-      <menu className="w-full flex flex-col gap-6">
+    <form
+      className="w-full flex flex-col gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <fieldset className="w-full flex flex-col gap-6">
         <h3 className="text-center uppercase text-primary text-lg font-medium">
           Professional address
         </h3>
@@ -240,8 +335,9 @@ const BeneficialOwnerProfessionalAddress = () => {
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
-                  <Select
+                  <Combobox
                     {...field}
+                    required
                     label={'Country'}
                     placeholder="Select country"
                     options={countriesList?.map((country) => {
@@ -251,6 +347,11 @@ const BeneficialOwnerProfessionalAddress = () => {
                       };
                     })}
                   />
+                  {errors?.proCountry && (
+                    <span className="text-red-500 text-[13px]">
+                      {String(errors?.proCountry.message)}
+                    </span>
+                  )}
                 </label>
               );
             }}
@@ -469,6 +570,33 @@ const BeneficialOwnerProfessionalAddress = () => {
             </>
           )}
           <Controller
+            name="proStreetNumber"
+            control={control}
+            rules={{
+              required:
+                proCountry && proCountry !== 'RW'
+                  ? 'Add professional street number'
+                  : false,
+            }}
+            render={({ field }) => {
+              return (
+                <label className="w-full flex flex-col gap-1">
+                  <Input
+                    label="Street number"
+                    placeholder="Street number"
+                    required={proCountry && proCountry !== 'RW'}
+                    {...field}
+                  />
+                  {errors?.proStreetNumber && (
+                    <span className="text-red-500 text-[13px]">
+                      {String(errors?.proStreetNumber.message)}
+                    </span>
+                  )}
+                </label>
+              );
+            }}
+          />
+          <Controller
             name="proEmail"
             control={control}
             rules={{
@@ -483,12 +611,7 @@ const BeneficialOwnerProfessionalAddress = () => {
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
-                  <Input
-                    label="Email"
-                    placeholder="Email"
-                    required
-                    {...field}
-                  />
+                  <Input label="Email" placeholder="Email" {...field} />
                   {errors?.email && (
                     <span className="text-red-500 text-[12px]">
                       {String(errors?.email?.message)}
@@ -501,7 +624,6 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="proPhoneNumber"
             control={control}
-            rules={{ required: 'Professional phone number is required' }}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -509,7 +631,6 @@ const BeneficialOwnerProfessionalAddress = () => {
                     label="Phone Number"
                     placeholder="Phone Number"
                     type="tel"
-                    required
                     {...field}
                   />
                   {errors?.phoneNumber && (
@@ -529,7 +650,6 @@ const BeneficialOwnerProfessionalAddress = () => {
                 <label className="w-full flex flex-col gap-1">
                   <Combobox
                     label="Occupation"
-                    required
                     options={beneficialOwnerOccupations?.map((occupation) => {
                       return {
                         label: occupation,
@@ -537,28 +657,6 @@ const BeneficialOwnerProfessionalAddress = () => {
                       };
                     })}
                     placeholder="Select occupation"
-                    {...field}
-                  />
-                </label>
-              );
-            }}
-          />
-          <Controller
-            name="proStreetNumber"
-            control={control}
-            rules={{
-              required:
-                proCountry && proCountry !== 'RW'
-                  ? 'Add professional street number'
-                  : false,
-            }}
-            render={({ field }) => {
-              return (
-                <label className="w-full flex flex-col gap-1">
-                  <Input
-                    label="Street number"
-                    placeholder="Street number"
-                    required={proCountry && proCountry !== 'RW'}
                     {...field}
                   />
                 </label>
@@ -581,28 +679,88 @@ const BeneficialOwnerProfessionalAddress = () => {
             }}
           />
         </fieldset>
-      </menu>
+      </fieldset>
       <Controller
         name="occupationAttachment"
         control={control}
-        rules={{ required: 'Proof of occupation is required' }}
+        rules={{
+          required: occupation ? 'Proof of occupation is required' : false,
+        }}
         render={({ field }) => {
           return (
             <label className="w-full flex flex-col gap-2">
               <p className="text-[15px]">
-                Proof of occupation <span className="text-red-500">*</span>
+                Proof of occupation{' '}
+                {occupation && <span className="text-red-500">*</span>}
               </p>
               <Input
                 label="Upload proof of occupation"
                 type="file"
-                required
+                required={occupation ? true : false}
                 {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  const files = e.target.files;
+                  if (files) {
+                    setOccupationAttachments(Array.from(files));
+                    clearErrors('occupationAttachment');
+                  }
+                }}
               />
+              {errors?.occupationAttachment && (
+                <span className="text-red-500 text-[13px]">
+                  {String(errors?.occupationAttachment.message)}
+                </span>
+              )}
             </label>
           );
         }}
       />
-    </section>
+      {occupationAttachments.length > 0 && (
+        <Table
+          columns={
+            attachmentExtendedColumns as ColumnDef<{
+              fileName: string;
+              attachmentType: string;
+              size: number;
+            }>[]
+          }
+          data={occupationAttachments?.map((file) => {
+            return {
+              fileName: file.name,
+              attachmentType: file.type,
+              size: file.size,
+            };
+          })}
+        />
+      )}
+      <menu className="w-full flex items-center gap-3 justify-between mt-3">
+        <Button
+          value={'Cancel'}
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(
+              setActiveBeneficialOwnerNavigationStep('residential_address')
+            );
+          }}
+        />
+        <Button value={'Next'} primary submit />
+      </menu>
+      <ConfirmActionModal
+        isOpen={confirmDeleteAttachment}
+        onClose={(e) => {
+          if (e) e.preventDefault();
+          setConfirmDeleteAttachment(false);
+        }}
+        onConfirm={(e) => {
+          e.preventDefault();
+          setOccupationAttachments([]);
+          setConfirmDeleteAttachment(false);
+        }}
+        actionType="delete"
+        message="Are you sure you want to delete the attachment? You can always upload another one."
+      />
+    </form>
   );
 };
 
