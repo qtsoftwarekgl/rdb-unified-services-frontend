@@ -178,7 +178,6 @@ const BoardDirectors = ({
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
     createBoardMember({
       ...data,
       personDocNo: data?.personDocNo || data?.documentNumber,

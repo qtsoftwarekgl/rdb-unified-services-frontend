@@ -1,4 +1,4 @@
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, FormProvider, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../../states/store";
 import Input from "../../../../components/inputs/Input";
@@ -18,7 +18,6 @@ import {
   setNameAvailabilitiesList,
   setSimilarBusinessNamesModal,
 } from "@/states/features/businessSlice";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { convertDecimalToPercentage } from "@/helpers/strings";
 import SimilarBusinessNames from "@/pages/business-applications/SimilarBusinessNames";
 import {
@@ -29,6 +28,9 @@ import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
 } from "@/helpers/business.helpers";
+import SelectReservedName from "./SelectReservedName";
+import { setShowSelectReservedName } from "@/states/ui/businessRegistrationUISlice";
+import useReservedName from "./hooks/useReservedName";
 
 type EnterpriseDetailsProps = {
   businessId: businessId;
@@ -49,6 +51,11 @@ export const EnterpriseDetails = ({
     (state: RootState) => state.navigationFlow
   );
 
+  const {selectedReservedName} = useSelector((state: RootState) => state.businessRegistrationUI);
+  const {reservedNames} = useSelector((state: RootState) => state.nameReservation);
+  const {handleSetDefaultSelectedReservedName} = useReservedName();
+
+
   // INITIALIZE GET BUSINESS QUERY
   const [
     getBusinessDetails,
@@ -65,6 +72,7 @@ export const EnterpriseDetails = ({
   const navigate = useNavigate();
 
   // REACT HOOK FORM
+  const methods = useForm();
   const {
     handleSubmit,
     control,
@@ -73,7 +81,7 @@ export const EnterpriseDetails = ({
     clearErrors,
     setValue,
     setError,
-  } = useForm();
+  } = methods;
 
   // GET BUSINESS
   useEffect(() => {
@@ -81,6 +89,12 @@ export const EnterpriseDetails = ({
       getBusinessDetails({ id: businessId });
     }
   }, [getBusinessDetails, businessId]);
+
+  useEffect(() => {
+    if(businessDetails && reservedNames && reservedNames.length > 0){
+      handleSetDefaultSelectedReservedName(businessDetails, reservedNames);
+    }
+  },[businessDetails, reservedNames])
 
   useEffect(() => {
     if (businessDetails && Object.keys(businessDetails).length > 0) {
@@ -174,6 +188,7 @@ export const EnterpriseDetails = ({
       businessId,
       enterpriseName: data?.enterpriseName,
       enterpriseBusinessName: data?.enterpriseBusinessName || null,
+      reservationId: data?.reservationId || null,
     });
   };
 
@@ -220,6 +235,7 @@ export const EnterpriseDetails = ({
 
   return (
     <section className="flex flex-col w-full gap-4">
+      <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {businessDetailsIsFetching ? (
           <figure className="w-full flex items-center gap-2 justify-center min-h-[40vh]">
@@ -259,7 +275,9 @@ export const EnterpriseDetails = ({
                   return (
                     <label className="flex flex-col items-start w-1/2 gap-1">
                       <Input
-                        suffixIcon={faSearch}
+                        readOnly={selectedReservedName ? true : false}
+                        // suffixIcon={faSearch}
+                        showSearchSuffix={!selectedReservedName}
                         suffixIconHandler={(e) => {
                           e.preventDefault();
                           if (!field?.value || field?.value?.length < 3) {
@@ -271,7 +289,6 @@ export const EnterpriseDetails = ({
                           });
                         }}
                         label={`Business Name (Optional)`}
-                        readOnly={false}
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
@@ -322,7 +339,10 @@ export const EnterpriseDetails = ({
                                 Click to find conflicting business names
                               </Link>
                             </section>
-                          )}
+                        )}
+
+                       <p className="text-xs text-primary cursor-pointer hover:underline" onClick={() => dispatch(setShowSelectReservedName(true))}> {`${selectedReservedName ? "Change" : "Use"} reserved name`} </p>
+
                         {searchBusinessNameIsSuccess &&
                           nameAvailabilitiesList?.length === 0 &&
                           !errors?.enterpriseBusinessName &&
@@ -360,6 +380,8 @@ export const EnterpriseDetails = ({
           </fieldset>
         )}
       </form>
+      <SelectReservedName />
+      </FormProvider>
       <SimilarBusinessNames businessName={watch("enterpriseBusinessName")} />
     </section>
   );

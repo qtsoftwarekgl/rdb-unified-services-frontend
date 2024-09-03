@@ -38,6 +38,7 @@ import beneficialOwnerSlice from './features/beneficialOwnerSlice';
 import businessAmendmentSlice from './features/businessAmendmentSlice';
 import certificateSlice  from './features/certificateSlice';
 import nameReservationApiSlice from './api/nameReservationApiSlice';
+import businessRegistrationUISlice from './ui/businessRegistrationUISlice';
 
 export const store = configureStore({
   reducer: {
@@ -81,6 +82,7 @@ export const store = configureStore({
     beneficialOwner: beneficialOwnerSlice,
     businessAmendment: businessAmendmentSlice,
     certificate: certificateSlice,
+    businessRegistrationUI: businessRegistrationUISlice,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware().concat(

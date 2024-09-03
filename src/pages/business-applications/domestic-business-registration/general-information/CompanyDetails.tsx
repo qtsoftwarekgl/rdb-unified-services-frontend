@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm, FormProvider } from 'react-hook-form';
 import Input from '../../../../components/inputs/Input';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../../../components/Loader';
 import Select from '../../../../components/inputs/Select';
 import {
@@ -36,10 +35,13 @@ import {
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from '@/helpers/business.helpers';
-import ResolutionAttachment from '@/components/resolution-attachment/ResolutionAttachment';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ApplicationStatus } from '@/enums/ApplicationStatus';
+} from "@/helpers/business.helpers";
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import SelectReservedName from "./SelectReservedName";
+import { setShowSelectReservedName } from "@/states/ui/businessRegistrationUISlice";
+import useReservedName from "./hooks/useReservedName";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -51,6 +53,8 @@ const CompanyDetails = ({
   applicationStatus,
 }: CompanyDetailsProps) => {
   // REACT HOOK FORM
+  const methods = useForm();
+
   const {
     handleSubmit,
     control,
@@ -59,7 +63,9 @@ const CompanyDetails = ({
     setError,
     clearErrors,
     reset,
-  } = useForm();
+  } = methods;
+
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { businessDetails, nameAvailabilitiesList } = useSelector(
@@ -75,6 +81,10 @@ const CompanyDetails = ({
   const { file, fileName, attachmentType } = useSelector(
     (state: RootState) => state.resolutionAttachment
   );
+
+  const {selectedReservedName} = useSelector((state: RootState) => state.businessRegistrationUI);
+  const {reservedNames} = useSelector((state: RootState) => state.nameReservation);
+  const {handleSetDefaultSelectedReservedName} = useReservedName();
 
   // DISABLE FORM
   useEffect(() => {
@@ -179,6 +189,12 @@ const CompanyDetails = ({
     },
   ] = useCreateBusinessDetailsMutation();
 
+  useEffect(() => {
+    if(businessDetails && reservedNames && reservedNames.length > 0){
+      handleSetDefaultSelectedReservedName(businessDetails, reservedNames);
+    }
+  },[businessDetails, reservedNames])
+
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
     if (watch('companyCategory') === 'PUBLIC') {
@@ -198,6 +214,7 @@ const CompanyDetails = ({
       hasArticlesOfAssociation: data.hasArticlesOfAssociation === 'yes',
       companyType: data.companyType,
       companyCategory: data.companyCategory,
+      reservationId: data.reservationId
     });
   };
 
@@ -280,6 +297,7 @@ const CompanyDetails = ({
           <Loader />
         </figure>
       )}
+      <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset
           className="flex flex-col w-full gap-6"
@@ -295,10 +313,12 @@ const CompanyDetails = ({
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
+                      readOnly={selectedReservedName ? true : false}
                       label="Search company name"
                       required
                       suffixIconPrimary
-                      suffixIcon={faSearch}
+                      // suffixIcon={faSearch}
+                      showSearchSuffix={!selectedReservedName}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -329,7 +349,7 @@ const CompanyDetails = ({
                         ))}
                       {searchBusinessNameIsSuccess &&
                         nameAvailabilitiesList?.length > 0 &&
-                        !errors?.companyName && (
+                        !errors?.companyName && !selectedReservedName && (
                           <section className="flex flex-col gap-1">
                             <p className="text-[11px] text-red-600">
                               The given name has a similarity of up to{' '}
@@ -359,6 +379,8 @@ const CompanyDetails = ({
                           </p>
                         )}
                     </menu>
+                    <p className="text-xs text-primary cursor-pointer hover:underline" onClick={() => dispatch(setShowSelectReservedName(true))}> {`${selectedReservedName ? "Change" : "Use"} reserved name`} </p>
+                    
                     {errors.companyName && (
                       <p className="text-xs text-red-500">
                         {String(errors.companyName.message)}
@@ -438,7 +460,43 @@ const CompanyDetails = ({
                 );
               }}
             />
+
             <Controller
+              control={control}
+              name="abbreviation"
+              rules={{ required: 'Select the company abbreviation' }}
+              // defaultValue={businessDetails?.position}
+              render={({ field }) => {
+                return (
+                  <label className="flex flex-col w-full gap-1">
+                    <Select
+                      label="Abbreviation"
+                      required
+                      placeholder="Select abbreviation"
+                      options={["Ltd","Inc","Corp","LLC","LLP","PLC"].map((abbr) => {
+                        return {
+                          value: abbr,
+                          label: abbr,
+                        };
+                      })}
+                      {...field}
+                      onChange={async (e) => {
+                        field.onChange(e);
+                      }}
+                    />
+                    {errors?.abbreviation && (
+                      <p className="text-xs text-red-500">
+                        {String(errors?.abbreviation?.message)}
+                      </p>
+                    )}
+                  </label>
+                );
+              }}
+            />
+           
+          </menu>
+          <menu className="flex items-start w-2/4 pr-3 gap-6">
+          <Controller
               control={control}
               name="position"
               rules={{ required: 'Select your position' }}
@@ -529,6 +587,8 @@ const CompanyDetails = ({
           </menu>
         </fieldset>
       </form>
+       <SelectReservedName/>
+      </FormProvider>
       <SimilarBusinessNames businessName={watch('companyName')} />
     </section>
   );
