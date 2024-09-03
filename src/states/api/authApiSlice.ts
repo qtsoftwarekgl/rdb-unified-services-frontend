@@ -1,18 +1,18 @@
-import { userManagementApi } from '@/constants/environments';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import store from 'store';
+import { userManagementApi } from "@/constants/environments"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import store from "store"
 
 export const authApiSlice = createApi({
-  reducerPath: 'authApi',
+  reducerPath: "authApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${userManagementApi}/auth`,
     prepareHeaders: (headers) => {
-      const user = store.get('user');
+      const user = store.get("user")
       if (user?.token) {
-        headers.set('authorization', `Bearer ${user.token}`);
+        headers.set("authorization", `Bearer ${user.token}`)
       }
-      return headers;
-    },
+      return headers
+    }
   }),
   endpoints: (builder) => {
     return {
@@ -20,14 +20,14 @@ export const authApiSlice = createApi({
       login: builder.mutation({
         query: ({ username, password }) => {
           return {
-            url: '/login',
-            method: 'POST',
+            url: "/login",
+            method: "POST",
             body: {
               email: username,
-              password,
-            },
-          };
-        },
+              password
+            }
+          }
+        }
       }),
 
       // SIGNUP
@@ -39,11 +39,11 @@ export const authApiSlice = createApi({
           personDocNo,
           password,
           phoneNumber,
-          userType,
+          personIdentType
         }) => {
           return {
             url: `/signup`,
-            method: 'POST',
+            method: "POST",
             body: {
               email,
               firstName,
@@ -51,10 +51,10 @@ export const authApiSlice = createApi({
               personDocNo,
               password,
               phoneNumber,
-              userType,
-            },
-          };
-        },
+              personIdentType
+            }
+          }
+        }
       }),
 
       // VERIFY ACCOUNT
@@ -62,12 +62,12 @@ export const authApiSlice = createApi({
         query: ({ verificationCode }) => {
           return {
             url: `/verify-account/`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
-              verificationCode,
-            },
-          };
-        },
+              verificationCode
+            }
+          }
+        }
       }),
 
       // RESEND VERIFICATION CODE
@@ -75,12 +75,12 @@ export const authApiSlice = createApi({
         query: ({ email }) => {
           return {
             url: `/initate-account-verification`,
-            method: 'POST',
+            method: "POST",
             body: {
-              email,
-            },
-          };
-        },
+              email
+            }
+          }
+        }
       }),
 
       // REQUEST PASSWORD RESET
@@ -88,12 +88,12 @@ export const authApiSlice = createApi({
         query: ({ email }) => {
           return {
             url: `/forgot-password`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
-              email,
-            },
-          };
-        },
+              email
+            }
+          }
+        }
       }),
 
       // RESET PASSWORD
@@ -101,24 +101,24 @@ export const authApiSlice = createApi({
         query: ({ password, passwordResetCode }) => {
           return {
             url: `/reset-password`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
               password,
-              passwordResetCode,
-            },
-          };
-        },
-      }),
-    };
-  },
-});
+              passwordResetCode
+            }
+          }
+        }
+      })
+    }
+  }
+})
 
 export const {
   useLoginMutation,
   useSignupMutation,
   useVerifyAccountMutation,
   useRequestPasswordResetMutation,
-  useResetPasswordMutation,
-} = authApiSlice;
+  useResetPasswordMutation
+} = authApiSlice
 
-export default authApiSlice;
+export default authApiSlice

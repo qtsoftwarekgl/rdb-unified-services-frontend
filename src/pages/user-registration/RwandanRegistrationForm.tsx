@@ -1,37 +1,37 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../components/inputs/Input";
-import Button from "../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import { setRegistrationStep } from "../../states/features/authSlice";
-import validateInputs, { validatePassword } from "../../helpers/validations";
-import Select from "../../components/inputs/Select";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ChangeEvent, useEffect, useState } from "react"
+import { Controller, FieldValues, useForm } from "react-hook-form"
+import Input from "../../components/inputs/Input"
+import Button from "../../components/inputs/Button"
+import { AppDispatch, RootState } from "../../states/store"
+import { useDispatch, useSelector } from "react-redux"
+import { setRegistrationStep } from "../../states/features/authSlice"
+import validateInputs, { validatePassword } from "../../helpers/validations"
+import Select from "../../components/inputs/Select"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faCircle,
   faCircleCheck,
   faEyeSlash,
-  faInfo,
-} from "@fortawesome/free-solid-svg-icons";
-import { formatDate, maskPhoneDigits } from "@/helpers/strings";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { useTranslation } from "react-i18next";
-import { useSignupMutation } from "@/states/api/authApiSlice";
-import { toast } from "react-toastify";
-import { ErrorResponse, useNavigate } from "react-router-dom";
-import { setUser } from "@/states/features/userSlice";
-import Loader from "@/components/Loader";
+  faInfo
+} from "@fortawesome/free-solid-svg-icons"
+import { formatDate, maskPhoneDigits } from "@/helpers/strings"
+import { faEye } from "@fortawesome/free-regular-svg-icons"
+import { useTranslation } from "react-i18next"
+import { useSignupMutation } from "@/states/api/authApiSlice"
+import { toast } from "react-toastify"
+import { ErrorResponse, useNavigate } from "react-router-dom"
+import { setUser } from "@/states/features/userSlice"
+import Loader from "@/components/Loader"
 
 type RwandanRegistrationFormProps = {
-  isOpen: boolean;
-};
+  isOpen: boolean
+}
 
 const RwandanRegistrationForm = ({
-  isOpen = false,
+  isOpen = false
 }: RwandanRegistrationFormProps) => {
   // LOCALES
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   // REACT HOOK FORM
   const {
@@ -41,55 +41,55 @@ const RwandanRegistrationForm = ({
     setValue,
     trigger,
     handleSubmit,
-    clearErrors,
-  } = useForm();
+    clearErrors
+  } = useForm()
 
   // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch()
   const { userInformation } = useSelector(
     (state: RootState) => state.businessPeople
-  );
+  )
   // PASSWORD ERRORS
   const [passwordErrors, setPasswordErrors] = useState<
     {
-      message: string;
-      type: string;
-      color: string;
+      message: string
+      type: string
+      color: string
     }[]
-  >([]);
+  >([])
 
   // STATE VARIABLES
   const [showPassword, setShowPassword] = useState({
     password: false,
-    confirmPassword: false,
-  });
-  const [passwordIsValid, setPasswordIsValid] = useState(false);
+    confirmPassword: false
+  })
+  const [passwordIsValid, setPasswordIsValid] = useState(false)
 
   // NAVIGATION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // SET DEFAULT VALUES
   useEffect(() => {
-    setValue("firstName", userInformation?.foreName);
-    setValue("lastName", userInformation?.surnames);
-    setValue("dateOfBirth", formatDate(userInformation?.dateOfBirth));
-    setValue("gender", userInformation?.gender);
-    setValue("nationality", userInformation?.nationality);
-    setValue("perDocIdentType", "nid");
-    setValue("persDocIssueDate", formatDate(userInformation?.dateOfBirth));
-    setValue("persDocIssuePlace", "RW");
-    setValue("province", userInformation?.province);
-    setValue("district", userInformation?.district);
-    setValue("sector", userInformation?.sector);
-    setValue("cell", userInformation?.cell);
-    setValue("village", userInformation?.village);
-  }, [userInformation, setValue]);
+    setValue("firstName", userInformation?.foreName)
+    setValue("lastName", userInformation?.surnames)
+    setValue("dateOfBirth", formatDate(userInformation?.dateOfBirth))
+    setValue("gender", userInformation?.gender)
+    setValue("nationality", userInformation?.nationality)
+    setValue("perDocIdentType", "nid")
+    setValue("persDocIssueDate", formatDate(userInformation?.dateOfBirth))
+    setValue("persDocIssuePlace", "RW")
+    setValue("province", userInformation?.province)
+    setValue("district", userInformation?.district)
+    setValue("sector", userInformation?.sector)
+    setValue("cell", userInformation?.cell)
+    setValue("village", userInformation?.village)
+  }, [userInformation, setValue])
 
   useEffect(() => {
     if (!userInformation) {
-      dispatch(setRegistrationStep("selectNationality"));
+      dispatch(setRegistrationStep("selectNationality"))
     }
-  }, [dispatch, userInformation]);
+  }, [dispatch, userInformation])
 
   // INITIALIZE SIGNUP MUTATION
   const [
@@ -99,29 +99,29 @@ const RwandanRegistrationForm = ({
       isLoading: signupIsLoading,
       isError: signupIsError,
       isSuccess: signupIsSuccess,
-      error: signupError,
-    },
-  ] = useSignupMutation();
+      error: signupError
+    }
+  ] = useSignupMutation()
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
     signup({
       ...data,
-      userType: "LOCAL",
-      personDocNo: userInformation?.documentNumber,
-    });
-  };
+      personIdentType: "nid",
+      personDocNo: userInformation?.documentNumber
+    })
+  }
 
   // HANDLE SIGNUP RESPONSE
   useEffect(() => {
     if (signupIsError) {
-      toast.error((signupError as ErrorResponse)?.data?.message);
+      toast.error((signupError as ErrorResponse)?.data?.message)
     } else if (signupIsSuccess) {
       toast.success(
         "Account created successfully. You will a receive an OTP on your email address."
-      );
-      dispatch(setUser(signupData?.data));
-      navigate(`verify`);
+      )
+      dispatch(setUser(signupData?.data))
+      navigate(`verify`)
     }
   }, [
     dispatch,
@@ -129,8 +129,8 @@ const RwandanRegistrationForm = ({
     signupData?.data,
     signupError,
     signupIsError,
-    signupIsSuccess,
-  ]);
+    signupIsSuccess
+  ])
 
   return (
     <section
@@ -166,7 +166,7 @@ const RwandanRegistrationForm = ({
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -183,7 +183,7 @@ const RwandanRegistrationForm = ({
                     {...field}
                   />
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -200,7 +200,7 @@ const RwandanRegistrationForm = ({
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -209,7 +209,7 @@ const RwandanRegistrationForm = ({
             defaultValue={watch("gender") || userInformation?.gender}
             rules={{ required: "Select gender" }}
             render={({ field }) => {
-              const gender = userInformation?.gender;
+              const gender = userInformation?.gender
               return (
                 <label className="flex flex-col items-start w-[48%] gap-2">
                   <p className="flex items-center gap-1 text-[15px]">
@@ -241,14 +241,14 @@ const RwandanRegistrationForm = ({
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
             name="phoneNumber"
             control={control}
             rules={{
-              required: "Phone number is required",
+              required: "Phone number is required"
             }}
             render={({ field }) => {
               return (
@@ -260,8 +260,8 @@ const RwandanRegistrationForm = ({
                     options={userInformation?.phones?.map((phone) => {
                       return {
                         value: phone?.msidn,
-                        label: maskPhoneDigits(phone?.msidn),
-                      };
+                        label: maskPhoneDigits(phone?.msidn)
+                      }
                     })}
                     {...field}
                   />
@@ -271,7 +271,7 @@ const RwandanRegistrationForm = ({
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -283,8 +283,8 @@ const RwandanRegistrationForm = ({
                 return (
                   validateInputs(String(value), "email") ||
                   "Invalid email address"
-                );
-              },
+                )
+              }
             }}
             render={({ field }) => {
               return (
@@ -294,8 +294,8 @@ const RwandanRegistrationForm = ({
                     label="Email"
                     placeholder="name@domain.com"
                     onChange={async (e: ChangeEvent<HTMLInputElement>) => {
-                      field.onChange(e.target.value);
-                      await trigger("email");
+                      field.onChange(e.target.value)
+                      await trigger("email")
                     }}
                   />
                   {errors?.email && (
@@ -304,7 +304,7 @@ const RwandanRegistrationForm = ({
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -313,19 +313,19 @@ const RwandanRegistrationForm = ({
             rules={{
               validate: (value) => {
                 if (validatePassword(value).length > 0) {
-                  const newPasswordErrors = validatePassword(value);
-                  setPasswordErrors(newPasswordErrors);
+                  const newPasswordErrors = validatePassword(value)
+                  setPasswordErrors(newPasswordErrors)
                   if (
                     !newPasswordErrors?.find((error) => error?.color === "red")
                   ) {
-                    clearErrors("password");
-                    setPasswordIsValid(true);
-                    return true;
+                    clearErrors("password")
+                    setPasswordIsValid(true)
+                    return true
                   } else {
-                    return false;
+                    return false
                   }
                 }
-              },
+              }
             }}
             render={({ field }) => {
               return (
@@ -336,16 +336,16 @@ const RwandanRegistrationForm = ({
                     placeholder="********"
                     suffixIcon={showPassword?.password ? faEyeSlash : faEye}
                     suffixIconHandler={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                       setShowPassword({
                         ...showPassword,
-                        password: !showPassword?.password,
-                      });
+                        password: !showPassword?.password
+                      })
                     }}
                     {...field}
                     onChange={async (e) => {
-                      field.onChange(e);
-                      await trigger("password");
+                      field.onChange(e)
+                      await trigger("password")
                     }}
                   />
                   {(errors.password || passwordIsValid) && (
@@ -371,14 +371,14 @@ const RwandanRegistrationForm = ({
                                 />
                                 {error?.message}
                               </li>
-                            );
+                            )
                           })}
                         </ul>
                       )}
                     </menu>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -387,7 +387,7 @@ const RwandanRegistrationForm = ({
             rules={{
               required: `${t("confirm-password-required")}`,
               validate: (value) =>
-                value === watch("password") || `${t("password-mismatch")}`,
+                value === watch("password") || `${t("password-mismatch")}`
             }}
             render={({ field }) => {
               return (
@@ -400,16 +400,16 @@ const RwandanRegistrationForm = ({
                       showPassword?.confirmPassword ? faEyeSlash : faEye
                     }
                     suffixIconHandler={(e) => {
-                      e.preventDefault();
+                      e.preventDefault()
                       setShowPassword({
                         ...showPassword,
-                        confirmPassword: !showPassword?.confirmPassword,
-                      });
+                        confirmPassword: !showPassword?.confirmPassword
+                      })
                     }}
                     {...field}
                     onChange={async (e) => {
-                      field.onChange(e.target.value);
-                      await trigger("confirmPassword");
+                      field.onChange(e.target.value)
+                      await trigger("confirmPassword")
                     }}
                   />
                   {errors.confirmPassword && (
@@ -418,7 +418,7 @@ const RwandanRegistrationForm = ({
                     </span>
                   )}
                 </label>
-              );
+              )
             }}
           />
         </fieldset>
@@ -435,8 +435,8 @@ const RwandanRegistrationForm = ({
           <Button
             value="Back"
             onClick={(e) => {
-              e.preventDefault();
-              dispatch(setRegistrationStep("selectNationality"));
+              e.preventDefault()
+              dispatch(setRegistrationStep("selectNationality"))
             }}
           />
           <Button
@@ -448,7 +448,7 @@ const RwandanRegistrationForm = ({
         </menu>
       </form>
     </section>
-  );
-};
+  )
+}
 
-export default RwandanRegistrationForm;
+export default RwandanRegistrationForm
