@@ -95,6 +95,7 @@ export const businessRegApiSlice = createApi({
       createBusinessDetails: builder.mutation({
         query: ({
           businessId,
+          reservationId,
           companyName,
           position,
           hasArticlesOfAssociation,
@@ -108,6 +109,7 @@ export const businessRegApiSlice = createApi({
             method: 'POST',
             body: {
               companyName,
+              reservationId,
               position,
               hasArticlesOfAssociation,
               companyType,
