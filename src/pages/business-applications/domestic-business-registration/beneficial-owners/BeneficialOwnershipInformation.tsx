@@ -1,25 +1,50 @@
+import Button from '@/components/inputs/Button';
+import Combobox from '@/components/inputs/Combobox';
+import CustomPopover from '@/components/inputs/CustomPopover';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
 import TextArea from '@/components/inputs/TextArea';
+import Table from '@/components/table/Table';
+import { seniorManagementPositions } from '@/constants/beneficialOwner.constants';
 import {
+  attachmentColumns,
   beneficialOwnerControlMeans,
   beneficialOwnerControlType,
 } from '@/constants/business.constants';
+import ConfirmActionModal from '@/containers/modals/ConfirmActionModal';
 import { capitalizeString } from '@/helpers/strings';
-import { RootState } from '@/states/store';
+import {
+  setActiveBeneficialOwnerNavigationStep,
+  setCompleteBeneficialOwnerNavigationStep,
+} from '@/states/features/beneficialOwnerSlice';
+import { AppDispatch, RootState } from '@/states/store';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { faEllipsisH, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import moment from 'moment';
-import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const BeneficialOwnershipInformation = () => {
   // STATE VARIABLES
+  const dispatch: AppDispatch = useDispatch();
   const { selectedFounderDetailWithShares } = useSelector(
     (state: RootState) => state.founderDetail
   );
-  const { selectedBeneficialOwner } = useSelector(
+  const { selectedBeneficialOwner, newBeneficialOwner } = useSelector(
     (state: RootState) => state.beneficialOwner
   );
+  const [confirmDeleteAttachment, setConfirmDeleteAttachment] = useState(false);
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+  const [selectedAttachment, setSelectedAttachment] = useState<{
+    fileName: string;
+    attachmentType: string;
+    size: number;
+  } | null>(null);
 
   // REACT HOOK FORM
   const {
@@ -27,6 +52,7 @@ const BeneficialOwnershipInformation = () => {
     watch,
     formState: { errors },
     setValue,
+    handleSubmit,
   } = useForm();
   const {
     beneficialOwnerType,
@@ -60,8 +86,81 @@ const BeneficialOwnershipInformation = () => {
     }
   }, [selectedBeneficialOwner, selectedFounderDetailWithShares, setValue]);
 
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    console.log({
+      ...newBeneficialOwner,
+      ...data,
+    });
+    dispatch(setCompleteBeneficialOwnerNavigationStep('ownership_information'));
+  };
+
+  // ATTACHMENT EXTENDED COLUMNS
+  const attachmentExtendedColumns = [
+    ...attachmentColumns,
+    {
+      header: 'Actions',
+      accessorKey: 'actions',
+      cell: ({
+        row,
+      }: {
+        row: Row<{
+          fileName: string;
+          attachmentType: string;
+          size: number;
+        }>;
+      }) => {
+        return (
+          <CustomPopover
+            trigger={
+              <FontAwesomeIcon
+                icon={faEllipsisH}
+                className="p-1 px-3 rounded-md bg-slate-200 hover:bg-slate-300 cursor-pointer"
+              />
+            }
+          >
+            <menu className="w-full flex flex-col gap-1">
+              <Link
+                to={'#'}
+                className="flex items-center hover:bg-background p-[5px] px-2 rounded-md gap-2 text-[13px]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log(row.original);
+                }}
+              >
+                <FontAwesomeIcon
+                  className="text-[13px] rounded-full p-[6px] bg-primary text-white cursor-pointer"
+                  icon={faEye}
+                />{' '}
+                Preview{' '}
+              </Link>
+              <Link
+                to={'#'}
+                className="flex items-center hover:bg-background p-[5px] px-2 rounded-md gap-2 text-[13px]"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedAttachment(row?.original);
+                  setConfirmDeleteAttachment(true);
+                }}
+              >
+                <FontAwesomeIcon
+                  className="text-[13px] rounded-full p-[6px] bg-red-600 text-white cursor-pointer"
+                  icon={faTrash}
+                />
+                Delete
+              </Link>
+            </menu>
+          </CustomPopover>
+        );
+      },
+    },
+  ];
+
   return (
-    <section className="w-full flex flex-col gap-4">
+    <form
+      className="w-full flex flex-col gap-4"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <fieldset className="grid grid-cols-2 w-full gap-5 justify-between">
         <Controller
           name="registeredDate"
@@ -169,6 +268,10 @@ const BeneficialOwnershipInformation = () => {
                   type="number"
                   placeholder="Extent of shares"
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setValue('extentOfVoting', e.target.value);
+                  }}
                 />
                 {errors?.extentOfShare && (
                   <span className="text-red-500 text-[12px]">
@@ -192,7 +295,7 @@ const BeneficialOwnershipInformation = () => {
                     controlType === 'DIRECT' ||
                     !!selectedFounderDetailWithShares
                   }
-                  readOnly={!!selectedFounderDetailWithShares}
+                  readOnly={!!selectedFounderDetailWithShares || extentOfShare}
                   placeholder="Extent of voting rights"
                   {...field}
                 />
@@ -210,10 +313,16 @@ const BeneficialOwnershipInformation = () => {
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
-                  <Input
+                  <Combobox
+                    placeholder="Select Senior Management Position"
+                    options={seniorManagementPositions?.map((position) => {
+                      return {
+                        label: capitalizeString(position),
+                        value: position,
+                      };
+                    })}
                     required
                     label="Senior Management Position"
-                    placeholder="Senior Management Position"
                     {...field}
                   />
                   {errors?.seniorManagementPosition && (
@@ -272,6 +381,17 @@ const BeneficialOwnershipInformation = () => {
                       label="Identity Card"
                       type="file"
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        const files = e.target.files;
+                        if (files) {
+                          setAttachmentFiles((prev) => {
+                            return prev
+                              ? [...prev, ...Array.from(files)]
+                              : Array.from(files);
+                          });
+                        }
+                      }}
                     />
                     {errors?.seniorManagementAttachment && (
                       <span className="text-red-500 text-[12px]">
@@ -301,6 +421,17 @@ const BeneficialOwnershipInformation = () => {
                         label="Shareholder Attachment"
                         type="file"
                         {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          const files = e.target.files;
+                          if (files) {
+                            setAttachmentFiles((prev) => {
+                              return prev
+                                ? [...prev, ...Array.from(files)]
+                                : Array.from(files);
+                            });
+                          }
+                        }}
                       />
                       {errors?.extentOfShareAttachment && (
                         <span className="text-red-500 text-[12px]">
@@ -329,6 +460,17 @@ const BeneficialOwnershipInformation = () => {
                       label="Control Means Attachment"
                       type="file"
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        const files = e.target.files;
+                        if (files) {
+                          setAttachmentFiles((prev) => {
+                            return prev
+                              ? [...prev, ...Array.from(files)]
+                              : Array.from(files);
+                          });
+                        }
+                      }}
                     />
                     {errors?.significantInfluenceAttachment && (
                       <span className="text-red-500 text-[12px]">
@@ -354,6 +496,17 @@ const BeneficialOwnershipInformation = () => {
                     type="file"
                     multiple
                     {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      const files = e.target.files;
+                      if (files) {
+                        setAttachmentFiles((prev) => {
+                          return prev
+                            ? [...prev, ...Array.from(files)]
+                            : Array.from(files);
+                        });
+                      }
+                    }}
                   />
                 </label>
               );
@@ -361,7 +514,55 @@ const BeneficialOwnershipInformation = () => {
           />
         </fieldset>
       </menu>
-    </section>
+      {(attachmentFiles?.length ?? 0) > 0 && (
+        <Table
+          columns={
+            attachmentExtendedColumns as ColumnDef<{
+              fileName: string;
+              attachmentType: string;
+              size: number;
+            }>[]
+          }
+          data={Array.from(attachmentFiles ?? [])?.map((file) => {
+            return {
+              fileName: file.name,
+              attachmentType: file.type,
+              size: file.size,
+            };
+          })}
+        />
+      )}
+      <menu className="w-full flex items-center gap-3 justify-between">
+        <Button
+          value={'Back'}
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(
+              setActiveBeneficialOwnerNavigationStep('professional_address')
+            );
+          }}
+        />
+        <Button value={'Save'} primary submit />
+      </menu>
+      <ConfirmActionModal
+        actionType="delete"
+        isOpen={confirmDeleteAttachment}
+        onClose={(e) => {
+          if (e) e.preventDefault();
+          setConfirmDeleteAttachment(false);
+        }}
+        onConfirm={(e) => {
+          if (e) e.preventDefault();
+          setAttachmentFiles((prev) => {
+            return prev.filter(
+              (file) => file?.name !== selectedAttachment?.fileName
+            );
+          });
+          setConfirmDeleteAttachment(false);
+        }}
+        message={`Are you sure you want to delete this ${selectedAttachment?.fileName} attachment? You can always re-upload it.`}
+      />
+    </form>
   );
 };
 

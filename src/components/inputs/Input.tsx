@@ -129,7 +129,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           >
             {placeholder || 'Choose file'}
             {multiple ? 's' : ''}{' '}
-            {required && <span className="text-red-600">*</span>}
+            {required}
           </button>
           <input
             ref={hiddenFileInput as LegacyRef<HTMLInputElement> | undefined}

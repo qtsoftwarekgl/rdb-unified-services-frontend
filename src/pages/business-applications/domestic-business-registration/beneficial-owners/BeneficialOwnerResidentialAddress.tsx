@@ -1,3 +1,5 @@
+import Button from '@/components/inputs/Button';
+import Combobox from '@/components/inputs/Combobox';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
 import { countriesList } from '@/constants/countries';
@@ -8,7 +10,12 @@ import {
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
 } from '@/states/api/businessRegApiSlice';
-import { AppDispatch } from '@/states/store';
+import {
+  setActiveBeneficialOwnerNavigationStep,
+  setCompleteBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
+} from '@/states/features/beneficialOwnerSlice';
+import { AppDispatch, RootState } from '@/states/store';
 import {
   Cell,
   District,
@@ -17,7 +24,8 @@ import {
   Village,
 } from '@/types/locationTypes';
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -25,6 +33,7 @@ import { toast } from 'react-toastify';
 const BeneficialOwnerResidentialAddress = () => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
+  const { newBeneficialOwner } = useSelector((state: RootState) => state.beneficialOwner);
   const [selectedProvince, setSelectedProvince] = useState<number | undefined>(
     undefined
   );
@@ -48,6 +57,7 @@ const BeneficialOwnerResidentialAddress = () => {
     control,
     formState: { errors },
     watch,
+    handleSubmit,
   } = useForm();
 
   const { nationality } = watch();
@@ -223,9 +233,22 @@ const BeneficialOwnerResidentialAddress = () => {
     }
   }, [villagesData?.data, villagesError, villagesIsError, villagesIsSuccess]);
 
+  // HANDLE FORM SUBMISSION
+  const onSubmit = (data: FieldValues) => {
+    dispatch(setNewBeneficialOwner({
+      ...newBeneficialOwner,
+      ...data
+    }));
+    dispatch(setCompleteBeneficialOwnerNavigationStep('residential_address'));
+    dispatch(setActiveBeneficialOwnerNavigationStep('professional_address'));
+  };
+
   return (
-    <section className="w-full flex flex-col gap-5">
-      <menu className="w-full flex flex-col gap-6">
+    <form
+      className="w-full flex flex-col gap-5"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <fieldset className="w-full flex flex-col gap-6">
         <h3 className="text-center uppercase text-primary text-lg font-medium">
           Residential address
         </h3>
@@ -236,7 +259,8 @@ const BeneficialOwnerResidentialAddress = () => {
             rules={{ required: 'Select nationality' }}
             render={({ field }) => {
               return (
-                <Select
+                <label className='w-full flex flex-col gap-1'>
+                  <Combobox
                   {...field}
                   required
                   label={'Nationality'}
@@ -248,6 +272,12 @@ const BeneficialOwnerResidentialAddress = () => {
                     };
                   })}
                 />
+                {errors?.nationality && (
+                  <p className="text-red-500 text-[13px]">
+                    {String(errors?.nationality?.message)}
+                    </p>
+                )}
+                </label>
               );
             }}
           />
@@ -467,6 +497,11 @@ const BeneficialOwnerResidentialAddress = () => {
                     placeholder="Street number"
                     {...field}
                   />
+                  {errors?.streetNumber && (
+                    <p className="text-red-500 text-[13px]">
+                      {String(errors?.streetNumber.message)}
+                    </p>
+                  )}
                 </label>
               );
             }}
@@ -502,8 +537,20 @@ const BeneficialOwnerResidentialAddress = () => {
             }}
           />
         </fieldset>
+      </fieldset>
+      <menu className="w-full flex items-center gap-3 justify-between">
+        <Button
+          value={'Back'}
+          onClick={(e) => {
+            e.preventDefault();
+            dispatch(
+              setActiveBeneficialOwnerNavigationStep('personal_information')
+            );
+          }}
+        />
+        <Button value={'Next'} primary submit />
       </menu>
-    </section>
+    </form>
   );
 };
 

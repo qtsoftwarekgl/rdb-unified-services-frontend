@@ -84,6 +84,7 @@ const founderDetailSlice = createSlice({
       state.deleteFounderModal = action.payload;
     },
     setSelectedFounderDetailWithShares: (state, action) => {
+      console.log(action.payload);
       state.selectedFounderDetailWithShares = action.payload;
     },
     setFounderWithSharesDetailsModal: (state, action) => {
