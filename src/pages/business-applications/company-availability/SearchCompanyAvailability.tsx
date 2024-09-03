@@ -113,7 +113,7 @@ const SearchCompanyAvailability = () => {
                       />
                       {isLoading?.search && (
                         <p className="flex text-[13px] items-center gap-1">
-                          <Loader size={4} /> Looking for name availability
+                          <Loader className="text-primary" /> Looking for name availability
                         </p>
                       )}
                       {isLoading?.success && (

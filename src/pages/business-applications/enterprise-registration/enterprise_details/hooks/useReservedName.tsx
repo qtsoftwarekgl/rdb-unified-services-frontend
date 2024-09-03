@@ -49,28 +49,28 @@ export default function useReservedName(){
         fetchReservedNameByCode,
     ] = useLazyFetchReservedNameByCodeQuery();
     
-    const companyName = methods?.getValues()?.companyName;
+    const enterpriseBusinessName = methods?.getValues()?.enterpriseBusinessName;
 
     useEffect(() => {
         if(businessDetails && businessDetails.reservationId){
             dispatch(setShowSelectReservedName(false))
         }
-        else if(businessDetails !== undefined && businessDetails !== null && !companyName && !skipReservedName && !businessDetails?.companyName){
+        else if(businessDetails !== undefined && businessDetails !== null && !enterpriseBusinessName && !skipReservedName && !businessDetails?.enterpriseBusinessName){
             dispatch(setShowSelectReservedName(true))
         } else {
             // dispatch(setShowSelectReservedName(false))
         }
-    }, [companyName, skipReservedName, dispatch, businessDetails])
+    }, [enterpriseBusinessName, skipReservedName, dispatch, businessDetails])
 
-    const setCompanyName = (name: ReservedName) => {
+    const setEnterpriseBusinessName = (name: ReservedName) => {
         dispatch(setSelectedReservedName(name))
-        methods?.clearErrors('companyName')
-        methods?.setValue('companyName', name.name)
+        methods?.clearErrors('enterpriseBusinessName')
+        methods?.setValue('enterpriseBusinessName', name.name)
         methods?.setValue('reservationId', name.id)
     }
 
     const handleSkip = () => {
-        methods?.setValue('companyName', '')
+        methods?.setValue('enterpriseBusinessName', '')
         methods?.setValue('reservationId', null)
         dispatch(setShowSelectReservedName(false))
         dispatch(setSelectedReservedName(null))
@@ -92,7 +92,7 @@ export default function useReservedName(){
     const onSubmit =  async (data: {code: string}) => {
         const nameAlreadyFetched = reservedNames.find((name: ReservedName) => name.code === data.code)
         if(nameAlreadyFetched){
-            setCompanyName(nameAlreadyFetched.name)
+            setEnterpriseBusinessName(nameAlreadyFetched.name)
             return;
         }
         else {
@@ -109,8 +109,8 @@ export default function useReservedName(){
             }
 
             dispatch(setReservedNames(payload))
-            // setCompanyName(response.data.data.data[0].name)
-            setCompanyName(response.data.data.data[0].name)
+            // setEnterpriseBusinessName(response.data.data.data[0].name)
+            setEnterpriseBusinessName(response.data.data.data[0].name)
 
         }
         else{
@@ -124,7 +124,7 @@ export default function useReservedName(){
             if(!businessDetails?.reservationId) return;
             const selectedReservedName = reservedNames.find((name: ReservedName) => name.id === businessDetails.reservationId)
             if(selectedReservedName){
-                setCompanyName(selectedReservedName)
+                setEnterpriseBusinessName(selectedReservedName)
             }
             // get reservation name by id and set it as selected also add it to the reserved names
             // fetchReservedNameById({id: businessDetails.reservationId})
@@ -147,7 +147,7 @@ export default function useReservedName(){
     return {
         showSelectReservedName,
         setShowSelectReservedName,
-        setCompanyName,
+        setEnterpriseBusinessName,
         handleSkip,
         skipReservedName,
         reservedNames,

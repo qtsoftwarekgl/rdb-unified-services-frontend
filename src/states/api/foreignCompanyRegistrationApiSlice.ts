@@ -39,6 +39,7 @@ export const foreignCompanyRegistrationApiSlice = createApi({
         companyCategory,
         position,
         hasArticlesOfAssociation,
+        reservationId,
       }) => {
         return {
           url: `/details?businessId=${businessId}`,
@@ -49,6 +50,7 @@ export const foreignCompanyRegistrationApiSlice = createApi({
             companyCategory,
             position,
             hasArticlesOfAssociation,
+            reservationId
           },
         };
       },

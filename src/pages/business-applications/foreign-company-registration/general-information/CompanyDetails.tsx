@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
+import { Controller, FieldValues, FormProvider, useForm } from "react-hook-form";
 import Input from "../../../../components/inputs/Input";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Loader from "../../../../components/Loader";
 import Select from "../../../../components/inputs/Select";
 import { companyPositions } from "../../../../constants/businessRegistration";
@@ -34,7 +33,10 @@ import {
 } from "@/states/features/navigationFlowSlice";
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ApplicationStatus } from "@/enums/ApplicationStatus";
+import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import useReservedName from "../../domestic-business-registration/general-information/hooks/useReservedName";
+import SelectReservedName from "../../domestic-business-registration/general-information/SelectReservedName";
+import { setShowSelectReservedName } from "@/states/ui/businessRegistrationUISlice";
 
 type CompanyDetailsProps = {
   businessId: businessId;
@@ -42,6 +44,7 @@ type CompanyDetailsProps = {
 
 const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   // REACT HOOK FORM
+  const methods = useForm();
   const {
     handleSubmit,
     control,
@@ -50,7 +53,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     clearErrors,
     reset,
     watch,
-  } = useForm();
+  } = methods;
+
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -66,6 +70,11 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
   const { file, fileName, attachmentType } = useSelector(
     (state: RootState) => state.resolutionAttachment
   );
+
+  const {selectedReservedName} = useSelector((state: RootState) => state.businessRegistrationUI);
+  const {reservedNames} = useSelector((state: RootState) => state.nameReservation);
+  const {handleSetDefaultSelectedReservedName} = useReservedName();
+
 
   // GET BUSINESS DETAILS
   const [
@@ -122,6 +131,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
     }
   }, [businessId, getBusinessDetails]);
 
+  useEffect(() => {
+    if(businessDetails && reservedNames && reservedNames.length > 0){
+      handleSetDefaultSelectedReservedName(businessDetails, reservedNames);
+    }
+  },[businessDetails, reservedNames])
+
   // HANDLE BUSINESS DETAILS DATA RESPONSE
   useEffect(() => {
     if (businessIsError) {
@@ -164,6 +179,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
       companyCategory: data.companyCategory,
       position: data.position,
       hasArticlesOfAssociation: data.hasArticlesOfAssociation === "yes",
+      reservationId: data?.reservationId || null
     });
   };
 
@@ -242,9 +258,10 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           <Loader />
         </figure>
       )}
+      <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset className="flex flex-col w-full gap-6">
-          <menu className="flex items-start w-full gap-6">
+          <menu className="flex items-start w-2/4 gap-6">
             <Controller
               name="companyName"
               control={control}
@@ -258,10 +275,12 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
+                      readOnly={selectedReservedName ? true : false}
                       label="Search company name"
                       required
                       suffixIconPrimary
-                      suffixIcon={faSearch}
+                      // suffixIcon={faSearch}
+                      showSearchSuffix={!selectedReservedName}
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
@@ -327,6 +346,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
                           </p>
                         )}
                     </menu>
+                    <p className="text-xs text-primary cursor-pointer hover:underline" onClick={() => dispatch(setShowSelectReservedName(true))}> {`${selectedReservedName ? "Change" : "Use"} reserved name`} </p>
                     {errors.companyName && (
                       <p className="text-xs text-red-500">
                         {String(errors.companyName.message)}
@@ -337,7 +357,7 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
               }}
             />
           </menu>
-          <menu className="flex items-start w-full gap-6">
+          <menu className="flex items-start w-2/4 gap-6">
             <Controller
               control={control}
               name="position"
@@ -430,6 +450,8 @@ const CompanyDetails: FC<CompanyDetailsProps> = ({ businessId }) => {
           </menu>
         </fieldset>
       </form>
+      <SelectReservedName/>
+      </FormProvider>
       <SimilarBusinessNames businessName={watch("companyName")} />
     </section>
   );
