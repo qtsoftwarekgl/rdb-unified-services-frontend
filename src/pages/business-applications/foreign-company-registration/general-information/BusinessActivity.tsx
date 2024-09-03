@@ -40,7 +40,8 @@ import {
 import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
 import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
+import Combobox from "@/components/inputs/Combobox";
 
 interface BusinessActivityProps {
   businessId: businessId;
@@ -331,11 +332,9 @@ const BusinessActivities = ({
                 render={({ field }) => {
                   return (
                     <label className="flex flex-col items-start w-full gap-1">
-                      <Select
+                      <Combobox
                         label="Select sector"
-                        searchable
                         required
-                        defaultValue={String(businessActivitiesList[0].code)}
                         options={businessActivitiesList?.map((activity) => {
                           return {
                             label: activity.description,

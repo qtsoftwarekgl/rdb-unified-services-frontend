@@ -43,7 +43,7 @@ import {
   setForeignBusinessCompletedStep,
 } from "@/states/features/foreignCompanyRegistrationSlice";
 import { businessId } from "@/types/models/business";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 export interface business_beneficial_owners {
   no: number;

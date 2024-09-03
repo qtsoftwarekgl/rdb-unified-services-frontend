@@ -29,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Loader from "@/components/Loader";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 const AmendCompanyDetails = () => {
   // STATE VARIABLES

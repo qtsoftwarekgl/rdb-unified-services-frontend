@@ -2,7 +2,7 @@ import Modal from '@/components/Modal';
 import { getCountryName } from '@/constants/countries';
 import { getGenderLabel } from '@/constants/inputs.constants';
 import { capitalizeString, formatDate } from '@/helpers/strings';
-import { setBeneficialOwnerDetailsModal } from '@/states/features/beneficialOwnerSlice';
+import { setBeneficialOwnerDetailsModal, setSelectedBeneficialOwner } from '@/states/features/beneficialOwnerSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,7 @@ const BeneficialOwnerDetails = () => {
       isOpen={beneficialOwnerDetailsModal}
       onClose={() => {
         dispatch(setBeneficialOwnerDetailsModal(false));
+        dispatch(setSelectedBeneficialOwner(undefined));
       }}
       heading={`${selectedBeneficialOwner?.personDetail?.firstName || ''} ${
         selectedBeneficialOwner?.personDetail?.lastName || ''

@@ -28,7 +28,7 @@ import {
   createNavigationFlowThunk,
 } from "@/states/features/navigationFlowSlice";
 import { UnknownAction } from "@reduxjs/toolkit";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 
 type EnterprisePreviewSubmissionProps = {
   businessId: businessId;

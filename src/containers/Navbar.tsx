@@ -44,7 +44,7 @@ const Navbar = ({ className }: Props) => {
   const navDropdown = [
     {
       title: "Profile",
-      link: "/user-profile",
+      link: "/user/profile",
       icon: faUser,
     },
     {

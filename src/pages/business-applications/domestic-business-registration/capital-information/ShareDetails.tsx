@@ -1,31 +1,29 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import Button from "../../../../components/inputs/Button";
-import Loader from "../../../../components/Loader";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch } from "react-redux";
+import { useEffect, useMemo } from 'react';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import Input from '../../../../components/inputs/Input';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch } from 'react-redux';
+import { businessId } from '@/types/models/business';
 import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-} from "../../../../states/features/businessRegistrationSlice";
-import { businessId } from "@/types/models/business";
-import { useCreateShareDetailsMutation } from "@/states/api/businessRegApiSlice";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+  useCreateShareDetailsMutation,
+  useLazyFetchShareDetailsQuery,
+} from '@/states/api/businessRegApiSlice';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+} from '@/states/features/navigationFlowSlice';
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
-import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+} from '@/helpers/business.helpers';
+import ResolutionAttachment from '@/components/resolution-attachment/ResolutionAttachment';
+import { uploadAmendmentAttachmentThunk } from '@/states/features/businessSlice';
+import { ApplicationStatus } from '@/enums/ApplicationStatus';
 
 type ShareDetailsProps = {
   businessId: businessId;
@@ -44,12 +42,93 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
     watch,
   } = useForm();
 
+  const {
+    ordinaryShareQuantity,
+    preferenceShareQuantity,
+    nonVotingShareQuantity,
+    redeemableShareQuantity,
+    irredeemableShareQuantity,
+    ordinaryShareTotalAmount,
+    preferenceShareTotalAmount,
+    nonVotingShareTotalAmount,
+    redeemableShareTotalAmount,
+    irredeemableShareTotalAmount,
+    companyCapital,
+  } = watch();
+
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const disableForm = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+
+  // INITIALIZE FETCH SHARE DETAILS QUERY
+  const [
+    fetchShareDetails,
+    {
+      data: shareDetailsData,
+      isFetching: shareDetailsIsFetching,
+      error: shareDetailsError,
+      isError: shareDetailsIsError,
+      isSuccess: shareDetailsIsSuccess,
+    },
+  ] = useLazyFetchShareDetailsQuery();
+
+  // TABLE ROWS
+  const tableRows = useMemo(
+    () => [
+      { name: 'ordinaryShare', label: 'Ordinary Share' },
+      { name: 'preferenceShare', label: 'Preference Share' },
+      { name: 'nonVotingShare', label: 'Non-voting Share' },
+      { name: 'redeemableShare', label: 'Redeemable Share' },
+      { name: 'irredeemableShare', label: 'Irredeemable Share' },
+    ],
+    []
+  );
+
+  // FETCH SHARE DETAILS
+  useEffect(() => {
+    if (businessId) {
+      fetchShareDetails({ businessId });
+    }
+  }, [businessId, fetchShareDetails]);
+
+  // HANDLE FETCH SHARE DETAILS RESPONSE
+  useEffect(() => {
+    if (shareDetailsIsError) {
+      if ((shareDetailsError as ErrorResponse)?.status === 500) {
+        toast.error('An error occurred, please try again later');
+      } else {
+        toast.error((shareDetailsError as ErrorResponse)?.data?.message);
+      }
+    } else if (shareDetailsIsSuccess) {
+      if (shareDetailsData) {
+        tableRows.forEach((row) => {
+          const shareDetail = shareDetailsData?.data.find(
+            (detail: {
+              shareTypeCD: string;
+              shareQuantity: number;
+              perValue: number;
+              totalAmount: number;
+            }) => detail.shareTypeCD === row.label
+          );
+          if (shareDetail) {
+            setValue(`${row.name}Quantity`, shareDetail.shareQuantity);
+            setValue(`${row.name}PerValue`, shareDetail.perValue);
+            setValue(`${row.name}TotalAmount`, shareDetail.totalAmount);
+          }
+        });
+      }
+    }
+  }, [
+    setValue,
+    shareDetailsData,
+    shareDetailsError,
+    shareDetailsIsError,
+    shareDetailsIsSuccess,
+    tableRows,
+  ]);
 
   // Resolution attachment
   const { file, fileName, attachmentType } = useSelector(
@@ -70,63 +149,62 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
 
   // TABLE HEADERS
   const tableHeaders = [
-    "Share type",
-    "Number of shares",
-    "Per Value",
-    "Total Value",
-  ];
-
-  // TABLE ROWS
-  const tableRows = [
-    { name: "ordinaryShare", label: "Ordinary Share" },
-    { name: "preferenceShare", label: "Preference Share" },
-    { name: "nonVotingShare", label: "Non-voting Share" },
-    { name: "redeemableShare", label: "Redeemable Share" },
-    { name: "irredeemableShare", label: "Irredeemable Share" },
+    'Share type',
+    'Number of shares',
+    'Per Value',
+    'Total Value',
   ];
 
   // HANDLE CAPITAL SHARES OVERFLOW
   useEffect(() => {
     setValue(
-      "totalShares",
+      'totalShares',
       tableRows
         ?.map((row) => watch(`${row.name}Quantity`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
   }, [
-    watch("ordinaryShareQuantity"),
-    watch("preferenceShareQuantity"),
-    watch("nonVotingShareQuantity"),
-    watch("redeemableShareQuantity"),
-    watch("irredeemableShareQuantity"),
+    ordinaryShareQuantity,
+    preferenceShareQuantity,
+    nonVotingShareQuantity,
+    redeemableShareQuantity,
+    irredeemableShareQuantity,
+    setValue,
+    tableRows,
+    watch,
   ]);
 
   // HANDLE CAPITAL TOTAL OVERFLOW
   useEffect(() => {
     setValue(
-      "totalAmount",
+      'totalAmount',
       tableRows
         ?.map((row) => watch(`${row.name}TotalAmount`))
         ?.filter((row) => Number(row) === row)
         ?.reduce((a, b) => a + b, 0)
     );
-    setValue("companyCapital", watch("totalAmount"));
-    if (Number(watch("totalAmount")) > Number(watch("companyCapital"))) {
-      setError("totalAmount", {
-        type: "manual",
-        message: "Share values cannot exceed total company capital",
+    setValue('companyCapital', watch('totalAmount'));
+    if (Number(watch('totalAmount')) > Number(watch('companyCapital'))) {
+      setError('totalAmount', {
+        type: 'manual',
+        message: 'Share values cannot exceed total company capital',
       });
     } else {
-      clearErrors("totalAmount");
+      clearErrors('totalAmount');
     }
   }, [
-    watch("ordinaryShareTotalAmount"),
-    watch("preferenceShareTotalAmount"),
-    watch("nonVotingShareTotalAmount"),
-    watch("redeemableShareTotalAmount"),
-    watch("irredeemableShareTotalAmount"),
-    watch("companyCapital"),
+    ordinaryShareTotalAmount,
+    preferenceShareTotalAmount,
+    nonVotingShareTotalAmount,
+    redeemableShareTotalAmount,
+    irredeemableShareTotalAmount,
+    companyCapital,
+    setValue,
+    tableRows,
+    watch,
+    setError,
+    clearErrors,
   ]);
 
   // HANDLE SUBMIT
@@ -147,7 +225,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
   useEffect(() => {
     if (createShareDetailsIsError) {
       if ((createShareDetailsError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred, please try again later");
+        toast.error('An error occurred, please try again later');
       } else {
         toast.error((createShareDetailsError as ErrorResponse)?.data?.message);
       }
@@ -170,7 +248,7 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            "Share Details"
+            'Share Details'
           )?.id,
         })
       );
@@ -179,175 +257,215 @@ const ShareDetails = ({ businessId, applicationStatus }: ShareDetailsProps) => {
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            "Shareholders"
+            'Shareholders'
           ),
           isActive: true,
         })
       );
     }
-  }, [createShareDetailsIsSuccess]);
+  }, [
+    applicationStatus,
+    attachmentType,
+    businessId,
+    businessNavigationFlowsList,
+    createShareDetailsData?.data?.amendmentId,
+    createShareDetailsError,
+    createShareDetailsIsError,
+    createShareDetailsIsSuccess,
+    dispatch,
+    file,
+    fileName,
+    navigationFlowMassList,
+  ]);
 
   return (
     <section className="flex flex-col w-full gap-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-        <fieldset className="flex flex-col w-full gap-6" disabled={disableForm}>
-          <Controller
-            name="companyCapital"
-            control={control}
-            rules={{ required: "Total company capital is required" }}
-            render={({ field }) => {
-              return (
-                <label className="w-[49%] flex flex-col gap-1">
-                  <Input
-                    prefixText="RWF"
-                    required
-                    label="Total company capital"
-                    labelClassName="!hidden"
-                    {...field}
-                    readOnly
-                  />
-                  <p className="text-secondary text-[12px] hidden">
-                    The amount is derived from the total value of available
-                    shares
-                  </p>
-                  {errors?.companyCapital && (
-                    <p className="text-[13px] text-red-600">
-                      {String(errors?.companyCapital?.message)}
-                    </p>
-                  )}
-                </label>
-              );
-            }}
-          />
-          <table className="flex flex-col w-full gap-3">
-            <thead className="flex items-center justify-between w-full">
-              {tableHeaders?.map((header, index) => {
-                return (
-                  <tr
-                    key={index}
-                    className="flex flex-row w-full gap-3 p-3 font-normal text-center text-white bg-primary"
-                  >
-                    <th className="font-medium text-center">{header}</th>
-                  </tr>
-                );
-              })}
-            </thead>
-            <tbody className="flex flex-col items-center justify-between w-full gap-4 p-2">
-              {tableRows?.map((row, index) => {
-                return (
-                  <tr key={index} className="flex flex-row w-full gap-3">
-                    <h4 className="w-full text-[15px]">{row?.label}</h4>
-                    <td className="flex flex-col w-full gap-1">
-                      <Input
-                        required
-                        type="number"
-                        onChange={(e) => {
-                          if (Number(e.target.value) < 0) {
-                            return;
-                          }
-                          setValue(
-                            `${row.name}Quantity`,
-                            Number(e.target.value)
-                          );
-                          setValue(
-                            `${row.name}TotalAmount`,
-                            Number(watch(`${row.name}PerValue`)) *
-                              Number(e.target.value)
-                          );
-                        }}
-                      />
-                    </td>
-                    <td className="flex flex-col w-full gap-1">
-                      <Input
-                        required
-                        type="number"
-                        onChange={(e) => {
-                          if (Number(e.target.value) < 0) {
-                            return;
-                          }
-                          setValue(
-                            `${row.name}PerValue`,
-                            Number(e.target.value)
-                          );
-                          setValue(
-                            `${row.name}TotalAmount`,
-                            Number(watch(`${row.name}Quantity`)) *
-                              Number(e.target.value)
-                          );
-                        }}
-                      />
-                    </td>
-                    <td className="flex flex-col w-full gap-1">
-                      <Input
-                        required
-                        readOnly
-                        value={watch(`${row.name}TotalAmount`)}
-                        type="number"
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot className="flex flex-row items-center justify-between w-full">
-              <tr className="flex flex-row items-center justify-between w-full gap-3 p-3">
-                <h2 className="w-full font-semibold uppercase">Total</h2>
-                <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch("totalShares")} />
-                </td>
-                <span className="w-full"></span>
-
-                <td className="flex flex-col w-full gap-1">
-                  <Input required readOnly value={watch("totalAmount")} />
-                </td>
-              </tr>
-            </tfoot>
-            {errors?.totalAmount && (
-              <caption className="w-full text-[14px] text-red-600 caption-bottom">
-                {String(errors?.totalAmount?.message)}
-              </caption>
-            )}
-          </table>
-          {applicationStatus === ApplicationStatus.IsAmending && (
-            <ResolutionAttachment errors={errors} control={control} />
-          )}
-        </fieldset>
-        {[
-          ApplicationStatus.Inprogress,
-          ApplicationStatus.IsAmending,
-          ApplicationStatus.Forcorrection,
-        ].includes(applicationStatus as ApplicationStatus) && (
-          <menu
-            className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+      {shareDetailsIsFetching ? (
+        <figure className="w-full min-h-[60vh] flex items-center justify-center">
+          <Loader className="text-primary" />
+        </figure>
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+          <fieldset
+            className="flex flex-col w-full gap-6"
+            disabled={disableForm}
           >
-            <Button
-              value="Back"
-              disabled={disableForm}
-              onClick={(e) => {
-                e.preventDefault();
-                dispatch(
-                  createNavigationFlowThunk({
-                    businessId,
-                    massId: findNavigationFlowMassIdByStepName(
-                      navigationFlowMassList,
-                      "Business Activity & VAT"
-                    ),
-                    isActive: true,
-                  })
+            <Controller
+              name="companyCapital"
+              control={control}
+              rules={{ required: 'Total company capital is required' }}
+              render={({ field }) => {
+                return (
+                  <label className="w-[49%] flex flex-col gap-1">
+                    <Input
+                      prefixText="RWF"
+                      required
+                      label="Total company capital"
+                      labelClassName="!hidden"
+                      {...field}
+                      readOnly
+                    />
+                    <p className="text-secondary text-[12px] hidden">
+                      The amount is derived from the total value of available
+                      shares
+                    </p>
+                    {errors?.companyCapital && (
+                      <p className="text-[13px] text-red-600">
+                        {String(errors?.companyCapital?.message)}
+                      </p>
+                    )}
+                  </label>
                 );
               }}
             />
-            <Button
-              value={
-                createShareDetailsIsLoading ? <Loader /> : "Save & Continue"
-              }
-              primary
-              submit
-              disabled={Object.keys(errors)?.length > 0 || disableForm}
-            />
-          </menu>
-        )}
-      </form>
+            <table className="flex flex-col w-full gap-3">
+              <thead className="flex items-center justify-between w-full">
+                {tableHeaders?.map((header, index) => {
+                  return (
+                    <tr
+                      key={index}
+                      className="flex flex-row w-full gap-3 p-3 font-normal text-center text-white bg-primary"
+                    >
+                      <th className="font-medium text-center">{header}</th>
+                    </tr>
+                  );
+                })}
+              </thead>
+              <tbody className="flex flex-col items-center justify-between w-full gap-4 p-2">
+                {tableRows?.map((row, index) => {
+                  return (
+                    <tr key={index} className="flex flex-row w-full gap-3">
+                      <h4 className="w-full text-[15px]">{row?.label}</h4>
+                      <td className="flex flex-col w-full gap-1">
+                        <Controller
+                          control={control}
+                          name={`${row.name}Quantity`}
+                          render={({ field }) => {
+                            return (
+                              <Input
+                                required
+                                type="number"
+                                {...field}
+                                onChange={(e) => {
+                                  if (Number(e.target.value) < 0) {
+                                    return;
+                                  }
+                                  setValue(
+                                    `${row.name}Quantity`,
+                                    Number(e.target.value)
+                                  );
+                                  setValue(
+                                    `${row.name}TotalAmount`,
+                                    Number(watch(`${row.name}PerValue`)) *
+                                      Number(e.target.value)
+                                  );
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </td>
+                      <td className="flex flex-col w-full gap-1">
+                        <Controller
+                          name={`${row.name}PerValue`}
+                          control={control}
+                          render={({ field }) => {
+                            return (
+                              <Input
+                                required
+                                {...field}
+                                type="number"
+                                onChange={(e) => {
+                                  if (Number(e.target.value) < 0) {
+                                    return;
+                                  }
+                                  setValue(
+                                    `${row.name}PerValue`,
+                                    Number(e.target.value)
+                                  );
+                                  setValue(
+                                    `${row.name}TotalAmount`,
+                                    Number(watch(`${row.name}Quantity`)) *
+                                      Number(e.target.value)
+                                  );
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      </td>
+                      <td className="flex flex-col w-full gap-1">
+                        <Input
+                          required
+                          readOnly
+                          value={watch(`${row.name}TotalAmount`)}
+                          type="number"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot className="flex flex-row items-center justify-between w-full">
+                <tr className="flex flex-row items-center justify-between w-full gap-3 p-3">
+                  <h2 className="w-full font-semibold uppercase">Total</h2>
+                  <td className="flex flex-col w-full gap-1">
+                    <Input required readOnly value={watch('totalShares')} />
+                  </td>
+                  <span className="w-full"></span>
+
+                  <td className="flex flex-col w-full gap-1">
+                    <Input required readOnly value={watch('totalAmount')} />
+                  </td>
+                </tr>
+              </tfoot>
+              {errors?.totalAmount && (
+                <caption className="w-full text-[14px] text-red-600 caption-bottom">
+                  {String(errors?.totalAmount?.message)}
+                </caption>
+              )}
+            </table>
+            {applicationStatus === ApplicationStatus.IsAmending && (
+              <ResolutionAttachment errors={errors} control={control} />
+            )}
+          </fieldset>
+          {[
+            ApplicationStatus.Inprogress,
+            ApplicationStatus.IsAmending,
+            ApplicationStatus.Forcorrection,
+          ].includes(applicationStatus as ApplicationStatus) && (
+            <menu
+              className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
+            >
+              <Button
+                value="Back"
+                disabled={disableForm}
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch(
+                    createNavigationFlowThunk({
+                      businessId,
+                      massId: findNavigationFlowMassIdByStepName(
+                        navigationFlowMassList,
+                        'Business Activity & VAT'
+                      ),
+                      isActive: true,
+                    })
+                  );
+                }}
+              />
+              <Button
+                value={
+                  createShareDetailsIsLoading ? <Loader /> : 'Save & Continue'
+                }
+                primary
+                submit
+                disabled={Object.keys(errors)?.length > 0 || disableForm}
+              />
+            </menu>
+          )}
+        </form>
+      )}
     </section>
   );
 };

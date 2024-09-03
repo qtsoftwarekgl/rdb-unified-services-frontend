@@ -26,8 +26,9 @@ const initialState: {
   selectedBusiness?: Business;
   deleteBusinessModal: boolean;
   nameAvailabilitiesList: {
-    companyName: string;
+    name: string;
     similarity: string | number;
+    status?: string;
   }[];
   similarBusinessNamesModal: boolean;
   businessDetails?: Details;

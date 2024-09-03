@@ -1,47 +1,48 @@
-import { FC, useEffect } from "react";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+import { FC, useEffect } from 'react';
+import { AppDispatch, RootState } from '../../../../states/store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   faCircleInfo,
   faEllipsisVertical,
   faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CapitalDetailsModal from "./AssignShareDetails";
-import Button from "../../../../components/inputs/Button";
-import Loader from "../../../../components/Loader";
-import { useForm } from "react-hook-form";
-import { businessId } from "@/types/models/business";
+} from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import CapitalDetailsModal from './AssignShareDetails';
+import Button from '../../../../components/inputs/Button';
+import Loader from '../../../../components/Loader';
+import { useForm } from 'react-hook-form';
+import { businessId } from '@/types/models/business';
 import {
   useLazyFetchShareDetailsQuery,
   useLazyFetchShareholdersQuery,
-} from "@/states/api/businessRegApiSlice";
-import { ErrorResponse, Link } from "react-router-dom";
-import { toast } from "react-toastify";
+} from '@/states/api/businessRegApiSlice';
+import { ErrorResponse, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import {
   setAssignSharesModal,
   setDeleteFounderModal,
   setFounderDetailsList,
   setSelectedFounderDetail,
-} from "@/states/features/founderDetailSlice";
-import { setShareDetailsList } from "@/states/features/shareDetailSlice";
-import Table from "@/components/table/Table";
-import { FounderDetail } from "@/types/models/personDetail";
-import { capitalizeString } from "@/helpers/strings";
-import { ColumnDef, Row } from "@tanstack/react-table";
+} from '@/states/features/founderDetailSlice';
+import { setConfirmUnassignedSharesModal, setShareDetailsList } from '@/states/features/shareDetailSlice';
+import Table from '@/components/table/Table';
+import { FounderDetail } from '@/types/models/personDetail';
+import { capitalizeString } from '@/helpers/strings';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import {
   completeNavigationFlowThunk,
   createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+} from '@/states/features/navigationFlowSlice';
 import {
   findNavigationFlowByStepName,
   findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import CustomPopover from "@/components/inputs/CustomPopover";
-import CustomTooltip from "@/components/inputs/CustomTooltip";
-import DeleteBusinessFounder from "./DeleteBusinessFounder";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+} from '@/helpers/business.helpers';
+import CustomPopover from '@/components/inputs/CustomPopover';
+import CustomTooltip from '@/components/inputs/CustomTooltip';
+import DeleteBusinessFounder from './DeleteBusinessFounder';
+import { ApplicationStatus } from '@/enums/ApplicationStatus';
+import ConfirmUnAssignedShares from './ConfirmUnAssignedShares';
 
 interface CapitalDetailsProps {
   businessId: businessId;
@@ -66,7 +67,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   const { founderDetailsList } = useSelector(
     (state: RootState) => state.founderDetail
   );
-  const disableForm = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
+  const disableForm = ['IN_REVIEW', 'APPROVED'].includes(applicationStatus);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
@@ -109,11 +110,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   useEffect(() => {
     if (shareholdersIsError) {
       if ((shareholdersError as ErrorResponse).status === 500) {
-        toast.error("An error occurred while fetching shareholders");
+        toast.error('An error occurred while fetching shareholders');
       } else {
         toast.error(
           (shareholdersError as ErrorResponse).data?.message ??
-            "An error occurred while fetching shareholders"
+            'An error occurred while fetching shareholders'
         );
       }
     } else if (shareholdersIsSuccess) {
@@ -131,11 +132,11 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   useEffect(() => {
     if (shareDetailsIsError) {
       if ((shareDetailsError as ErrorResponse).status === 500) {
-        toast.error("An error occurred while fetching share details");
+        toast.error('An error occurred while fetching share details');
       } else {
         toast.error(
           (shareDetailsError as ErrorResponse).data?.message ??
-            "An error occurred while fetching share details"
+            'An error occurred while fetching share details'
         );
       }
     } else if (shareDetailsIsSuccess) {
@@ -152,28 +153,28 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
   // TABLE COLUMNS
   const founderDetailsColumns = [
     {
-      header: "No",
-      accessorKey: "no",
+      header: 'No',
+      accessorKey: 'no',
     },
     {
-      header: "Name",
-      accessorKey: "name",
+      header: 'Name',
+      accessorKey: 'name',
     },
     {
-      header: "Type",
-      accessorKey: "shareHolderType",
+      header: 'Type',
+      accessorKey: 'shareHolderType',
     },
     {
-      header: "Number of shares",
-      accessorKey: "shareQuantity",
+      header: 'Number of shares',
+      accessorKey: 'shareQuantity',
     },
     {
-      header: "Total value",
-      accessorKey: "totalQuantity",
+      header: 'Total value',
+      accessorKey: 'totalQuantity',
     },
     {
-      header: "Action",
-      accessorKey: "action",
+      header: 'Action',
+      accessorKey: 'action',
       cell: ({ row }: { row: Row<FounderDetail> }) => {
         return (
           <CustomPopover
@@ -190,7 +191,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           >
             <menu className="flex flex-col items-start gap-2">
               <Link
-                to={"#"}
+                to={'#'}
                 className="flex items-center gap-2 text-[13px] hover:bg-slate-50 w-full rounded-md p-1 py-2"
                 onClick={(e) => {
                   e.preventDefault();
@@ -205,7 +206,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 Assign shares
               </Link>
               <Link
-                to={"#"}
+                to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
                   dispatch(setSelectedFounderDetail(row?.original));
@@ -216,14 +217,14 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 <FontAwesomeIcon
                   className={`${
                     disableForm
-                      ? "text-secondary cursor-default"
-                      : "text-red-600 cursor-pointer"
+                      ? 'text-secondary cursor-default'
+                      : 'text-red-600 cursor-pointer'
                   } font-bold text-[16px] ease-in-out duration-300 hover:scale-[1.02]`}
                   icon={faTrash}
                   onClick={(e) => {
                     e.preventDefault();
                     if (disableForm) return;
-                    clearErrors("total_shares");
+                    clearErrors('total_shares');
                   }}
                 />
                 Delete
@@ -261,9 +262,9 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 name: `${
                   founder?.personDetail?.firstName ||
                   founder?.organization?.organizationName ||
-                  ""
-                } ${founder?.personDetail?.middleName || ""} ${
-                  founder?.personDetail?.lastName || ""
+                  ''
+                } ${founder?.personDetail?.middleName || ''} ${
+                  founder?.personDetail?.lastName || ''
                 }`,
                 shareHolderType: capitalizeString(founder?.shareHolderType),
               };
@@ -279,7 +280,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
           </figure>
         ) : (
           <>
-            {" "}
+            {' '}
             <menu className="flex flex-col w-full gap-1">
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
                 <h2>Total number of shares</h2>
@@ -313,7 +314,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
                 <h2>Total value of shares</h2>
                 <p>
-                  RWF{" "}
+                  RWF{' '}
                   {shareDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.totalAmount),
                     0
@@ -323,7 +324,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
               <ul className="w-full py-2 text-[14px] rounded-md hover:shadow-sm flex items-center gap-3 justify-between">
                 <h2>Value of issued shares</h2>
                 <p>
-                  RWF{" "}
+                  RWF{' '}
                   {founderDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.totalQuantity),
                     0
@@ -335,7 +336,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   Remaning value of unissued shares
                 </h2>
                 <p className="underline">
-                  RWF{" "}
+                  RWF{' '}
                   {shareDetailsList?.reduce(
                     (acc, curr) => acc + Number(curr?.totalAmount),
                     0
@@ -368,7 +369,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   businessId,
                   massId: findNavigationFlowMassIdByStepName(
                     navigationFlowMassList,
-                    "Shareholders"
+                    'Shareholders'
                   ),
                   isActive: true,
                 })
@@ -376,7 +377,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
             }}
           />
           <Button
-            value={"Save & Continue"}
+            value={'Save & Continue'}
             primary
             disabled={disableForm || Object.keys(errors).length > 0}
             onClick={(e) => {
@@ -386,9 +387,18 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                 (founder) => !founder?.shareQuantity
               );
 
+              const unassignedShares = shareDetailsList?.find(
+                (share) => share?.remainingShares
+              );
+
+              if (unassignedShares) {
+                dispatch(setConfirmUnassignedSharesModal(true));
+                return;
+              }
+
               if (unassignedFounder) {
                 toast.error(
-                  "Please assign shares to all shareholders before proceeding",
+                  'Please assign shares to all shareholders before proceeding',
                   {
                     autoClose: 5000,
                   }
@@ -400,7 +410,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   isCompleted: true,
                   navigationFlowId: findNavigationFlowByStepName(
                     businessNavigationFlowsList,
-                    "Capital Details"
+                    'Capital Details'
                   )?.id,
                 })
               );
@@ -409,7 +419,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
                   businessId,
                   massId: findNavigationFlowMassIdByStepName(
                     navigationFlowMassList,
-                    "Executive Management"
+                    'Executive Management'
                   ),
                   isActive: true,
                 })
@@ -419,6 +429,7 @@ const CapitalDetails: FC<CapitalDetailsProps> = ({
         </menu>
       )}
       <DeleteBusinessFounder />
+      <ConfirmUnAssignedShares businessId={businessId} />
     </section>
   );
 };

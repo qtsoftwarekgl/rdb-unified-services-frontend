@@ -31,10 +31,10 @@ export const createNavigationFlowThunk = createAsyncThunk<
   { businessId: businessId; massId: string; isActive: boolean },
   { dispatch: AppDispatch }
 >('navigationFlow/createNavigationFlow', async (payload, { dispatch }) => {
-    const response = await dispatch(
-      businessRegApiSlice.endpoints.createNavigationFlow.initiate(payload)
-    ).unwrap();
-    return response.data;
+  const response = await dispatch(
+    businessRegApiSlice.endpoints.createNavigationFlow.initiate(payload)
+  ).unwrap();
+  return response.data;
 });
 
 export const completeNavigationFlowThunk = createAsyncThunk<
@@ -42,10 +42,10 @@ export const completeNavigationFlowThunk = createAsyncThunk<
   { isCompleted: boolean; navigationFlowId?: UUID },
   { dispatch: AppDispatch }
 >('navigationFlow/completeNavigationFlow', async (payload, { dispatch }) => {
-    const response = await dispatch(
-      businessRegApiSlice.endpoints.completeNavigationFlow.initiate(payload)
-    ).unwrap();
-    return response.data;
+  const response = await dispatch(
+    businessRegApiSlice.endpoints.completeNavigationFlow.initiate(payload)
+  ).unwrap();
+  return response.data;
 });
 
 const navigationFlowSlice = createSlice({
@@ -72,7 +72,10 @@ const navigationFlowSlice = createSlice({
     },
     setSelectedNavigationFlow: (state, action) => {
       state.selectedBusinessNavigationFlow = action.payload;
-    }
+    },
+    setCompleteNavigationFlowIsSuccess: (state, action) => {
+      state.completeNavigationFlowIsSuccess = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -102,12 +105,12 @@ const navigationFlowSlice = createSlice({
           state.businessNavigationFlowIsLoading = false;
           state.completeNavigationFlowIsSuccess = true;
           state.completeNavigationFlowIsError = false;
-          state.businessNavigationFlowsList = state.businessNavigationFlowsList.map(
-            (navigationFlow) =>
+          state.businessNavigationFlowsList =
+            state.businessNavigationFlowsList.map((navigationFlow) =>
               navigationFlow.id === action.payload.id
                 ? action.payload
                 : navigationFlow
-          );
+            );
         }
       )
       .addCase(completeNavigationFlowThunk.rejected, (state) => {
@@ -125,7 +128,8 @@ export const {
   addBusinessNavigationFlow,
   removeBusinessNavigationFlow,
   setBusinessNavigationFlowIsLoading,
-  setSelectedNavigationFlow
+  setSelectedNavigationFlow,
+  setCompleteNavigationFlowIsSuccess,
 } = navigationFlowSlice.actions;
 
 export default navigationFlowSlice.reducer;

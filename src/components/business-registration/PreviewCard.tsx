@@ -11,7 +11,7 @@ import { UUID } from "crypto";
 import { useCreateNavigationFlowMutation } from "@/states/api/businessRegApiSlice";
 import { toast } from "react-toastify";
 import Loader from "../Loader";
-import { ApplicationStatus } from "@/Enums/ApplicationStatus";
+import { ApplicationStatus } from "@/enums/ApplicationStatus";
 import { faComments, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import {
   setBusinessNavigationFlowsList,

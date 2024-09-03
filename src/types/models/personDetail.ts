@@ -1,6 +1,7 @@
 import { UUID } from 'crypto';
 import { Organization } from './organization';
 import { PersonRole } from './personRole';
+import { ShareDetail } from './shareDetail';
 
 export interface PersonDetail {
   id: UUID;
@@ -53,7 +54,8 @@ export type FounderDetail = {
   verificationCodeExpiration?: number;
   verified?: boolean;
   personDetail?: PersonDetail;
-  organization: Organization
+  organization: Organization;
+  founderShareDetails?: ShareDetail[];
 };
 
 export interface BeneficialOwner extends PersonDetail {
