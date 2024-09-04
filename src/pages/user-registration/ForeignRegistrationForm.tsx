@@ -96,7 +96,7 @@ const ForeignRegistrationForm = ({ isOpen }: ForeignRegistrationFormProps) => {
   const onSubmit = (data: FieldValues) => {
     signup({
       ...data,
-      userType: 'FOREIGN',
+      personIdentType: 'passport',
     });
   };
 
@@ -515,7 +515,7 @@ const ForeignRegistrationForm = ({ isOpen }: ForeignRegistrationFormProps) => {
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-full mx-auto">
+                <label className="flex flex-col items-start w-full gap-1 mx-auto">
                   <Input
                     type={showPassword?.password ? 'text' : 'password'}
                     label={t('password-label')}
@@ -535,7 +535,7 @@ const ForeignRegistrationForm = ({ isOpen }: ForeignRegistrationFormProps) => {
                     }}
                   />
                   {(errors.password || passwordIsValid) && (
-                    <menu className="flex flex-col gap-1 w-full">
+                    <menu className="flex flex-col w-full gap-1">
                       <p className="text-[13px] text-red-500 ml-1">
                         {errors?.password?.message &&
                           String(errors?.password?.message)}
@@ -577,7 +577,7 @@ const ForeignRegistrationForm = ({ isOpen }: ForeignRegistrationFormProps) => {
             }}
             render={({ field }) => {
               return (
-                <label className="flex flex-col items-start gap-1 w-full mx-auto">
+                <label className="flex flex-col items-start w-full gap-1 mx-auto">
                   <Input
                     type={showPassword?.confirmPassword ? 'text' : 'password'}
                     label={t('confirm-password-label')}

@@ -1,18 +1,18 @@
-import Loader from "@/components/Loader";
-import Button from "@/components/inputs/Button";
-import CustomPopover from "@/components/inputs/CustomPopover";
-import CustomBreadcrumb from "@/components/navigation/CustomBreadcrumb";
-import Table from "@/components/table/Table";
-import { businessColumns } from "@/constants/business.constants";
-import UserLayout from "@/containers/UserLayout";
-import { getBusinessStatusColor } from "@/helpers/business.helpers";
-import { capitalizeString } from "@/helpers/strings";
-import DeleteBusinessApplication from "@/pages/business-applications/containers/DeleteBusinessApplication";
+import Loader from "@/components/Loader"
+import Button from "@/components/inputs/Button"
+import CustomPopover from "@/components/inputs/CustomPopover"
+import CustomBreadcrumb from "@/components/navigation/CustomBreadcrumb"
+import Table from "@/components/table/Table"
+import { businessColumns } from "@/constants/business.constants"
+import UserLayout from "@/containers/UserLayout"
+import { getBusinessStatusColor } from "@/helpers/business.helpers"
+import { capitalizeString } from "@/helpers/strings"
+import DeleteBusinessApplication from "@/pages/business-applications/containers/DeleteBusinessApplication"
 import {
   useCreateBusinessMutation,
-  useLazyFetchBusinessesQuery,
-} from "@/states/api/businessRegApiSlice";
-import { useLazyGetServiceQuery } from "@/states/api/businessRegApiSlice";
+  useLazyFetchBusinessesQuery
+} from "@/states/api/businessRegApiSlice"
+import { useLazyGetServiceQuery } from "@/states/api/businessRegApiSlice"
 import {
   setBusinessesList,
   setBusinessPage,
@@ -20,38 +20,38 @@ import {
   setBusinessTotalElements,
   setBusinessTotalPages,
   setDeleteBusinessModal,
-  setSelectedBusiness,
-} from "@/states/features/businessSlice";
-import { setService } from "@/states/features/serviceSlice";
-import { AppDispatch, RootState } from "@/states/store";
-import { Business } from "@/types/models/business";
+  setSelectedBusiness
+} from "@/states/features/businessSlice"
+import { setService } from "@/states/features/serviceSlice"
+import { AppDispatch, RootState } from "@/states/store"
+import { Business } from "@/types/models/business"
 import {
   faArrowRight,
   faEllipsisH,
   faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
-import { ErrorResponse, useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+  faTrash
+} from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { ColumnDef, Row } from "@tanstack/react-table"
+import { useEffect } from "react"
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
+import { ErrorResponse, useNavigate, useParams } from "react-router-dom"
+import { toast } from "react-toastify"
 
 const NewServiceApplication = () => {
   // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
-  const { service } = useSelector((state: RootState) => state.service);
+  const dispatch: AppDispatch = useDispatch()
+  const { service } = useSelector((state: RootState) => state.service)
   const { businessesList, page, size, totalElements, totalPages } = useSelector(
     (state: RootState) => state.business
-  );
+  )
 
   // GET PARAM FROM PATH
-  const { id } = useParams();
+  const { id } = useParams()
 
   // NAVIGATION
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // INITIALIZE GET SERVICE QUERY
   const [
@@ -61,9 +61,9 @@ const NewServiceApplication = () => {
       isLoading: serviceIsLoading,
       error: serviceError,
       isError: serviceIsError,
-      isSuccess: serviceIsSuccess,
-    },
-  ] = useLazyGetServiceQuery();
+      isSuccess: serviceIsSuccess
+    }
+  ] = useLazyGetServiceQuery()
 
   // INITIATE CREATE BUSINESS MUTATION
   const [
@@ -73,20 +73,20 @@ const NewServiceApplication = () => {
       data: businessData,
       isError: businessIsError,
       error: businessError,
-      isSuccess: businessIsSuccess,
-    },
-  ] = useCreateBusinessMutation();
+      isSuccess: businessIsSuccess
+    }
+  ] = useCreateBusinessMutation()
 
   // HANDLE CREATE BUSINESS RESPONSE
   useEffect(() => {
     if (businessIsError) {
       if ((businessError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred, please try again later");
+        toast.error("An error occurred, please try again later")
       } else {
-        toast.error((businessError as ErrorResponse)?.data?.message);
+        toast.error((businessError as ErrorResponse)?.data?.message)
       }
     } else if (businessIsSuccess) {
-      navigate(`${service?.path}?businessId=${businessData?.data?.id}`);
+      navigate(`${service?.path}?businessId=${businessData?.data?.id}`)
     }
   }, [
     businessData,
@@ -94,8 +94,8 @@ const NewServiceApplication = () => {
     businessIsError,
     businessIsSuccess,
     navigate,
-    service?.path,
-  ]);
+    service?.path
+  ])
 
   // INITIALIZE FETCH IN PROGRESS APPLICATIONS QUERY
   const [
@@ -105,9 +105,9 @@ const NewServiceApplication = () => {
       isLoading: businessesIsLoading,
       error: businessesError,
       isError: businessesIsError,
-      isSuccess: businessesIsSuccess,
-    },
-  ] = useLazyFetchBusinessesQuery();
+      isSuccess: businessesIsSuccess
+    }
+  ] = useLazyFetchBusinessesQuery()
 
   // GET APPLICATIONS IN PROGRESS
   useEffect(() => {
@@ -115,52 +115,52 @@ const NewServiceApplication = () => {
       serviceId: id,
       applicationStatus: "IN_PROGRESS,IS_AMENDING,ACTION_REQUIRED",
       page,
-      size,
-    });
-  }, [fetchBusinesses, id, page, size]);
+      size
+    })
+  }, [fetchBusinesses, id, page, size])
 
   // HANDLE APPLICATIONS IN PROGRESS RESPONSE
   useEffect(() => {
     if (businessesIsError) {
       if ((businessesError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred, please try again later");
+        toast.error("An error occurred, please try again later")
       } else {
         toast.error(
           capitalizeString((businessesError as ErrorResponse)?.data?.message)
-        );
+        )
       }
     } else if (businessesIsSuccess) {
-      dispatch(setBusinessesList(businessesData?.data?.data));
-      dispatch(setBusinessTotalPages(businessesData?.data?.totalPages));
-      dispatch(setBusinessTotalElements(businessesData?.data?.totalElements));
+      dispatch(setBusinessesList(businessesData?.data?.data))
+      dispatch(setBusinessTotalPages(businessesData?.data?.totalPages))
+      dispatch(setBusinessTotalElements(businessesData?.data?.totalElements))
     }
   }, [
     businessesData,
     businessesError,
     businessesIsError,
     businessesIsSuccess,
-    dispatch,
-  ]);
+    dispatch
+  ])
 
   // FETCH SERVICE
   useEffect(() => {
     if (id) {
-      getService({ id });
+      getService({ id })
     }
-  }, [getService, id]);
+  }, [getService, id])
 
   // HANDLE SERVICE RESPONSE
   useEffect(() => {
     if (serviceIsError) {
       if ((serviceError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred, please try again later");
+        toast.error("An error occurred, please try again later")
       } else {
-        toast.error((serviceError as ErrorResponse)?.data?.message);
+        toast.error((serviceError as ErrorResponse)?.data?.message)
       }
     } else if (serviceIsSuccess) {
-      dispatch(setService(serviceData?.data));
+      dispatch(setService(serviceData?.data))
     }
-  }, [dispatch, serviceData, serviceError, serviceIsError, serviceIsSuccess]);
+  }, [dispatch, serviceData, serviceError, serviceIsError, serviceIsSuccess])
 
   // APPLICATIONS IN PROGRESS COLUMNS
   const applicationsColumns = [
@@ -177,8 +177,8 @@ const NewServiceApplication = () => {
           >
             {capitalizeString(row?.original?.applicationStatus)}
           </p>
-        );
-      },
+        )
+      }
     },
     {
       header: "Action",
@@ -208,17 +208,18 @@ const NewServiceApplication = () => {
                   </menu>
                 }
                 onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`${service?.path}?businessId=${row.original.id}`);
+                  e.preventDefault()
+                  navigate(`${service?.path}?businessId=${row.original.id}`)
                 }}
                 styled={false}
                 className="!bg-transparent"
               />
               <Button
+                disabled
                 onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setSelectedBusiness(row.original));
-                  dispatch(setDeleteBusinessModal(true));
+                  e.preventDefault()
+                  dispatch(setSelectedBusiness(row.original))
+                  dispatch(setDeleteBusinessModal(true))
                 }}
                 value={
                   <menu className="flex items-center gap-1 p-1 px-3 transition-all duration-200 bg-red-600 rounded-md hover:gap-2">
@@ -234,22 +235,22 @@ const NewServiceApplication = () => {
               />
             </menu>
           </CustomPopover>
-        );
-      },
-    },
-  ];
+        )
+      }
+    }
+  ]
 
   // NAVIGATION LINKS
   const navigationLinks = [
     {
       label: "Services",
-      route: "/services",
+      route: "/services"
     },
     {
       label: `${capitalizeString(service?.name)}`,
-      route: `/services/${service?.id}/new`,
-    },
-  ];
+      route: `/services/${service?.id}/new`
+    }
+  ]
 
   return (
     <UserLayout>
@@ -270,11 +271,11 @@ const NewServiceApplication = () => {
             <Button
               primary
               onClick={(e) => {
-                e.preventDefault();
+                e.preventDefault()
                 createBusiness({
                   isForeign: service?.path === "/foreign-company-registration",
-                  serviceId: service?.id,
-                });
+                  serviceId: service?.id
+                })
               }}
               value={
                 !businessIsLoading ? (
@@ -313,8 +314,8 @@ const NewServiceApplication = () => {
                         (application: Business, index) => {
                           return {
                             ...application,
-                            no: index + 1,
-                          };
+                            no: index + 1
+                          }
                         }
                       )}
                       columns={applicationsColumns as ColumnDef<Business>[]}
@@ -328,7 +329,7 @@ const NewServiceApplication = () => {
       )}
       <DeleteBusinessApplication />
     </UserLayout>
-  );
-};
+  )
+}
 
-export default NewServiceApplication;
+export default NewServiceApplication

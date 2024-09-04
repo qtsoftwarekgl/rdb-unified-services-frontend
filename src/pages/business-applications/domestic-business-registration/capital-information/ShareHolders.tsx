@@ -1,58 +1,55 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Select from "../../../../components/inputs/Select";
+import { useEffect, useState } from "react"
+import { Controller, FieldValues, useForm } from "react-hook-form"
+import Select from "../../../../components/inputs/Select"
 import {
   legalArrangementTypes,
   legalPersonTypes,
-  personnelTypes,
-} from "../../../../constants/businessRegistration";
-import Input from "../../../../components/inputs/Input";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import Loader from "../../../../components/Loader";
-import validateInputs from "../../../../helpers/validations";
-import { countriesList } from "../../../../constants/countries";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
+  personnelTypes
+} from "../../../../constants/businessRegistration"
+import Input from "../../../../components/inputs/Input"
+import { faSearch } from "@fortawesome/free-solid-svg-icons"
+import Loader from "../../../../components/Loader"
+import validateInputs from "../../../../helpers/validations"
+import { countriesList } from "../../../../constants/countries"
+import Button from "../../../../components/inputs/Button"
+import { AppDispatch, RootState } from "../../../../states/store"
+import { useDispatch, useSelector } from "react-redux"
+import { maskPhoneDigits } from "../../../../helpers/strings"
+import moment from "moment"
+import { businessId } from "@/types/models/business"
 import {
-  setBusinessActiveStep,
-  setBusinessActiveTab,
-  setBusinessCompletedStep,
-} from "../../../../states/features/businessRegistrationSlice";
-import { maskPhoneDigits } from "../../../../helpers/strings";
-import { setUserApplications } from "../../../../states/features/userApplicationSlice";
-import moment from "moment";
-import { businessId } from "@/types/models/business";
-import { useCreateShareholderMutation } from "@/states/api/businessRegApiSlice";
-import { ErrorResponse } from "react-router-dom";
-import { toast } from "react-toastify";
-import FoundersDetails from "./FoundersDetailsList";
-import { genderOptions } from "@/constants/inputs.constants";
+  useCreateShareholderMutation,
+  useLazyGetCompanyInformationQuery
+} from "@/states/api/businessRegApiSlice"
+import { ErrorResponse } from "react-router-dom"
+import { toast } from "react-toastify"
+import FoundersDetails from "./FoundersDetailsList"
+import { genderOptions } from "@/constants/inputs.constants"
 import {
   addBusinessPersonAttachment,
   setBusinessPersonAttachments,
-  setUserInformation,
-} from "@/states/features/businessPeopleSlice";
-import BusinessPeopleAttachments from "../BusinessPeopleAttachments";
-import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice";
-import { useLazyGetUserInformationQuery } from "@/states/api/businessExternalServiceApiSlice";
-import { addFounderDetail } from "@/states/features/founderDetailSlice";
+  setUserInformation
+} from "@/states/features/businessPeopleSlice"
+import BusinessPeopleAttachments from "../BusinessPeopleAttachments"
+import { useUploadPersonAttachmentMutation } from "@/states/api/businessRegApiSlice"
+import { useLazyGetUserInformationQuery } from "@/states/api/businessExternalServiceApiSlice"
+import { addFounderDetail } from "@/states/features/founderDetailSlice"
 import {
   completeNavigationFlowThunk,
-  createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+  createNavigationFlowThunk
+} from "@/states/features/navigationFlowSlice"
 import {
   findNavigationFlowByStepName,
-  findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
-import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
-import { ApplicationStatus } from "@/enums/ApplicationStatus";
+  findNavigationFlowMassIdByStepName
+} from "@/helpers/business.helpers"
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment"
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice"
+import { ApplicationStatus } from "@/enums/ApplicationStatus"
 
 type ShareHoldersProps = {
-  businessId: businessId;
-  applicationStatus?: string;
-};
+  businessId: businessId
+  applicationStatus?: string
+}
 
 const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
   // REACT HOOK FORM
@@ -64,13 +61,15 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
     clearErrors,
     trigger,
     reset,
-    formState: { errors },
-  } = useForm();
+    formState: { errors }
+  } = useForm()
+
+  const { isBasedInRwanda } = watch()
 
   // Resolution attachment
   const { file, fileName, attachmentType } = useSelector(
     (state: RootState) => state.resolutionAttachment
-  );
+  )
 
   // INITIALIZE CREATE SHAREHOLDER MUTATION
   const [
@@ -80,20 +79,20 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
       error: createShareholderError,
       isSuccess: createShareholderIsSuccess,
       isError: createShareholderIsError,
-      data: createShareholderData,
-    },
-  ] = useCreateShareholderMutation();
+      data: createShareholderData
+    }
+  ] = useCreateShareholderMutation()
 
   // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch()
   const [attachmentFile, setAttachmentFile] = useState<File | null | undefined>(
     null
-  );
+  )
   const { userInformation, businessPersonAttachments } = useSelector(
     (state: RootState) => state.businessPeople
-  );
+  )
   const [legalShareholderTypes, setLegalShareholderTypes] =
-    useState(legalPersonTypes);
+    useState(legalPersonTypes)
 
   // HANDLE FORM SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -107,12 +106,12 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
         ? "RW"
         : data?.countryOfIncorporation,
       phoneNumber: data?.phoneNumber || data?.companyPhone,
-      shareHolderType: data?.legalShareType || data?.shareHolderType,
-    });
-  };
+      shareHolderType: data?.legalShareType || data?.shareHolderType
+    })
+  }
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
-  );
+  )
 
   // INITIALIZE UPLOAD PERSON ATTACHMENT MUTATION
   const [
@@ -122,9 +121,9 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
       error: uploadAttachmentError,
       isLoading: uploadAttachmentIsLoading,
       isSuccess: uploadAttachmentIsSuccess,
-      isError: uploadAttachmentIsError,
-    },
-  ] = useUploadPersonAttachmentMutation();
+      isError: uploadAttachmentIsError
+    }
+  ] = useUploadPersonAttachmentMutation()
 
   // INITIALIZE GET USER INFORMATION QUERY
   const [
@@ -134,48 +133,63 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
       error: userInformationError,
       isFetching: userInformationIsFetching,
       isSuccess: userInformationIsSuccess,
-      isError: userInformationIsError,
-    },
-  ] = useLazyGetUserInformationQuery();
+      isError: userInformationIsError
+    }
+  ] = useLazyGetUserInformationQuery()
+
+  const clearForm = () => {
+    reset({
+      position: "",
+      personIdentType: "",
+      documentNumber: "",
+      personDocNo: "",
+      persDocIssueDate: "",
+      persDocExpiryDate: "",
+      dateOfBirth: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      companyName: "",
+      companyCode: "",
+      incorporationDate: "",
+      email: "",
+      companyPhone: "",
+      streetNumber: "",
+      poBox: "",
+      tin: "",
+      isBasedInRwanda,
+      shareHolderType: "",
+      legalShareType: ""
+    })
+  }
 
   // HANDLE CREATE SHAREHOLDER RESPONSE
   useEffect(() => {
     if (createShareholderIsError) {
       if ((createShareholderError as ErrorResponse)?.status === 500) {
-        toast.error("An error occurred, please try again later");
+        toast.error("An error occurred, please try again later")
       } else {
-        toast.error((createShareholderError as ErrorResponse)?.data?.message);
+        toast.error((createShareholderError as ErrorResponse)?.data?.message)
       }
     } else if (createShareholderIsSuccess) {
       if (
         watch("nationality") !== "RW" &&
         watch("shareHolderType") === "individual"
       ) {
-        const formData = new FormData();
-        formData.append("file", attachmentFile as File);
+        const formData = new FormData()
+        formData.append("file", attachmentFile as File)
         formData.append(
           "personId",
           createShareholderData?.data?.data?.personDetail?.id
-        );
-        formData.append("attachmentType", String(attachmentFile?.type));
-        formData.append("businessId", String(businessId));
-        formData.append("fileName", String(attachmentFile?.name));
-        uploadPersonAttachment({ formData });
+        )
+        formData.append("attachmentType", String(attachmentFile?.type))
+        formData.append("businessId", String(businessId))
+        formData.append("fileName", String(attachmentFile?.name))
+        uploadPersonAttachment({ formData })
       } else {
-        reset({
-          position: "",
-          personIdentType: "",
-          documentNumber: "",
-          personDocNo: "",
-          persDocIssueDate: "",
-          persDocExpiryDate: "",
-          dateOfBirth: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-        });
-        dispatch(setUserInformation(undefined));
-        dispatch(addFounderDetail(createShareholderData?.data?.data));
+        clearForm()
+        dispatch(setUserInformation(undefined))
+        dispatch(addFounderDetail(createShareholderData?.data?.data))
       }
 
       if (applicationStatus === ApplicationStatus.IsAmending) {
@@ -186,9 +200,9 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
               fileName,
               attachmentType,
               businessId: businessId.toString(),
-              amendmentId: createShareholderData?.data?.amendmentId,
+              amendmentId: createShareholderData?.data?.amendmentId
             })
-          );
+          )
       }
     }
   }, [
@@ -202,8 +216,53 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
     dispatch,
     reset,
     uploadPersonAttachment,
-    watch,
-  ]);
+    watch
+  ])
+
+  // INITIALIZE GET COMPANY INFORMATION QUERY
+  const [
+    getCompanyInformation,
+    {
+      data: companyInformationData,
+      error: companyInformationError,
+      isFetching: companyInformationIsFetching,
+      isSuccess: companyInformationIsSuccess,
+      isError: companyInformationIsError
+    }
+  ] = useLazyGetCompanyInformationQuery()
+
+  // HANDLE FETCH COMPANY INFORMATION
+  useEffect(() => {
+    if (companyInformationIsError) {
+      if ((companyInformationError as ErrorResponse).status === 500) {
+        toast.error("An error occured while fetching company information")
+      } else {
+        toast.error((companyInformationError as ErrorResponse)?.data?.message)
+      }
+    } else if (companyInformationIsSuccess) {
+      // dispatch(setcompanyInformation(companyInformationData?.data))\
+      reset({
+        companyName: companyInformationData?.data?.companyName,
+        companyCode: companyInformationData?.data?.companyCode,
+        incorporationDate: companyInformationData?.data?.incorporationDate,
+        email: companyInformationData?.data?.email,
+        companyPhone: companyInformationData?.data?.phoneNumber,
+        streetNumber: companyInformationData?.data?.streetName,
+        poBox: companyInformationData?.data?.poBox,
+        tin: watch("tin"),
+        isBasedInRwanda,
+        shareHolderType: watch("shareHolderType"),
+        legalShareType: watch("legalShareType")
+      })
+    }
+  }, [
+    dispatch,
+    reset,
+    companyInformationIsError,
+    companyInformationError,
+    companyInformationIsSuccess,
+    watch
+  ])
 
   // HANDLE UPLOAD PERSON ATTACHMENT RESPONSE
   useEffect(() => {
@@ -211,27 +270,16 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
       if ((uploadAttachmentError as ErrorResponse)?.status === 500) {
         toast.error(
           "An error occured while uploading attachment. Please try again"
-        );
+        )
       } else {
-        toast.error((uploadAttachmentError as ErrorResponse)?.data?.message);
+        toast.error((uploadAttachmentError as ErrorResponse)?.data?.message)
       }
     } else if (uploadAttachmentIsSuccess) {
-      toast.success("Person added successfully");
-      dispatch(addFounderDetail(createShareholderData?.data?.data));
-      reset({
-        position: "",
-        personIdentType: "",
-        documentNumber: "",
-        personDocNo: "",
-        persDocIssueDate: "",
-        persDocExpiryDate: "",
-        dateOfBirth: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-      });
-      setAttachmentFile(null);
-      dispatch(setBusinessPersonAttachments([]));
+      toast.success("Person added successfully")
+      dispatch(addFounderDetail(createShareholderData?.data?.data))
+      clearForm()
+      setAttachmentFile(null)
+      dispatch(setBusinessPersonAttachments([]))
     }
   }, [
     dispatch,
@@ -240,19 +288,19 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
     uploadAttachmentData,
     uploadAttachmentError,
     uploadAttachmentIsError,
-    uploadAttachmentIsSuccess,
-  ]);
+    uploadAttachmentIsSuccess
+  ])
 
   // HANDLE GET USER INFORMATION RESPONSE
   useEffect(() => {
     if (userInformationIsError) {
       if ((userInformationError as ErrorResponse).status === 500) {
-        toast.error("An error occured while fetching user information");
+        toast.error("An error occured while fetching user information")
       } else {
-        toast.error((userInformationError as ErrorResponse)?.data?.message);
+        toast.error((userInformationError as ErrorResponse)?.data?.message)
       }
     } else if (userInformationIsSuccess) {
-      dispatch(setUserInformation(userInformationData?.data));
+      dispatch(setUserInformation(userInformationData?.data))
       reset({
         shareHolderType: watch("shareHolderType"),
         personIdentType: "nid",
@@ -262,8 +310,8 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
         gender: userInformation?.gender,
         nationality: userInformation?.nationality,
         persDocIssuePlace: userInformation?.nationality,
-        isFromNida: true,
-      });
+        isFromNida: true
+      })
     }
   }, [
     dispatch,
@@ -273,18 +321,18 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
     userInformationError,
     userInformationIsError,
     userInformationIsSuccess,
-    watch,
-  ]);
+    watch
+  ])
 
   useEffect(() => {
     if (watch("shareHolderType") && watch("shareHolderType") !== "individual") {
       if (watch("shareHolderType") === "legal_person")
-        setLegalShareholderTypes(legalPersonTypes);
+        setLegalShareholderTypes(legalPersonTypes)
       else if (watch("shareHolderType") === "legal_arrangement")
-        setLegalShareholderTypes(legalArrangementTypes);
+        setLegalShareholderTypes(legalArrangementTypes)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watch("shareHolderType")]);
+  }, [watch("shareHolderType")])
 
   return (
     <section className="flex flex-col w-full gap-5">
@@ -305,12 +353,30 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     {...field}
                     required
                     onChange={(e) => {
-                      field.onChange(e);
-                      setAttachmentFile(null);
-                      clearErrors(["personIdentType", "personDocNo"]);
+                      field.onChange(e)
+                      setAttachmentFile(null)
+                      clearErrors(["personIdentType", "personDocNo"])
                       reset({
                         shareHolderType: e,
-                      });
+                        documentNumber: "",
+                        personDocNo: "",
+                        persDocIssueDate: "",
+                        persDocExpiryDate: "",
+                        dateOfBirth: "",
+                        firstName: "",
+                        middleName: "",
+                        lastName: "",
+                        companyName: "",
+                        companyCode: "",
+                        incorporationDate: "",
+                        email: "",
+                        companyPhone: "",
+                        streetNumber: "",
+                        poBox: "",
+                        tin: "",
+                        isBasedInRwanda,
+                        legalShareType: ""
+                      })
                     }}
                   />
                   {errors?.shareHolderType && (
@@ -319,7 +385,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           {watch("shareHolderType") &&
@@ -339,7 +405,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         {...field}
                         required
                         onChange={(e) => {
-                          field.onChange(e);
+                          field.onChange(e)
                         }}
                       />
                       {errors?.legalShareType && (
@@ -348,7 +414,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </p>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
             )}
@@ -361,8 +427,8 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                 render={({ field }) => {
                   const options = [
                     { value: "nid", label: "National ID" },
-                    { label: "Passport", value: "passport" },
-                  ];
+                    { label: "Passport", value: "passport" }
+                  ]
                   return (
                     <label
                       className={`flex flex-col gap-1 w-full items-start ${
@@ -376,7 +442,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         placeholder="Select document type"
                         {...field}
                         onChange={(e) => {
-                          field.onChange(e);
+                          field.onChange(e)
                         }}
                       />
                       {errors?.personIdentType && (
@@ -385,7 +451,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </p>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
             )}
@@ -402,8 +468,8 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       return (
                         validateInputs(value, "nid") ||
                         "National ID must be 16 characters long"
-                      );
-                    },
+                      )
+                    }
                   }}
                   render={({ field }) => {
                     return (
@@ -412,23 +478,23 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           required
                           suffixIcon={faSearch}
                           suffixIconHandler={async (e) => {
-                            e.preventDefault();
+                            e.preventDefault()
                             if (!field.value) {
                               setError("documentNumber", {
                                 type: "manual",
-                                message: "Document number is required",
-                              });
-                              return;
+                                message: "Document number is required"
+                              })
+                              return
                             }
-                            getUserInformation({ documentNumber: field.value });
+                            getUserInformation({ documentNumber: field.value })
                           }}
                           label="ID Document No"
                           suffixIconPrimary
                           placeholder="1 XXXX X XXXXXXX X XX"
                           {...field}
                           onChange={async (e) => {
-                            field.onChange(e);
-                            await trigger("documentNumber");
+                            field.onChange(e)
+                            await trigger("documentNumber")
                           }}
                         />
                         {userInformationIsFetching && (
@@ -445,7 +511,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           </p>
                         )}
                       </label>
-                    );
+                    )
                   }}
                 />
               )}
@@ -485,7 +551,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       </span>
                     )}
                   </label>
-                );
+                )
               }}
             />
           </menu>
@@ -500,7 +566,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     name="personDocNo"
                     control={control}
                     rules={{
-                      required: "Passport number is required",
+                      required: "Passport number is required"
                     }}
                     render={({ field }) => {
                       return (
@@ -519,7 +585,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             </span>
                           )}
                         </label>
-                      );
+                      )
                     }}
                   />
                   <Controller
@@ -531,10 +597,10 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           moment(value).format() >
                           moment(watch("persDocExpiryDate")).format()
                         ) {
-                          return "Issue date must be before expiry date";
+                          return "Issue date must be before expiry date"
                         }
-                        return true;
-                      },
+                        return true
+                      }
                     }}
                     control={control}
                     render={({ field }) => {
@@ -547,9 +613,9 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             onChange={(e) => {
                               field.onChange(
                                 moment(String(e)).format("YYYY-MM-DD")
-                              );
-                              trigger("persDocIssueDate");
-                              trigger("persDocExpiryDate");
+                              )
+                              trigger("persDocIssueDate")
+                              trigger("persDocExpiryDate")
                             }}
                           />
                           {errors?.persDocIssueDate && (
@@ -558,7 +624,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             </p>
                           )}
                         </label>
-                      );
+                      )
                     }}
                   />
                   <Controller
@@ -570,10 +636,10 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           moment(value).format() <
                           moment(watch("persDocIssueDate")).format()
                         ) {
-                          return "Expiry date must be after issue date";
+                          return "Expiry date must be after issue date"
                         }
-                        return true;
-                      },
+                        return true
+                      }
                     }}
                     control={control}
                     render={({ field }) => {
@@ -586,9 +652,9 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             onChange={(e) => {
                               field.onChange(
                                 moment(String(e)).format("YYYY-MM-DD")
-                              );
-                              trigger("persDocExpiryDate");
-                              trigger("persDocIssueDate");
+                              )
+                              trigger("persDocExpiryDate")
+                              trigger("persDocIssueDate")
                             }}
                           />
                           {errors?.persDocExpiryDate && (
@@ -597,7 +663,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             </p>
                           )}
                         </label>
-                      );
+                      )
                     }}
                   />
                   <Controller
@@ -615,7 +681,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             onChange={(e) => {
                               field.onChange(
                                 moment(String(e)).format("YYYY-MM-DD")
-                              );
+                              )
                             }}
                           />
                           {errors?.dateOfBirth && (
@@ -624,7 +690,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             </p>
                           )}
                         </label>
-                      );
+                      )
                     }}
                   />
                 </>
@@ -649,7 +715,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </span>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
               <Controller
@@ -665,7 +731,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         {...field}
                       />
                     </label>
-                  );
+                  )
                 }}
               />
               <Controller
@@ -675,7 +741,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                   required:
                     watch("personIdentType") === "passport"
                       ? "Select gender"
-                      : false,
+                      : false
                 }}
                 defaultValue={watch("gender")}
                 render={({ field }) => {
@@ -693,14 +759,14 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </span>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
               <Controller
                 name="phoneNumber"
                 control={control}
                 rules={{
-                  required: "Phone number is required",
+                  required: "Phone number is required"
                 }}
                 render={({ field }) => {
                   return (
@@ -720,8 +786,8 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           options={userInformation?.phones?.map((phone) => {
                             return {
                               label: maskPhoneDigits(phone?.msidn),
-                              value: phone?.msidn,
-                            };
+                              value: phone?.msidn
+                            }
                           })}
                           {...field}
                         />
@@ -732,7 +798,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </p>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
               <Controller
@@ -740,8 +806,8 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                 rules={{
                   required: "Email address is required",
                   validate: (value) => {
-                    return validateInputs(value, "email");
-                  },
+                    return validateInputs(value, "email")
+                  }
                 }}
                 control={control}
                 render={({ field }) => {
@@ -759,7 +825,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </p>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
               {watch("personIdentType") !== "nid" ? (
@@ -780,12 +846,12 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                                 return {
                                   ...country,
                                   label: country.name,
-                                  value: country?.code,
-                                };
+                                  value: country?.code
+                                }
                               })}
                             {...field}
                             onChange={(e) => {
-                              field.onChange(e);
+                              field.onChange(e)
                             }}
                           />
                           {errors?.persDocIssuePlace && (
@@ -794,7 +860,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             </p>
                           )}
                         </label>
-                      );
+                      )
                     }}
                   />
                 </>
@@ -807,7 +873,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       <label className="w-[49%] flex flex-col gap-1">
                         <Input label="PO Box" placeholder="PO Box" {...field} />
                       </label>
-                    );
+                    )
                   }}
                 />
               )}
@@ -825,7 +891,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     required:
                       watch("personIdentType") === "passport"
                         ? "Passport is required"
-                        : false,
+                        : false
                   }}
                   control={control}
                   render={({ field }) => {
@@ -836,15 +902,15 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           accept="application/pdf"
                           className="!w-fit max-sm:!w-full self-start"
                           onChange={(e) => {
-                            field.onChange(e?.target?.files?.[0]);
-                            setAttachmentFile(e.target.files?.[0]);
+                            field.onChange(e?.target?.files?.[0])
+                            setAttachmentFile(e.target.files?.[0])
                             dispatch(
                               addBusinessPersonAttachment({
                                 attachmentType: e.target.files?.[0]?.type,
                                 fileName: e.target.files?.[0]?.name,
-                                fileSize: e.target.files?.[0]?.size,
+                                fileSize: e.target.files?.[0]?.size
                               })
-                            );
+                            )
                           }}
                         />
                         <ul className="flex flex-col items-center w-full gap-3">
@@ -861,7 +927,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                           </p>
                         )}
                       </label>
-                    );
+                    )
                   }}
                 />
               </menu>
@@ -875,6 +941,66 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                 : "hidden"
             } grid-cols-2 gap-4 items-start justify-between w-full`}
           >
+            {isBasedInRwanda === "yes" && (
+              <Controller
+                control={control}
+                name="tin"
+                rules={{
+                  required:
+                    isBasedInRwanda === "yes"
+                      ? "Tin number is required"
+                      : false,
+                  validate: (value) => {
+                    return (
+                      validateInputs(value, "tin") ||
+                      "Tin number must be 9 digits"
+                    )
+                  }
+                }}
+                render={({ field }) => {
+                  return (
+                    <label className="flex flex-col items-start w-full gap-2">
+                      <Input
+                        required
+                        suffixIcon={faSearch}
+                        suffixIconHandler={async (e) => {
+                          e.preventDefault()
+                          if (!field.value) {
+                            setError("tin", {
+                              type: "manual",
+                              message: "Tin number is required"
+                            })
+                            return
+                          }
+                          getCompanyInformation({ tin: field.value })
+                        }}
+                        label="Tin number"
+                        suffixIconPrimary
+                        placeholder="XXXXXXXXX"
+                        {...field}
+                        onChange={async (e) => {
+                          field.onChange(e)
+                          await trigger("tin")
+                        }}
+                      />
+                      {companyInformationIsFetching && (
+                        <ul className="flex items-center gap-2">
+                          <Loader className="text-primary" />
+                          <p className="text-[13px]">
+                            Fetching company information...
+                          </p>
+                        </ul>
+                      )}
+                      {errors?.tin && (
+                        <p className="text-red-500 text-[13px]">
+                          {String(errors?.tin?.message)}
+                        </p>
+                      )}
+                    </label>
+                  )
+                }}
+              />
+            )}
             <Controller
               name="companyName"
               control={control}
@@ -882,13 +1008,14 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                 required:
                   watch("shareHolderType") !== "individual"
                     ? "Company name is required"
-                    : false,
+                    : false
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       label="Company Name"
+                      readOnly={isBasedInRwanda === "yes"}
                       placeholder="Company name"
                       required
                       {...field}
@@ -899,7 +1026,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -910,11 +1037,12 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       label="Company code"
+                      readOnly={isBasedInRwanda === "yes"}
                       placeholder="Company code"
                       {...field}
                     />
                   </label>
-                );
+                )
               }}
             />
             {watch("isBasedInRwanda") === "no" && (
@@ -925,7 +1053,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                   required:
                     watch("shareHolderType") !== "individual"
                       ? "Select country of incorporation"
-                      : false,
+                      : false
                 }}
                 render={({ field }) => {
                   return (
@@ -940,8 +1068,8 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                             return {
                               ...country,
                               label: country.name,
-                              value: country.code,
-                            };
+                              value: country.code
+                            }
                           })}
                         {...field}
                       />
@@ -951,7 +1079,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         </p>
                       )}
                     </label>
-                  );
+                  )
                 }}
               />
             )}
@@ -968,18 +1096,18 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     return (
                       moment(value).format() < moment().format() ||
                       "Invalid date selected"
-                    );
-                  } else return true;
-                },
+                    )
+                  } else return true
+                }
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       label="Incorporation Date"
+                      readOnly={isBasedInRwanda === "yes"}
                       required
                       defaultValue={watch("incorporationDate")}
-                      readOnly={watch("rwandan_company") === "yes"}
                       type="date"
                       {...field}
                     />
@@ -989,7 +1117,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -1004,15 +1132,16 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     return (
                       validateInputs(String(value), "email") ||
                       "Invalid email address"
-                    );
-                  } else return true;
-                },
+                    )
+                  } else return true
+                }
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col items-start w-full gap-1">
                     <Input
                       required
+                      readOnly={isBasedInRwanda === "yes"}
                       label="Email"
                       placeholder="name@domain.com"
                       {...field}
@@ -1023,7 +1152,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -1038,15 +1167,16 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                   if (watch("rwandan_company") === "yes") {
                     return (
                       validateInputs(value, "tel") || "Invalid phone number"
-                    );
-                  } else return true;
-                },
+                    )
+                  } else return true
+                }
               }}
               render={({ field }) => {
                 return (
                   <label className="flex flex-col w-full gap-1">
                     <Input
                       label="Phone number"
+                      readOnly={isBasedInRwanda === "yes"}
                       required
                       prefixText={watch("rwandan_company") === "yes" && "+250"}
                       type={watch("rwandan_company") === "yes" ? "text" : "tel"}
@@ -1058,7 +1188,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -1070,10 +1200,11 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     <Input
                       label="Street Name"
                       placeholder="Street name"
+                      readOnly={isBasedInRwanda === "yes"}
                       {...field}
                     />
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -1085,10 +1216,11 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                     <Input
                       label="PO Box"
                       placeholder="Postal code"
+                      readOnly={isBasedInRwanda === "yes"}
                       {...field}
                     />
                   </label>
-                );
+                )
               }}
             />
           </section>
@@ -1126,7 +1258,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
           {[
             ApplicationStatus.Inprogress,
             ApplicationStatus.IsAmending,
-            ApplicationStatus.Forcorrection,
+            ApplicationStatus.Forcorrection
           ].includes(String(applicationStatus) as ApplicationStatus) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -1134,7 +1266,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
               <Button
                 value="Back"
                 onClick={(e) => {
-                  e.preventDefault();
+                  e.preventDefault()
                   dispatch(
                     createNavigationFlowThunk({
                       businessId,
@@ -1142,25 +1274,25 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         navigationFlowMassList,
                         "Share Details"
                       ),
-                      isActive: true,
+                      isActive: true
                     })
-                  );
+                  )
                 }}
               />
               <Button
                 value="Save & Continue"
                 primary
                 onClick={(e) => {
-                  e.preventDefault();
+                  e.preventDefault()
                   dispatch(
                     completeNavigationFlowThunk({
                       isCompleted: true,
                       navigationFlowId: findNavigationFlowByStepName(
                         businessNavigationFlowsList,
                         "Shareholders"
-                      )?.id,
+                      )?.id
                     })
-                  );
+                  )
                   dispatch(
                     createNavigationFlowThunk({
                       businessId,
@@ -1168,9 +1300,9 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
                         navigationFlowMassList,
                         "Capital Details"
                       ),
-                      isActive: true,
+                      isActive: true
                     })
-                  );
+                  )
                 }}
               />
             </menu>
@@ -1178,7 +1310,7 @@ const ShareHolders = ({ businessId, applicationStatus }: ShareHoldersProps) => {
         </fieldset>
       </form>
     </section>
-  );
-};
+  )
+}
 
-export default ShareHolders;
+export default ShareHolders

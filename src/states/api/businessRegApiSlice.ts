@@ -1,8 +1,8 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import { businessBaseQueryWithReauth } from './rootApiSlice';
+import { createApi } from "@reduxjs/toolkit/query/react"
+import { businessBaseQueryWithReauth } from "./rootApiSlice"
 
 export const businessRegApiSlice = createApi({
-  reducerPath: 'businessRegistrationApi',
+  reducerPath: "businessRegistrationApi",
   baseQuery: businessBaseQueryWithReauth,
   endpoints: (builder) => {
     return {
@@ -10,66 +10,66 @@ export const businessRegApiSlice = createApi({
       searchBusinesses: builder.query({
         query: ({ type, companyName, tin, page, size }) => {
           return {
-            url: `/search?companyName=${companyName}&tin=${tin}&type=${type}&page=${page}&size=${size}`,
-          };
-        },
+            url: `/search?companyName=${companyName}&tin=${tin}&type=${type}&page=${page}&size=${size}`
+          }
+        }
       }),
 
       // FETCH BUSINESSES
       fetchBusinesses: builder.query({
         query: ({ page, size, applicationStatus, serviceId }) => {
-          let url = `/?page=${page}&size=${size}`;
+          let url = `/?page=${page}&size=${size}`
           if (applicationStatus) {
-            url += `&applicationStatus=${applicationStatus}`;
+            url += `&applicationStatus=${applicationStatus}`
           }
           if (serviceId) {
-            url += `&serviceId=${serviceId}`;
+            url += `&serviceId=${serviceId}`
           }
           return {
-            url,
-          };
-        },
+            url
+          }
+        }
       }),
 
       // GET BUSINESS
       getBusiness: builder.query({
         query: ({ id }) => {
           return {
-            url: `/${id}`,
-          };
-        },
+            url: `/${id}`
+          }
+        }
       }),
 
       // GET BUSINESS DETAILS
       getBusinessDetails: builder.query({
         query: ({ id }) => {
           return {
-            url: `/details?businessId=${id}`,
-          };
-        },
+            url: `/details?businessId=${id}`
+          }
+        }
       }),
 
       // GET BUSINESS ADDRESS
       getBusinessAddress: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/address?businessId=${businessId}`,
-          };
-        },
+            url: `/address?businessId=${businessId}`
+          }
+        }
       }),
 
       // CREATE BUSINESS
       createBusiness: builder.mutation({
         query: ({ isForeign, serviceId }) => {
           return {
-            url: '/register',
-            method: 'POST',
+            url: "/register",
+            method: "POST",
             body: {
               isForeign,
-              serviceId,
-            },
-          };
-        },
+              serviceId
+            }
+          }
+        }
       }),
 
       // DELETE BUSINESS
@@ -77,18 +77,18 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/${id}`,
-            method: 'DELETE',
-          };
-        },
+            method: "DELETE"
+          }
+        }
       }),
 
       // SEARCH BUSINESS NAME AVAILABILITY
       searchBusinessNameAvailability: builder.query({
         query: ({ companyName }) => {
           return {
-            url: `/search-availability?companyName=${companyName}`,
-          };
-        },
+            url: `/search-availability?companyName=${companyName}`
+          }
+        }
       }),
 
       // CREATE OR UPDATE COMPANY DETAILS
@@ -103,10 +103,11 @@ export const businessRegApiSlice = createApi({
           companyCategory,
           enterpriseName,
           enterpriseBusinessName,
+          abbreviation
         }) => {
           return {
             url: `/details?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               companyName,
               reservationId,
@@ -116,18 +117,19 @@ export const businessRegApiSlice = createApi({
               companyCategory,
               enterpriseName,
               enterpriseBusinessName,
-            },
-          };
-        },
+              abbreviation
+            }
+          }
+        }
       }),
 
       // FETCH COMPANY DETAILS
       fetchBusinessDetails: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/details?businessId=${businessId}`,
-          };
-        },
+            url: `/details?businessId=${businessId}`
+          }
+        }
       }),
 
       // CREATE OR UPDATE COMPANY ADDRESS
@@ -138,20 +140,20 @@ export const businessRegApiSlice = createApi({
           address,
           email,
           phoneNumber,
-          streetName,
+          streetName
         }) => {
           return {
             url: `/address?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               villageId,
               address,
               email,
               phoneNumber,
-              streetName,
-            },
-          };
-        },
+              streetName
+            }
+          }
+        }
       }),
 
       // CREATE BUSINESS ACTIVITIES
@@ -160,33 +162,33 @@ export const businessRegApiSlice = createApi({
           businessId,
           isVATRegistered,
           mainBusinessActivity,
-          businessLines,
+          businessLines
         }) => {
           return {
             url: `/business-activities?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               isVATRegistered,
               mainBusinessActivity,
-              businessLines,
-            },
-          };
-        },
+              businessLines
+            }
+          }
+        }
       }),
 
       // FETCH BUSINESS ACTIVITIES
       fetchBusinessActivities: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/business-activities?businessId=${businessId}`,
-          };
-        },
+            url: `/business-activities?businessId=${businessId}`
+          }
+        }
       }),
 
       // CREATE MANAGEMENT OR BOARD PEOPLE
       createManagementOrBoardPerson: builder.mutation({
         query: ({
-          route = 'management',
+          route = "management",
           businessId,
           position,
           firstName,
@@ -211,11 +213,11 @@ export const businessRegApiSlice = createApi({
           phoneNumber,
           email,
           fax,
-          poBox,
+          poBox
         }) => {
           return {
             url: `/${route}?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               position,
               firstName,
@@ -240,19 +242,19 @@ export const businessRegApiSlice = createApi({
               phoneNumber,
               email,
               fax,
-              poBox,
-            },
-          };
-        },
+              poBox
+            }
+          }
+        }
       }),
 
       // FETCH MANAGEMENT OR BOARD PEOPLE
       fetchBusinessPeople: builder.query({
-        query: ({ businessId, route = 'management' }) => {
+        query: ({ businessId, route = "management" }) => {
           return {
-            url: `/${route}?businessId=${businessId}`,
-          };
-        },
+            url: `/${route}?businessId=${businessId}`
+          }
+        }
       }),
 
       // CREATE EMPLOYMENT INFORMATION
@@ -265,11 +267,11 @@ export const businessRegApiSlice = createApi({
           hiringDate,
           employmentDeclarationDate,
           financialYearStartDate,
-          financialYearEndDate = financialYearStartDate,
+          financialYearEndDate = financialYearStartDate
         }) => {
           return {
             url: `/employment-info?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               workingStartTime,
               workingEndTime,
@@ -277,19 +279,19 @@ export const businessRegApiSlice = createApi({
               hiringDate,
               employmentDeclarationDate,
               financialYearStartDate,
-              financialYearEndDate,
-            },
-          };
-        },
+              financialYearEndDate
+            }
+          }
+        }
       }),
 
       // GET EMPLOYMENT INFO
       getEmploymentInfo: builder.query({
         query: ({ id }) => {
           return {
-            url: `/employment-info?businessId=${id}`,
-          };
-        },
+            url: `/employment-info?businessId=${id}`
+          }
+        }
       }),
 
       // CREATE SHARE DETAILS
@@ -297,10 +299,10 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, shareDetails }) => {
           return {
             url: `/share-details?businessId=${businessId}`,
-            method: 'POST',
-            body: shareDetails,
-          };
-        },
+            method: "POST",
+            body: shareDetails
+          }
+        }
       }),
 
       // CREATE SHAREHOLDER
@@ -335,11 +337,11 @@ export const businessRegApiSlice = createApi({
           email,
           fax,
           poBox,
-          businessId,
+          businessId
         }) => {
           return {
             url: `/founder-details?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               shareHolderType,
               description,
@@ -369,28 +371,28 @@ export const businessRegApiSlice = createApi({
               email,
               fax,
               poBox,
-              isBasedInRwanda,
-            },
-          };
-        },
+              isBasedInRwanda
+            }
+          }
+        }
       }),
 
       // FETCH SHAREHOLDERS
       fetchShareholders: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/founders?businessId=${businessId}`,
-          };
-        },
+            url: `/founders?businessId=${businessId}`
+          }
+        }
       }),
 
       // FETCH SHARE DETAILS
       fetchShareDetails: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/share-details?businessId=${businessId}`,
-          };
-        },
+            url: `/share-details?businessId=${businessId}`
+          }
+        }
       }),
 
       // ASSIGN SHARES
@@ -398,28 +400,28 @@ export const businessRegApiSlice = createApi({
         query: ({ founderId, shareDetails }) => {
           return {
             url: `/assign-share?founderId=${founderId}`,
-            method: 'POST',
-            body: shareDetails,
-          };
-        },
+            method: "POST",
+            body: shareDetails
+          }
+        }
       }),
 
       // FETCH BUSINESS ADDRESS
       fetchBusinessAddress: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/address?businessId=${businessId}`,
-          };
-        },
+            url: `/address?businessId=${businessId}`
+          }
+        }
       }),
 
       // FETCH BUSINESS EMPLOYMENT INFO
       fetchBusinessEmploymentInfo: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/employment-info?businessId=${businessId}`,
-          };
-        },
+            url: `/employment-info?businessId=${businessId}`
+          }
+        }
       }),
 
       // UPDATE BUSINESS
@@ -427,75 +429,75 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, applicationStatus }) => {
           return {
             url: `/?businessId=${businessId}`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
-              applicationStatus,
-            },
-          };
-        },
+              applicationStatus
+            }
+          }
+        }
       }),
 
       // FETCH SERVICES
       fetchServices: builder.query({
         query: ({ category }) => {
           return {
-            url: `/services?${category ? `category=${category}` : ''}`,
-          };
-        },
+            url: `/services?${category ? `category=${category}` : ""}`
+          }
+        }
       }),
 
       // GET SERVICE
       getService: builder.query({
         query: ({ id }) => {
           return {
-            url: `/services/${id}`,
-          };
-        },
+            url: `/services/${id}`
+          }
+        }
       }),
 
       // FETCH PROVINCES
       fetchProvinces: builder.query({
         query: () => {
           return {
-            url: `/location/provinces`,
-          };
-        },
+            url: `/location/provinces`
+          }
+        }
       }),
 
       // FETCH DISTRICTS
       fetchDistricts: builder.query({
         query: ({ provinceId }) => {
           return {
-            url: `/location/districts?provinceId=${provinceId}`,
-          };
-        },
+            url: `/location/districts?provinceId=${provinceId}`
+          }
+        }
       }),
 
       // FETCH SECTORS
       fetchSectors: builder.query({
         query: ({ districtId }) => {
           return {
-            url: `/location/sectors?districtId=${districtId}`,
-          };
-        },
+            url: `/location/sectors?districtId=${districtId}`
+          }
+        }
       }),
 
       // FETCH CELLS
       fetchCells: builder.query({
         query: ({ sectorId }) => {
           return {
-            url: `/location/cells?sectorId=${sectorId}`,
-          };
-        },
+            url: `/location/cells?sectorId=${sectorId}`
+          }
+        }
       }),
 
       // FETCH VILLAGES
       fetchVillages: builder.query({
         query: ({ cellId }) => {
           return {
-            url: `/location/villages?cellId=${cellId}`,
-          };
-        },
+            url: `/location/villages?cellId=${cellId}`
+          }
+        }
       }),
 
       // SEARCH VILLAGE
@@ -505,30 +507,30 @@ export const businessRegApiSlice = createApi({
           cellName,
           sectorName,
           districtName,
-          provinceName,
+          provinceName
         }) => {
           return {
-            url: `/location/villages/search?villageName=${villageName}&cellName=${cellName}&sectorName=${sectorName}&districtName=${districtName}&provinceName=${provinceName}`,
-          };
-        },
+            url: `/location/villages/search?villageName=${villageName}&cellName=${cellName}&sectorName=${sectorName}&districtName=${districtName}&provinceName=${provinceName}`
+          }
+        }
       }),
 
       // FETCH BUSINESS ACTIVITY SECTORS
       fetchBusinessActivitiesSectors: builder.query({
         query: () => {
           return {
-            url: `/business-activity/sectors`,
-          };
-        },
+            url: `/business-activity/sectors`
+          }
+        }
       }),
 
       // FETCH BUSINESS LINES
       fetchBusinessLines: builder.query({
         query: ({ sectorCode }) => {
           return {
-            url: `/business-activity/business-lines?sectorCode=${sectorCode}`,
-          };
-        },
+            url: `/business-activity/business-lines?sectorCode=${sectorCode}`
+          }
+        }
       }),
 
       // UPLOAD PERSON ATTACHMENT
@@ -536,11 +538,11 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/attachment/person-upload`,
-            method: 'POST',
+            method: "POST",
             body: formData,
-            formData: true,
-          };
-        },
+            formData: true
+          }
+        }
       }),
 
       // UPLOAD BUSINESS ATTACHMENT
@@ -548,20 +550,20 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/attachment/business-upload`,
-            method: 'POST',
+            method: "POST",
             body: formData,
-            formData: true,
-          };
-        },
+            formData: true
+          }
+        }
       }),
 
       // FETCH BUSINESS ATTACHMENTS
       fetchBusinessAttachments: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/attachment/business?businessId=${businessId}`,
-          };
-        },
+            url: `/attachment/business?businessId=${businessId}`
+          }
+        }
       }),
 
       // DELETE BUSINESS ATTACHMENT
@@ -569,51 +571,51 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/attachment/business/${id}`,
-            method: 'DELETE',
-          };
-        },
+            method: "DELETE"
+          }
+        }
       }),
 
       // GET PERSON DETAILS BY ID
       getBusinessPersonDetails: builder.query({
-        query: ({ id }) => `/person/${id}`,
+        query: ({ id }) => `/person/${id}`
       }),
 
       // GET PERSON ATTACHMENTS
       fetchPersonAttachments: builder.query({
-        query: ({ personId }) => `/attachment/person?personId=${personId}`,
+        query: ({ personId }) => `/attachment/person?personId=${personId}`
       }),
 
       // DELETE BUSINESS PERSON
       deleteBusinessPerson: builder.mutation({
         query: ({ id }) => {
-          return { url: `/person/${id}`, method: 'DELETE' };
-        },
+          return { url: `/person/${id}`, method: "DELETE" }
+        }
       }),
 
       // DELETE FOUNDER
       deleteShareholder: builder.mutation({
         query: ({ id }) => {
-          return { url: `/founder/${id}`, method: 'DELETE' };
-        },
+          return { url: `/founder/${id}`, method: "DELETE" }
+        }
       }),
 
       // FETCH NAVIGATION FLOW MASS
       fetchNavigationFlowMass: builder.query({
         query: ({ businessType }) => {
           return {
-            url: `/navigation-flow/mass?businessType=${businessType}`,
-          };
-        },
+            url: `/navigation-flow/mass?businessType=${businessType}`
+          }
+        }
       }),
 
       // FETCH BUSINESS NAVIGATION FLOWS
       fetchBusinessNavigationFlows: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/navigation-flow?businessId=${businessId}`,
-          };
-        },
+            url: `/navigation-flow?businessId=${businessId}`
+          }
+        }
       }),
 
       // CREATE NAVIGATION FLOW
@@ -621,14 +623,14 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, massId, isActive }) => {
           return {
             url: `/navigation-flow`,
-            method: 'POST',
+            method: "POST",
             body: {
               businessId,
               massId,
-              isActive,
-            },
-          };
-        },
+              isActive
+            }
+          }
+        }
       }),
 
       // COMPLETE NAVIGATION FLOW
@@ -636,13 +638,13 @@ export const businessRegApiSlice = createApi({
         query: ({ isCompleted = true, navigationFlowId }) => {
           return {
             url: `/navigation-flow/complete`,
-            method: 'POST',
+            method: "POST",
             body: {
               isCompleted,
-              navigationFlowId,
-            },
-          };
-        },
+              navigationFlowId
+            }
+          }
+        }
       }),
 
       // DELETE BUSINESS FOUNDER
@@ -650,9 +652,9 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/founder/${id}`,
-            method: 'DELETE',
-          };
-        },
+            method: "DELETE"
+          }
+        }
       }),
 
       // UPLOAD AMENDMENT ATTACHMENT
@@ -660,11 +662,11 @@ export const businessRegApiSlice = createApi({
         query: ({ formData }) => {
           return {
             url: `/amendment/attachment`,
-            method: 'POST',
+            method: "POST",
             body: formData,
-            formData: true,
-          };
-        },
+            formData: true
+          }
+        }
       }),
 
       // DECLARE BUSINESS DORMANCY
@@ -673,18 +675,18 @@ export const businessRegApiSlice = createApi({
           businessId,
           dormantReason,
           dormantStartDate,
-          dormantDeclarationDate,
+          dormantDeclarationDate
         }) => {
           return {
             url: `/amendment/dormant?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               dormantReason,
               dormantStartDate,
-              dormantDeclarationDate,
-            },
-          };
-        },
+              dormantDeclarationDate
+            }
+          }
+        }
       }),
 
       // CLOSE COMPANY
@@ -694,19 +696,19 @@ export const businessRegApiSlice = createApi({
           dissolutionReason,
           dissolutionDate,
           resolutionDate,
-          resolutionReason,
+          resolutionReason
         }) => {
           return {
             url: `/amendment/dissolution?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               dissolutionReason,
               dissolutionDate,
               resolutionDate,
-              resolutionReason,
-            },
-          };
-        },
+              resolutionReason
+            }
+          }
+        }
       }),
 
       // CREATE BUSINESS BRANCH
@@ -716,19 +718,19 @@ export const businessRegApiSlice = createApi({
           branchName,
           workingHoursFrom,
           workingHoursTo,
-          branchAddress,
+          branchAddress
         }) => {
           return {
             url: `/amendment/new-branch?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               branchName,
               workingHoursFrom,
               workingHoursTo,
-              branchAddress,
-            },
-          };
-        },
+              branchAddress
+            }
+          }
+        }
       }),
 
       // REQUEST CESSATION TO DORMANCY
@@ -737,18 +739,18 @@ export const businessRegApiSlice = createApi({
           businessId,
           resolutionReason,
           resolutionStartDate,
-          resolutionEndDate,
+          resolutionEndDate
         }) => {
           return {
             url: `/amendment/cessation?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               resolutionReason,
               resolutionStartDate,
-              resolutionEndDate,
-            },
-          };
-        },
+              resolutionEndDate
+            }
+          }
+        }
       }),
 
       // TRANSFER BUSINESS REGISTRATION
@@ -756,13 +758,13 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId, transferDate, transferReason }) => {
           return {
             url: `/amendment/transfer-registration?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               transferDate,
-              transferReason,
-            },
-          };
-        },
+              transferReason
+            }
+          }
+        }
       }),
 
       // RESTORE BUSINESS
@@ -770,38 +772,38 @@ export const businessRegApiSlice = createApi({
         query: ({ businessId }) => {
           return {
             url: `/amendment/restore?businessId=${businessId}`,
-            method: 'POST',
-          };
-        },
+            method: "POST"
+          }
+        }
       }),
 
       // FETCH BACK OFFICE BUSINESSES
       fetchBackOfficeBusinesses: builder.query({
         query: ({ page, size, applicationStatus, serviceId }) => {
-          let url = `/back-office/?page=${page}&size=${size}`;
+          let url = `/back-office/?page=${page}&size=${size}`
           if (applicationStatus) {
-            url += `&applicationStatus=${applicationStatus}`;
+            url += `&applicationStatus=${applicationStatus}`
           }
           if (serviceId) {
-            url += `&serviceId=${serviceId}`;
+            url += `&serviceId=${serviceId}`
           }
           return {
-            url,
-          };
-        },
+            url
+          }
+        }
       }),
 
       // FETCH BUSINESS REVIEW COMMENTS
       fetchBusinessReviewComments: builder.query({
         query: ({ navigationFlowId, businessId }) => {
-          let url = `/review-comments?businessId=${businessId}`;
+          let url = `/review-comments?businessId=${businessId}`
           if (navigationFlowId) {
-            url += `&navigationFlowId=${navigationFlowId}`;
+            url += `&navigationFlowId=${navigationFlowId}`
           }
           return {
-            url,
-          };
-        },
+            url
+          }
+        }
       }),
 
       // UPDATE BUSINESS REVIEW COMMENT STATUS
@@ -809,21 +811,21 @@ export const businessRegApiSlice = createApi({
         query: ({ id, status }) => {
           return {
             url: `/review-comments/${id}/status`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
-              status,
-            },
-          };
-        },
+              status
+            }
+          }
+        }
       }),
 
       // FETCH FOUNDERS WITH SHARE PERCENTAGES
       fetchFoundersWithSharePercentages: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/founders-with-shares?businessId=${businessId}`,
-          };
-        },
+            url: `/founders-with-shares?businessId=${businessId}`
+          }
+        }
       }),
 
       // CREATE BENEFICIAL OWNER
@@ -863,11 +865,11 @@ export const businessRegApiSlice = createApi({
           OtherControlMeansDesc,
           beneficialOwnerType,
           seniorManagementPosition,
-          businessId,
+          businessId
         }) => {
           return {
             url: `/beneficial-owner/register?businessId=${businessId}`,
-            method: 'POST',
+            method: "POST",
             body: {
               founderId,
               tinNumber,
@@ -902,57 +904,57 @@ export const businessRegApiSlice = createApi({
               controlType,
               OtherControlMeansDesc,
               beneficialOwnerType,
-              seniorManagementPosition,
-            },
-          };
-        },
+              seniorManagementPosition
+            }
+          }
+        }
       }),
 
       // FETCH BENEFICIAL OWNERS
       fetchBeneficialOwners: builder.query({
         query: ({ businessId }) => {
           return {
-            url: `/beneficial-owner/all/${businessId}`,
-          };
-        },
+            url: `/beneficial-owner/all/${businessId}`
+          }
+        }
       }),
 
       // FETCH USER AMENDMENTS
       fetchUserBusinessAmendments: builder.query({
         query: ({ businessId, amendmentType }) => {
-          let url = `/amendment${businessId ? `?businessId=${businessId}` : ''}`;
+          let url = `/amendment${businessId ? `?businessId=${businessId}` : ""}`
           if (amendmentType) {
-            url += `&searchKey=${amendmentType}`;
+            url += `&searchKey=${amendmentType}`
           }
           return {
-            url,
-          };
-        },
+            url
+          }
+        }
       }),
 
       // FETCH AMENDMENTS
       fetchBusinessAmendments: builder.query({
         query: ({ businessId, userId, searchKey }) => {
-          let url = `/back-office/amendments?businessId=${businessId}&page=1&size=100`;
+          let url = `/back-office/amendments?businessId=${businessId}&page=1&size=100`
           if (userId) {
-            url += `&userId=${userId}`;
+            url += `&userId=${userId}`
           }
           if (searchKey) {
-            url += `&searchKey=${searchKey}`;
+            url += `&searchKey=${searchKey}`
           }
           return {
-            url,
-          };
-        },
+            url
+          }
+        }
       }),
 
       // FETCH AMENDMENT REVIEW COMMENTS
       fetchAmendmentReviewComments: builder.query({
         query: ({ amendmentDetailId }) => {
           return {
-            url: `/review-comments/amendment?amendmentDetailId=${amendmentDetailId}`,
-          };
-        },
+            url: `/review-comments/amendment?amendmentDetailId=${amendmentDetailId}`
+          }
+        }
       }),
 
       // UPDATE AMENDMENT REVIEW COMMENT STATUS
@@ -960,12 +962,12 @@ export const businessRegApiSlice = createApi({
         query: ({ id, status }) => {
           return {
             url: `/review-comments/amendment/${id}/status`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
-              status,
-            },
-          };
-        },
+              status
+            }
+          }
+        }
       }),
 
       // UPDATE BUSINESS AMENDMENT
@@ -973,23 +975,22 @@ export const businessRegApiSlice = createApi({
         query: ({ id, amendmentStatus }) => {
           return {
             url: `/amendment/${id}`,
-            method: 'PATCH',
+            method: "PATCH",
             body: {
-              amendmentStatus,
-            },
-          };
-        },
+              amendmentStatus
+            }
+          }
+        }
       }),
-
 
       // GET BUSINESS CERTIFICATE
       fetchBusinessCertificate: builder.query({
         query: ({ id }) => {
           return {
             url: `/certificate/getCertificate/all?businessId=${id}&status=ACTIVE`,
-            method: "GET",
-          };
-        },
+            method: "GET"
+          }
+        }
       }),
 
       // GET BUSINESS CERTIFICATE by ID
@@ -997,39 +998,44 @@ export const businessRegApiSlice = createApi({
         query: ({ id }) => {
           return {
             url: `/certificate/getCertificate/${id}`,
-            method: "GET",
-          };
-        },
+            method: "GET"
+          }
+        }
       }),
       // GET FULL BUSINESS CERTIFICATES
       fetchFullBusinessCertificateById: builder.query({
         query: ({ id }) => {
           return {
             url: `/certificate/getCertificate/full-info/${id}`,
-            method: "GET",
-          };
-        },
+            method: "GET"
+          }
+        }
       }),
       // REQUEST CERTIFICATE
       createCertificateRequest: builder.mutation({
         query: ({ businessId, certificateType, endpoint, reservationId }) => {
-          return businessId ? {
-            url: `/certificate/${endpoint}?businessId=${businessId}&businessCertificateType=${certificateType}`,
-            method: "POST",
-          } :
-          {
-            url: `/certificate/${endpoint}?reservationId=${reservationId}`,
-            method: "POST",
-          }
-          ;
-        },
+          return businessId
+            ? {
+                url: `/certificate/${endpoint}?businessId=${businessId}&businessCertificateType=${certificateType}`,
+                method: "POST"
+              }
+            : {
+                url: `/certificate/${endpoint}?reservationId=${reservationId}`,
+                method: "POST"
+              }
+        }
       }),
-    };
-  },
-});
+
+      getCompanyInformation: builder.query({
+        query: ({ tin }) => `/search?type=tin&tin=${tin}`
+      })
+    }
+  }
+})
 
 export const {
   useLazySearchBusinessesQuery,
+  useLazyGetCompanyInformationQuery,
   useLazyFetchBusinessesQuery,
   useLazyGetBusinessQuery,
   useLazyGetBusinessAddressQuery,
@@ -1098,7 +1104,7 @@ export const {
   useLazyFetchBusinessCertificateQuery,
   useLazyFetchBusinessCertificateByIdQuery,
   useLazyFetchFullBusinessCertificateByIdQuery,
-  useCreateCertificateRequestMutation,
-} = businessRegApiSlice;
+  useCreateCertificateRequestMutation
+} = businessRegApiSlice
 
-export default businessRegApiSlice;
+export default businessRegApiSlice

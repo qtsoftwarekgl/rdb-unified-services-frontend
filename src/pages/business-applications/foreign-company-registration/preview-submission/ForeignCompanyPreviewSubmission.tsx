@@ -1,69 +1,78 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../../../states/store";
-import PreviewCard from "../../../../components/business-registration/PreviewCard";
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch, RootState } from "../../../../states/store"
+import PreviewCard from "../../../../components/business-registration/PreviewCard"
 import {
   removeForeignCompanyRegistrationTabs,
   setForeignBusinessActiveStep,
-  setForeignBusinessActiveTab,
-} from "../../../../states/features/foreignCompanyRegistrationSlice";
-import { capitalizeString } from "../../../../helpers/strings";
-import Button from "../../../../components/inputs/Button";
-import { ErrorResponse, useNavigate } from "react-router-dom";
-import Loader from "../../../../components/Loader";
+  setForeignBusinessActiveTab
+} from "../../../../states/features/foreignCompanyRegistrationSlice"
+import { capitalizeString } from "../../../../helpers/strings"
+import Button from "../../../../components/inputs/Button"
+import { ErrorResponse, useNavigate } from "react-router-dom"
+import Loader from "../../../../components/Loader"
 import {
   Address,
   Business,
   BusinessActivity,
-  businessId,
-} from "@/types/models/business";
+  businessId
+} from "@/types/models/business"
 import {
   useLazyFetchBusinessActivitiesQuery,
   useLazyGetBusinessAddressQuery,
   useLazyGetBusinessDetailsQuery,
   useLazyGetEmploymentInfoQuery,
-  useUpdateBusinessMutation,
-} from "@/states/api/businessRegApiSlice";
-import { toast } from "react-toastify";
-import { useLazyFetchBusinessPeopleQuery } from "@/states/api/foreignCompanyRegistrationApiSlice";
-import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessRegApiSlice";
-import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments";
+  useUpdateBusinessMutation
+} from "@/states/api/businessRegApiSlice"
+import { toast } from "react-toastify"
+import { useLazyFetchBusinessPeopleQuery } from "@/states/api/foreignCompanyRegistrationApiSlice"
+import { useLazyFetchBusinessAttachmentsQuery } from "@/states/api/businessRegApiSlice"
+import BusinessPeopleAttachments from "../../domestic-business-registration/BusinessPeopleAttachments"
 import {
   findNavigationFlowByStepName,
-  findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
+  findNavigationFlowMassIdByStepName
+} from "@/helpers/business.helpers"
 import {
   completeNavigationFlowThunk,
-  createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
-import ListBusinessReviewComments from "../../business-review/ListBusinessReviewComments";
-import { setBusinessAttachments } from "@/states/features/businessSlice";
-import moment from "moment";
-import { ApplicationStatus } from "@/enums/ApplicationStatus";
-import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople";
-import { PersonDetail } from "@/types/models/personDetail";
-import { renderCompanyDetails } from "../../domestic-business-registration/preview-submission/BusinessPreviewSubmission";
+  createNavigationFlowThunk
+} from "@/states/features/navigationFlowSlice"
+import ListBusinessReviewComments from "../../business-review/ListBusinessReviewComments"
+import { setBusinessAttachments } from "@/states/features/businessSlice"
+import moment from "moment"
+import { ApplicationStatus } from "@/enums/ApplicationStatus"
+import BusinessPeople from "../../domestic-business-registration/management/BusinessPeople"
+import { PersonDetail } from "@/types/models/personDetail"
+import {
+  checkAllTabsCompletion,
+  renderCompanyDetails
+} from "../../domestic-business-registration/preview-submission/BusinessPreviewSubmission"
+import ConfirmPreviewModal from "@/components/business-registration/ConfirmPreviewModal"
+import {
+  setConfirmPreviewModal,
+  setResubmitConfirmModal
+} from "@/states/features/businessRegistrationSlice"
+import ResubmitConfirmModal from "@/components/business-registration/ResubmitConfirmModal"
 
 interface ForeignCompanyPreviewSubmissionProps {
-  businessId: businessId;
-  applicationStatus: string;
-  noActions?: boolean;
+  businessId: businessId
+  applicationStatus: string
+  noActions?: boolean
 }
 
 const ForeignCompanyPreviewSubmission = ({
   businessId,
   applicationStatus,
-  noActions = false,
+  noActions = false
 }: ForeignCompanyPreviewSubmissionProps) => {
   // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch()
+  const navigate = useNavigate()
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
-  );
+  )
   const { businessReviewCommentsList } = useSelector(
     (state: RootState) => state.businessReviewComment
-  );
+  )
 
   // UPDATE NAVIGATION FLOW ON LOAD
   useEffect(() => {
@@ -73,28 +82,28 @@ const ForeignCompanyPreviewSubmission = ({
         navigationFlowId: findNavigationFlowByStepName(
           businessNavigationFlowsList,
           "Preview & Submission"
-        )?.id,
+        )?.id
       })
-    );
-  }, [dispatch, businessId]);
+    )
+  }, [dispatch, businessId])
 
   // GET BUSINESS DETAILS
   const [
     getBusinessDetails,
-    { data: businessDetailsData, isLoading: businessIsLoading },
-  ] = useLazyGetBusinessDetailsQuery();
+    { data: businessDetailsData, isLoading: businessIsLoading }
+  ] = useLazyGetBusinessDetailsQuery()
 
   // INITIALIZE GET BUSINESS QUERY
   const [
     getBusinessAddress,
-    { data: businessAddressData, isLoading: businessAddressIsLoading },
-  ] = useLazyGetBusinessAddressQuery();
+    { data: businessAddressData, isLoading: businessAddressIsLoading }
+  ] = useLazyGetBusinessAddressQuery()
 
   // INITIALIZE FETCH BOARD MEMEBER QUERY
   const [
     fetchBoardMembers,
-    { data: boardMemberData, isLoading: boardMemberIsLoading },
-  ] = useLazyFetchBusinessPeopleQuery();
+    { data: boardMemberData, isLoading: boardMemberIsLoading }
+  ] = useLazyFetchBusinessPeopleQuery()
 
   // INITIALIZE FETCH BUSINESS ACTIVITIES QUERY
   const [
@@ -102,15 +111,15 @@ const ForeignCompanyPreviewSubmission = ({
     {
       data: businessActivitiesData,
       isLoading: businessActivitiesIsLoading,
-      isSuccess: businessActivitiesIsSuccess,
-    },
-  ] = useLazyFetchBusinessActivitiesQuery();
+      isSuccess: businessActivitiesIsSuccess
+    }
+  ] = useLazyFetchBusinessActivitiesQuery()
 
   // INITIALIZE FETCH MANAGEMENT OR BOARD PEOPLE QUERY
   const [
     fetchManagementMember,
-    { data: managementMemberData, isLoading: managementMemberIsLoading },
-  ] = useLazyFetchBusinessPeopleQuery();
+    { data: managementMemberData, isLoading: managementMemberIsLoading }
+  ] = useLazyFetchBusinessPeopleQuery()
 
   // GET EMPLOYMENT INFO
   const [
@@ -118,9 +127,9 @@ const ForeignCompanyPreviewSubmission = ({
     {
       data: employmentInfoData,
       isLoading: employmentInfoIsLoading,
-      isSuccess: employmentInfoIsSuccess,
-    },
-  ] = useLazyGetEmploymentInfoQuery();
+      isSuccess: employmentInfoIsSuccess
+    }
+  ] = useLazyGetEmploymentInfoQuery()
 
   // INITIALIZE FETC BUSINESS ATTACHMENTS
   const [
@@ -130,23 +139,23 @@ const ForeignCompanyPreviewSubmission = ({
       isLoading: businessAttachmentsIsLoading,
       error: businessAttachmentsError,
       isSuccess: businessAttachmentsIsSuccess,
-      isError: businessAttachmentsIsError,
-    },
-  ] = useLazyFetchBusinessAttachmentsQuery();
+      isError: businessAttachmentsIsError
+    }
+  ] = useLazyFetchBusinessAttachmentsQuery()
 
   // GET BUSINESS
   useEffect(() => {
     if (businessId) {
-      getBusinessDetails({ id: businessId });
-      getBusinessAddress({ businessId });
-      fetchBusinessActivities({ businessId });
-      fetchBoardMembers({ businessId, route: "board-member" });
+      getBusinessDetails({ id: businessId })
+      getBusinessAddress({ businessId })
+      fetchBusinessActivities({ businessId })
+      fetchBoardMembers({ businessId, route: "board-member" })
       fetchManagementMember({
         businessId,
-        route: "management",
-      });
-      fetchEmploymentInfo({ id: businessId });
-      fetchBusinessAttachments({ businessId });
+        route: "management"
+      })
+      fetchEmploymentInfo({ id: businessId })
+      fetchBusinessAttachments({ businessId })
 
       // complete preview tab
       dispatch(
@@ -155,9 +164,9 @@ const ForeignCompanyPreviewSubmission = ({
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
             "Preview & Submission"
-          )?.id,
+          )?.id
         })
-      );
+      )
     }
   }, [
     businessId,
@@ -167,8 +176,8 @@ const ForeignCompanyPreviewSubmission = ({
     fetchEmploymentInfo,
     fetchManagementMember,
     getBusinessAddress,
-    getBusinessDetails,
-  ]);
+    getBusinessDetails
+  ])
 
   // INITIALIZE UPDATE BUSINESS MUTATION
   const [
@@ -178,29 +187,29 @@ const ForeignCompanyPreviewSubmission = ({
       error: updateBusinessError,
       isLoading: updateBusinessIsLoading,
       isSuccess: updateBusinessIsSuccess,
-      isError: updateBusinessIsError,
-    },
-  ] = useUpdateBusinessMutation();
+      isError: updateBusinessIsError
+    }
+  ] = useUpdateBusinessMutation()
 
   // HANDLE UPDATE BUSINESS RESPONSE
   useEffect(() => {
     if (updateBusinessIsError) {
       if ((updateBusinessError as ErrorResponse).status === 500) {
-        toast.error("An error occurred while updating business");
+        toast.error("An error occurred while updating business")
       } else {
         toast.error(
           (updateBusinessError as ErrorResponse).data?.message ??
             "An error occurred while updating business"
-        );
+        )
       }
     } else if (updateBusinessIsSuccess) {
-      toast.success("Business updated successfully");
-      dispatch(setForeignBusinessActiveStep("company_details"));
-      dispatch(setForeignBusinessActiveTab("general_information"));
-      dispatch(removeForeignCompanyRegistrationTabs());
+      toast.success("Business updated successfully")
+      dispatch(setForeignBusinessActiveStep("company_details"))
+      dispatch(setForeignBusinessActiveTab("general_information"))
+      dispatch(removeForeignCompanyRegistrationTabs())
       navigate("/success", {
-        state: { redirectUrl: "/services" },
-      });
+        state: { redirectUrl: "/services" }
+      })
     }
   }, [
     dispatch,
@@ -208,28 +217,28 @@ const ForeignCompanyPreviewSubmission = ({
     updateBusinessData,
     updateBusinessError,
     updateBusinessIsError,
-    updateBusinessIsSuccess,
-  ]);
+    updateBusinessIsSuccess
+  ])
 
   useEffect(() => {
     if (businessAttachmentsIsError) {
       if ((businessAttachmentsError as ErrorResponse)?.status === 500) {
         toast.error(
           "An error occurred while fetching business attachments. Please try again later."
-        );
+        )
       } else {
-        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message);
+        toast.error((businessAttachmentsError as ErrorResponse)?.data?.message)
       }
     } else if (businessAttachmentsIsSuccess) {
-      dispatch(setBusinessAttachments(businessAttachmentsData?.data));
+      dispatch(setBusinessAttachments(businessAttachmentsData?.data))
     }
   }, [
     businessAttachmentsData,
     businessAttachmentsError,
     businessAttachmentsIsError,
     businessAttachmentsIsSuccess,
-    dispatch,
-  ]);
+    dispatch
+  ])
 
   return (
     <section className="flex flex-col w-full h-full gap-6">
@@ -267,7 +276,7 @@ const ForeignCompanyPreviewSubmission = ({
               Object?.entries(businessDetailsData?.data)?.map(
                 ([key, value], index: number) => {
                   if (["amendedInformation"].includes(key) && value) {
-                    const originalValue = businessDetailsData?.data;
+                    const originalValue = businessDetailsData?.data
                     return (
                       <article className="flex flex-col w-full gap-2 my-4">
                         <h3 className="text-lg font-medium uppercase text-primary">
@@ -278,7 +287,7 @@ const ForeignCompanyPreviewSubmission = ({
                           originalValue as Business
                         )}
                       </article>
-                    );
+                    )
                   }
                   if (
                     value === null ||
@@ -287,10 +296,10 @@ const ForeignCompanyPreviewSubmission = ({
                       "updatedAt",
                       "isForeign",
                       "id",
-                      "applicationStatus",
+                      "applicationStatus"
                     ].includes(key)
                   )
-                    return null;
+                    return null
                   if (key === "service")
                     return (
                       <p>
@@ -299,13 +308,13 @@ const ForeignCompanyPreviewSubmission = ({
                           String(
                             (
                               value as {
-                                name: string;
+                                name: string
                               }
                             )?.name
                           )
                         )}
                       </p>
-                    );
+                    )
                   return (
                     <li key={index}>
                       <p className="flex text-[14px] items-center gap-2">
@@ -313,7 +322,7 @@ const ForeignCompanyPreviewSubmission = ({
                         {capitalizeString(String(value))}
                       </p>
                     </li>
-                  );
+                  )
                 }
               )
             ) : (
@@ -344,13 +353,13 @@ const ForeignCompanyPreviewSubmission = ({
         {businessAddressData?.data &&
           Object?.entries(businessAddressData?.data)?.map(
             ([key, value], index: number) => {
-              if (key === "id" || value === null) return null;
+              if (key === "id" || value === null) return null
               if (key === "location")
                 return (
                   <ul key={index} className="flex flex-col gap-2">
                     {Object?.entries(value as Address)?.map(
                       ([key, value], index: number) => {
-                        if (key === "id" || value === null) return null;
+                        if (key === "id" || value === null) return null
                         return (
                           <li key={index}>
                             <p className="flex text-[14px] items-center gap-2">
@@ -358,11 +367,11 @@ const ForeignCompanyPreviewSubmission = ({
                               {capitalizeString(String(value))}
                             </p>
                           </li>
-                        );
+                        )
                       }
                     )}
                   </ul>
-                );
+                )
               if (key === "placeOfIncorporation")
                 return (
                   <ul key={index} className="flex flex-col gap-2">
@@ -377,7 +386,7 @@ const ForeignCompanyPreviewSubmission = ({
                           ) ||
                           value === null
                         )
-                          return null;
+                          return null
                         return (
                           <li key={index}>
                             <p className="flex text-[14px] items-center gap-2">
@@ -385,11 +394,11 @@ const ForeignCompanyPreviewSubmission = ({
                               <strong>{capitalizeString(String(value))}</strong>
                             </p>
                           </li>
-                        );
+                        )
                       }
                     )}
                   </ul>
-                );
+                )
               return (
                 <li key={index}>
                   <p className="flex text-[14px] items-center gap-2">
@@ -397,7 +406,7 @@ const ForeignCompanyPreviewSubmission = ({
                     <strong>{capitalizeString(String(value))}</strong>
                   </p>
                 </li>
-              );
+              )
             }
           )}
       </PreviewCard>
@@ -441,7 +450,7 @@ const ForeignCompanyPreviewSubmission = ({
                           {capitalizeString(activity?.description)}
                         </p>
                       </li>
-                    );
+                    )
                   }
                 )}
               </ul>
@@ -585,7 +594,7 @@ const ForeignCompanyPreviewSubmission = ({
       [
         ApplicationStatus.Inprogress,
         ApplicationStatus.IsAmending,
-        ApplicationStatus.Forcorrection,
+        ApplicationStatus.Forcorrection
       ].includes(String(applicationStatus) as ApplicationStatus) ? (
         <menu
           className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -593,7 +602,7 @@ const ForeignCompanyPreviewSubmission = ({
           <Button
             value="Back"
             onClick={(e) => {
-              e.preventDefault();
+              e.preventDefault()
               dispatch(
                 createNavigationFlowThunk({
                   businessId,
@@ -601,14 +610,14 @@ const ForeignCompanyPreviewSubmission = ({
                     navigationFlowMassList,
                     "Attachments"
                   ),
-                  isActive: true,
+                  isActive: true
                 })
-              );
+              )
             }}
           />
           <Button
             onClick={(e) => {
-              e.preventDefault();
+              e.preventDefault()
               if (
                 managementMemberData.data.find(
                   (manager: PersonDetail) =>
@@ -617,44 +626,60 @@ const ForeignCompanyPreviewSubmission = ({
               ) {
                 toast.info(
                   "Please add an authorized representative in the executive management section"
-                );
-                return false;
+                )
+                return false
               }
+              dispatch(setConfirmPreviewModal(true))
+            }}
+            value={"Submit"}
+            primary
+          />
+          <ConfirmPreviewModal
+            isLoading={updateBusinessIsLoading}
+            applicationType="Branch of Foreign"
+            confirmHandler={async () => {
               updateBusiness({
                 businessId,
                 applicationStatus:
                   applicationStatus === ApplicationStatus.Inprogress
                     ? ApplicationStatus.Submitted
-                    : ApplicationStatus.AmendmentSubmitted,
-              });
+                    : ApplicationStatus.AmendmentSubmitted
+              })
             }}
-            value={updateBusinessIsLoading ? <Loader /> : "Submit"}
-            primary
           />
         </menu>
       ) : (
         ["ACTION_REQUIRED"].includes(String(applicationStatus)) && (
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              updateBusiness({
-                businessId,
-                applicationStatus: "RESUBMITTED",
-              });
-            }}
-            disabled={
-              businessReviewCommentsList?.filter(
-                (reviewComment) => reviewComment?.status === "UNRESOLVED"
-              ).length > 0
-            }
-            value={updateBusinessIsLoading ? <Loader /> : "Submit again"}
-            primary
-          />
+          <>
+            <Button
+              onClick={(e) => {
+                e.preventDefault()
+                dispatch(setResubmitConfirmModal(true))
+              }}
+              disabled={
+                businessReviewCommentsList?.filter(
+                  (reviewComment) => reviewComment?.status === "UNRESOLVED"
+                ).length > 0
+              }
+              value={"Submit again"}
+              primary
+            />
+            <ResubmitConfirmModal
+              applicationType="Domestic"
+              isLoading={updateBusinessIsLoading}
+              confirmHandler={async () => {
+                updateBusiness({
+                  businessId,
+                  applicationStatus: "RESUBMITTED"
+                })
+              }}
+            />
+          </>
         )
       )}
       <ListBusinessReviewComments />
     </section>
-  );
-};
+  )
+}
 
-export default ForeignCompanyPreviewSubmission;
+export default ForeignCompanyPreviewSubmission

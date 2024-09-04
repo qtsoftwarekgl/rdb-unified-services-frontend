@@ -1,70 +1,218 @@
-import { useState } from "react";
-import { useForm, Controller, FieldValues } from "react-hook-form";
-import Button from "../../../components/inputs/Button";
-import Input from "../../../components/inputs/Input";
-import Loader from "../../../components/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useDispatch, useSelector } from "react-redux";
-import ViewDocument from "../../user-company-details/ViewDocument";
-import { faEye } from "@fortawesome/free-regular-svg-icons";
-import { businessId } from "@/types/models/business";
+import { useEffect, useState } from "react"
+import { useForm, Controller, FieldValues } from "react-hook-form"
+import Button from "../../../components/inputs/Button"
+import Input from "../../../components/inputs/Input"
+import Loader from "../../../components/Loader"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useDispatch, useSelector } from "react-redux"
+import ViewDocument from "../../user-company-details/ViewDocument"
+import { faEye } from "@fortawesome/free-regular-svg-icons"
+import { businessId } from "@/types/models/business"
 import {
   completeNavigationFlowThunk,
-  createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+  createNavigationFlowThunk
+} from "@/states/features/navigationFlowSlice"
 import {
   findNavigationFlowByStepName,
-  findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import { UnknownAction } from "@reduxjs/toolkit";
-import { RootState } from "@/states/store";
+  findNavigationFlowMassIdByStepName
+} from "@/helpers/business.helpers"
+import { UnknownAction } from "@reduxjs/toolkit"
+import { RootState } from "@/states/store"
+import store from "store"
+import {
+  useLazyFetchBusinessAttachmentsQuery,
+  useLazyGetBusinessDetailsQuery,
+  useUploadBusinessAttachmentMutation
+} from "@/states/api/businessRegApiSlice"
+import { ErrorResponse } from "react-router-dom"
+import {
+  addBusinessAttachment,
+  setBusinessAttachments,
+  setBusinessDetails
+} from "@/states/features/businessSlice"
+import { toast } from "react-toastify"
+import { BusinessAttachment } from "@/types/models/attachment"
+import BusinessPeopleAttachments from "../domestic-business-registration/BusinessPeopleAttachments"
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
 
 type AttachmentsProps = {
-  businessId: businessId;
-  applicationStatus?: string;
-};
+  businessId: businessId
+  applicationStatus?: string
+}
 
 type Attachment = {
-  label: string;
-  file: File | null;
-};
+  label: string
+  file: File | null
+  required: boolean
+  attachmentType: string
+}
 
 const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
   // REACT HOOK FORM
   const {
     handleSubmit,
     control,
-    formState: { errors },
-  } = useForm();
+    formState: { errors }
+  } = useForm()
 
   // STATE VARIABLES
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  // Logged in user
+  const user = store.get("user")
   const [attachmentFiles, setAttachmentFiles] = useState<Attachment[]>([
-    { label: "National ID Copy ", file: null },
-    { label: "Passport Copy", file: null },
-  ]);
+    {
+      label: "National ID Copy ",
+      file: null,
+      required: user?.profile?.personIdentType?.toLowerCase() === "nid",
+      attachmentType: "nid"
+    },
+    {
+      label: "Passport Copy",
+      file: null,
+      required: user.profile?.personIdentType?.toLowerCase() === "passport",
+      attachmentType: "passport"
+    }
+  ])
   const isFormDisabled = ["IN_REVIEW", "APPROVED"].includes(
     String(applicationStatus)
-  );
-  const [previewAttachment, setPreviewAttachment] = useState<string>("");
+  )
+  const [previewAttachment, setPreviewAttachment] = useState<string>("")
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
-  );
+  )
+  const { businessAttachments } = useSelector(
+    (state: RootState) => state.business
+  )
+
+  // GET BUSINESS DETAILS
+  const [
+    getBusinessDetails,
+    {
+      data: businessDetailsData,
+      isFetching: businessIsFetching,
+      error: businessError,
+      isError: businessIsError,
+      isSuccess: businessIsSuccess
+    }
+  ] = useLazyGetBusinessDetailsQuery()
+
+  // GET BUSINESS DETAILS
+  useEffect(() => {
+    if (businessId) {
+      getBusinessDetails({ id: businessId })
+    }
+  }, [businessId, getBusinessDetails])
+
+  // HANDLE BUSINESS DETAILS DATA RESPONSE
+  useEffect(() => {
+    if (businessIsError) {
+      const errorMessage =
+        (businessError as ErrorResponse)?.data?.message ||
+        "An error occurred while fetching business details. Please try again later."
+      toast.error(errorMessage)
+    } else if (businessIsSuccess) {
+      dispatch(setBusinessDetails(businessDetailsData?.data))
+    }
+  }, [
+    businessDetailsData,
+    businessError,
+    businessIsError,
+    businessIsSuccess,
+    dispatch
+  ])
+
+  // INITIALIZE FETCH BUSINESS ATTACHMENTS
+  const [
+    fetchBusinessAttachments,
+    {
+      data: businessAttachmentsData,
+      isFetching: businessAttachmentsIsFetching,
+      error: businessAttachmentsError,
+      isSuccess: businessAttachmentsIsSuccess,
+      isError: businessAttachmentsIsError
+    }
+  ] = useLazyFetchBusinessAttachmentsQuery()
+
+  // FETCH BUSINESS ATTACHMENTS
+  useEffect(() => {
+    if (businessId) {
+      fetchBusinessAttachments({ businessId })
+    }
+  }, [businessId, fetchBusinessAttachments])
+
+  // INITIALIZE UPLOAD BUSINESS ATTACHMENT
+  const [
+    uploadBusinessAttachment,
+    {
+      data: uploadBusinessAttachmentData,
+      isLoading: uploadBusinessAttachmentIsLoading,
+      error: uploadBusinessAttachmentError,
+      isSuccess: uploadBusinessAttachmentIsSuccess,
+      isError: uploadBusinessAttachmentIsError
+    }
+  ] = useUploadBusinessAttachmentMutation()
+
+  // HANDLE UPLOAD BUSINESS ATTACHMENT RESPONSE
+  useEffect(() => {
+    if (uploadBusinessAttachmentIsError) {
+      const errorMessage =
+        (uploadBusinessAttachmentError as ErrorResponse)?.data?.message ||
+        "An error occurred while uploading attachments. Please try again later."
+      toast.error(errorMessage)
+    } else if (uploadBusinessAttachmentIsSuccess) {
+      toast.success("Attachments uploaded successfully")
+      dispatch(addBusinessAttachment(uploadBusinessAttachmentData?.data))
+    }
+  }, [
+    businessId,
+    dispatch,
+    uploadBusinessAttachmentData,
+    uploadBusinessAttachmentError,
+    uploadBusinessAttachmentIsError,
+    uploadBusinessAttachmentIsSuccess
+  ])
+
+  const uploadHelper = (file: File, attachmentType: string) => {
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("businessId", String(businessId))
+    formData.append("attachmentType", attachmentType)
+    formData.append("fileName", file.name)
+    uploadBusinessAttachment({ formData })
+  }
+
+  // HANDLE FETCH BUSINESS ATTACHMENTS RESPONSE
+  useEffect(() => {
+    if (businessAttachmentsIsError) {
+      const errorMessage =
+        (businessAttachmentsError as ErrorResponse)?.data?.message ||
+        "An error occurred while fetching business attachments. Please try again later."
+      toast.error(errorMessage)
+    } else if (businessAttachmentsIsSuccess) {
+      dispatch(setBusinessAttachments(businessAttachmentsData?.data))
+    }
+  }, [
+    businessAttachmentsData,
+    businessAttachmentsError,
+    businessAttachmentsIsError,
+    businessAttachmentsIsSuccess,
+    dispatch
+  ])
 
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    setIsLoading(true)
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoading(false)
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
             "Attachments"
-          )?.id,
+          )?.id
         }) as unknown as UnknownAction
-      );
+      )
       dispatch(
         createNavigationFlowThunk({
           businessId,
@@ -72,91 +220,112 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
             navigationFlowMassList,
             "Preview & Submission"
           ),
-          isActive: true,
+          isActive: true
         }) as unknown as UnknownAction
-      );
-    }, 4000);
+      )
+    }, 4000)
     return {
       ...data,
       businessId,
-      applicationStatus,
-    };
-  };
-
-  const handleFileChange = (index: number, file: File | null) => {
-    const newAttachments = [...attachmentFiles];
-    newAttachments[index].file = file;
-    setAttachmentFiles(newAttachments);
-  };
+      applicationStatus
+    }
+  }
 
   return (
     <section className="flex flex-col w-full gap-6">
+      {(businessAttachmentsIsFetching || businessIsFetching) && (
+        <figure className="flex items-center justify-center">
+          <Loader />
+        </figure>
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <fieldset disabled={isFormDisabled}>
-          {attachmentFiles.map((file, index) => (
-            <menu
-              key={index}
-              className="flex flex-col items-start w-full gap-3 mb-4 max-md:items-center"
+        <section className="flex flex-col w-full gap-3 ">
+          {attachmentFiles.map(({ label, required, attachmentType }) => (
+            <section
+              key={attachmentType}
+              className={`flex flex-col w-full gap-3`}
             >
-              <menu className="flex items-start justify-between w-full gap-12">
-                <h3 className="capitalize text-[14px] font-normal w-1/2">
-                  {file.label} <span className="text-red-600">*</span>
-                </h3>
-                <Controller
-                  name={`attachment${index + 1}`}
-                  rules={{
-                    required: `Document attachment ${index + 1} is required`,
-                  }}
-                  control={control}
-                  render={({ field }) => (
-                    <menu className="flex items-center justify-between gap-3 w-fit">
-                      <label className="flex flex-col items-start gap-2 max-sm:!w-full">
-                        <ul>
-                          <Input
-                            type="file"
-                            accept="application/pdf"
-                            className="!w-fit max-sm:!w-full"
-                            onChange={(e) => {
-                              field.onChange(e?.target?.files?.[0]);
-                              handleFileChange(
-                                index,
-                                e?.target?.files?.[0] as File | null
-                              );
-                            }}
+              {/* <h1 className="text-lg font-medium uppercase">{label}</h1> */}
+              <Controller
+                name={attachmentType}
+                control={control}
+                rules={
+                  required
+                    ? {
+                        required: businessAttachments.some(
+                          (attachment: BusinessAttachment) =>
+                            attachment.attachmentType === attachmentType
+                        )
+                          ? false
+                          : `Upload ${label.toLowerCase()}`
+                      }
+                    : {}
+                }
+                render={({ field }) => (
+                  <label className="flex flex-col w-full gap-2">
+                    <ul className="flex items-center justify-between w-full gap-3">
+                      <p className="flex items-center gap-1">
+                        {label}
+                        {required && <span className="text-red-600">*</span>}
+                        {businessAttachments.some(
+                          (attachment: BusinessAttachment) =>
+                            attachment.attachmentType === attachmentType
+                        ) && (
+                          <FontAwesomeIcon
+                            icon={faCheckCircle}
+                            className="text-primary"
                           />
-                        </ul>
-                        {errors?.[`attachment${index + 1}`] && (
-                          <p className="text-sm text-red-500">
-                            {String(
-                              errors?.[`attachment${index + 1}`]?.message
-                            )}
-                          </p>
                         )}
-                      </label>
-                      {file.file && (
-                        <FontAwesomeIcon
-                          icon={faEye}
-                          onClick={() => {
-                            if (!file.file) return;
-                            const url = URL.createObjectURL(file.file);
-                            setPreviewAttachment(url);
-                          }}
-                          className="text-primary text-[14px] cursor-pointer ease-in-out duration-300 hover:scale-[1.02]"
-                        />
-                      )}
-                    </menu>
-                  )}
-                />
-              </menu>
-            </menu>
+                      </p>
+                      <Input
+                        type="file"
+                        required={required}
+                        accept="application/pdf"
+                        className="!w-fit"
+                        name={field.name}
+                        onChange={(e) => {
+                          field.onChange(e.target.files?.[0])
+                          if (e.target.files?.[0])
+                            uploadHelper(e.target.files[0], attachmentType)
+                        }}
+                      />
+                    </ul>
+                    {errors[attachmentType] && (
+                      <p className="text-red-600 text-[13px]">
+                        {String(errors[attachmentType]?.message)}
+                      </p>
+                    )}
+                  </label>
+                )}
+              />
+            </section>
           ))}
+          {uploadBusinessAttachmentIsLoading && (
+            <ul className="flex flex-col items-center gap-3">
+              <ul className="flex items-center gap-2">
+                <Loader className="text-primary" />
+                Uploading attachment...
+              </ul>
+            </ul>
+          )}
+          {businessAttachmentsIsFetching ? (
+            <figure className="flex items-center gap-3 w-full min-h-[20vh]">
+              <Loader className="text-primary" />
+              Fetching business attachments...
+            </figure>
+          ) : (
+            businessAttachments?.length > 0 && (
+              <BusinessPeopleAttachments attachments={businessAttachments} />
+            )
+          )}
           <menu
             className={`flex mt-6 items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
           >
             <Button
               value="Back"
               onClick={(e) => {
-                e.preventDefault();
+                e.preventDefault()
                 dispatch(
                   createNavigationFlowThunk({
                     businessId,
@@ -164,9 +333,9 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
                       navigationFlowMassList,
                       "Enterprise Address"
                     ),
-                    isActive: true,
+                    isActive: true
                   }) as unknown as UnknownAction
-                );
+                )
               }}
             />
             <Button
@@ -176,6 +345,7 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
               submit
             />
           </menu>
+          </section>
         </fieldset>
       </form>
       {previewAttachment && (
@@ -185,7 +355,7 @@ const Attachments = ({ businessId, applicationStatus }: AttachmentsProps) => {
         />
       )}
     </section>
-  );
-};
+  )
+}
 
-export default Attachments;
+export default Attachments
