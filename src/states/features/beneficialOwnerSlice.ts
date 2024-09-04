@@ -46,6 +46,7 @@ const initialState: {
     completed: boolean;
   }[];
   newBeneficialOwner?: BeneficialOwner;
+  beneficialOwner?: BeneficialOwner;
 } = {
   selectedBeneficialOwner: undefined,
   beneficialOwnersList: [],
@@ -55,6 +56,7 @@ const initialState: {
   beneficialOwnerDetailsModal: false,
   beneficialOwnerNavigationSteps,
   newBeneficialOwner: undefined,
+  beneficialOwner: undefined,
 };
 
 // FETCH BENEFICIAL OWNERS THUNK
@@ -116,6 +118,9 @@ const beneficialOwnerSlice = createSlice({
     setNewBeneficialOwner: (state, action) => {
       state.newBeneficialOwner = action.payload;
     },
+    setBeneficialOwner: (state, action) => {
+      state.beneficialOwner = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBeneficialOwnersThunk.pending, (state) => {
@@ -145,6 +150,7 @@ export const {
   setCompleteBeneficialOwnerNavigationStep,
   setActiveBeneficialOwnerNavigationStep,
   setNewBeneficialOwner,
+  setBeneficialOwner,
 } = beneficialOwnerSlice.actions;
 
 export default beneficialOwnerSlice.reducer;

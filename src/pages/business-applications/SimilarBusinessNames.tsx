@@ -39,10 +39,9 @@ const SimilarBusinessNames = ({ businessName }: { businessName: string }) => {
       onClose={() => {
         dispatch(setSimilarBusinessNamesModal(false));
       }}
+      heading={`List of businesses with similar names to ${businessName?.toUpperCase()}`}
+      className="min-w-[50vw]"
     >
-      <h1 className="text-center text-primary font-medium uppercase">
-        List of businesses with similar names to {businessName?.toUpperCase()}
-      </h1>
       <section className="flex flex-col gap-2">
         <Table
           showFilter={false}

@@ -831,83 +831,30 @@ export const businessRegApiSlice = createApi({
       // CREATE BENEFICIAL OWNER
       createBeneficialOwner: builder.mutation({
         query: ({
-          founderId,
-          tinNumber,
-          personIdentType,
-          personDocNo,
-          firstName,
-          middleName,
-          lastName,
-          dateOfBirth,
-          gender,
-          nationality,
-          persDocIssuePlace,
-          persDocExpiryDate,
-          villageId,
-          streetNumber,
-          poBox,
-          email,
-          phoneNumber,
-          fax,
-          proCountry,
-          proVillageId,
-          proStreetNumber,
-          proPoBox,
-          proEmail,
-          proPhoneNumber,
-          proFax,
-          occupation,
-          registeredDate,
-          extentOfShare,
-          extentOfVoting,
-          significantInfluence,
+          businessId,
           controlType,
-          OtherControlMeansDesc,
           beneficialOwnerType,
-          seniorManagementPosition,
-          businessId
+          founderId,
         }) => {
           return {
             url: `/beneficial-owner/register?businessId=${businessId}`,
             method: "POST",
             body: {
-              founderId,
-              tinNumber,
-              personIdentType,
-              personDocNo,
-              firstName,
-              middleName,
-              lastName,
-              dateOfBirth,
-              gender,
-              nationality,
-              persDocIssuePlace,
-              persDocExpiryDate,
-              villageId,
-              streetNumber,
-              poBox,
-              email,
-              phoneNumber,
-              fax,
-              proCountry,
-              proVillageId,
-              proStreetNumber,
-              proPoBox,
-              proEmail,
-              proPhoneNumber,
-              proFax,
-              occupation,
-              registeredDate,
-              extentOfShare,
-              extentOfVoting,
-              significantInfluence,
               controlType,
-              OtherControlMeansDesc,
               beneficialOwnerType,
-              seniorManagementPosition
-            }
-          }
-        }
+              founderId,
+            },
+          };
+        },
+      }),
+
+      // GET BENEFICIAL OWNER BY ID
+      getBeneficialOwner: builder.query({
+        query: ({ id }) => {
+          return {
+            url: `/beneficial-owner/${id}`,
+          };
+        },
       }),
 
       // FETCH BENEFICIAL OWNERS
@@ -1002,6 +949,7 @@ export const businessRegApiSlice = createApi({
           }
         }
       }),
+
       // GET FULL BUSINESS CERTIFICATES
       fetchFullBusinessCertificateById: builder.query({
         query: ({ id }) => {
@@ -1011,19 +959,136 @@ export const businessRegApiSlice = createApi({
           }
         }
       }),
+
       // REQUEST CERTIFICATE
       createCertificateRequest: builder.mutation({
         query: ({ businessId, certificateType, endpoint, reservationId }) => {
           return businessId
             ? {
                 url: `/certificate/${endpoint}?businessId=${businessId}&businessCertificateType=${certificateType}`,
-                method: "POST"
+                method: 'POST',
               }
             : {
                 url: `/certificate/${endpoint}?reservationId=${reservationId}`,
-                method: "POST"
-              }
-        }
+                method: 'POST',
+              };
+        },
+      }),
+
+      // UPDATE BENEFICIAL OWNER TIN
+      updateBeneficialOwnerTin: builder.mutation({
+        query: ({ id, tin }) => {
+          return {
+            url: `/beneficial-owner/${id}/tin?tin=${String(tin)}`,
+            method: 'PATCH',
+          };
+        },
+      }),
+
+      // UPDATE BENEFICIAL OWNER PERSONAL INFORMATION
+      updateBeneficialOwnerPersonalInfo: builder.mutation({
+        query: ({
+          id,
+          firstName,
+          lastName,
+          nationality,
+          gender,
+          dateOfBirth,
+          persDocIssuePlace,
+          personIdentType,
+          email,
+          phoneNumber,
+          personDocNo,
+          persDocExpiryDate,
+        }) => {
+          return {
+            url: `/beneficial-owner/${id}/personal-info`,
+            method: 'PATCH',
+            body: {
+              firstName,
+              lastName,
+              dateOfBirth,
+              personIdentType,
+              email,
+              phoneNumber,
+              personDocNo,
+              persDocExpiryDate,
+              persDocIssuePlace,
+              nationality,
+              gender,
+            },
+          };
+        },
+      }),
+
+      // UPDATE BENEFICIAL OWNER RESIDENTIAL ADDRESS
+      updateBeneficialOwnerResidentialAddress: builder.mutation({
+        query: ({ id, villageId, fax, poBox, streetNumber }) => {
+          return {
+            url: `/beneficial-owner/${id}/residential-address`,
+            method: 'PATCH',
+            body: {
+              villageId,
+              fax,
+              poBox,
+              streetNumber,
+            },
+          };
+        },
+      }),
+
+      // UPDATE BENEFICIAL OWNER PROFESSIONAL ADDRESS
+      updateBeneficialOwnerProfessionalAddress: builder.mutation({
+        query: ({
+          id,
+          proVillageId,
+          proCountry,
+          proEmail,
+          proPhoneNumber,
+          proFax,
+          proPoBox,
+          proStreetNumber,
+        }) => {
+          return {
+            url: `/beneficial-owner/${id}/professional-address`,
+            method: 'PATCH',
+            body: {
+              proVillageId,
+              proCountry,
+              proEmail,
+              proPhoneNumber,
+              proFax,
+              proPoBox,
+              proStreetNumber,
+            },
+          };
+        },
+      }),
+
+      // UPDATE BENEFICIAL OWNER OWNERSHIP INFORMATION
+      updateBeneficialOwnerOwnershipInfo: builder.mutation({
+        query: ({
+          id,
+          registeredDate,
+          extentOfShare,
+          extentOfVoting,
+          significantInfluence,
+          OtherControlMeansDesc,
+          seniorManagementPosition,
+        }) => {
+          return {
+            url: `/beneficial-owner/${id}/ownership-info`,
+            method: 'PATCH',
+            body: {
+              registeredDate,
+              extentOfShare,
+              extentOfVoting,
+              significantInfluence,
+              OtherControlMeansDesc,
+              seniorManagementPosition,
+            },
+          };
+        },
       }),
 
       getCompanyInformation: builder.query({
@@ -1104,7 +1169,13 @@ export const {
   useLazyFetchBusinessCertificateQuery,
   useLazyFetchBusinessCertificateByIdQuery,
   useLazyFetchFullBusinessCertificateByIdQuery,
-  useCreateCertificateRequestMutation
-} = businessRegApiSlice
+  useCreateCertificateRequestMutation,
+  useLazyGetBeneficialOwnerQuery,
+  useUpdateBeneficialOwnerTinMutation,
+  useUpdateBeneficialOwnerPersonalInfoMutation,
+  useUpdateBeneficialOwnerResidentialAddressMutation,
+  useUpdateBeneficialOwnerProfessionalAddressMutation,
+  useUpdateBeneficialOwnerOwnershipInfoMutation,
+} = businessRegApiSlice;
 
 export default businessRegApiSlice

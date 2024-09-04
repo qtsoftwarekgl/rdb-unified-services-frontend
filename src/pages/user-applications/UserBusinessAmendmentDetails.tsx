@@ -31,6 +31,11 @@ import { updateBusinessThunk } from '@/states/features/businessSlice';
 import EmploymentInfoAmendmentReview from './EmploymentInfoAmendmentReview';
 import CompanyAddressAmendmentReview from './CompanyAddressAmendmentReview';
 import CustomBreadcrumb from '@/components/navigation/CustomBreadcrumb';
+import BusinessDormancyDeclarationReview from './BusinessDormancyDeclarationDetails';
+import BusinessCessationToDormancyReview from './BusinessCessationToDormancyDetails';
+import BusinessNewBranchReview from './BusinessNewBranchDetails';
+import TransferOfRegistrationReview from './TransferOfRegistrationDetails';
+import CloseBusinessAmendmentReview from './CloseBusinessAmendmentDetails';
 
 const UserBusinessAmendmentDetails = () => {
   // STATE VARIABLES
@@ -294,6 +299,23 @@ const UserBusinessAmendmentDetails = () => {
             )}
             {queryParams?.amendmentType === 'AMEND_COMPANY_DETAILS' && (
               <CompanyAddressAmendmentReview />
+            )}
+            {queryParams?.amendmentType ===
+              'AMEND_BUSINESS_DORMANCY_DECLARATION' && (
+              <BusinessDormancyDeclarationReview />
+            )}
+            {queryParams?.amendmentType === 'AMEND_CESSATION_TO_BE_DORMANT' && (
+              <BusinessCessationToDormancyReview />
+            )}
+            {queryParams?.amendmentType === 'AMEND_BUSINESS_NEW_BRANCH' && (
+              <BusinessNewBranchReview />
+            )}
+            {queryParams?.amendmentType ===
+              'AMEND_BUSINESS_TRANSFER_OF_REGISTRATION' && (
+              <TransferOfRegistrationReview />
+            )}
+            {queryParams?.amendmentType === 'AMEND_BUSINESS_DISSOLUTION' && (
+              <CloseBusinessAmendmentReview />
             )}
           </section>
         )}

@@ -60,45 +60,6 @@ export const generateUUID = () => {
   return uuid();
 };
 
-export const formatCompanyData = (business: any) => {
-  if (business?.type === 'name_reservation') {
-    return {
-      ...business,
-      company_name: business?.name || 'N/A',
-      status: business?.status,
-      id: business?.id || Math.floor(Math.random() * 9000) + 1000,
-      entryId: business?.entryId,
-      reference_no: `REG-${(
-        business?.entryId?.split('-')[0] || ''
-      ).toUpperCase()}`,
-      service_name: business?.type,
-      createdAt: formatDate(business?.createdAt),
-      updatedAt: formatDate(business?.updatedAt),
-      path: business?.path,
-      active_tab: business?.active_tab,
-      active_step: business?.active_step,
-    };
-  }
-
-  const company = business?.company_details;
-  return {
-    ...company,
-    company_name: company?.name || 'N/A',
-    status: business?.status,
-    id: business?.id || Math.floor(Math.random() * 9000) + 1000,
-    entryId: business?.entryId,
-    reference_no: `REG-${(
-      business?.entryId?.split('-')[0] || ''
-    ).toUpperCase()}`,
-    service_name: business?.type,
-    createdAt: formatDate(business?.createdAt),
-    updatedAt: formatDate(business?.updatedAt),
-    path: business?.path,
-    active_tab: business?.active_tab,
-    active_step: business?.active_step,
-  };
-};
-
 export function filterObject(
   obj: Record<string, string | number | undefined>
 ): Record<string, string | number | undefined> {

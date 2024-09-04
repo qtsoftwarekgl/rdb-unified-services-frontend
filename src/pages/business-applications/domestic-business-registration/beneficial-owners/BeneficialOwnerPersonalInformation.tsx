@@ -4,8 +4,13 @@ import Select from '@/components/inputs/Select';
 import Loader from '@/components/Loader';
 import { countriesList } from '@/constants/countries';
 import { genderOptions } from '@/constants/inputs.constants';
-import { capitalizeString, formatDate, maskPhoneDigits } from '@/helpers/strings';
+import {
+  capitalizeString,
+  formatDate,
+  maskPhoneDigits,
+} from '@/helpers/strings';
 import validateInputs from '@/helpers/validations';
+import { useUpdateBeneficialOwnerPersonalInfoMutation } from '@/states/api/businessRegApiSlice';
 import {
   setActiveBeneficialOwnerNavigationStep,
   setCompleteBeneficialOwnerNavigationStep,
@@ -13,20 +18,29 @@ import {
 } from '@/states/features/beneficialOwnerSlice';
 import { getUserInformationThunk } from '@/states/features/businessPeopleSlice';
 import { AppDispatch, RootState } from '@/states/store';
+import { queryParam } from '@/types/models/business';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import { useEffect } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import { ErrorResponse } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const BeneficialOwnerPersonalInformation = () => {
+interface BeneficialOwnerPersonalInformationProps {
+  beneficialOwnerId: queryParam;
+}
+
+const BeneficialOwnerPersonalInformation = ({
+  beneficialOwnerId,
+}: BeneficialOwnerPersonalInformationProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { selectedFounderDetailWithShares } = useSelector(
     (state: RootState) => state.founderDetail
   );
-  const { selectedBeneficialOwner, newBeneficialOwner } = useSelector(
+  const { newBeneficialOwner } = useSelector(
     (state: RootState) => state.beneficialOwner
   );
   const {
@@ -43,6 +57,19 @@ const BeneficialOwnerPersonalInformation = () => {
     formState: { errors },
     handleSubmit,
   } = useForm();
+
+  // INITIALIZE UPDATE PERSONAL INFORMATION MUTATION
+  const [
+    updateBeneficialOwnerPersonalInformation,
+    {
+      isLoading: updateBeneficialOwnerPersonalInformationIsLoading,
+      isSuccess: updateBeneficialOwnerPersonalInformationIsSuccess,
+      isError: updateBeneficialOwnerPersonalInformationIsError,
+      error: updateBeneficialOwnerPersonalInformationError,
+      reset: updateBeneficialOwnerPersonalInformationReset,
+      data: updateBeneficialOwnerPersonalInformationData,
+    },
+  ] = useUpdateBeneficialOwnerPersonalInfoMutation();
 
   const { personIdentType } = watch();
 
@@ -64,65 +91,80 @@ const BeneficialOwnerPersonalInformation = () => {
   // SET FOUNDER DETAILS VALUES
   useEffect(() => {
     setValue('founderId', selectedFounderDetailWithShares?.founderDetail?.id);
-    setValue(
-      'firstName',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.firstName
-    );
-    setValue(
-      'lastName',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.lastName
-    );
+    setValue('firstName', newBeneficialOwner?.personDetail?.firstName);
+    setValue('lastName', newBeneficialOwner?.personDetail?.lastName);
     setValue(
       'personIdentType',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.personIdentType?.toUpperCase()
+      newBeneficialOwner?.personDetail?.personIdentType?.toUpperCase()
     );
-    setValue(
-      'personDocNo',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.personDocNo
-    );
-    setValue(
-      'phoneNumber',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.phoneNumber
-    );
-    setValue(
-      'email',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.email
-    );
-    setValue(
-      'nationality',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.nationality
-    );
+    setValue('personDocNo', newBeneficialOwner?.personDetail?.personDocNo);
+    setValue('phoneNumber', newBeneficialOwner?.personDetail?.phoneNumber);
+    setValue('email', newBeneficialOwner?.personDetail?.email);
+    setValue('nationality', newBeneficialOwner?.personDetail?.nationality);
     setValue(
       'persDocIssuePlace',
       selectedFounderDetailWithShares?.founderDetail?.personDetail
         ?.persDocIssuePlace
     );
-    setValue(
-      'dateOfBirth',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.dateOfBirth
-    );
-    setValue(
-      'gender',
-      selectedFounderDetailWithShares?.founderDetail?.personDetail?.gender
-    );
+    setValue('dateOfBirth', newBeneficialOwner?.personDetail?.dateOfBirth);
+    setValue('gender', newBeneficialOwner?.personDetail?.gender);
     setValue(
       'extentOfShare',
       selectedFounderDetailWithShares?.shareQuantityPercentage
     );
-  }, [selectedFounderDetailWithShares, setValue, watch]);
+  }, [
+    newBeneficialOwner,
+    selectedFounderDetailWithShares,
+    setValue,
+    watch,
+  ]);
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    dispatch(
-      setNewBeneficialOwner({
-        ...newBeneficialOwner,
-        ...data,
-        dateOfBirth: formatDate(data?.dateOfBirth),
-      })
-    );
-    dispatch(setCompleteBeneficialOwnerNavigationStep('personal_information'));
-    dispatch(setActiveBeneficialOwnerNavigationStep('residential_address'));
+    updateBeneficialOwnerPersonalInformation({
+      id: beneficialOwnerId,
+      firstName: data?.firstName,
+      middleName: data?.middleName,
+      lastName: data?.lastName,
+      dateOfBirth: formatDate(data?.dateOfBirth),
+      gender: data?.gender,
+      personIdentType: data?.personIdentType?.toUpperCase(),
+      personDocNo: data?.personDocNo,
+      email: data?.email,
+      phoneNumber: data?.phoneNumber,
+      nationality: data?.nationality,
+      persDocIssuePlace: data?.persDocIssuePlace,
+    });
   };
+
+  // HANDLE UPDATE PERSONAL INFORMATION RESPONSE
+  useEffect(() => {
+    if (updateBeneficialOwnerPersonalInformationIsSuccess) {
+      dispatch(
+        setNewBeneficialOwner(
+          updateBeneficialOwnerPersonalInformationData?.data
+        )
+      );
+      updateBeneficialOwnerPersonalInformationReset();
+      dispatch(
+        setCompleteBeneficialOwnerNavigationStep('personal_information')
+      );
+      dispatch(setActiveBeneficialOwnerNavigationStep('residential_address'));
+    } else if (updateBeneficialOwnerPersonalInformationIsError) {
+      const errorResponse =
+        (updateBeneficialOwnerPersonalInformationError as ErrorResponse)?.data
+          ?.message ||
+        'An error occurred while updating beneficial owner personal information';
+      toast.error(errorResponse);
+    }
+  }, [
+    dispatch,
+    updateBeneficialOwnerPersonalInformationData?.data,
+    updateBeneficialOwnerPersonalInformationError,
+    updateBeneficialOwnerPersonalInformationIsError,
+    updateBeneficialOwnerPersonalInformationIsSuccess,
+    updateBeneficialOwnerPersonalInformationReset,
+  ]);
 
   return (
     <form
@@ -133,6 +175,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="personIdentType"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.personIdentType}
           rules={{ required: 'Identification document type is required' }}
           render={({ field }) => {
             const options = [
@@ -150,7 +193,7 @@ const BeneficialOwnerPersonalInformation = () => {
                       value: option?.value,
                       disabled:
                         selectedFounderDetailWithShares &&
-                        selectedBeneficialOwner?.controlType === 'DIRECT' &&
+                        newBeneficialOwner?.controlType === 'DIRECT' &&
                         selectedFounderDetailWithShares?.founderDetail?.personDetail?.personIdentType?.toUpperCase() !==
                           option?.value
                           ? true
@@ -171,6 +214,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="personDocNo"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.personDocNo}
           rules={{ required: 'ID Document number is required' }}
           render={({ field }) => {
             return (
@@ -180,7 +224,7 @@ const BeneficialOwnerPersonalInformation = () => {
                   required
                   readOnly={
                     selectedFounderDetailWithShares &&
-                    selectedBeneficialOwner?.controlType === 'DIRECT'
+                    newBeneficialOwner?.controlType === 'DIRECT'
                       ? true
                       : false
                   }
@@ -188,7 +232,7 @@ const BeneficialOwnerPersonalInformation = () => {
                     personIdentType === 'NID' &&
                     !(
                       selectedFounderDetailWithShares &&
-                      selectedBeneficialOwner?.controlType === 'DIRECT'
+                      newBeneficialOwner?.controlType === 'DIRECT'
                     )
                       ? faSearch
                       : undefined
@@ -224,6 +268,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="firstName"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.firstName}
           rules={{ required: 'First name is required' }}
           render={({ field }) => {
             return (
@@ -234,7 +279,7 @@ const BeneficialOwnerPersonalInformation = () => {
                   readOnly={
                     userInformation ||
                     (selectedFounderDetailWithShares &&
-                      selectedBeneficialOwner?.controlType === 'DIRECT')
+                      newBeneficialOwner?.controlType === 'DIRECT')
                       ? true
                       : false
                   }
@@ -254,6 +299,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="lastName"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.lastName}
           render={({ field }) => {
             return (
               <label className="w-full flex flex-col gap-1">
@@ -263,7 +309,7 @@ const BeneficialOwnerPersonalInformation = () => {
                   readOnly={
                     userInformation ||
                     (selectedFounderDetailWithShares &&
-                      selectedBeneficialOwner?.controlType === 'DIRECT')
+                      newBeneficialOwner?.controlType === 'DIRECT')
                       ? true
                       : false
                   }
@@ -278,6 +324,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="dateOfBirth"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.dateOfBirth}
           rules={{ required: 'Date of birth is required' }}
           render={({ field }) => {
             return (
@@ -302,6 +349,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="gender"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.gender}
           rules={{ required: 'Sex is required' }}
           render={({ field }) => {
             return (
@@ -316,7 +364,7 @@ const BeneficialOwnerPersonalInformation = () => {
                       disabled:
                         userInformation ||
                         (selectedFounderDetailWithShares &&
-                          selectedBeneficialOwner?.controlType === 'DIRECT')
+                          newBeneficialOwner?.controlType === 'DIRECT')
                           ? (
                               userInformation ||
                               selectedFounderDetailWithShares?.founderDetail
@@ -339,6 +387,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="nationality"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.nationality}
           rules={{ required: 'Nationality is required' }}
           render={({ field }) => {
             return (
@@ -351,7 +400,7 @@ const BeneficialOwnerPersonalInformation = () => {
                       disabled:
                         userInformation ||
                         (selectedFounderDetailWithShares &&
-                          selectedBeneficialOwner?.controlType === 'DIRECT')
+                          newBeneficialOwner?.controlType === 'DIRECT')
                           ? (
                               userInformation ||
                               selectedFounderDetailWithShares?.founderDetail
@@ -377,6 +426,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="persDocIssuePlace"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.persDocIssuePlace}
           rules={{
             required: 'Country of document issue is required',
           }}
@@ -394,7 +444,7 @@ const BeneficialOwnerPersonalInformation = () => {
                       disabled:
                         userInformation ||
                         (selectedFounderDetailWithShares &&
-                          selectedBeneficialOwner?.controlType === 'DIRECT')
+                          newBeneficialOwner?.controlType === 'DIRECT')
                           ? (
                               userInformation ||
                               selectedFounderDetailWithShares?.founderDetail
@@ -417,6 +467,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="email"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.email}
           rules={{
             validate: (value) => {
               if (!value) return true;
@@ -439,6 +490,7 @@ const BeneficialOwnerPersonalInformation = () => {
         <Controller
           name="phoneNumber"
           control={control}
+          defaultValue={newBeneficialOwner?.personDetail?.phoneNumber}
           rules={{ required: 'Phone number is required' }}
           render={({ field }) => {
             return (
@@ -461,7 +513,7 @@ const BeneficialOwnerPersonalInformation = () => {
                     placeholder="Phone Number"
                     readOnly={
                       selectedFounderDetailWithShares &&
-                      selectedBeneficialOwner?.controlType === 'DIRECT'
+                      newBeneficialOwner?.controlType === 'DIRECT'
                         ? true
                         : false
                     }
@@ -487,7 +539,17 @@ const BeneficialOwnerPersonalInformation = () => {
             dispatch(setActiveBeneficialOwnerNavigationStep('tin_ownership'));
           }}
         />
-        <Button value={'Next'} primary submit />
+        <Button
+          value={
+            updateBeneficialOwnerPersonalInformationIsLoading ? (
+              <Loader />
+            ) : (
+              'Next'
+            )
+          }
+          primary
+          submit
+        />
       </menu>
     </form>
   );

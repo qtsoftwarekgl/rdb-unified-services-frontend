@@ -64,8 +64,8 @@ const CompanyDetails = ({
     watch,
     setError,
     clearErrors,
-    reset
-  } = methods
+    reset,
+  } = methods;
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch()
@@ -96,11 +96,11 @@ const CompanyDetails = ({
 
   const { selectedReservedName } = useSelector(
     (state: RootState) => state.businessRegistrationUI
-  )
+  );
   const { reservedNames } = useSelector(
     (state: RootState) => state.nameReservation
-  )
-  const { handleSetDefaultSelectedReservedName } = useReservedName()
+  );
+  const { handleSetDefaultSelectedReservedName } = useReservedName();
 
   // DISABLE FORM
   useEffect(() => {
@@ -207,9 +207,9 @@ const CompanyDetails = ({
 
   useEffect(() => {
     if (businessDetails && reservedNames && reservedNames.length > 0) {
-      handleSetDefaultSelectedReservedName(businessDetails, reservedNames)
+      handleSetDefaultSelectedReservedName(businessDetails, reservedNames);
     }
-  }, [businessDetails, reservedNames])
+  }, [businessDetails, handleSetDefaultSelectedReservedName, reservedNames]);
 
   // SET BUSINESS CATEGORY OPTIONS
   useEffect(() => {
@@ -233,9 +233,8 @@ const CompanyDetails = ({
       companyType: data.companyType,
       companyCategory: data.companyCategory,
       reservationId: data.reservationId,
-      abbreviation: data.abbreviation
-    })
-  }
+    });
+  };
 
   // HANDLE CREATE COMPANY DETAILS RESPONSE
   useEffect(() => {
@@ -324,7 +323,7 @@ const CompanyDetails = ({
               <Controller
                 name="companyName"
                 control={control}
-                rules={{ required: "Company name is required" }}
+                rules={{ required: 'Company name is required' }}
                 defaultValue={businessDetails?.companyName}
                 render={({ field }) => {
                   return (
@@ -338,22 +337,22 @@ const CompanyDetails = ({
                         showSearchSuffix={!selectedReservedName}
                         {...field}
                         onChange={(e) => {
-                          field.onChange(e)
-                          setError("companyName", {
-                            type: "manual",
+                          field.onChange(e);
+                          setError('companyName', {
+                            type: 'manual',
                             message:
-                              "Check if company name is available before proceeding"
-                          })
+                              'Check if company name is available before proceeding',
+                          });
                         }}
                         suffixIconHandler={(e) => {
-                          e.preventDefault()
+                          e.preventDefault();
                           if (!field?.value || field?.value?.length < 3) {
-                            return
+                            return;
                           }
-                          clearErrors("companyName")
+                          clearErrors('companyName');
                           searchBusinessNameAvailability({
-                            companyName: field?.value
-                          })
+                            companyName: field?.value,
+                          });
                         }}
                       />
                       <menu className="flex flex-col w-full gap-2">
@@ -370,7 +369,7 @@ const CompanyDetails = ({
                           !selectedReservedName && (
                             <section className="flex flex-col gap-1">
                               <p className="text-[11px] text-red-600">
-                                The given name has a similarity of up to{" "}
+                                The given name has a similarity of up to{' '}
                                 {convertDecimalToPercentage(
                                   nameAvailabilitiesList[0]?.similarity
                                 )}
@@ -378,11 +377,11 @@ const CompanyDetails = ({
                                 it to avoid conflicts.
                               </p>
                               <Link
-                                to={"#"}
+                                to={'#'}
                                 className="text-[11px] underline text-primary"
                                 onClick={(e) => {
-                                  e.preventDefault()
-                                  dispatch(setSimilarBusinessNamesModal(true))
+                                  e.preventDefault();
+                                  dispatch(setSimilarBusinessNamesModal(true));
                                 }}
                               >
                                 Click to find conflicting business names
@@ -398,7 +397,7 @@ const CompanyDetails = ({
                           )}
                       </menu>
                       <p
-                        className="text-xs cursor-pointer text-primary hover:underline"
+                        className="text-xs text-primary cursor-pointer hover:underline"
                         onClick={() =>
                           dispatch(setShowSelectReservedName(true))
                         }

@@ -3,6 +3,7 @@ import {
   NavigationFlow,
   NavigationFlowMass,
 } from '@/types/models/navigationFlow';
+import { BeneficialOwner } from '@/types/models/personDetail';
 import { UUID } from 'crypto';
 
 // FIND NAVIGATION FLOW ID BY STEP NAME
@@ -54,6 +55,8 @@ export const getBusinessStatusColor = (status: string): string => {
     case 'ACTIVE':
       return 'bg-green-700';
     case 'REJECTED':
+    case 'DORMANT':
+    case 'CLOSED':
       return 'bg-red-700';
     case 'IN_PROGRESS':
       return 'bg-slate-600';
@@ -80,5 +83,15 @@ export const getBusinessName = (business: Business): string => {
     business?.branchName ||
     ''
   );
-}
+};
 
+export const verifyBeneficialOwnerCompletion = (
+  beneficialOwner: BeneficialOwner
+) => {
+  return (
+    beneficialOwner?.personDetail &&
+    (beneficialOwner?.villageId || beneficialOwner?.streetNumber) &&
+    (beneficialOwner?.proVillageId || beneficialOwner?.proStreetNumber) &&
+    beneficialOwner?.registeredDate
+  );
+};
