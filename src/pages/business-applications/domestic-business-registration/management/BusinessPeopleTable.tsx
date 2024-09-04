@@ -18,9 +18,9 @@ import { Loader } from "lucide-react";
 import { useDispatch } from "react-redux";
 
 type BusinessPeopleTableProps = {
-  businessPeopleList: PersonDetail[];
-  type: string;
-  isLoading: boolean;
+  businessPeopleList?: PersonDetail[];
+  type?: string;
+  isLoading?: boolean;
 };
 
 const BusinessPeopleTable = ({
@@ -94,7 +94,7 @@ const BusinessPeopleTable = ({
           ? 'Executive Management List'
           : 'Board of Directors List'}
       </h1>
-      {!isLoading && businessPeopleList?.length <= 0 && (
+      {!isLoading && (businessPeopleList ?? [])?.length <= 0 && (
         <p className="text-sm text-center text-gray-500">
           No {type === 'executiveManagement' ? 'management' : 'board'} people
           found

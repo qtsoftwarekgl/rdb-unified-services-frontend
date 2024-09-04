@@ -55,6 +55,8 @@ export const getBusinessStatusColor = (status: string): string => {
     case 'ACTIVE':
       return 'bg-green-700';
     case 'REJECTED':
+    case 'DORMANT':
+    case 'CLOSED':
       return 'bg-red-700';
     case 'IN_PROGRESS':
       return 'bg-slate-600';

@@ -64,7 +64,7 @@ const CompanyRestoration = () => {
       fetchBusinessesThunk({
         page: 1,
         size: 100,
-        applicationStatus: "APPROVED",
+        applicationStatus: "ACTIVE",
       })
     );
   }, [dispatch]);
