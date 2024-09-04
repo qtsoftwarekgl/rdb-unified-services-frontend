@@ -102,7 +102,8 @@ export const businessRegApiSlice = createApi({
           companyType,
           companyCategory,
           enterpriseName,
-          enterpriseBusinessName
+          enterpriseBusinessName,
+          abbreviation
         }) => {
           return {
             url: `/details?businessId=${businessId}`,
@@ -115,7 +116,8 @@ export const businessRegApiSlice = createApi({
               companyType,
               companyCategory,
               enterpriseName,
-              enterpriseBusinessName
+              enterpriseBusinessName,
+              abbreviation
             }
           }
         }
