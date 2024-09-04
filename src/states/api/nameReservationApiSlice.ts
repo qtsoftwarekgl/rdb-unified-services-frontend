@@ -30,6 +30,15 @@ export const nameReservationApiSlice = createApi({
                     }
                 },
             }),
+            reserveName: builder.mutation({
+                query: (payload) => {
+                    return {
+                        url: `name-reservations/reserve`,
+                        method: "POST",
+                        body: payload,
+                    }
+                },
+            })
         }
 }
 })
@@ -38,6 +47,7 @@ export const {
     useLazyFetchReservedNameQuery,
     useLazyFetchReservedNameByCodeQuery,
     useLazyFetchReservedNameByIdQuery,
+    useReserveNameMutation,
 } = nameReservationApiSlice;
 
 

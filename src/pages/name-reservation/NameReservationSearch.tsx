@@ -7,6 +7,7 @@ import Button from '../../components/inputs/Button';
 import { AppDispatch, RootState } from '../../states/store';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  setNameReservation,
   setNameReservationActiveStep,
   setNameReservationActiveTab,
 } from '../../states/features/nameReservationSlice';
@@ -19,6 +20,7 @@ import {
   setSimilarBusinessNamesModal,
 } from '@/states/features/businessSlice';
 import SimilarBusinessNames from '../business-applications/SimilarBusinessNames';
+import useReserveForOther from './hooks/useReserveForOther';
 
 type Props = {
   isOpen: boolean;
@@ -29,6 +31,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
   const {
     control,
     formState: { errors },
+    getValues,
     watch,
     setError,
     clearErrors,
@@ -37,6 +40,8 @@ const NameReservationSearch = ({ isOpen }: Props) => {
   const { name_reservation } = useSelector(
     (state: RootState) => state.nameReservation
   );
+
+  const {handleSaveReservedName} = useReserveForOther();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
@@ -89,6 +94,13 @@ const NameReservationSearch = ({ isOpen }: Props) => {
     searchBusinessNameIsSuccess,
     setError,
   ]);
+
+  const handleSubmit = () => {
+    const {companyName} = getValues();
+    dispatch(setNameReservation(companyName));
+    // trigger handler to save the reserved name
+    handleSaveReservedName({companyName});
+  }
 
   if (!isOpen) return null;
 
@@ -194,8 +206,7 @@ const NameReservationSearch = ({ isOpen }: Props) => {
             primary
             onClick={(e) => {
               e.preventDefault();
-              dispatch(setNameReservationActiveStep('success'));
-              dispatch(setNameReservationActiveTab('complete'));
+              handleSubmit();
             }}
             disabled={Object.keys(errors)?.length > 0}
           />

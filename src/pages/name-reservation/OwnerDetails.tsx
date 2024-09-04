@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import Select from '../../components/inputs/Select';
 import Input from '../../components/inputs/Input';
 import { useEffect, useState } from 'react';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { userData } from '../../constants/authentication';
 import Loader from '../../components/Loader';
 import { countriesList } from '../../constants/countries';
 import moment from 'moment';
@@ -17,9 +17,10 @@ import {
   setNameReservationCompletedStep,
   setNameReservationOwnerDetails,
 } from '../../states/features/nameReservationSlice';
-import { validNationalID } from '../../constants/Users';
 import validateInputs from '../../helpers/validations';
 import { maskPhoneDigits } from '@/helpers/strings';
+import useReserveForOther from './hooks/useReserveForOther';
+import { UserInformation } from '@/types/models/userInformation';
 
 type Props = {
   isOpen: boolean;
@@ -37,14 +38,17 @@ const OwnerDetails = ({ isOpen }: Props) => {
     clearErrors,
     trigger,
     reset,
+    register,
   } = useForm();
+
+  const {getUserInformation, userInformationData, userInformationIsSuccess, userInformationIsFetching } = useReserveForOther();
 
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { owner_details } = useSelector(
     (state: RootState) => state.nameReservation
   );
-  const [searchMember, setSearchMember] = useState({
+  const [searchMember, setSearchMember] = useState<{loading: boolean, error: boolean | string, data: any}>({
     loading: false,
     error: false,
     data: null,
@@ -56,7 +60,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       dispatch(
@@ -73,7 +77,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
       dispatch(setNameReservationActiveTab('name_reservation'));
       dispatch(setNameReservationActiveStep('name_reservation'));
       dispatch(setNameReservationCompletedStep('owner_details'));
-    }, 1000);
+    }, 0);
     return data;
   };
 
@@ -104,31 +108,40 @@ const OwnerDetails = ({ isOpen }: Props) => {
     }
   }, [owner_details, setValue]);
 
+
   if (!isOpen) return null;
 
   return (
     <section className="flex flex-col gap-6 w-[40%] mx-auto">
+      {/* Make radio buttons that sets the value of name_owner to either 'owner' or 'other', the above one commented out is not working */}
       <menu className="flex flex-col gap-4 w-full">
         <p>
           I am reserving for: <span className="text-red-600">*</span>
         </p>
-        <Controller
-          name="name_owner"
-          control={control}
-          render={({ field }) => {
-            return (
-              <ul className="flex flex-col w-fit items-start gap-6">
-                <Input
-                  type="radio"
-                  label="Myself"
-                  checked
-                  {...field}
-                  value={'owner'}
-                />
-              </ul>
-            );
-          }}
-        />
+        <menu className="flex gap-[8em] my-4">
+         <div className='flex gap-4'>
+          <input
+            type="radio"
+            id="owner"
+            // name="name_owner"
+            className='text-primary'
+            value="owner"
+            {...register('name_owner')}
+          />
+          <label htmlFor="owner">Myself</label>
+          </div>
+
+          <div className='flex gap-4'>
+          <input
+            type="radio"
+            id="other"
+            // name="name_owner"
+            value="other"
+            {...register('name_owner')}
+          />
+          <label htmlFor="other">Other</label>
+          </div>
+        </menu>
       </menu>
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -208,38 +221,44 @@ const OwnerDetails = ({ isOpen }: Props) => {
                           setSearchMember({
                             ...searchMember,
                             data: null,
-                            loading: true,
+                            loading: userInformationIsFetching,
                             error: false,
                           });
-                          setTimeout(() => {
-                            const randomNumber = Math.floor(Math.random() * 10);
-                            const userDetails = userData[randomNumber];
+                         
+                          await getUserInformation({documentNumber: field.value});
+                          
+                          console.log("initialized search members")
+                          console.log(searchMember)
+                          console.log("user information data")
+                          console.log(userInformationData)
+                          if (userInformationIsSuccess && userInformationData) {
+                            console.log("user information data")
+                            clearErrors('documentNumber');
+                            const userDetails = userInformationData?.data as UserInformation;
+                            console.log(userDetails)
+                            setSearchMember({
+                              ...searchMember,
+                              data: userDetails,
+                              loading: false,
+                              error: false,
+                            });
+                            setValue('first_name', userDetails?.foreName);
+                            setValue('middle_name', "");
+                            setValue('last_name', userDetails?.surnames);
+                          } else {
+                            setSearchMember({
+                              ...searchMember,
+                              data: null,
+                              loading: false,
+                              error: true,
+                            });
+                            setError('documentNumber', {
+                              type: 'manual',
+                              message: 'Document number not found',
+                            });
+                          }
 
-                            if (field?.value !== String(validNationalID)) {
-                              setSearchMember({
-                                ...searchMember,
-                                data: null,
-                                loading: false,
-                                error: true,
-                              });
-                              setError('documentNumber', {
-                                type: 'manual',
-                                message: 'Document number not found',
-                              });
-                            } else {
-                              clearErrors('documentNumber');
-                              setSearchMember({
-                                ...searchMember,
-                                data: userDetails,
-                                loading: false,
-                                error: false,
-                              });
-                              setValue('first_name', userDetails?.first_name);
-                              setValue('middle_name', userDetails?.middle_name);
-                              setValue('last_name', userDetails?.last_name);
-                              setValue('gender', userDetails?.data?.gender);
-                            }
-                          }, 700);
+
                         }}
                         label="ID Document No"
                         suffixIconPrimary
@@ -254,9 +273,9 @@ const OwnerDetails = ({ isOpen }: Props) => {
                           await trigger('documentNumber');
                         }}
                       />
-                      {searchMember?.loading && (
+                      {searchMember?.loading || userInformationIsFetching && (
                         <p className="text-[13px] flex items-center gap-1">
-                          <Loader size={4} /> Searching...
+                          <Loader className='text-primary' size={"medium"} /> Searching...
                         </p>
                       )}
                       {errors?.documentNumber && (
@@ -345,7 +364,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                     <Input
                       readOnly={watch('document_type') === 'nid'}
                       defaultValue={
-                        owner_details?.last_name || searchMember?.last_name
+                        owner_details?.last_name || searchMember?.data?.last_name
                       }
                       placeholder="Last name"
                       label="Last name"
@@ -461,6 +480,113 @@ const OwnerDetails = ({ isOpen }: Props) => {
               />
             )}
             {watch('document_type') === 'passport' && (
+              <>
+              <Controller
+                  name="documentNumber"
+                  control={control}
+                  rules={{
+                    required: "Passport number is required",
+                  }}
+                  render={({ field }) => {
+                    return (
+                      <label
+                        className={`w-[49%] flex flex-col gap-1 items-start`}
+                      >
+                        <Input
+                          required
+                          placeholder="Passport number"
+                          label="Passport number"
+                          {...field}
+                        />
+                        {errors?.documentNumber && (
+                          <span className="text-sm text-red-500">
+                            {String(errors?.documentNumber?.message)}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="persDocIssueDate"
+                  rules={{
+                    required: "Issue date is required",
+                    validate: (value) => {
+                      if (
+                        moment(value).format() >
+                        moment(watch("persDocExpiryDate")).format()
+                      ) {
+                        return "Issue date must be before expiry date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          {...field}
+                          label="Passport Issue Date"
+                          type="date"
+                          required
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("persDocIssueDate");
+                            trigger("persDocExpiryDate");
+                          }}
+                        />
+                        {errors?.persDocIssueDate && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.persDocIssueDate.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
+                <Controller
+                  name="persDocExpiryDate"
+                  rules={{
+                    required: "Expiry date is required",
+                    validate: (value) => {
+                      if (
+                        moment(value).format() <
+                        moment(watch("persDocIssueDate")).format()
+                      ) {
+                        return "Expiry date must be after issue date";
+                      }
+                      return true;
+                    },
+                  }}
+                  control={control}
+                  render={({ field }) => {
+                    return (
+                      <label className="flex flex-col gap-1 w-[49%]">
+                        <Input
+                          {...field}
+                          label="Passport Expiry Date"
+                          type="date"
+                          required
+                          onChange={(e) => {
+                            field.onChange(
+                              moment(String(e)).format("YYYY-MM-DD")
+                            );
+                            trigger("persDocExpiryDate");
+                            trigger("persDocIssueDate");
+                          }}
+                        />
+                        {errors?.persDocExpiryDate && (
+                          <p className="text-[13px] text-red-600">
+                            {String(errors.persDocExpiryDate.message)}
+                          </p>
+                        )}
+                      </label>
+                    );
+                  }}
+                />
               <Controller
                 name="date_of_birth"
                 control={control}
@@ -496,6 +622,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                   );
                 }}
               />
+              </>
             )}
             <Controller
               name="phone"
@@ -518,11 +645,11 @@ const OwnerDetails = ({ isOpen }: Props) => {
                       <Select
                         label="Phone number"
                         required
-                        options={userData?.slice(0, 3)?.map((user) => {
+                        options={(searchMember?.data as unknown as UserInformation)?.phones?.slice(0, 3)?.map((phone) => {
                           return {
-                            ...user,
-                            label: `(+250) ${maskPhoneDigits(user?.phone)}`,
-                            value: user?.phone,
+                            ...phone,
+                            label: `${maskPhoneDigits(phone?.msidn)}`,
+                            value: phone?.msidn,
                           };
                         })}
                         placeholder="Select phone number"
@@ -603,7 +730,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
           disabled={searchMember?.loading || Object.keys(errors).length > 0}
           onClick={(e) => {
             e.preventDefault();
-            setIsLoading(true);
+            // setIsLoading(true);
             setTimeout(() => {
               dispatch(setNameReservationActiveTab('name_reservation'));
               dispatch(setNameReservationActiveStep('name_reservation'));
@@ -614,7 +741,7 @@ const OwnerDetails = ({ isOpen }: Props) => {
                   step: 'owner_details',
                 })
               );
-            }, 1000);
+            }, 0);
           }}
         />
       </menu>
