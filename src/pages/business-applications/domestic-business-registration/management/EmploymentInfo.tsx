@@ -1,39 +1,39 @@
-import { useEffect, useState } from "react";
-import { Controller, FieldValues, useForm } from "react-hook-form";
-import Input from "../../../../components/inputs/Input";
-import Button from "../../../../components/inputs/Button";
-import { AppDispatch, RootState } from "../../../../states/store";
-import { useDispatch, useSelector } from "react-redux";
-import Loader from "../../../../components/Loader";
-import { ErrorResponse, Link } from "react-router-dom";
-import ViewDocument from "@/pages/user-company-details/ViewDocument";
-import { businessId } from "@/types/models/business";
-import Select from "@/components/inputs/Select";
-import { dayHoursArray } from "@/constants/time";
-import { useCreateEmploymentInfoMutation } from "@/states/api/businessRegApiSlice";
-import moment from "moment";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react"
+import { Controller, FieldValues, useForm } from "react-hook-form"
+import Input from "../../../../components/inputs/Input"
+import Button from "../../../../components/inputs/Button"
+import { AppDispatch, RootState } from "../../../../states/store"
+import { useDispatch, useSelector } from "react-redux"
+import Loader from "../../../../components/Loader"
+import { ErrorResponse, Link } from "react-router-dom"
+import ViewDocument from "@/pages/user-company-details/ViewDocument"
+import { businessId } from "@/types/models/business"
+import Select from "@/components/inputs/Select"
+import { dayHoursArray } from "@/constants/time"
+import { useCreateEmploymentInfoMutation } from "@/states/api/businessRegApiSlice"
+import moment from "moment"
+import { toast } from "react-toastify"
 import {
   completeNavigationFlowThunk,
-  createNavigationFlowThunk,
-} from "@/states/features/navigationFlowSlice";
+  createNavigationFlowThunk
+} from "@/states/features/navigationFlowSlice"
 import {
   findNavigationFlowByStepName,
-  findNavigationFlowMassIdByStepName,
-} from "@/helpers/business.helpers";
-import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice";
-import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ApplicationStatus } from "@/enums/ApplicationStatus";
+  findNavigationFlowMassIdByStepName
+} from "@/helpers/business.helpers"
+import { uploadAmendmentAttachmentThunk } from "@/states/features/businessSlice"
+import ResolutionAttachment from "@/components/resolution-attachment/ResolutionAttachment"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { ApplicationStatus } from "@/enums/ApplicationStatus"
 
 type EmploymentInfoProps = {
-  businessId: businessId;
-  applicationStatus: string;
-};
+  businessId: businessId
+  applicationStatus: string
+}
 
 const EmploymentInfo = ({
   businessId,
-  applicationStatus,
+  applicationStatus
 }: EmploymentInfoProps) => {
   // REACT HOOK FORM
   const {
@@ -42,22 +42,21 @@ const EmploymentInfo = ({
     formState: { errors },
     setValue,
     watch,
-    trigger,
-  } = useForm();
+    trigger
+  } = useForm()
 
   // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
-  const disableForm = ["IN_REVIEW", "APPROVED"].includes(applicationStatus);
-  const [customReferenceDate, setCustomReferenceDate] =
-    useState<boolean>(false);
-  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("");
+  const dispatch: AppDispatch = useDispatch()
+  const disableForm = ["IN_REVIEW", "APPROVED"].includes(applicationStatus)
+  const [customReferenceDate, setCustomReferenceDate] = useState<boolean>(false)
+  const [attachmentPreview, setAttachmentPreview] = useState<string | null>("")
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
-  );
+  )
   // Resolution Attachment
   const { file, fileName, attachmentType } = useSelector(
     (state: RootState) => state.resolutionAttachment
-  );
+  )
 
   // INITIALIZE CREATE EMPLOYMENT INFO MUTATIon
   const [
@@ -67,9 +66,9 @@ const EmploymentInfo = ({
       error: createEmploymentInfoError,
       isSuccess: createEmploymentInfoIsSuccess,
       isError: createEmploymentInfoIsError,
-      data: createEmploymentInfoData,
-    },
-  ] = useCreateEmploymentInfoMutation();
+      data: createEmploymentInfoData
+    }
+  ] = useCreateEmploymentInfoMutation()
 
   // HANDLE SUBMIT
   const onSubmit = (data: FieldValues) => {
@@ -87,69 +86,68 @@ const EmploymentInfo = ({
         moment(data?.financialYearStartDate).format("0000-MM-DD"),
       financialYearEndDate:
         data?.financialYearStartDate &&
-        moment(data?.financialYearStartDate).format("0000-MM-DD"),
-    });
-  };
+        moment(data?.financialYearStartDate).format("0000-MM-DD")
+    })
+  }
 
   // HANDLE CREATE EMPLYOMENT INFO RESPONSE
   useEffect(() => {
     if (createEmploymentInfoIsError) {
       if ((createEmploymentInfoError as ErrorResponse)?.status === 500) {
-        toast.error('An error occurred. Please try again later');
+        toast.error("An error occurred. Please try again later")
       } else {
-        toast.error(
-          (createEmploymentInfoError as ErrorResponse)?.data?.message
-        );
+        toast.error((createEmploymentInfoError as ErrorResponse)?.data?.message)
       }
     } else if (createEmploymentInfoIsSuccess) {
-      toast.success('Employment info saved successfully');
+      toast.success("Employment info saved successfully")
       if (applicationStatus === ApplicationStatus.IsAmending) {
-        if (file && businessId)
-          dispatch(
-            uploadAmendmentAttachmentThunk({
-              file,
-              fileName,
-              attachmentType,
-              businessId: businessId.toString(),
-              amendmentId: createEmploymentInfoData?.data?.amendmentId,
-            })
-          );
+        if (file && businessId) c
+        dispatch(
+          uploadAmendmentAttachmentThunk({
+            file,
+            fileName,
+            attachmentType,
+            businessId: businessId.toString(),
+            amendmentId: createEmploymentInfoData?.data?.amendmentId
+          })
+        )
       }
+
+      console.log(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>>>",
+        findNavigationFlowByStepName(
+          businessNavigationFlowsList,
+          "Employment Info"
+        )?.id
+      )
 
       dispatch(
         completeNavigationFlowThunk({
           isCompleted: true,
           navigationFlowId: findNavigationFlowByStepName(
             businessNavigationFlowsList,
-            'Employment Info'
-          )?.id,
+            "Employment Info"
+          )?.id
         })
-      );
+      )
       dispatch(
         createNavigationFlowThunk({
           businessId,
           massId: findNavigationFlowMassIdByStepName(
             navigationFlowMassList,
-            'Beneficial Owners'
+            "Beneficial Owners"
           ),
-          isActive: true,
+          isActive: true
         })
-      );
+      )
     }
   }, [
-    applicationStatus,
-    attachmentType,
     businessId,
-    businessNavigationFlowsList,
-    createEmploymentInfoData,
     createEmploymentInfoError,
     createEmploymentInfoIsError,
     createEmploymentInfoIsSuccess,
-    dispatch,
-    file,
-    fileName,
-    navigationFlowMassList,
-  ]);
+    dispatch
+  ])
 
   return (
     <section className="flex flex-col w-full gap-6">
@@ -161,7 +159,7 @@ const EmploymentInfo = ({
             rules={{
               required: customReferenceDate
                 ? "Account reference date is required"
-                : false,
+                : false
             }}
             defaultValue={moment().format("0000-MM-DD")}
             render={({ field }) => {
@@ -186,8 +184,8 @@ const EmploymentInfo = ({
                           to={"#"}
                           className="text-primary text-[12px] hover:underline cursor-pointer w-fit"
                           onClick={(e) => {
-                            e.preventDefault();
-                            setCustomReferenceDate(false);
+                            e.preventDefault()
+                            setCustomReferenceDate(false)
                           }}
                         >
                           Use default date
@@ -209,12 +207,12 @@ const EmploymentInfo = ({
                         <Link
                           to={"#"}
                           onClick={(e) => {
-                            e.preventDefault();
-                            setCustomReferenceDate(true);
+                            e.preventDefault()
+                            setCustomReferenceDate(true)
                             setValue(
                               "financialYearStartDate",
                               moment().format("0000-MM-DD")
-                            );
+                            )
                           }}
                           className="text-primary text-[12px] hover:underline cursor-pointer"
                         >
@@ -229,7 +227,7 @@ const EmploymentInfo = ({
                     </p>
                   )}
                 </label>
-              );
+              )
             }}
           />
           <Controller
@@ -265,7 +263,7 @@ const EmploymentInfo = ({
                     </p>
                   )}
                 </menu>
-              );
+              )
             }}
           />
           <menu
@@ -280,7 +278,7 @@ const EmploymentInfo = ({
                 required:
                   watch("has_employees") === "yes"
                     ? "Hiring date is required"
-                    : false,
+                    : false
               }}
               render={({ field }) => {
                 return (
@@ -291,9 +289,9 @@ const EmploymentInfo = ({
                       label="Hiring Date"
                       {...field}
                       onChange={(e) => {
-                        field.onChange(e);
+                        field.onChange(e)
                         if (!watch("employeeDeclarationDate")) {
-                          setValue("employeeDeclarationDate", e);
+                          setValue("employeeDeclarationDate", e)
                         }
                       }}
                     />
@@ -303,7 +301,7 @@ const EmploymentInfo = ({
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -320,7 +318,7 @@ const EmploymentInfo = ({
                       {...field}
                     />
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -332,9 +330,9 @@ const EmploymentInfo = ({
                       value &&
                       Number(value) >= Number(watch("workingEndTime"))
                     )
-                      return "Working Start Time must be less than Working End Time";
+                      return "Working Start Time must be less than Working End Time"
                   }
-                },
+                }
               }}
               control={control}
               render={({ field }) => {
@@ -345,9 +343,9 @@ const EmploymentInfo = ({
                       label="Working Start Time"
                       {...field}
                       onChange={async (e) => {
-                        field.onChange(e);
-                        await trigger("workingStartTime");
-                        await trigger("workingEndTime");
+                        field.onChange(e)
+                        await trigger("workingStartTime")
+                        await trigger("workingEndTime")
                       }}
                     />
                     {errors?.workingStartTime && (
@@ -356,7 +354,7 @@ const EmploymentInfo = ({
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -369,9 +367,9 @@ const EmploymentInfo = ({
                       value &&
                       Number(value) <= Number(watch("workingStartTime"))
                     )
-                      return "Working End Time must be greater than Working Start Time";
+                      return "Working End Time must be greater than Working Start Time"
                   }
-                },
+                }
               }}
               render={({ field }) => {
                 return (
@@ -381,9 +379,9 @@ const EmploymentInfo = ({
                       label="Working End Time"
                       {...field}
                       onChange={async (e) => {
-                        field.onChange(e);
-                        await trigger("workingEndTime");
-                        await trigger("workingStartTime");
+                        field.onChange(e)
+                        await trigger("workingEndTime")
+                        await trigger("workingStartTime")
                       }}
                     />
                     {errors?.workingEndTime && (
@@ -392,7 +390,7 @@ const EmploymentInfo = ({
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
             <Controller
@@ -404,11 +402,11 @@ const EmploymentInfo = ({
                     : false,
                 validate: (value) => {
                   if (watch("has_employees") === "yes") {
-                    if (!value) return "Number of employees is required";
+                    if (!value) return "Number of employees is required"
                     if (value < 1)
-                      return "Number of employees must be greater than 0";
+                      return "Number of employees must be greater than 0"
                   }
-                },
+                }
               }}
               control={control}
               render={({ field }) => {
@@ -419,8 +417,8 @@ const EmploymentInfo = ({
                       label="Number of employees"
                       {...field}
                       onChange={async (e) => {
-                        field.onChange(e);
-                        await trigger("numberOfEmployees");
+                        field.onChange(e)
+                        await trigger("numberOfEmployees")
                       }}
                     />
                     {errors?.numberOfEmployees && (
@@ -429,7 +427,7 @@ const EmploymentInfo = ({
                       </p>
                     )}
                   </label>
-                );
+                )
               }}
             />
           </menu>
@@ -439,7 +437,7 @@ const EmploymentInfo = ({
           {[
             ApplicationStatus.Inprogress,
             ApplicationStatus.IsAmending,
-            ApplicationStatus.Forcorrection,
+            ApplicationStatus.Forcorrection
           ].includes(String(applicationStatus) as ApplicationStatus) && (
             <menu
               className={`flex items-center gap-3 w-full mx-auto justify-between max-sm:flex-col-reverse`}
@@ -448,7 +446,7 @@ const EmploymentInfo = ({
                 value="Back"
                 disabled={disableForm}
                 onClick={(e) => {
-                  e.preventDefault();
+                  e.preventDefault()
                   dispatch(
                     createNavigationFlowThunk({
                       businessId,
@@ -456,9 +454,9 @@ const EmploymentInfo = ({
                         navigationFlowMassList,
                         "Board of Directors"
                       ),
-                      isActive: true,
+                      isActive: true
                     })
-                  );
+                  )
                 }}
               />
               <Button
@@ -480,7 +478,7 @@ const EmploymentInfo = ({
         />
       )}
     </section>
-  );
-};
+  )
+}
 
-export default EmploymentInfo;
+export default EmploymentInfo

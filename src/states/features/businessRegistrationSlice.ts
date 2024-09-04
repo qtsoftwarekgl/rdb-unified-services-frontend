@@ -1,182 +1,184 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit"
 
 export interface RegistrationStep {
-  label: string;
-  name: string;
-  tab_name: string;
-  active: boolean;
-  completed: boolean;
+  label: string
+  name: string
+  tab_name: string
+  active: boolean
+  completed: boolean
 }
 export interface RegistrationTab {
-  no: number;
-  label: string;
-  name: string;
-  active: boolean;
-  completed: boolean;
-  steps: Array<RegistrationStep>;
+  no: number
+  label: string
+  name: string
+  active: boolean
+  completed: boolean
+  steps: Array<RegistrationStep>
 }
 
 export const business_registration_tabs_initial_state: Array<RegistrationTab> =
   [
     {
       no: 1,
-      label: 'General Information',
-      name: 'general_information',
+      label: "General Information",
+      name: "general_information",
       completed: false,
       active: true,
       steps: [
         {
-          label: 'Company Details',
-          name: 'company_details',
-          tab_name: 'general_information',
+          label: "Company Details",
+          name: "company_details",
+          tab_name: "general_information",
           active: true,
-          completed: false,
+          completed: false
         },
         {
-          label: 'Company Address',
-          name: 'company_address',
-          tab_name: 'general_information',
+          label: "Company Address",
+          name: "company_address",
+          tab_name: "general_information",
           active: false,
-          completed: false,
+          completed: false
         },
         {
-          label: 'Business Activity & VAT',
-          name: 'business_activity_vat',
-          tab_name: 'general_information',
+          label: "Business Activity & VAT",
+          name: "business_activity_vat",
+          tab_name: "general_information",
           active: false,
-          completed: false,
-        },
-      ],
+          completed: false
+        }
+      ]
     },
     {
       no: 2,
-      label: 'Capital Information',
-      name: 'capital_information',
+      label: "Capital Information",
+      name: "capital_information",
       active: false,
       completed: false,
       steps: [
         {
-          label: 'Share Details',
-          name: 'share_details',
-          tab_name: 'capital_information',
+          label: "Share Details",
+          name: "share_details",
+          tab_name: "capital_information",
           active: false,
-          completed: false,
+          completed: false
         },
         {
-          label: 'Shareholders',
-          name: 'shareholders',
-          tab_name: 'capital_information',
+          label: "Shareholders",
+          name: "shareholders",
+          tab_name: "capital_information",
           active: false,
-          completed: false,
+          completed: false
         },
         {
-          label: 'Capital Details',
-          name: 'capital_details',
-          tab_name: 'capital_information',
+          label: "Capital Details",
+          name: "capital_details",
+          tab_name: "capital_information",
           active: false,
-          completed: false,
-        },
-      ],
+          completed: false
+        }
+      ]
     },
     {
       no: 3,
-      label: 'Management',
-      name: 'management',
+      label: "Management",
+      name: "management",
       active: false,
       completed: false,
       steps: [
         {
-          label: 'Executive Management',
-          name: 'executive_management',
-          tab_name: 'management',
+          label: "Executive Management",
+          name: "executive_management",
+          tab_name: "management",
           active: false,
-          completed: false,
+          completed: false
         },
         {
-          label: 'Board of Directors',
-          name: 'board_of_directors',
-          tab_name: 'management',
+          label: "Board of Directors",
+          name: "board_of_directors",
+          tab_name: "management",
           active: false,
-          completed: false,
+          completed: false
         },
         {
-          label: 'Employment Info',
-          name: 'employment_info',
-          tab_name: 'management',
+          label: "Employment Info",
+          name: "employment_info",
+          tab_name: "management",
           active: false,
-          completed: false,
-        },
-      ],
+          completed: false
+        }
+      ]
     },
     {
       no: 4,
-      label: 'Attachments',
-      name: 'attachments',
+      label: "Attachments",
+      name: "attachments",
       completed: false,
       active: false,
       steps: [
         {
-          label: 'Attachments',
-          name: 'attachments',
-          tab_name: 'attachments',
+          label: "Attachments",
+          name: "attachments",
+          tab_name: "attachments",
           active: false,
-          completed: false,
-        },
-      ],
+          completed: false
+        }
+      ]
     },
     {
       no: 5,
-      label: 'Preview & Submission',
-      name: 'preview_submission',
+      label: "Preview & Submission",
+      name: "preview_submission",
       completed: false,
       active: false,
       steps: [
         {
-          label: 'Preview & Submission',
-          name: 'preview_submission',
-          tab_name: 'preview_submission',
+          label: "Preview & Submission",
+          name: "preview_submission",
+          tab_name: "preview_submission",
           active: false,
-          completed: false,
-        },
-      ],
-    },
-  ];
+          completed: false
+        }
+      ]
+    }
+  ]
 
 export const businessRegistrationSlice = createSlice({
-  name: 'businessRegistration',
+  name: "businessRegistration",
   initialState: {
     business_registration_tabs:
-      JSON.parse(String(localStorage.getItem('business_registration_tabs'))) ||
+      JSON.parse(String(localStorage.getItem("business_registration_tabs"))) ||
       business_registration_tabs_initial_state,
     business_active_step: JSON.parse(
-      String(localStorage.getItem('business_active_step'))
+      String(localStorage.getItem("business_active_step"))
     ) || {
-      label: 'Company Details',
-      name: 'company_details',
+      label: "Company Details",
+      name: "company_details"
     },
     business_active_tab: JSON.parse(
-      String(localStorage.getItem('business_active_tab'))
+      String(localStorage.getItem("business_active_tab"))
     ) || {
-      label: 'General Information',
-      name: 'general_information',
+      label: "General Information",
+      name: "general_information"
     },
     company_business_lines:
-      JSON.parse(String(localStorage.getItem('company_business_lines'))) || [],
+      JSON.parse(String(localStorage.getItem("company_business_lines"))) || [],
     capitalDetailsModal: false,
     confirmDeleteModal: false,
     shareholderDetailsModal: false,
     beneficialOwnerDetailsModal: false,
     businessPersonDetailsModal: false,
     deleteApplicationModal: false,
+    confirmPreviewModal: false,
+    reSubmitConfirmModal: false
   },
   reducers: {
     // SET REGISTRATION TABS
     setBusinessRegistrationTabs: (state, action) => {
-      state.business_registration_tabs = action.payload;
+      state.business_registration_tabs = action.payload
       localStorage.setItem(
-        'business_registration_tabs',
+        "business_registration_tabs",
         JSON.stringify(action.payload)
-      );
+      )
     },
 
     // SET ACTIVE TAB
@@ -185,43 +187,43 @@ export const businessRegistrationSlice = createSlice({
         (tab: RegistrationTab) => {
           return {
             ...tab,
-            active: false,
-          };
+            active: false
+          }
         }
-      );
+      )
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === action.payload
-      );
-      updatedRegistrationTabs[tabIndex].active = true;
-      updatedRegistrationTabs[tabIndex].completed = false;
+      )
+      updatedRegistrationTabs[tabIndex].active = true
+      updatedRegistrationTabs[tabIndex].completed = false
 
       // SET ACTIVE TAB TO STATE AND LOCAL STORAGE
-      state.business_active_tab = updatedRegistrationTabs[tabIndex];
+      state.business_active_tab = updatedRegistrationTabs[tabIndex]
       localStorage.setItem(
-        'business_active_tab',
+        "business_active_tab",
         JSON.stringify(updatedRegistrationTabs[tabIndex])
-      );
+      )
 
       // SET UPDATED REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.business_registration_tabs = updatedRegistrationTabs
       localStorage.setItem(
-        'business_registration_tabs',
+        "business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
-      );
+      )
     },
 
     // SET COMPLETED TAB
     setBusinessCompletedTab: (state, action) => {
-      const updatedRegistrationTabs = state.business_registration_tabs;
+      const updatedRegistrationTabs = state.business_registration_tabs
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === action.payload
-      );
-      updatedRegistrationTabs[tabIndex].completed = true;
-      state.business_registration_tabs = updatedRegistrationTabs;
+      )
+      updatedRegistrationTabs[tabIndex].completed = true
+      state.business_registration_tabs = updatedRegistrationTabs
       localStorage.setItem(
-        'business_registration_tabs',
+        "business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
-      );
+      )
     },
 
     // SET ACTIVE STEP
@@ -233,45 +235,45 @@ export const businessRegistrationSlice = createSlice({
             steps: tab?.steps?.map((step: RegistrationStep) => {
               return {
                 ...step,
-                active: false,
-              };
-            }),
-          };
+                active: false
+              }
+            })
+          }
         }
-      );
+      )
 
       // FIND STEP
       const step = updatedRegistrationTabs
         ?.flatMap((tab: RegistrationTab) => tab?.steps)
-        .find((step: RegistrationStep) => step?.name === action.payload);
+        .find((step: RegistrationStep) => step?.name === action.payload)
 
       // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === step?.tab_name
-      );
+      )
 
       // FIND STEP INDEX
       const stepIndex = updatedRegistrationTabs[tabIndex].steps?.findIndex(
         (stepToFind: RegistrationStep) => stepToFind?.name === step?.name
-      );
+      )
 
       // SET ACTIVE STEP
-      updatedRegistrationTabs[tabIndex].steps[stepIndex].active = true;
+      updatedRegistrationTabs[tabIndex].steps[stepIndex].active = true
 
       // SET ACTIVE STEP TO STATE AND LOCAL STORAGE
       state.business_active_step =
-        updatedRegistrationTabs[tabIndex].steps[stepIndex];
+        updatedRegistrationTabs[tabIndex].steps[stepIndex]
       localStorage.setItem(
-        'business_active_step',
+        "business_active_step",
         JSON.stringify(updatedRegistrationTabs[tabIndex].steps[stepIndex])
-      );
+      )
 
       // SET UPDATED REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.business_registration_tabs = updatedRegistrationTabs
       localStorage.setItem(
-        'business_registration_tabs',
+        "business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
-      );
+      )
     },
 
     // SET COMPLETED STEP
@@ -282,37 +284,37 @@ export const businessRegistrationSlice = createSlice({
             ...tab,
             steps: tab.steps?.map((step: RegistrationStep) => {
               return {
-                ...step,
-              };
-            }),
-          };
+                ...step
+              }
+            })
+          }
         }
-      );
+      )
 
       // FIND STEP
       const step = updatedRegistrationTabs
         ?.flatMap((tab: RegistrationTab) => tab?.steps)
-        .find((step: RegistrationStep) => step?.name === action.payload);
+        .find((step: RegistrationStep) => step?.name === action.payload)
 
       // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === step?.tab_name
-      );
+      )
 
       // FIND STEP INDEX
       const stepIndex = updatedRegistrationTabs[tabIndex].steps?.findIndex(
         (stepToFind: RegistrationStep) => stepToFind?.name === step?.name
-      );
+      )
 
       // SET COMPLETED STEP
-      updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = true;
+      updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = true
 
       // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.business_registration_tabs = updatedRegistrationTabs
       localStorage.setItem(
-        'business_registration_tabs',
+        "business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
-      );
+      )
     },
 
     // REMOVE COMPLETED STEP
@@ -323,87 +325,97 @@ export const businessRegistrationSlice = createSlice({
             ...tab,
             steps: tab.steps?.map((step: RegistrationStep) => {
               return {
-                ...step,
-              };
-            }),
-          };
+                ...step
+              }
+            })
+          }
         }
-      );
+      )
 
       // FIND STEP
       const step = updatedRegistrationTabs
         ?.flatMap((tab: RegistrationTab) => tab?.steps)
-        .find((step: RegistrationStep) => step?.name === action.payload);
+        .find((step: RegistrationStep) => step?.name === action.payload)
 
       // FIND TAB INDEX
       const tabIndex = updatedRegistrationTabs?.findIndex(
         (tab: RegistrationTab) => tab?.name === step?.tab_name
-      );
+      )
 
       // FIND STEP INDEX
       const stepIndex = updatedRegistrationTabs[tabIndex].steps?.findIndex(
         (stepToFind: RegistrationStep) => stepToFind?.name === step?.name
-      );
+      )
 
       // SET COMPLETED STEP
-      updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = false;
+      updatedRegistrationTabs[tabIndex].steps[stepIndex].completed = false
 
       // SET UPDATED ACTIVE REGISTRATION TABS TO STATE AND LOCAL STORAGE
-      state.business_registration_tabs = updatedRegistrationTabs;
+      state.business_registration_tabs = updatedRegistrationTabs
       localStorage.setItem(
-        'business_registration_tabs',
+        "business_registration_tabs",
         JSON.stringify(updatedRegistrationTabs)
-      );
+      )
     },
 
     // SET COMPANY SUB ACTIVITIES
     setBusinessSubActivities: (state, action) => {
-      state.company_business_lines = action.payload;
+      state.company_business_lines = action.payload
       localStorage.setItem(
-        'company_business_lines',
+        "company_business_lines",
         JSON.stringify(action.payload)
-      );
+      )
     },
 
     // SET CAPITAL DETAILS MODAL
     setCapitalDetailsModal: (state, action) => {
-      state.capitalDetailsModal = action.payload;
+      state.capitalDetailsModal = action.payload
     },
 
     // SET CONFIRM DELETE MODAL
     setConfirmDeleteModal: (state, action) => {
-      state.confirmDeleteModal = action.payload;
+      state.confirmDeleteModal = action.payload
     },
 
     // SET SHAREHOLDER DETAILS MODAL
     setShareholderDetailsModal: (state, action) => {
-      state.shareholderDetailsModal = action.payload;
+      state.shareholderDetailsModal = action.payload
     },
 
     // SET BENEFICIAL OWNER DETAILS MODAL
     setBeneficialOwnerDetailsModal: (state, action) => {
-      state.beneficialOwnerDetailsModal = action.payload;
+      state.beneficialOwnerDetailsModal = action.payload
     },
 
     // SET PERSON DETAILS MODAL
     setBusinessPersonDetailsModal: (state, action) => {
-      state.businessPersonDetailsModal = action.payload;
+      state.businessPersonDetailsModal = action.payload
     },
 
     // SET DELETE APPLICATION MODAL
     setDeleteApplicationModal: (state, action) => {
-      state.deleteApplicationModal = action.payload;
+      state.deleteApplicationModal = action.payload
+    },
+    // SET PREVIEW APPLICATION MODAL
+    setConfirmPreviewModal: (state, action) => {
+      state.confirmPreviewModal = action.payload
+    },
+
+    //SET RESUBMIT
+    setResubmitConfirmModal: (state, action) => {
+      state.reSubmitConfirmModal = action.payload
     },
 
     // REMOVE BUSINESS REGISTRATION TABS
     removeBusinessRegistrationTabs: (state) => {
-      state.business_registration_tabs = business_registration_tabs_initial_state;
-      localStorage.removeItem('business_registration_tabs');
-    },
-  },
-});
+      state.business_registration_tabs =
+        business_registration_tabs_initial_state
+      localStorage.removeItem("business_registration_tabs")
+    }
+  }
+})
 
-export default businessRegistrationSlice.reducer;
+export default businessRegistrationSlice.reducer
 
 export const {
   setBusinessActiveTab,
@@ -420,4 +432,6 @@ export const {
   setBusinessPersonDetailsModal,
   setDeleteApplicationModal,
   removeBusinessRegistrationTabs,
-} = businessRegistrationSlice.actions;
+  setConfirmPreviewModal,
+  setResubmitConfirmModal
+} = businessRegistrationSlice.actions

@@ -1,86 +1,86 @@
-import Button from '@/components/inputs/Button';
-import Modal from '@/components/Modal';
+import Button from "@/components/inputs/Button"
+import Modal from "@/components/Modal"
 import {
   findNavigationFlowByStepName,
-  findNavigationFlowMassIdByStepName,
-} from '@/helpers/business.helpers';
+  findNavigationFlowMassIdByStepName
+} from "@/helpers/business.helpers"
 import {
   completeNavigationFlowThunk,
-  createNavigationFlowThunk,
-} from '@/states/features/navigationFlowSlice';
-import { setConfirmUnassignedSharesModal } from '@/states/features/shareDetailSlice';
-import { AppDispatch, RootState } from '@/states/store';
-import { businessId } from '@/types/models/business';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+  createNavigationFlowThunk
+} from "@/states/features/navigationFlowSlice"
+import { setConfirmUnassignedSharesModal } from "@/states/features/shareDetailSlice"
+import { AppDispatch, RootState } from "@/states/store"
+import { businessId } from "@/types/models/business"
+import { useSelector } from "react-redux"
+import { useDispatch } from "react-redux"
 
 interface ConfirmUnAssignedSharesProps {
-  businessId: businessId;
+  businessId: businessId
 }
 
 const ConfirmUnAssignedShares = ({
-  businessId,
+  businessId
 }: ConfirmUnAssignedSharesProps) => {
   // STATE VARIABLES
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch()
   const { confirmUnassignedSharesModal } = useSelector(
     (state: RootState) => state.shareDetail
-  );
+  )
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
-  );
+  )
 
   return (
     <Modal
       isOpen={confirmUnassignedSharesModal}
       onClose={() => {
-        dispatch(setConfirmUnassignedSharesModal(false));
+        dispatch(setConfirmUnassignedSharesModal(false))
       }}
       heading="Proceed with unassigned shares?"
       className="min-w-[40vw]"
       headingClassName="text-red-600"
     >
-      You are going to unassign the shares. Are you sure you want to proceed?
+      You are going with unassigned shares. Are you sure you want to proceed?
       You can always assign the shares later by returning to this step.
-      <menu className="w-full flex items-center gap-3 justify-between mt-4">
+      <menu className="flex items-center justify-between w-full gap-3 mt-4">
         <Button
-          value={'Cancel'}
+          value={"Cancel"}
           onClick={(e) => {
-            e.preventDefault();
-            dispatch(setConfirmUnassignedSharesModal(false));
+            e.preventDefault()
+            dispatch(setConfirmUnassignedSharesModal(false))
           }}
         />
 
         <Button
-          value={'Proceed'}
+          value={"Proceed"}
           primary
           onClick={(e) => {
-            e.preventDefault();
+            e.preventDefault()
             dispatch(
               completeNavigationFlowThunk({
                 isCompleted: true,
                 navigationFlowId: findNavigationFlowByStepName(
                   businessNavigationFlowsList,
-                  'Capital Details'
-                )?.id,
+                  "Capital Details"
+                )?.id
               })
-            );
+            )
             dispatch(
               createNavigationFlowThunk({
                 businessId,
                 massId: findNavigationFlowMassIdByStepName(
                   navigationFlowMassList,
-                  'Executive Management'
+                  "Executive Management"
                 ),
-                isActive: true,
+                isActive: true
               })
-            );
-            dispatch(setConfirmUnassignedSharesModal(false));
+            )
+            dispatch(setConfirmUnassignedSharesModal(false))
           }}
         />
       </menu>
     </Modal>
-  );
-};
+  )
+}
 
-export default ConfirmUnAssignedShares;
+export default ConfirmUnAssignedShares
