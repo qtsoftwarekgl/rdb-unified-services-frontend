@@ -12,6 +12,8 @@ export type Profile = {
 
 export interface User extends AbstractDomain {
   fullName?: string;
+  firstName: string;
+  lastName: string;
   state: string;
   profile: Profile;
   nationality: string;

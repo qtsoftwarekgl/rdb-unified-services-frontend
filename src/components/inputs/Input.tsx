@@ -44,6 +44,7 @@ type InputProps = {
   toDate?: Date;
   checked?: boolean;
   selectionType?: 'date' | 'month' | 'year' | 'recurringDate';
+  showSearchSuffix?: boolean;
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -74,6 +75,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       toDate,
       checked,
       selectionType,
+      showSearchSuffix = false
     },
     ref
   ) => {
@@ -127,7 +129,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           >
             {placeholder || 'Choose file'}
             {multiple ? 's' : ''}{' '}
-            {required && <span className="text-red-600">*</span>}
+            {required}
           </button>
           <input
             ref={hiddenFileInput as LegacyRef<HTMLInputElement> | undefined}
@@ -183,7 +185,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             *
           </span>
         </p>
-        {!prefixIcon && !prefixText && !suffixIcon && (
+        {!prefixIcon && !prefixText && !suffixIcon && !showSearchSuffix && (
           <input
             defaultValue={defaultValue as string}
             min={min}
@@ -267,6 +269,44 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                   '!border-[.1px] !border-background hover:cursor-default focus:!border-background'
                 }`}
               />
+            </menu>
+          )}
+            {showSearchSuffix && (
+            <menu className="flex gap-2">
+              {/* <Link
+                to={'#'}
+                onClick={suffixIconHandler}
+                className={`${
+                  !suffixIcon && 'hidden'
+                } absolute top-0 end-0 p-2.5 px-3.5 text-sm font-medium h-full rounded-e-lg border focus:outline-none ${
+                  suffixIconPrimary
+                    ? 'bg-primary text-white border-primary border-l-none'
+                    : 'border-secondary border-opacity-50 bg-white text-primary border-l-none'
+                }`}
+              >
+                <FontAwesomeIcon icon={suffixIcon || faSearch} />
+              </Link> */}
+              <input
+                defaultValue={defaultValue as string}
+                value={value}
+                type={type || 'text'}
+                onChange={onChange}
+                readOnly={readOnly}
+                name={name}
+                placeholder={readOnly ? '' : placeholder}
+                className={`${
+                  prefixText && '!ml-16 !w-[85%]'
+                } py-[7px] px-4 font-normal placeholder:!font-light  placeholder:text-[13px] text-[14px] flex items-center w-full rounded-lg border-[1.5px] border-secondary border-opacity-50 outline-none focus:outline-none focus:border-[1.6px] focus:border-primary ease-in-out duration-50 ${className} ${
+                  prefixIcon &&
+                  '!ml-[45px] !w-[90%] !border-l-none !rounded-l-none !ps-3.5'
+                } ${
+                  readOnly &&
+                  '!border-[.1px] !border-background hover:cursor-default focus:!border-background'
+                }`}
+              />
+              <button 
+              onClick={suffixIconHandler}
+              className='text-white bg-primary text-xs p-2 px-4 rounded-md'>Search</button>
             </menu>
           )}
         </section>

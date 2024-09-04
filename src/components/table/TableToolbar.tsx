@@ -46,7 +46,6 @@ const TableToolbar = ({
                   {...field}
                   onChange={(e) => {
                     field.onChange(e);
-                    console.log(e);
                     searchTypeHandler && searchTypeHandler(e);
                   }}
                 />

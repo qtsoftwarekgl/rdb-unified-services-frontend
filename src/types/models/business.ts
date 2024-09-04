@@ -44,6 +44,7 @@ export type Details = {
   companyType: string;
   companyCategory: string;
   applicationReferenceId: string;
+  reservationId?: string;
   position: string;
   hasArticlesOfAssociation: boolean;
   createdAt: Date;

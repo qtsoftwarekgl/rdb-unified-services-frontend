@@ -5,6 +5,7 @@ export type ReservedName = {
     name: string;
     state: string;
     reservationStatus: string;
+    code: string;
     expiryDate: Date;
     createdAt: Date;
 }

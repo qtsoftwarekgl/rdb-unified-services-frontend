@@ -1,8 +1,4 @@
-import {
-  fetchFoundersWithSharePercentagesThunk,
-  setFounderWithSharesDetailsModal,
-  setSelectedFounderDetailWithShares,
-} from '@/states/features/founderDetailSlice';
+import { fetchFoundersWithSharePercentagesThunk } from '@/states/features/founderDetailSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { businessId } from '@/types/models/business';
 import { useEffect, useState } from 'react';
@@ -10,17 +6,14 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import FounderDetailsWithShares from '../capital-information/FounderDetailsWithSharesTable';
 import { FounderDetail } from '@/types/models/personDetail';
-import { FieldValues, useForm } from 'react-hook-form';
 import Button from '@/components/inputs/Button';
-import { formatDate } from '@/helpers/strings';
+import { capitalizeString } from '@/helpers/strings';
 import Loader from '@/components/Loader';
-import { useCreateBeneficialOwnerMutation } from '@/states/api/businessRegApiSlice';
 import {
-  addToBeneficialOwnersList,
   fetchBeneficialOwnersThunk,
+  setActiveBeneficialOwnerNavigationStep,
 } from '@/states/features/beneficialOwnerSlice';
-import { toast } from 'react-toastify';
-import { ErrorResponse } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import BeneficialOwnersTable from './BeneficialOwnersTable';
 import {
   completeNavigationFlowThunk,
@@ -33,7 +26,7 @@ import {
 import BeneficialOwnerResidentialAddress from './BeneficialOwnerResidentialAddress';
 import BeneficialOwnerProfessionalAddress from './BeneficialOwnerProfessionalAddress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircle } from '@fortawesome/free-regular-svg-icons';
+import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import BeneficialOwnershipInformation from './BeneficialOwnershipInformation';
 import BeneficialOwnerTinOwnership from './BeneficialOwnerTinOwnership';
 import BeneficialOwnerPersonalInformation from './BeneficialOwnerPersonalInformation';
@@ -55,19 +48,22 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
     beneficialOwnersList,
     beneficialOwnersIsFetching,
     beneficialOwnersIsSuccess,
+    beneficialOwnerNavigationSteps,
   } = useSelector((state: RootState) => state.beneficialOwner);
-  const [scrollSlides, setScrollSlides] = useState(0);
   const [addNewBeneficialOwner, setAddNewBeneficialOwner] = useState(false);
   const { navigationFlowMassList, businessNavigationFlowsList } = useSelector(
     (state: RootState) => state.navigationFlow
   );
+  const [activeBeneficialOwnerStep, setActiveBeneficialOwnerStep] = useState(
+    beneficialOwnerNavigationSteps?.find((step) => step.active)
+  );
 
-  // REACT HOOK FORM
-  const {
-    formState: { errors },
-    handleSubmit,
-    reset,
-  } = useForm();
+  // CHANGE ACTIVE BENEFICIAL OWNER STEP
+  useEffect(() => {
+    setActiveBeneficialOwnerStep(
+      beneficialOwnerNavigationSteps?.find((step) => step.active)
+    );
+  }, [beneficialOwnerNavigationSteps]);
 
   // FETCH FOUNDER DETAILS WITH SHARE PERCENTAGES
   useEffect(() => {
@@ -77,54 +73,6 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
       })
     );
   }, [dispatch, businessId]);
-
-  // INITIALIZE CREATE BENEFICIAL OWNER MUTATION
-  const [
-    createBeneficialOwner,
-    {
-      data: createBeneficialOwnerData,
-      error: createBeneficialOwnerError,
-      isLoading: createBeneficialOwnerIsLoading,
-      isSuccess: createBeneficialOwnerIsSuccess,
-      isError: createBeneficialOwnerIsError,
-    },
-  ] = useCreateBeneficialOwnerMutation();
-
-  // HANDLE FORM SUBMISSION
-  const onSubmit = (data: FieldValues) => {
-    if (data?.founderId) {
-      createBeneficialOwner({
-        ...data,
-        businessId,
-        dateOfBirth: formatDate(data?.dateOfBirth),
-        registeredDate: formatDate(data?.registeredDate),
-        extentOfShare: selectedFounderDetailWithShares?.shareQuantityPercentage,
-      });
-    }
-  };
-
-  // HANDLE CREATE BENEFICIAL OWNER RESPONSE
-  useEffect(() => {
-    if (createBeneficialOwnerIsSuccess && createBeneficialOwnerData) {
-      toast.success('Beneficial owner created successfully');
-      dispatch(addToBeneficialOwnersList(createBeneficialOwnerData?.data));
-      setAddNewBeneficialOwner(false);
-      dispatch(setSelectedFounderDetailWithShares(undefined));
-    } else if (createBeneficialOwnerIsError && createBeneficialOwnerError) {
-      const errorResponse = (createBeneficialOwnerError as ErrorResponse)?.data
-        ?.message;
-      toast.error(
-        errorResponse ||
-          'An error occurred while creating beneficial owner. Refresh and try again'
-      );
-    }
-  }, [
-    createBeneficialOwnerIsSuccess,
-    createBeneficialOwnerData,
-    dispatch,
-    createBeneficialOwnerIsError,
-    createBeneficialOwnerError,
-  ]);
 
   // FETCH EXISTING BENEFICIAL OWNERS
   useEffect(() => {
@@ -161,23 +109,51 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
       )}
       {((selectedFounderDetailWithShares && !founderWithSharesDetailsModal) ||
         addNewBeneficialOwner) && (
-        <form
-          className="w-full flex flex-col gap-4 p-0"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <fieldset className="flex flex-col gap-4 items-start w-full">
+        <section className="w-full flex flex-col gap-4 p-0">
+          <nav className="w-full grid grid-cols-5 gap-2 my-3">
+            {beneficialOwnerNavigationSteps?.map((step, index: number) => {
+              return (
+                <Link
+                  to={'#'}
+                  key={index}
+                  className={`bg-background text-black hover:bg-primary hover:text-white ${
+                    step?.active && `bg-primary text-white`
+                  } text-center p-[6px] px-2 rounded-md text-[13px] flex items-center gap-3 justify-center`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(setActiveBeneficialOwnerNavigationStep(step.name));
+                  }}
+                >
+                  {step?.completed && (
+                    <FontAwesomeIcon
+                      icon={faCircleCheck}
+                      className="text-[14px] bg-primary rounded-full text-background"
+                    />
+                  )}
+                  {capitalizeString(step.name)}
+                </Link>
+              );
+            })}
+          </nav>
+          <menu className="flex flex-col gap-1 items-start w-full">
             {/* TIN NUMBER DETAILS */}
             <menu
               className={`${
-                scrollSlides === 0 ? 'w-full' : 'w-0 h-0 invisible'
-              } flex flex-col gap-8 justify-between`}
+                activeBeneficialOwnerStep?.name === 'tin_ownership'
+                  ? 'w-full'
+                  : 'w-0 h-0 invisible'
+              } flex flex-col gap-2 justify-between`}
             >
-              <BeneficialOwnerTinOwnership />
+              <BeneficialOwnerTinOwnership
+                setAddNewBeneficialOwner={setAddNewBeneficialOwner}
+              />
             </menu>
             {/* PERSONAL IDENTIFICATION */}
             <menu
               className={`${
-                scrollSlides === 1 ? 'w-full' : 'w-0 h-0 invisible'
+                activeBeneficialOwnerStep?.name === 'personal_information'
+                  ? 'w-full'
+                  : 'w-0 h-0 invisible'
               } w-full flex flex-col gap-3 justify-between`}
             >
               <BeneficialOwnerPersonalInformation />
@@ -185,83 +161,34 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
             {/* PROFESSIONAL INFORMATION */}
             <menu
               className={`${
-                scrollSlides === 2 ? 'w-full' : 'w-0 h-0 invisible'
+                activeBeneficialOwnerStep?.name === 'residential_address'
+                  ? 'w-full'
+                  : 'w-0 h-0 invisible'
               } flex flex-col gap-4 justify-between`}
             >
               <BeneficialOwnerResidentialAddress />
+            </menu>
+            <menu
+              className={`${
+                activeBeneficialOwnerStep?.name === 'professional_address'
+                  ? 'w-full'
+                  : 'w-0 h-0 invisible'
+              } flex flex-col gap-4 justify-between`}
+            >
               <BeneficialOwnerProfessionalAddress />
             </menu>
             {/* BENEFICIAL OWNER INFORMATION */}
             <menu
               className={`${
-                scrollSlides === 3 ? 'w-full' : 'w-0 h-0 invisible'
+                activeBeneficialOwnerStep?.name === 'ownership_information'
+                  ? 'w-full'
+                  : 'w-0 h-0 invisible'
               } flex flex-col gap-4`}
             >
               <BeneficialOwnershipInformation />
             </menu>
-          </fieldset>
-          {Object.keys(errors)?.length > 0 && (
-            <article className="w-full flex flex-col gap-3 my-4">
-              <h3 className="text-red-600 text-[15px]">
-                The form cannot be submitted because there are required fields
-                that are not filled. Check the messages below and try again
-              </h3>
-              <ol className="flex flex-col items-start gap-3 flex-wrap">
-                {Object.entries(errors).map(([key, value]) => {
-                  return (
-                    <li key={key} className="flex items-center gap-2">
-                      <FontAwesomeIcon
-                        className="text-red-600 text-[7px] bg-red-600 rounded-full"
-                        icon={faCircle}
-                      />
-                      <p className="text-red-600 text-[14px]">
-                        {String(value?.message)}
-                      </p>
-                    </li>
-                  );
-                })}
-              </ol>
-            </article>
-          )}
-          <menu className="w-full flex items-center gap-3 justify-between">
-            {scrollSlides > 0 ? (
-              <Button
-                value={'Back'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollSlides >= 0 && setScrollSlides(scrollSlides - 1);
-                }}
-              />
-            ) : (
-              <Button
-                value={'Cancel'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  dispatch(setFounderWithSharesDetailsModal(false));
-                  setAddNewBeneficialOwner(false);
-                  dispatch(setSelectedFounderDetailWithShares(undefined));
-                  reset();
-                }}
-              />
-            )}
-            {scrollSlides >= 3 ? (
-              <Button
-                value={createBeneficialOwnerIsLoading ? <Loader /> : 'Save'}
-                primary
-                submit
-              />
-            ) : (
-              <Button
-                value={'Next'}
-                primary
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollSlides <= 3 && setScrollSlides(scrollSlides + 1);
-                }}
-              />
-            )}
           </menu>
-        </form>
+        </section>
       )}
       {!addNewBeneficialOwner && !selectedFounderDetailWithShares && (
         <menu className="w-full flex items-center gap-3 justify-between">

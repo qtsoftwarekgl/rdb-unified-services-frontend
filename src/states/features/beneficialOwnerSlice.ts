@@ -5,6 +5,34 @@ import { businessId } from '@/types/models/business';
 import { toast } from 'react-toastify';
 import businessRegApiSlice from '../api/businessRegApiSlice';
 
+const beneficialOwnerNavigationSteps = [
+  {
+    name: 'tin_ownership',
+    active: true,
+    completed: false,
+  },
+  {
+    name: 'personal_information',
+    active: false,
+    completed: false,
+  },
+  {
+    name: 'residential_address',
+    active: false,
+    completed: false,
+  },
+  {
+    name: 'professional_address',
+    active: false,
+    completed: false,
+  },
+  {
+    name: 'ownership_information',
+    active: false,
+    completed: false,
+  },
+];
+
 const initialState: {
   selectedBeneficialOwner?: BeneficialOwner;
   beneficialOwnersList: BeneficialOwner[];
@@ -12,6 +40,12 @@ const initialState: {
   beneficialOwnersIsError: boolean;
   beneficialOwnersIsSuccess: boolean;
   beneficialOwnerDetailsModal: boolean;
+  beneficialOwnerNavigationSteps: {
+    name: string;
+    active: boolean;
+    completed: boolean;
+  }[];
+  newBeneficialOwner?: BeneficialOwner;
 } = {
   selectedBeneficialOwner: undefined,
   beneficialOwnersList: [],
@@ -19,6 +53,8 @@ const initialState: {
   beneficialOwnersIsFetching: false,
   beneficialOwnersIsSuccess: false,
   beneficialOwnerDetailsModal: false,
+  beneficialOwnerNavigationSteps,
+  newBeneficialOwner: undefined,
 };
 
 // FETCH BENEFICIAL OWNERS THUNK
@@ -59,6 +95,27 @@ const beneficialOwnerSlice = createSlice({
     setBeneficialOwnerDetailsModal: (state, action) => {
       state.beneficialOwnerDetailsModal = action.payload;
     },
+    setCompleteBeneficialOwnerNavigationStep: (state, action) => {
+      state.beneficialOwnerNavigationSteps =
+        state.beneficialOwnerNavigationSteps.map((step) => {
+          if (step.name === action.payload) {
+            return { ...step, active: false, completed: true };
+          }
+          return step;
+        });
+    },
+    setActiveBeneficialOwnerNavigationStep: (state, action) => {
+      state.beneficialOwnerNavigationSteps =
+        state.beneficialOwnerNavigationSteps.map((step) => {
+          if (step.name === action.payload) {
+            return { ...step, active: true };
+          }
+          return { ...step, active: false };
+        });
+    },
+    setNewBeneficialOwner: (state, action) => {
+      state.newBeneficialOwner = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchBeneficialOwnersThunk.pending, (state) => {
@@ -85,6 +142,9 @@ export const {
   setBeneficialOwnersList,
   addToBeneficialOwnersList,
   setBeneficialOwnerDetailsModal,
+  setCompleteBeneficialOwnerNavigationStep,
+  setActiveBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
 } = beneficialOwnerSlice.actions;
 
 export default beneficialOwnerSlice.reducer;

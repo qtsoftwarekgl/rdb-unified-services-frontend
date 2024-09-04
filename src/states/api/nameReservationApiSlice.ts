@@ -14,12 +14,30 @@ export const nameReservationApiSlice = createApi({
                     }
                 },
             }),
+            fetchReservedNameByCode: builder.query({
+                query: ({code}) => {
+                    return {
+                        url: `name-reservations/all?code=${code}&status=APPROVED`,
+                        method: "GET",
+                    }
+                },
+            }),
+            fetchReservedNameById: builder.query({
+                query: ({id}) => {
+                    return {
+                        url: `name-reservations/${id}`,
+                        method: "GET",
+                    }
+                },
+            }),
         }
 }
 })
 
 export const {
     useLazyFetchReservedNameQuery,
+    useLazyFetchReservedNameByCodeQuery,
+    useLazyFetchReservedNameByIdQuery,
 } = nameReservationApiSlice;
 
 

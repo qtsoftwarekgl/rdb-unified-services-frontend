@@ -167,3 +167,9 @@ export const formatDateTime = (date: string | Date | undefined) => {
   if (!date) return '';
   return moment(date).format('YYYY-MM-DD HH:mm:ss A');
 };
+
+// FORMAT EXPIRES IN DATE
+export const formatExpiresIn = (date: string | Date | undefined) => {
+  if (!date) return '';
+  return moment(date).fromNow();
+};
