@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import UserLayout from "../../containers/UserLayout";
 import { AppDispatch, RootState } from "../../states/store";
-import RegisteredBusinessesTable from "./RegisteredBusinessesTable";
 import NotificationPreference from "./NotificationPreference";
 import { useLazyGetUserQuery } from "@/states/api/userManagementApiSlice";
 import { useEffect } from "react";
@@ -134,7 +133,6 @@ const UserProfile = () => {
           )
         )}
         {/* User Registered businesses */}
-        <RegisteredBusinessesTable />
         <NotificationPreference />
       </main>
     </UserLayout>

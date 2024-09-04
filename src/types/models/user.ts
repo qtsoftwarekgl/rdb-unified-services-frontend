@@ -32,6 +32,7 @@ export interface User extends AbstractDomain {
   userType: string;
   failedLoginAttempts: number;
   isLocked: boolean;
+  email: string;
   roles: string[];
   permissions: string[];
 }
