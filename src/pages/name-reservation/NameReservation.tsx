@@ -5,6 +5,8 @@ import NameReservationSuccess from './NameReservationSuccess';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { capitalizeString } from '@/helpers/strings';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/states/store';
 
 const NameReservation = () => {
   const [navigationTabs] = useState([
@@ -24,7 +26,8 @@ const NameReservation = () => {
       steps: 3,
     },
   ]);
-  const [activeTab, setActiveTab] = useState(navigationTabs[0]);
+  // const [activeTab, setActiveTab] = useState(navigationTabs[0]);
+  const {name_reservation_active_step: activeTab} = useSelector((state: RootState) => state.nameReservation);
 
   return (
     <UserLayout>
@@ -41,7 +44,9 @@ const NameReservation = () => {
                 } w-full flex items-center justify-center rounded-md text-center py-2`}
                 onClick={(e) => {
                   e.preventDefault();
-                  setActiveTab(navigationTab);
+                  // dispatch(setNameReservationActiveTab(navigationTab.name));
+                  // dispatch(setNameReservationActiveStep(navigationTab.name));
+                  // setActiveTab(navigationTab);
                 }}
               >
                 {capitalizeString(navigationTab?.name)}

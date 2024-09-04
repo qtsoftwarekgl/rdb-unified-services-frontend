@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { Step, TabType } from "../../types/navigationTypes";
 
 export const nameReservationSlice = createSlice({
@@ -256,6 +256,9 @@ export const nameReservationSlice = createSlice({
     setSelectReservedNameModal: (state, action) => {
       state.selectReservedNameModal = action.payload;
     },
+    resetReservationData: (state) => {
+      localStorage.removeItem("owner_details");
+    }
   },
 });
 
@@ -271,4 +274,5 @@ export const {
   setReservedNames,
   removeFromReservedNames,
   setSelectReservedNameModal,
+  resetReservationData
 } = nameReservationSlice.actions;
