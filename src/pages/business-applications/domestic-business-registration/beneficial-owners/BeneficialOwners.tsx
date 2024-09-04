@@ -1,4 +1,7 @@
-import { fetchFoundersWithSharePercentagesThunk } from '@/states/features/founderDetailSlice';
+import {
+  fetchFoundersWithSharePercentagesThunk,
+  setSelectedFounderDetailWithShares,
+} from '@/states/features/founderDetailSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import { businessId } from '@/types/models/business';
 import { useEffect, useState } from 'react';
@@ -12,8 +15,10 @@ import Loader from '@/components/Loader';
 import {
   fetchBeneficialOwnersThunk,
   setActiveBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
+  setSelectedBeneficialOwner,
 } from '@/states/features/beneficialOwnerSlice';
-import { Link } from 'react-router-dom';
+import { ErrorResponse, Link, useLocation } from 'react-router-dom';
 import BeneficialOwnersTable from './BeneficialOwnersTable';
 import {
   completeNavigationFlowThunk,
@@ -30,6 +35,9 @@ import { faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import BeneficialOwnershipInformation from './BeneficialOwnershipInformation';
 import BeneficialOwnerTinOwnership from './BeneficialOwnerTinOwnership';
 import BeneficialOwnerPersonalInformation from './BeneficialOwnerPersonalInformation';
+import { useLazyGetBeneficialOwnerQuery } from '@/states/api/businessRegApiSlice';
+import queryString, { ParsedQuery } from 'query-string';
+import { toast } from 'react-toastify';
 
 interface BeneficialOwnersProps {
   businessId: businessId;
@@ -57,6 +65,62 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
   const [activeBeneficialOwnerStep, setActiveBeneficialOwnerStep] = useState(
     beneficialOwnerNavigationSteps?.find((step) => step.active)
   );
+  const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
+    {}
+  );
+
+  // NAVIGATION
+  const { search } = useLocation();
+
+  // GET PARAM FROM PATH
+  useEffect(() => {
+    setQueryParams(queryString.parse(search));
+  }, [search]);
+
+  // INITIALIZE GET BENEFICIAL OWNER QUERY
+  const [
+    getBeneficialOwner,
+    {
+      data: beneficialOwnerData,
+      error: beneficialOwnerError,
+      isFetching: beneficialOwnerIsFetching,
+      isSuccess: beneficialOwnerIsSuccess,
+      isError: beneficialOwnerIsError,
+    },
+  ] = useLazyGetBeneficialOwnerQuery();
+
+  // FETCH BENEFICIAL OWNER
+  useEffect(() => {
+    if (queryParams?.beneficialOwnerId) {
+      getBeneficialOwner({
+        id: queryParams?.beneficialOwnerId,
+      });
+    }
+  }, [queryParams, dispatch, getBeneficialOwner]);
+
+  // HANDLE BENEFICIAL OWNER FETCHING
+  useEffect(() => {
+    if (beneficialOwnerIsSuccess) {
+      setAddNewBeneficialOwner(true);
+      dispatch(setNewBeneficialOwner(beneficialOwnerData?.data));
+    } else if (beneficialOwnerIsError) {
+      const errorResponse =
+        (beneficialOwnerError as ErrorResponse)?.data?.message ||
+        'Failed to fetch beneficial owner';
+      toast.error(errorResponse);
+      setAddNewBeneficialOwner(false);
+      dispatch(setSelectedBeneficialOwner(undefined));
+      dispatch(setSelectedFounderDetailWithShares(undefined));
+      dispatch(setNewBeneficialOwner(undefined));
+    }
+  }, [
+    beneficialOwnerData,
+    beneficialOwnerData?.data,
+    beneficialOwnerError,
+    beneficialOwnerIsError,
+    beneficialOwnerIsSuccess,
+    dispatch,
+  ]);
 
   // CHANGE ACTIVE BENEFICIAL OWNER STEP
   useEffect(() => {
@@ -109,7 +173,12 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
       )}
       {((selectedFounderDetailWithShares && !founderWithSharesDetailsModal) ||
         addNewBeneficialOwner) && (
-        <section className="w-full flex flex-col gap-4 p-0">
+        <section className="w-full flex flex-col gap-4 p-0 relative">
+          {beneficialOwnerIsFetching && (
+            <figure className="absolute top-0 bottom-0 right-0 left-0 h-full w-full flex items-center justify-center bg-background bg-opacity-20">
+              <Loader className="text-primary" />
+            </figure>
+          )}
           <nav className="w-full grid grid-cols-5 gap-2 my-3">
             {beneficialOwnerNavigationSteps?.map((step, index: number) => {
               return (
@@ -146,6 +215,7 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
             >
               <BeneficialOwnerTinOwnership
                 setAddNewBeneficialOwner={setAddNewBeneficialOwner}
+                beneficialOwnerId={queryParams?.beneficialOwnerId}
               />
             </menu>
             {/* PERSONAL IDENTIFICATION */}
@@ -156,7 +226,9 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
                   : 'w-0 h-0 invisible'
               } w-full flex flex-col gap-3 justify-between`}
             >
-              <BeneficialOwnerPersonalInformation />
+              <BeneficialOwnerPersonalInformation
+                beneficialOwnerId={queryParams?.beneficialOwnerId}
+              />
             </menu>
             {/* PROFESSIONAL INFORMATION */}
             <menu
@@ -166,7 +238,9 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
                   : 'w-0 h-0 invisible'
               } flex flex-col gap-4 justify-between`}
             >
-              <BeneficialOwnerResidentialAddress />
+              <BeneficialOwnerResidentialAddress
+                beneficialOwnerId={queryParams?.beneficialOwnerId}
+              />
             </menu>
             <menu
               className={`${
@@ -175,7 +249,9 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
                   : 'w-0 h-0 invisible'
               } flex flex-col gap-4 justify-between`}
             >
-              <BeneficialOwnerProfessionalAddress />
+              <BeneficialOwnerProfessionalAddress
+                beneficialOwnerId={queryParams?.beneficialOwnerId}
+              />
             </menu>
             {/* BENEFICIAL OWNER INFORMATION */}
             <menu
@@ -185,7 +261,9 @@ const BeneficialOwners = ({ businessId }: BeneficialOwnersProps) => {
                   : 'w-0 h-0 invisible'
               } flex flex-col gap-4`}
             >
-              <BeneficialOwnershipInformation />
+              <BeneficialOwnershipInformation
+                beneficialOwnerId={queryParams?.beneficialOwnerId}
+              />
             </menu>
           </menu>
         </section>

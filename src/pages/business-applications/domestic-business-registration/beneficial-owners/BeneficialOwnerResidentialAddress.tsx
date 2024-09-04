@@ -2,6 +2,7 @@ import Button from '@/components/inputs/Button';
 import Combobox from '@/components/inputs/Combobox';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
+import Loader from '@/components/Loader';
 import { countriesList } from '@/constants/countries';
 import {
   useLazyFetchCellsQuery,
@@ -9,6 +10,7 @@ import {
   useLazyFetchProvincesQuery,
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
+  useUpdateBeneficialOwnerResidentialAddressMutation,
 } from '@/states/api/businessRegApiSlice';
 import {
   setActiveBeneficialOwnerNavigationStep,
@@ -23,6 +25,7 @@ import {
   Sector,
   Village,
 } from '@/types/locationTypes';
+import { queryParam } from '@/types/models/business';
 import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
@@ -30,10 +33,18 @@ import { useDispatch } from 'react-redux';
 import { ErrorResponse } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const BeneficialOwnerResidentialAddress = () => {
+interface BeneficialOwnerResidentialAddressProps {
+  beneficialOwnerId: queryParam;
+}
+
+const BeneficialOwnerResidentialAddress = ({
+  beneficialOwnerId,
+}: BeneficialOwnerResidentialAddressProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { newBeneficialOwner } = useSelector((state: RootState) => state.beneficialOwner);
+  const { newBeneficialOwner } = useSelector(
+    (state: RootState) => state.beneficialOwner
+  );
   const [selectedProvince, setSelectedProvince] = useState<number | undefined>(
     undefined
   );
@@ -233,22 +244,60 @@ const BeneficialOwnerResidentialAddress = () => {
     }
   }, [villagesData?.data, villagesError, villagesIsError, villagesIsSuccess]);
 
+  // INITIALIZE UPDATE BENEFICIAL OWNER RESIDENTIAL ADDRESS
+  const [
+    updateBeneficialOwnerResidentialAddress,
+    {
+      data: updateBeneficialOwnerResidentialAddressData,
+      error: updateBeneficialOwnerResidentialAddressError,
+      isError: updateBeneficialOwnerResidentialAddressIsError,
+      isLoading: updateBeneficialOwnerResidentialAddressIsLoading,
+      isSuccess: updateBeneficialOwnerResidentialAddressIsSuccess,
+      reset: resetUpdateBeneficialOwnerResidentialAddress,
+    },
+  ] = useUpdateBeneficialOwnerResidentialAddressMutation();
+
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    dispatch(setNewBeneficialOwner({
-      ...newBeneficialOwner,
-      ...data
-    }));
-    dispatch(setCompleteBeneficialOwnerNavigationStep('residential_address'));
-    dispatch(setActiveBeneficialOwnerNavigationStep('professional_address'));
+    updateBeneficialOwnerResidentialAddress({
+      id: beneficialOwnerId,
+      villageId: data?.villageId,
+      streetNumber: data?.streetNumber,
+      fax: data?.fax,
+    });
   };
+
+  // HANDLE UPDATE BENEFICIAL OWNER RESIDENTIAL ADDRESS RESPONSE
+  useEffect(() => {
+    if (updateBeneficialOwnerResidentialAddressIsSuccess) {
+      dispatch(
+        setNewBeneficialOwner(updateBeneficialOwnerResidentialAddressData?.data)
+      );
+      dispatch(setCompleteBeneficialOwnerNavigationStep('residential_address'));
+      dispatch(setActiveBeneficialOwnerNavigationStep('professional_address'));
+      resetUpdateBeneficialOwnerResidentialAddress();
+    } else if (updateBeneficialOwnerResidentialAddressIsError) {
+      const errorResponse =
+        (updateBeneficialOwnerResidentialAddressError as ErrorResponse)?.data
+          ?.message || 'An error occured while updating residential address';
+      toast.error(errorResponse);
+      resetUpdateBeneficialOwnerResidentialAddress();
+    }
+  }, [
+    dispatch,
+    resetUpdateBeneficialOwnerResidentialAddress,
+    updateBeneficialOwnerResidentialAddressData?.data,
+    updateBeneficialOwnerResidentialAddressError,
+    updateBeneficialOwnerResidentialAddressIsError,
+    updateBeneficialOwnerResidentialAddressIsSuccess,
+  ]);
 
   return (
     <form
       className="w-full flex flex-col gap-5"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <fieldset className="w-full flex flex-col gap-6">
+      <menu className="w-full flex flex-col gap-6">
         <h3 className="text-center uppercase text-primary text-lg font-medium">
           Residential address
         </h3>
@@ -256,27 +305,28 @@ const BeneficialOwnerResidentialAddress = () => {
           <Controller
             name="nationality"
             control={control}
+            defaultValue={newBeneficialOwner?.villageId ? 'RW' : ''}
             rules={{ required: 'Select nationality' }}
             render={({ field }) => {
               return (
-                <label className='w-full flex flex-col gap-1'>
+                <label className="w-full flex flex-col gap-1">
                   <Combobox
-                  {...field}
-                  required
-                  label={'Nationality'}
-                  placeholder="Select nationality"
-                  options={countriesList?.map((country) => {
-                    return {
-                      label: country.name,
-                      value: country.code,
-                    };
-                  })}
-                />
-                {errors?.nationality && (
-                  <p className="text-red-500 text-[13px]">
-                    {String(errors?.nationality?.message)}
+                    {...field}
+                    required
+                    label={'Nationality'}
+                    placeholder="Select nationality"
+                    options={countriesList?.map((country) => {
+                      return {
+                        label: country.name,
+                        value: country.code,
+                      };
+                    })}
+                  />
+                  {errors?.nationality && (
+                    <p className="text-red-500 text-[13px]">
+                      {String(errors?.nationality?.message)}
                     </p>
-                )}
+                  )}
                 </label>
               );
             }}
@@ -481,6 +531,7 @@ const BeneficialOwnerResidentialAddress = () => {
           )}
           <Controller
             control={control}
+            defaultValue={newBeneficialOwner?.streetNumber}
             name="streetNumber"
             rules={{
               required:
@@ -509,6 +560,7 @@ const BeneficialOwnerResidentialAddress = () => {
           <Controller
             name="poBox"
             control={control}
+            defaultValue={newBeneficialOwner?.poBox}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -537,7 +589,7 @@ const BeneficialOwnerResidentialAddress = () => {
             }}
           />
         </fieldset>
-      </fieldset>
+      </menu>
       <menu className="w-full flex items-center gap-3 justify-between">
         <Button
           value={'Back'}
@@ -548,7 +600,17 @@ const BeneficialOwnerResidentialAddress = () => {
             );
           }}
         />
-        <Button value={'Next'} primary submit />
+        <Button
+          value={
+            updateBeneficialOwnerResidentialAddressIsLoading ? (
+              <Loader />
+            ) : (
+              'Next'
+            )
+          }
+          primary
+          submit
+        />
       </menu>
     </form>
   );

@@ -2,6 +2,7 @@ import { UUID } from 'crypto';
 import { Organization } from './organization';
 import { PersonRole } from './personRole';
 import { ShareDetail } from './shareDetail';
+import { Business } from './business';
 
 export interface PersonDetail {
   id: UUID;
@@ -78,4 +79,5 @@ export interface BeneficialOwner extends PersonDetail {
   beneficialOwnerType?: string;
   seniorManagementPosition?: string;
   personDetail?: PersonDetail;
+  business: Business;
 }

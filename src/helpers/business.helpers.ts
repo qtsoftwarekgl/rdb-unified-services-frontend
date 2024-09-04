@@ -3,6 +3,7 @@ import {
   NavigationFlow,
   NavigationFlowMass,
 } from '@/types/models/navigationFlow';
+import { BeneficialOwner } from '@/types/models/personDetail';
 import { UUID } from 'crypto';
 
 // FIND NAVIGATION FLOW ID BY STEP NAME
@@ -80,5 +81,15 @@ export const getBusinessName = (business: Business): string => {
     business?.branchName ||
     ''
   );
-}
+};
 
+export const verifyBeneficialOwnerCompletion = (
+  beneficialOwner: BeneficialOwner
+) => {
+  return (
+    beneficialOwner?.personDetail &&
+    (beneficialOwner?.villageId || beneficialOwner?.streetNumber) &&
+    (beneficialOwner?.proVillageId || beneficialOwner?.proStreetNumber) &&
+    beneficialOwner?.registeredDate
+  );
+};

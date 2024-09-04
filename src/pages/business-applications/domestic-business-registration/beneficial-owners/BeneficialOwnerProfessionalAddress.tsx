@@ -3,6 +3,7 @@ import Combobox from '@/components/inputs/Combobox';
 import CustomPopover from '@/components/inputs/CustomPopover';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
+import Loader from '@/components/Loader';
 import Table from '@/components/table/Table';
 import { beneficialOwnerOccupations } from '@/constants/beneficialOwner.constants';
 import { attachmentColumns } from '@/constants/business.constants';
@@ -15,8 +16,13 @@ import {
   useLazyFetchProvincesQuery,
   useLazyFetchSectorsQuery,
   useLazyFetchVillagesQuery,
+  useUpdateBeneficialOwnerProfessionalAddressMutation,
 } from '@/states/api/businessRegApiSlice';
-import { setActiveBeneficialOwnerNavigationStep, setCompleteBeneficialOwnerNavigationStep, setNewBeneficialOwner } from '@/states/features/beneficialOwnerSlice';
+import {
+  setActiveBeneficialOwnerNavigationStep,
+  setCompleteBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
+} from '@/states/features/beneficialOwnerSlice';
 import { AppDispatch, RootState } from '@/states/store';
 import {
   Cell,
@@ -25,6 +31,7 @@ import {
   Sector,
   Village,
 } from '@/types/locationTypes';
+import { queryParam } from '@/types/models/business';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { faEllipsisH, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,10 +43,18 @@ import { useDispatch } from 'react-redux';
 import { ErrorResponse, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const BeneficialOwnerProfessionalAddress = () => {
+interface BeneficialOwnerProfessionalAddressProps {
+  beneficialOwnerId: queryParam;
+}
+
+const BeneficialOwnerProfessionalAddress = ({
+  beneficialOwnerId,
+}: BeneficialOwnerProfessionalAddressProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
-  const { newBeneficialOwner } = useSelector((state: RootState) => state.beneficialOwner);
+  const { newBeneficialOwner } = useSelector(
+    (state: RootState) => state.beneficialOwner
+  );
   const [selectedProvince, setSelectedProvince] = useState<number | undefined>(
     undefined
   );
@@ -306,17 +321,57 @@ const BeneficialOwnerProfessionalAddress = () => {
     },
   ];
 
+  // INITIALIZE UPDATE PROFESSIONAL ADDRESS MUTATION
+  const [
+    updateBeneficialOwnerProfessionalAddress,
+    {
+      isLoading: updateProfessionalAddressIsLoading,
+      error: updateProfessionalAddressError,
+      isSuccess: updateProfessionalAddressIsSuccess,
+      isError: updateProfessionalAddressIsError,
+      data: updateProfessionalAddressData,
+      reset: resetUpdateProfessionalAddress,
+    },
+  ] = useUpdateBeneficialOwnerProfessionalAddressMutation();
+
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    dispatch(
-      setNewBeneficialOwner({
-        ...newBeneficialOwner,
-        ...data,
-      })
-    );
-    dispatch(setCompleteBeneficialOwnerNavigationStep('professional_address'));
-    dispatch(setActiveBeneficialOwnerNavigationStep('ownership_information'));
+    updateBeneficialOwnerProfessionalAddress({
+      id: beneficialOwnerId,
+      proCountry: data?.proCountry,
+      proStreetNumber: data?.proStreetNumber,
+      proEmail: data?.proEmail,
+      proPhoneNumber: data?.proPhoneNumber,
+      occupation: data?.occupation,
+      proPoBox: data?.proPoBox,
+      proFax: data?.proFax,
+    });
   };
+
+  // HANDLE UPDATE PROFESSIONAL ADDRESS RESPONSE
+  useEffect(() => {
+    if (updateProfessionalAddressIsError) {
+      const errorResponse =
+        (updateProfessionalAddressError as ErrorResponse)?.data?.message ||
+        'An error occurred while updating professional address';
+      toast.error(errorResponse);
+    } else if (updateProfessionalAddressIsSuccess) {
+      dispatch(setNewBeneficialOwner(updateProfessionalAddressData?.data));
+      dispatch(
+        setCompleteBeneficialOwnerNavigationStep('professional_address')
+      );
+      dispatch(setActiveBeneficialOwnerNavigationStep('ownership_information'));
+      toast.success('Professional address updated successfully');
+      resetUpdateProfessionalAddress();
+    }
+  }, [
+    dispatch,
+    resetUpdateProfessionalAddress,
+    updateProfessionalAddressData,
+    updateProfessionalAddressError,
+    updateProfessionalAddressIsError,
+    updateProfessionalAddressIsSuccess,
+  ]);
 
   return (
     <form
@@ -331,6 +386,7 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="proCountry"
             control={control}
+            defaultValue={newBeneficialOwner?.proCountry}
             rules={{ required: 'Select the country of profession' }}
             render={({ field }) => {
               return (
@@ -572,6 +628,7 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="proStreetNumber"
             control={control}
+            defaultValue={newBeneficialOwner?.proStreetNumber}
             rules={{
               required:
                 proCountry && proCountry !== 'RW'
@@ -599,6 +656,7 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="proEmail"
             control={control}
+            defaultValue={newBeneficialOwner?.proEmail}
             rules={{
               validate: (value) => {
                 if (!value) return true;
@@ -624,6 +682,7 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="proPhoneNumber"
             control={control}
+            defaultValue={newBeneficialOwner?.proPhoneNumber}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -645,6 +704,7 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="occupation"
             control={control}
+            defaultValue={newBeneficialOwner?.occupation}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -666,6 +726,7 @@ const BeneficialOwnerProfessionalAddress = () => {
           <Controller
             name="proPoBox"
             control={control}
+            defaultValue={newBeneficialOwner?.proPoBox}
             render={({ field }) => {
               return (
                 <label className="w-full flex flex-col gap-1">
@@ -744,7 +805,11 @@ const BeneficialOwnerProfessionalAddress = () => {
             );
           }}
         />
-        <Button value={'Next'} primary submit />
+        <Button
+          value={updateProfessionalAddressIsLoading ? <Loader /> : 'Next'}
+          primary
+          submit
+        />
       </menu>
       <ConfirmActionModal
         isOpen={confirmDeleteAttachment}

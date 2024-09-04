@@ -94,6 +94,8 @@ export type EmploymentInfo = {
 
 export type businessId = string | number | (string | number | null)[] | null
 
+export type queryParam = string | number | (string | number | null)[] | null;
+
 export type BusinessActivity = {
   code: number
   description: string

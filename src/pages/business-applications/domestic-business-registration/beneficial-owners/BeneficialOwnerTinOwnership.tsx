@@ -1,5 +1,7 @@
 import Button from '@/components/inputs/Button';
 import Input from '@/components/inputs/Input';
+import Loader from '@/components/Loader';
+import { useUpdateBeneficialOwnerTinMutation } from '@/states/api/businessRegApiSlice';
 import {
   setActiveBeneficialOwnerNavigationStep,
   setCompleteBeneficialOwnerNavigationStep,
@@ -8,23 +10,48 @@ import {
 } from '@/states/features/beneficialOwnerSlice';
 import { setSelectedFounderDetailWithShares } from '@/states/features/founderDetailSlice';
 import { AppDispatch, RootState } from '@/states/store';
+import { queryParam } from '@/types/models/business';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import queryString, { ParsedQuery } from 'query-string';
+import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import {
+  ErrorResponse,
+  URLSearchParamsInit,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 interface BeneficialOwnerTinOwnershipProps {
+  beneficialOwnerId: queryParam;
   setAddNewBeneficialOwner: (value: boolean) => void;
 }
 
 const BeneficialOwnerTinOwnership = ({
-  setAddNewBeneficialOwner,
+  beneficialOwnerId,
 }: BeneficialOwnerTinOwnershipProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { newBeneficialOwner } = useSelector(
     (state: RootState) => state.beneficialOwner
   );
+  const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
+    {}
+  );
+
+  // NAVIGATION
+  const { search } = useLocation();
+
+  // GET PARAM FROM PATH
+  useEffect(() => {
+    setQueryParams(queryString.parse(search));
+  }, [search]);
+
+  // NAVIGATION
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // REACT HOOK FORM
   const {
@@ -32,19 +59,58 @@ const BeneficialOwnerTinOwnership = ({
     watch,
     formState: { errors },
     handleSubmit,
+    setValue,
   } = useForm();
 
   const { hasTin, tinRwandan } = watch();
 
+  // INITIALIZE UPDATE BENEFICIAL OWNER TIN
+  const [
+    updateBeneficialOwnerTin,
+    {
+      data: updateBeneficialOwnerTinData,
+      isLoading: updateBeneficialOwnerTinIsLoading,
+      isSuccess: updateBeneficialOwnerTinIsSuccess,
+      isError: updateBeneficialOwnerTinIsError,
+      error: updateBeneficialOwnerTinError,
+      reset: resetUpdateBeneficialOwnerTin,
+    },
+  ] = useUpdateBeneficialOwnerTinMutation();
+
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    dispatch(setNewBeneficialOwner({
-      ...newBeneficialOwner,
-      tinNumber: data?.tinNumber,
-    }));
-    dispatch(setCompleteBeneficialOwnerNavigationStep('tin_ownership'));
-    dispatch(setActiveBeneficialOwnerNavigationStep('personal_information'));
+    updateBeneficialOwnerTin({
+      id: beneficialOwnerId,
+      tin: data?.tinNumber,
+    });
   };
+
+  // HANDLE UPDATE TIN RESPONSE
+  useEffect(() => {
+    if (updateBeneficialOwnerTinIsSuccess) {
+      dispatch(setNewBeneficialOwner(updateBeneficialOwnerTinData?.data));
+      dispatch(setCompleteBeneficialOwnerNavigationStep('tin_ownership'));
+      dispatch(setActiveBeneficialOwnerNavigationStep('personal_information'));
+      resetUpdateBeneficialOwnerTin();
+    } else if (updateBeneficialOwnerTinIsError) {
+      const errorResponse =
+        (updateBeneficialOwnerTinError as ErrorResponse)?.data?.message ||
+        'An error occurred while updating beneficial owner TIN';
+      toast.error(errorResponse);
+    }
+  }, [
+    dispatch,
+    resetUpdateBeneficialOwnerTin,
+    updateBeneficialOwnerTinData,
+    updateBeneficialOwnerTinError,
+    updateBeneficialOwnerTinIsError,
+    updateBeneficialOwnerTinIsSuccess,
+  ]);
+
+  // SET DEFAULT VALUES
+  useEffect(() => {
+    setValue('tinNumber', newBeneficialOwner?.tinNumber);
+  }, [newBeneficialOwner?.tinNumber, setValue]);
 
   return (
     <form
@@ -147,11 +213,14 @@ const BeneficialOwnerTinOwnership = ({
             e.preventDefault();
             dispatch(setSelectedBeneficialOwner(undefined));
             dispatch(setSelectedFounderDetailWithShares(undefined));
-            setAddNewBeneficialOwner(false);
+            setSearchParams({
+              ...searchParams,
+              businessId: queryParams?.businessId,
+            } as URLSearchParamsInit);
           }}
         />
         <Button
-          value={'Next'}
+          value={updateBeneficialOwnerTinIsLoading ? <Loader /> : 'Next'}
           submit
           primary
           disabled={Object.keys(errors)?.length > 0}

@@ -4,6 +4,7 @@ import CustomPopover from '@/components/inputs/CustomPopover';
 import Input from '@/components/inputs/Input';
 import Select from '@/components/inputs/Select';
 import TextArea from '@/components/inputs/TextArea';
+import Loader from '@/components/Loader';
 import Table from '@/components/table/Table';
 import { seniorManagementPositions } from '@/constants/beneficialOwner.constants';
 import {
@@ -12,30 +13,47 @@ import {
   beneficialOwnerControlType,
 } from '@/constants/business.constants';
 import ConfirmActionModal from '@/containers/modals/ConfirmActionModal';
-import { capitalizeString } from '@/helpers/strings';
+import { capitalizeString, formatDate } from '@/helpers/strings';
+import { useUpdateBeneficialOwnerOwnershipInfoMutation } from '@/states/api/businessRegApiSlice';
 import {
   setActiveBeneficialOwnerNavigationStep,
   setCompleteBeneficialOwnerNavigationStep,
+  setNewBeneficialOwner,
 } from '@/states/features/beneficialOwnerSlice';
 import { AppDispatch, RootState } from '@/states/store';
+import { queryParam } from '@/types/models/business';
 import { faEye } from '@fortawesome/free-regular-svg-icons';
 import { faEllipsisH, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import moment from 'moment';
+import queryString, { ParsedQuery } from 'query-string';
 import { useEffect, useState } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import {
+  ErrorResponse,
+  Link,
+  URLSearchParamsInit,
+  useLocation,
+  useSearchParams,
+} from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-const BeneficialOwnershipInformation = () => {
+interface BeneficialOwnershipInformationProps {
+  beneficialOwnerId: queryParam;
+}
+
+const BeneficialOwnershipInformation = ({
+  beneficialOwnerId,
+}: BeneficialOwnershipInformationProps) => {
   // STATE VARIABLES
   const dispatch: AppDispatch = useDispatch();
   const { selectedFounderDetailWithShares } = useSelector(
     (state: RootState) => state.founderDetail
   );
-  const { selectedBeneficialOwner, newBeneficialOwner } = useSelector(
+  const { newBeneficialOwner } = useSelector(
     (state: RootState) => state.beneficialOwner
   );
   const [confirmDeleteAttachment, setConfirmDeleteAttachment] = useState(false);
@@ -45,14 +63,27 @@ const BeneficialOwnershipInformation = () => {
     attachmentType: string;
     size: number;
   } | null>(null);
+  const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
+    {}
+  );
+
+  // NAVIGATION
+  const { search } = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // GET PARAM FROM PATH
+  useEffect(() => {
+    setQueryParams(queryString.parse(search));
+  }, [search]);
 
   // REACT HOOK FORM
   const {
     control,
     watch,
     formState: { errors },
-    setValue,
     handleSubmit,
+    trigger,
+    setValue
   } = useForm();
   const {
     beneficialOwnerType,
@@ -64,36 +95,73 @@ const BeneficialOwnershipInformation = () => {
   // SET DEFAULT VALUES
   useEffect(() => {
     if (selectedFounderDetailWithShares) {
-      setValue(
-        'extentOfShare',
-        selectedFounderDetailWithShares.shareQuantityPercentage
-      );
-      setValue(
-        'extentOfVoting',
-        selectedFounderDetailWithShares.shareQuantityPercentage
-      );
+      setValue('extentOfShare', newBeneficialOwner?.extentOfShare);
+      setValue('extentOfVoting', newBeneficialOwner?.extentOfVoting);
     }
-    if (selectedBeneficialOwner) {
-      setValue(
-        'beneficialOwnerType',
-        selectedBeneficialOwner?.beneficialOwnerType
-      );
-      setValue('controlType', selectedBeneficialOwner.controlType);
-      setValue(
-        'significantInfluence',
-        selectedBeneficialOwner.significantInfluence
-      );
+    if (newBeneficialOwner) {
+      setValue('beneficialOwnerType', newBeneficialOwner?.beneficialOwnerType);
+      setValue('controlType', newBeneficialOwner.controlType);
+      setValue('significantInfluence', newBeneficialOwner.significantInfluence);
     }
-  }, [selectedBeneficialOwner, selectedFounderDetailWithShares, setValue]);
+  }, [newBeneficialOwner, selectedFounderDetailWithShares, setValue]);
+
+  // INITIALIZE UPDATE BENEFICIAL OWNERSHIP INFO MUTATION
+  const [
+    updateBeneficialOwnerOwnershipInfo,
+    {
+      data: updateBeneficialOwnerOwnershipInfoData,
+      error: updateBeneficialOwnerOwnershipInfoError,
+      isLoading: updateBeneficialOwnerOwnershipInfoIsLoading,
+      isSuccess: updateBeneficialOwnerOwnershipInfoIsSuccess,
+      reset: resetUpdateBeneficialOwnerOwnershipInfo,
+    },
+  ] = useUpdateBeneficialOwnerOwnershipInfoMutation();
 
   // HANDLE FORM SUBMISSION
   const onSubmit = (data: FieldValues) => {
-    console.log({
-      ...newBeneficialOwner,
-      ...data,
+    updateBeneficialOwnerOwnershipInfo({
+      id: beneficialOwnerId,
+      registeredDate: formatDate(data?.registeredDate),
+      extentOfShare: data?.extentOfShare,
+      extentOfVoting: data?.extentOfVoting,
+      significantInfluence: data?.significantInfluence,
+      OtherControlMeansDesc: data?.OtherControlMeansDesc,
+      seniorManagementPosition: data?.seniorManagementPosition,
     });
-    dispatch(setCompleteBeneficialOwnerNavigationStep('ownership_information'));
   };
+
+  // HANDLE UPDATE BENEFICIAL OWNER OWNERSHIP INFO MUTATION
+  useEffect(() => {
+    if (updateBeneficialOwnerOwnershipInfoIsSuccess) {
+      resetUpdateBeneficialOwnerOwnershipInfo();
+      dispatch(
+        setNewBeneficialOwner(updateBeneficialOwnerOwnershipInfoData?.data)
+      );
+      toast.success('Beneficial Owner Ownership Information Updated');
+      dispatch(
+        setCompleteBeneficialOwnerNavigationStep('ownership_information')
+      );
+      setSearchParams({
+        businessId: queryParams?.businessId,
+      } as URLSearchParamsInit);
+    }
+    if (updateBeneficialOwnerOwnershipInfoError) {
+      const errorResponse =
+        (updateBeneficialOwnerOwnershipInfoError as ErrorResponse)?.data
+          ?.message ||
+        'An error occurred while updating beneficial owner ownership information';
+      toast.error(errorResponse);
+    }
+  }, [
+    updateBeneficialOwnerOwnershipInfoIsSuccess,
+    updateBeneficialOwnerOwnershipInfoError,
+    dispatch,
+    setSearchParams,
+    queryParams,
+    resetUpdateBeneficialOwnerOwnershipInfo,
+    updateBeneficialOwnerOwnershipInfoData?.data,
+    searchParams,
+  ]);
 
   // ATTACHMENT EXTENDED COLUMNS
   const attachmentExtendedColumns = [
@@ -156,6 +224,35 @@ const BeneficialOwnershipInformation = () => {
     },
   ];
 
+  // SET DEFAULT VALUES
+  useEffect(() => {
+    setValue('extentOfShare', newBeneficialOwner?.extentOfShare);
+    setValue('extentOfVoting', newBeneficialOwner?.extentOfVoting);
+    setValue('significantInfluence', newBeneficialOwner?.significantInfluence);
+    setValue('controlType', newBeneficialOwner?.controlType);
+    setValue(
+      'registeredDate',
+      moment(newBeneficialOwner?.registeredDate).toDate()
+    );
+    setValue(
+      'seniorManagementPosition',
+      newBeneficialOwner?.seniorManagementPosition
+    );
+    setValue(
+      'OtherControlMeansDesc',
+      newBeneficialOwner?.otherControlMeansDesc
+    );
+  }, [
+    newBeneficialOwner?.controlType,
+    newBeneficialOwner?.extentOfShare,
+    newBeneficialOwner?.extentOfVoting,
+    newBeneficialOwner?.otherControlMeansDesc,
+    newBeneficialOwner?.registeredDate,
+    newBeneficialOwner?.seniorManagementPosition,
+    newBeneficialOwner?.significantInfluence,
+    setValue,
+  ]);
+
   return (
     <form
       className="w-full flex flex-col gap-4"
@@ -165,6 +262,7 @@ const BeneficialOwnershipInformation = () => {
         <Controller
           name="registeredDate"
           control={control}
+          defaultValue={moment(newBeneficialOwner?.registeredDate).toDate()}
           rules={{ required: 'Date of becoming beneficial owner is required' }}
           render={({ field }) => {
             return (
@@ -200,8 +298,8 @@ const BeneficialOwnershipInformation = () => {
                     return {
                       label: capitalizeString(controlType),
                       value: controlType,
-                      disabled: selectedBeneficialOwner?.controlType
-                        ? controlType !== selectedBeneficialOwner?.controlType
+                      disabled: newBeneficialOwner?.controlType
+                        ? controlType !== newBeneficialOwner?.controlType
                         : false,
                     };
                   })}
@@ -215,7 +313,7 @@ const BeneficialOwnershipInformation = () => {
             );
           }}
         />
-        {selectedBeneficialOwner?.significantInfluence === 'OTHER' && (
+        {newBeneficialOwner?.significantInfluence === 'OTHER' && (
           <Controller
             name="significantInfluence"
             control={control}
@@ -252,6 +350,11 @@ const BeneficialOwnershipInformation = () => {
               controlType === 'DIRECT' || selectedFounderDetailWithShares
                 ? 'Extent of shares is required'
                 : false,
+            validate: (value) => {
+              if (value && value > 100) {
+                return 'Extent of shares must not be greater than 100%';
+              }
+            },
           }}
           render={({ field }) => {
             return (
@@ -270,6 +373,7 @@ const BeneficialOwnershipInformation = () => {
                   {...field}
                   onChange={(e) => {
                     field.onChange(e);
+                    trigger('extentOfShare');
                     setValue('extentOfVoting', e.target.value);
                   }}
                 />
@@ -443,7 +547,7 @@ const BeneficialOwnershipInformation = () => {
                 }}
               />
             )}
-          {selectedBeneficialOwner?.significantInfluence === 'OTHER' && (
+          {newBeneficialOwner?.significantInfluence === 'OTHER' && (
             <Controller
               name="significantInfluenceAttachment"
               control={control}
@@ -542,7 +646,13 @@ const BeneficialOwnershipInformation = () => {
             );
           }}
         />
-        <Button value={'Save'} primary submit />
+        <Button
+          value={
+            updateBeneficialOwnerOwnershipInfoIsLoading ? <Loader /> : 'Save'
+          }
+          primary
+          submit
+        />
       </menu>
       <ConfirmActionModal
         actionType="delete"

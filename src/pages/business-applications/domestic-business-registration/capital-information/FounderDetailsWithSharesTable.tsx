@@ -13,14 +13,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef, Row } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
+import {
+  ErrorResponse,
+  Link,
+  URLSearchParamsInit,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import FounderDetailsWithSharesDetails from './FounderDetailsWithSharesDetails';
 import CustomTooltip from '@/components/inputs/CustomTooltip';
 import {
   setActiveBeneficialOwnerNavigationStep,
-  setSelectedBeneficialOwner,
 } from '@/states/features/beneficialOwnerSlice';
 import { Button } from '@/components/ui/button';
+import { useCreateBeneficialOwnerMutation } from '@/states/api/businessRegApiSlice';
+import { toast } from 'react-toastify';
+import queryString, { ParsedQuery } from 'query-string';
+import Loader from '@/components/Loader';
 
 interface FounderDetailsWithPercentagesProps {
   founderDetailsList: {
@@ -44,6 +54,64 @@ const FounderDetailsWithShares = ({
       (founderDetail) => founderDetail?.shareQuantityPercentage >= 98
     )
   );
+  const [queryParams, setQueryParams] = useState<ParsedQuery<string | number>>(
+    {}
+  );
+
+  // NAVIGATION
+  const { search } = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // GET PARAM FROM PATH
+  useEffect(() => {
+    setQueryParams(queryString.parse(search));
+  }, [search]);
+
+  // INITIALIZE CREATE BENEFICIAL OWNER MUTATION
+  const [
+    createBeneficialOwner,
+    {
+      data: createBeneficialOwnerData,
+      error: createBeneficialOwnerError,
+      isLoading: createBeneficialOwnerIsLoading,
+      isSuccess: createBeneficialOwnerIsSuccess,
+      reset: resetCreateBeneficialOwner,
+      isError: createBeneficialOwnerIsError,
+    },
+  ] = useCreateBeneficialOwnerMutation();
+
+  // HANDLE CREATE BENEFICIAL OWNER RESPONSE
+  useEffect(() => {
+    if (createBeneficialOwnerIsSuccess) {
+      resetCreateBeneficialOwner();
+      setSearchParams({
+        ...searchParams,
+        businessId: queryParams?.businessId,
+        beneficialOwnerId: createBeneficialOwnerData?.data?.id,
+      } as URLSearchParamsInit);
+      setAddNewBeneficialOwner && setAddNewBeneficialOwner(true);
+      dispatch(setActiveBeneficialOwnerNavigationStep('tin_ownership'));
+    } else if (createBeneficialOwnerIsError) {
+      resetCreateBeneficialOwner();
+      const errorResponse =
+        (createBeneficialOwnerError as ErrorResponse)?.data?.message ||
+        'Failed to create beneficial owner';
+      toast.error(errorResponse);
+    }
+  }, [
+    createBeneficialOwnerData?.data?.id,
+    createBeneficialOwnerError,
+    createBeneficialOwnerIsError,
+    createBeneficialOwnerIsSuccess,
+    dispatch,
+    navigate,
+    queryParams,
+    resetCreateBeneficialOwner,
+    searchParams,
+    setAddNewBeneficialOwner,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     setFounderDetailsWithPercentagesList(
@@ -97,15 +165,12 @@ const FounderDetailsWithShares = ({
               onClick={(e) => {
                 e.preventDefault();
                 dispatch(setSelectedFounderDetailWithShares(row?.original));
-                dispatch(
-                  setSelectedBeneficialOwner({
-                    controlType: 'DIRECT',
-                    beneficialOwnerType: 'REGULAR_MANAGEMENT',
-                  })
-                );
-                dispatch(
-                  setActiveBeneficialOwnerNavigationStep('tin_ownership')
-                );
+                createBeneficialOwner({
+                  businessId: queryParams?.businessId,
+                  founderDetailId: row?.original?.founderDetail?.id,
+                  controlType: 'DIRECT',
+                  beneficialOwnerType: 'REGULAR_MANAGEMENT',
+                });
               }}
               to={'#'}
             >
@@ -125,15 +190,12 @@ const FounderDetailsWithShares = ({
                     },
                   })
                 );
-                dispatch(
-                  setSelectedBeneficialOwner({
-                    controlType: 'INDIRECT',
-                    beneficialOwnerType: 'REGULAR_MANAGEMENT',
-                  })
-                );
-                dispatch(
-                  setActiveBeneficialOwnerNavigationStep('tin_ownership')
-                );
+                createBeneficialOwner({
+                  businessId: queryParams?.businessId,
+                  founderId: row?.original?.founderDetail?.id,
+                  controlType: 'INDIRECT',
+                  beneficialOwnerType: 'REGULAR_MANAGEMENT',
+                });
               }}
               to={'#'}
             >
@@ -147,7 +209,12 @@ const FounderDetailsWithShares = ({
   ];
 
   return (
-    <section className="w-full flex flex-col gap-4">
+    <section className="w-full flex flex-col gap-4 relative">
+      {createBeneficialOwnerIsLoading && (
+        <figure className="absolute top-0 bottom-0 right-0 z-[10000] bg-background h-full w-full flex items-center justify-center bg-opacity-50">
+          <Loader className="text-primary" />
+        </figure>
+      )}
       <menu className="w-full flex items-center gap-3 justify-between">
         <h1 className="font-medium uppercase text-center w-full">
           Existing founders eligible to become beneficial owners
@@ -186,16 +253,11 @@ const FounderDetailsWithShares = ({
                 to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setSelectedBeneficialOwner({
-                      controlType: 'INDIRECT',
-                      beneficialOwnerType: 'SENIOR_MANAGEMENT',
-                    })
-                  );
-                  dispatch(
-                    setActiveBeneficialOwnerNavigationStep('tin_ownership')
-                  );
-                  setAddNewBeneficialOwner && setAddNewBeneficialOwner(true);
+                  createBeneficialOwner({
+                    businessId: queryParams?.businessId,
+                    controlType: 'INDIRECT',
+                    beneficialOwnerType: 'SENIOR_MANAGEMENT',
+                  });
                 }}
               >
                 <FontAwesomeIcon className="text-primary" icon={faFlag} />
@@ -206,17 +268,11 @@ const FounderDetailsWithShares = ({
                 to={'#'}
                 onClick={(e) => {
                   e.preventDefault();
-                  dispatch(
-                    setSelectedBeneficialOwner({
-                      controlType: 'INDIRECT',
-                      beneficialOwnerType: 'REGULAR_MANAGEMENT',
-                      significantInfluence: 'OTHER',
-                    })
-                  );
-                  dispatch(
-                    setActiveBeneficialOwnerNavigationStep('tin_ownership')
-                  );
-                  setAddNewBeneficialOwner && setAddNewBeneficialOwner(true);
+                  createBeneficialOwner({
+                    businessId: queryParams?.businessId,
+                    controlType: 'INDIRECT',
+                    beneficialOwnerType: 'REGULAR_MANAGEMENT',
+                  });
                 }}
               >
                 <FontAwesomeIcon className="text-primary" icon={faSquarePlus} />
